@@ -1,7 +1,8 @@
 """
 Configuração do banco de dados SQL Server com SQLAlchemy 2.x.
 
-Conexão READ-ONLY via pymssql. Toda persistência está no PostgreSQL.
+Conexão READ-ONLY configurada via settings (suporta pymssql e pyodbc).
+Toda persistência está no PostgreSQL.
 """
 
 from collections.abc import Generator
