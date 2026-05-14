@@ -1,0 +1,25 @@
+FROM python:3.12-slim
+
+# Criar usuário não-root
+RUN groupadd --gid 1001 appgroup && \
+    useradd --uid 1001 --gid appgroup --no-create-home appuser
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Nota: O pacote shared é montado em /app/shared via volume no
+# podman-compose.yml. Não é possível usar COPY ../shared aqui pois
+# está fora do build context.
+
+RUN chown -R appuser:appgroup /app
+
+USER appuser
+
+EXPOSE 8001
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+

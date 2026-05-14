@@ -1,0 +1,102 @@
+"""
+Ponto de entrada da API PostgreSQL.
+
+Configura o app FastAPI com:
+- Lifespan (startup/shutdown gracioso)
+- CORS
+- Middlewares (request_id, security_headers, rate_limit)
+- Exception handlers
+- Routers (auth, produto, health)
+- Documentação Swagger/ReDoc em /v1/
+"""
+
+from contextlib import asynccontextmanager
+
+import structlog
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.auth.router import router as auth_router
+from app.core.config import settings
+from app.core.exceptions import register_exception_handlers
+from app.core.logging import setup_logging
+from app.middleware.rate_limit import RateLimitMiddleware
+from app.middleware.request_id import RequestIdMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.routers.health_router import router as health_router
+from app.routers.produto_router import router as produto_router
+
+logger = structlog.get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Gerencia startup e shutdown da aplicação.
+
+    Startup: configura logging e loga início do serviço.
+    Shutdown: loga encerramento gracioso.
+    """
+    setup_logging()
+    logger.info(
+        "Serviço iniciado",
+        service=settings.APP_NAME,
+        version=settings.APP_VERSION,
+        debug=settings.DEBUG,
+    )
+    yield
+    logger.info("Serviço encerrado", service=settings.APP_NAME)
+
+
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    description=(
+        "API principal do ERP — CRUD completo e autenticação centralizada. "
+        "Persistência no PostgreSQL (rede local)."
+    ),
+    docs_url="/v1/docs",
+    redoc_url="/v1/redoc",
+    openapi_url="/v1/openapi.json",
+    lifespan=lifespan,
+)
+
+# =========================================================
+# Middlewares (ordem importa: último adicionado é executado primeiro)
+# =========================================================
+
+# Rate limiting por IP
+app.add_middleware(
+    RateLimitMiddleware,
+    max_requests=settings.RATE_LIMIT_REQUESTS,
+    window_seconds=settings.RATE_LIMIT_WINDOW_SECONDS,
+    exclude_paths=["/health", "/v1/docs", "/v1/redoc", "/v1/openapi.json"],
+)
+
+# Headers de segurança
+app.add_middleware(SecurityHeadersMiddleware)
+
+# Request ID para rastreabilidade
+app.add_middleware(RequestIdMiddleware)
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allowed_origins_list,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allow_headers=["*"],
+)
+
+# =========================================================
+# Exception Handlers
+# =========================================================
+
+register_exception_handlers(app)
+
+# =========================================================
+# Routers
+# =========================================================
+
+app.include_router(health_router)
+app.include_router(auth_router)
+app.include_router(produto_router)

@@ -1,0 +1,50 @@
+version: "3.9"
+
+networks:
+  erp-net:
+    driver: bridge
+
+services:
+  api-sqlserver:
+    build:
+      context: ./packages/api-sqlserver
+      containerfile: Containerfile
+    image: erp/api-sqlserver:dev
+    container_name: erp-api-sqlserver
+    user: "1001:1001"
+    ports:
+      - "8001:8001"
+    env_file: ./packages/api-sqlserver/.env
+    networks:
+      - erp-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    volumes:
+      - ./packages/shared:/app/shared:z
+
+  api-postgres:
+    build:
+      context: ./packages/api-postgres
+      containerfile: Containerfile
+    image: erp/api-postgres:dev
+    container_name: erp-api-postgres
+    user: "1001:1001"
+    ports:
+      - "8002:8002"
+    env_file: ./packages/api-postgres/.env
+    networks:
+      - erp-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    volumes:
+      - ./packages/shared:/app/shared:z

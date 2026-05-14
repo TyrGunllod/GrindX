@@ -1,0 +1,70 @@
+"""
+Dependencies de autenticação e injeção de dependência.
+
+Fornece as factories para injetar services e o current_user
+autenticado via JWT nas rotas do FastAPI.
+"""
+
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.orm import Session
+
+from app.auth.service import AuthService
+from app.core.config import settings
+from app.database import get_db
+from app.repositories.produto_repository import ProdutoRepository
+from app.services.produto_service import ProdutoService
+from shared.exceptions.base import TokenInvalidoError
+from shared.schemas.auth import TokenPayload
+from shared.security.jwt import verificar_jwt
+
+# Scheme que extrai o token do header Authorization: Bearer <token>
+_bearer_scheme = HTTPBearer(auto_error=False)
+
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer_scheme),
+) -> TokenPayload:
+    """Dependency que extrai e valida o usuário atual do token JWT.
+
+    Extrai o token do header Authorization, decodifica e retorna
+    o payload com sub (user_id) e role.
+
+    Args:
+        credentials: Credenciais extraídas do header pelo HTTPBearer.
+
+    Returns:
+        TokenPayload com dados do usuário autenticado.
+
+    Raises:
+        TokenInvalidoError: Se o token estiver ausente ou inválido.
+    """
+    if not credentials:
+        raise TokenInvalidoError()
+
+    return verificar_jwt(credentials.credentials, settings.SECRET_KEY)
+
+
+def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
+    """Factory para o AuthService com injeção da sessão do banco.
+
+    Args:
+        db: Sessão do SQLAlchemy injetada via Depends.
+
+    Returns:
+        Instância do AuthService.
+    """
+    return AuthService(db)
+
+
+def get_produto_service(db: Session = Depends(get_db)) -> ProdutoService:
+    """Factory para o ProdutoService com injeção do repositório.
+
+    Args:
+        db: Sessão do SQLAlchemy injetada via Depends.
+
+    Returns:
+        Instância do ProdutoService.
+    """
+    repository = ProdutoRepository(db)
+    return ProdutoService(repository)
