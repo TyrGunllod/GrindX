@@ -1,7 +1,50 @@
-.PHONY: build up down logs test-postgres test-sqlserver test-all lint format clean
+# ==========================================
+# ERP — Sistema de Gestão Integrado
+# Makefile para Windows (PowerShell/GnuMake)
+# ==========================================
+
+.PHONY: build up down logs test-postgres test-sqlserver test-all dev-postgres dev-sqlserver seed migrate clean
 
 # ==========================================
-# Build & Run
+# Desenvolvimento & Execução
+# ==========================================
+
+dev-postgres:
+	@echo "Iniciando API Postgres na porta 8002..."
+	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --port 8002
+
+dev-sqlserver:
+	@echo "Iniciando API SQL Server na porta 8001..."
+	cd packages/api-sqlserver && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --port 8001
+
+# ==========================================
+# Banco de Dados & Dados Iniciais
+# ==========================================
+
+migrate:
+	@echo "Rodando migrações no PostgreSQL..."
+	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python manage_db.py upgrade head
+
+seed:
+	@echo "Populando banco de dados inicial..."
+	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python seed.py
+
+# ==========================================
+# Testes Automatizados
+# ==========================================
+
+test-postgres:
+	@echo "Executando testes da API Postgres..."
+	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+
+test-sqlserver:
+	@echo "Executando testes da API SQL Server..."
+	cd packages/api-sqlserver && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+
+test-all: test-postgres test-sqlserver
+
+# ==========================================
+# Infraestrutura (Containers)
 # ==========================================
 
 build:
@@ -13,85 +56,14 @@ up:
 down:
 	podman-compose down
 
-restart:
-	podman-compose down && podman-compose up -d
-
 logs:
 	podman-compose logs -f
 
-logs-postgres:
-	podman-compose logs -f api-postgres
-
-logs-sqlserver:
-	podman-compose logs -f api-sqlserver
-
 # ==========================================
-# Testes
-# ==========================================
-
-test-postgres:
-	cd packages/api-postgres && python -m pytest tests/ -v --tb=short
-
-test-postgres-unit:
-	cd packages/api-postgres && python -m pytest tests/unit/ -v --tb=short
-
-test-postgres-integration:
-	cd packages/api-postgres && python -m pytest tests/integration/ -v --tb=short
-
-test-sqlserver:
-	cd packages/api-sqlserver && python -m pytest tests/ -v --tb=short
-
-test-sqlserver-unit:
-	cd packages/api-sqlserver && python -m pytest tests/unit/ -v --tb=short
-
-test-sqlserver-integration:
-	cd packages/api-sqlserver && python -m pytest tests/integration/ -v --tb=short
-
-test-all: test-postgres test-sqlserver
-
-# ==========================================
-# Testes em Container
-# ==========================================
-
-test-container-postgres:
-	podman run --rm -v ./packages/api-postgres:/app:z \
-		-v ./packages/shared:/app/shared:z \
-		--user 1001:1001 erp/api-postgres:dev \
-		python -m pytest tests/ -v --tb=short
-
-test-container-sqlserver:
-	podman run --rm -v ./packages/api-sqlserver:/app:z \
-		-v ./packages/shared:/app/shared:z \
-		--user 1001:1001 erp/api-sqlserver:dev \
-		python -m pytest tests/ -v --tb=short
-
-# ==========================================
-# Qualidade de Código
-# ==========================================
-
-lint:
-	cd packages/api-postgres && python -m ruff check app/ tests/
-	cd packages/api-sqlserver && python -m ruff check app/ tests/
-
-format:
-	cd packages/api-postgres && python -m ruff format app/ tests/
-	cd packages/api-sqlserver && python -m ruff format app/ tests/
-
-# ==========================================
-# Dev Local
-# ==========================================
-
-dev-postgres:
-	cd packages/api-postgres && uvicorn app.main:app --reload --port 8002
-
-dev-sqlserver:
-	cd packages/api-sqlserver && uvicorn app.main:app --reload --port 8001
-
-# ==========================================
-# Limpeza
+# Utilitários
 # ==========================================
 
 clean:
-	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
-	find . -name "*.pyc" -delete 2>/dev/null || true
+	@echo "Limpando arquivos temporários..."
+	if exist .pytest_cache (rmdir /s /q .pytest_cache)
+	for /d /r . %%d in (__pycache__) do @if exist "%%d" rmdir /s /q "%%d"

@@ -44,10 +44,10 @@ def seed_database():
         # Verificar se já existe dados
         usuario_count = session.query(Usuario).count()
         if usuario_count > 0:
-            print("✓ Banco já possui usuários. Abortando seed.")
+            print("[INFO] Banco já possui usuários. Abortando seed.")
             return
 
-        print("📝 Populando banco com dados iniciais...")
+        print("[START] Populando banco com dados iniciais...")
 
         # Criar usuários
         usuarios = [
@@ -75,7 +75,7 @@ def seed_database():
         ]
         session.add_all(usuarios)
         session.commit()
-        print(f"✓ Criados {len(usuarios)} usuários")
+        print(f"[OK] Criados {len(usuarios)} usuários")
 
         # Criar produtos de exemplo
         produtos = [
@@ -107,16 +107,16 @@ def seed_database():
         ]
         session.add_all(produtos)
         session.commit()
-        print(f"✓ Criados {len(produtos)} produtos")
+        print(f"[OK] Criados {len(produtos)} produtos")
 
-        print("\n✨ Seed concluído com sucesso!")
+        print("\n[FINISH] Seed concluído com sucesso!")
         print("\nCredenciais para teste:")
         print("  admin    / admin123")
         print("  operador / operador123")
         print("  leitura  / leitura123")
 
     except Exception as e:
-        print(f"✗ Erro ao fazer seed: {e}")
+        print(f"[ERROR] Erro ao fazer seed: {e}")
         session.rollback()
         raise
     finally:
