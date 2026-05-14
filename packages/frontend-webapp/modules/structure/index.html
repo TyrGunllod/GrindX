@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGI — Estrutura do Portal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="module-page">
+
+    <div class="container animate-in">
+        <header class="page-header flex justify-between items-center mb-8">
+            <div>
+                <h1>Estrutura do Portal</h1>
+                <p class="text-muted">Gerencie as abas do menu lateral e os módulos do sistema.</p>
+            </div>
+            <div class="flex gap-2">
+                <button class="btn" id="btnAddAba">
+                    <i class="fas fa-folder-plus"></i> Nova Aba
+                </button>
+                <button class="btn btn-primary" id="btnAddModulo">
+                    <i class="fas fa-plus"></i> Novo Módulo
+                </button>
+            </div>
+        </header>
+
+        <!-- Visualizador de Estrutura -->
+        <div id="structureContainer" class="grid grid-md-2">
+            <!-- As abas e seus módulos serão renderizados aqui como cards -->
+            <div class="loading-state">Carregando estrutura...</div>
+        </div>
+    </div>
+
+    <!-- Modal para Nova Aba -->
+    <div class="modal-overlay" id="abaModal" style="display: none;">
+        <div class="modal-card">
+            <header class="modal-header">
+                <h3>Gerenciar Aba</h3>
+            </header>
+            <form id="abaForm">
+                <div class="form-group">
+                    <label for="abaNome">Nome da Aba</label>
+                    <input type="text" id="abaNome" required placeholder="Ex: Financeiro">
+                </div>
+                <div class="form-group">
+                    <label for="abaIcone">Ícone (FontAwesome)</label>
+                    <input type="text" id="abaIcone" placeholder="fas fa-wallet">
+                </div>
+                <div class="form-group">
+                    <label for="abaOrdem">Ordem</label>
+                    <input type="number" id="abaOrdem" value="0">
+                </div>
+            </form>
+            <footer class="modal-footer flex justify-end gap-2 mt-4">
+                <button class="btn" onclick="document.getElementById('abaModal').style.display='none'">Cancelar</button>
+                <button class="btn btn-primary" id="btnSaveAba">Salvar Aba</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal para Novo Módulo -->
+    <div class="modal-overlay" id="moduloModal" style="display: none;">
+        <div class="modal-card">
+            <header class="modal-header">
+                <h3>Gerenciar Módulo</h3>
+            </header>
+            <form id="moduloForm">
+                <div class="form-group">
+                    <label for="modAba">Aba Pai</label>
+                    <select id="modAba" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="modNome">Nome do Módulo</label>
+                    <input type="text" id="modNome" required placeholder="Ex: Contas a Pagar">
+                </div>
+                <div class="form-group">
+                    <label for="modUrl">URL do Arquivo</label>
+                    <input type="text" id="modUrl" required placeholder="modules/financeiro/pagar.html">
+                </div>
+                <div class="form-group">
+                    <label for="modSlug">Identificador (Slug)</label>
+                    <input type="text" id="modSlug" required placeholder="fin-pagar">
+                </div>
+            </form>
+            <footer class="modal-footer flex justify-end gap-2 mt-4">
+                <button class="btn" onclick="document.getElementById('moduloModal').style.display='none'">Cancelar</button>
+                <button class="btn btn-primary" id="btnSaveModulo">Salvar Módulo</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../../shared/app.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

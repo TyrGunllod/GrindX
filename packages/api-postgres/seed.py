@@ -76,7 +76,8 @@ def seed_database():
 
             mod_home = Modulo(aba_id=aba_principal.id, nome="Dashboard", slug="home", url="modules/home/index.html", icone="fas fa-home")
             mod_users = Modulo(aba_id=aba_gestao.id, nome="Usuários", slug="users", url="modules/users/index.html", icone="fas fa-user-friends", role_minima="admin")
-            session.add_all([mod_home, mod_users])
+            mod_struct = Modulo(aba_id=aba_gestao.id, nome="Módulos & Abas", slug="structure", url="modules/structure/index.html", icone="fas fa-cubes", role_minima="admin")
+            session.add_all([mod_home, mod_users, mod_struct])
             print("[OK] Estrutura do Portal criada")
         else:
             print("[SKIP] Estrutura do portal já existe")
