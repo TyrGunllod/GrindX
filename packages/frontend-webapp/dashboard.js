@@ -3,7 +3,7 @@
  * Gerencia a navegação baseada na estrutura vinda da API.
  */
 
-const API_BASE_URL = 'http://localhost:8002/v1';
+const API_BASE_URL = window.sgi.config.API_BASE_URL;
 
 class DashboardController {
     constructor() {

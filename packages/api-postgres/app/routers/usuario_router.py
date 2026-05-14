@@ -6,7 +6,7 @@ from app.database import get_db
 from app.schemas.usuario import UsuarioCreate, UsuarioUpdate, UsuarioResponse
 from app.services.usuario_service import UsuarioService
 from app.auth.dependencies import require_role
-from shared.schemas.pagination import PaginatedResponse
+from shared.schemas.base import PaginatedResponse
 
 router = APIRouter(prefix="/v1/usuarios", tags=["Gestão de Usuários"])
 

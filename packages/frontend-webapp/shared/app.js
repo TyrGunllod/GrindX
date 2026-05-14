@@ -5,7 +5,8 @@
 
 const SGI_CONFIG = {
     DEFAULT_LANG: 'pt-BR',
-    SUPPORTED_LANGS: ['pt-BR', 'en-US', 'es-ES']
+    SUPPORTED_LANGS: ['pt-BR', 'en-US', 'es-ES'],
+    API_BASE_URL: 'http://127.0.0.1:8002/v1'
 };
 
 // 1. i18n / Localization System
@@ -102,6 +103,7 @@ class ThemeManager {
 
 // Export Singleton Instance
 const sgi = {
+    config: SGI_CONFIG,
     i18n: new I18nManager(),
     ui: UIFactory,
     theme: new ThemeManager()

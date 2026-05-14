@@ -3,7 +3,7 @@
  * Consome a API /v1/usuarios da api-postgres.
  */
 
-const API_BASE_URL = 'http://localhost:8002/v1';
+const API_BASE_URL = window.sgi.config.API_BASE_URL;
 
 class UsersController {
     constructor() {
@@ -16,8 +16,14 @@ class UsersController {
     }
 
     async init() {
+        console.log('Módulo de Usuários Inicializado');
+        
+        // Garantir que pegamos o token mais atualizado
+        this.token = localStorage.getItem('access_token');
+        
         if (!this.token) {
-            console.error('Não autenticado');
+            console.error('Token não encontrado no LocalStorage!');
+            this.tableBody.innerHTML = `<tr><td colspan="4" class="text-error">Sessão expirada. Faça login novamente.</td></tr>`;
             return;
         }
 
@@ -59,6 +65,7 @@ class UsersController {
     }
 
     bindEvents() {
+        document.getElementById('btnRefresh').onclick = () => this.loadUsers();
         document.getElementById('addUserBtn').onclick = () => this.openModal();
         document.getElementById('closeModal').onclick = () => this.closeModal();
         document.getElementById('btnCancel').onclick = () => this.closeModal();
@@ -67,17 +74,31 @@ class UsersController {
 
     async loadUsers() {
         try {
+            console.log('Solicitando listagem de usuários...');
             const response = await fetch(`${API_BASE_URL}/usuarios`, {
                 headers: { 'Authorization': `Bearer ${this.token}` }
             });
 
-            if (!response.ok) throw new Error('Erro ao carregar usuários');
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Erro da API:', errorData);
+                throw new Error(errorData.message || 'Erro ao carregar usuários');
+            }
 
             const result = await response.json();
-            this.renderTable(result.items);
+            console.log('Dados recebidos:', result);
+
+            if (result && Array.isArray(result.items)) {
+                this.renderTable(result.items);
+            } else {
+                console.warn('Formato de dados inesperado:', result);
+                this.tableBody.innerHTML = `<tr><td colspan="4" class="text-center">Nenhum usuário encontrado.</td></tr>`;
+            }
         } catch (err) {
-            console.error(err);
-            this.tableBody.innerHTML = `<tr><td colspan="4" class="text-error">Erro ao carregar dados.</td></tr>`;
+            console.error('Falha no loadUsers:', err);
+            this.tableBody.innerHTML = `<tr><td colspan="4" class="text-error" style="color:red; text-align:center; padding: 20px;">
+                Erro: ${err.message}
+            </td></tr>`;
         }
     }
 

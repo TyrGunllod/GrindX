@@ -4,8 +4,8 @@ from app.repositories.usuario_repository import UsuarioRepository
 from app.schemas.usuario import UsuarioCreate, UsuarioUpdate
 from shared.security.jwt import gerar_hash_senha
 from shared.exceptions.base import (
-    RecursoNaoEncontradoError,
-    RecursoJaExisteError
+    NotFoundError,
+    ConflictError
 )
 
 class UsuarioService:
@@ -14,21 +14,24 @@ class UsuarioService:
 
     def listar_usuarios(self, page: int = 1, page_size: int = 20, role: str = None):
         if role:
-            return self.repo.listar_por_role(role, page, page_size)
-        return self.repo.listar_todos(page, page_size)
+            items, total = self.repo.listar_por_role(role, page, page_size)
+        else:
+            items, total = self.repo.listar_todos(page, page_size)
+        
+        return items or [], total or 0
 
     def buscar_por_id(self, usuario_id: int):
         usuario = self.repo.buscar_por_id(usuario_id)
         if not usuario:
-            raise RecursoNaoEncontradoError(f"Usuário com ID {usuario_id} não encontrado")
+            raise NotFoundError(resource="Usuário", identifier=usuario_id)
         return usuario
 
     def criar_usuario(self, schema: UsuarioCreate):
         # Verificar duplicidade
         if self.repo.buscar_por_username(schema.username):
-            raise RecursoJaExisteError(f"Username '{schema.username}' já está em uso")
+            raise ConflictError(f"Username '{schema.username}' já está em uso")
         if self.repo.buscar_por_email(schema.email):
-            raise RecursoJaExisteError(f"E-mail '{schema.email}' já está em uso")
+            raise ConflictError(f"E-mail '{schema.email}' já está em uso")
 
         usuario = Usuario(
             username=schema.username,

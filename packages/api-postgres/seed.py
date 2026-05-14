@@ -47,9 +47,9 @@ def seed_database():
         # 1. Criar usuários
         if session.query(Usuario).count() == 0:
             usuarios = [
-                Usuario(username="admin", email="admin@erp.local", nome_completo="Administrador", senha_hash=gerar_hash_senha("admin123"), role="admin"),
-                Usuario(username="operador", email="operador@erp.local", nome_completo="Operador", senha_hash=gerar_hash_senha("operador123"), role="operador"),
-                Usuario(username="leitura", email="leitura@erp.local", nome_completo="Leitura", senha_hash=gerar_hash_senha("leitura123"), role="leitura"),
+                Usuario(username="admin", email="admin@erp.com.br", nome_completo="Administrador", senha_hash=gerar_hash_senha("admin123"), role="admin"),
+                Usuario(username="operador", email="operador@erp.com.br", nome_completo="Operador", senha_hash=gerar_hash_senha("operador123"), role="operador"),
+                Usuario(username="leitura", email="leitura@erp.com.br", nome_completo="Leitura", senha_hash=gerar_hash_senha("leitura123"), role="leitura"),
             ]
             session.add_all(usuarios)
             print(f"[OK] Criados {len(usuarios)} usuários")
