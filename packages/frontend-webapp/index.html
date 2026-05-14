@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal de Acesso Seguro - ERP SGI">
+    <title>SGI — Login</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Shared Design System -->
+    <link rel="stylesheet" href="shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page">
+    <div class="background-blobs" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <main class="container">
+        <div class="card login-card animate-in">
+            <header class="text-center mb-8">
+                <div class="logo-circle" aria-hidden="true">SGI</div>
+                <h1 id="mainTitle">Bem-vindo</h1>
+                <p class="text-muted" id="subTitle">Acesse sua conta para continuar</p>
+            </header>
+
+            <form id="loginForm" class="grid" novalidate>
+                <div class="form-group">
+                    <label for="username" id="labelUser">Usuário</label>
+                    <input type="text" id="username" name="username" 
+                           autocomplete="username" required 
+                           aria-describedby="userHint"
+                           placeholder="Ex: admin">
+                </div>
+
+                <div class="form-group">
+                    <div class="flex justify-between">
+                        <label for="password" id="labelPass">Senha</label>
+                        <a href="#" class="link-sm" id="linkForgot">Esqueceu a senha?</a>
+                    </div>
+                    <input type="password" id="password" name="password" 
+                           autocomplete="current-password" required
+                           placeholder="••••••••">
+                </div>
+
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember" class="text-sm">Lembrar de mim</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full" id="btnSubmit">
+                    <span>Entrar no Sistema</span>
+                </button>
+
+                <div id="errorMessage" class="alert alert-error" role="alert" aria-live="polite"></div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Core Scripts -->
+    <script src="shared/app.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGI — Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Shared Architecture -->
+    <link rel="stylesheet" href="shared/core.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body class="dashboard-layout">
+
+    <!-- A11y: Skip to content link -->
+    <a href="#moduleViewport" class="sr-only focus:not-sr-only">Pular para o conteúdo</a>
+
+    <!-- Navigation Sidebar (Mobile Overlay + Desktop Persistent) -->
+    <aside class="sidebar" id="sidebar" aria-label="Navegação Principal">
+        <header class="sidebar-header">
+            <div class="logo-box" aria-hidden="true">SGI</div>
+            <span class="brand-text">Sistema Integrado</span>
+            <button class="btn-close-mobile md-hide" id="closeSidebar" aria-label="Fechar menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </header>
+
+        <nav class="sidebar-nav" id="mainNav">
+            <div class="nav-group">
+                <span class="nav-title">Menu</span>
+                <a href="#" class="nav-link active" data-module="home" role="button">
+                    <i class="fas fa-home"></i> <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-link" data-module="estoque" role="button">
+                    <i class="fas fa-box"></i> <span>Estoque</span>
+                </a>
+            </div>
+
+            <div class="nav-group admin-only" id="adminNav" style="display: none;">
+                <span class="nav-title">Gestão</span>
+                <a href="#" class="nav-link" data-module="admin-users" role="button">
+                    <i class="fas fa-users-cog"></i> <span>Usuários</span>
+                </a>
+            </div>
+        </nav>
+
+        <footer class="sidebar-footer">
+            <div class="user-pill">
+                <img src="" alt="" id="userAvatar" class="avatar">
+                <div class="user-meta">
+                    <strong id="userName">...</strong>
+                    <span id="userRole">...</span>
+                </div>
+            </div>
+            <button id="logoutBtn" class="btn-icon" aria-label="Encerrar sessão">
+                <i class="fas fa-power-off"></i>
+            </button>
+        </footer>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+        <header class="top-bar">
+            <button class="btn-icon md-hide" id="openSidebar" aria-label="Abrir menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="search-wrapper">
+                <label for="globalSearch" class="sr-only">Pesquisar no sistema</label>
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input type="search" id="globalSearch" placeholder="Pesquisar...">
+            </div>
+
+            <div class="top-actions">
+                <button class="btn-icon" aria-label="Notificações">
+                    <i class="far fa-bell"></i>
+                    <span class="dot-indicator"></span>
+                </button>
+                <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Alternar tema">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <section class="content-area" id="moduleViewport" role="region" aria-live="polite">
+            <!-- Os módulos serão injetados aqui -->
+            <div class="loader-overlay" id="moduleLoader" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Core Scripts -->
+    <script src="shared/app.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
