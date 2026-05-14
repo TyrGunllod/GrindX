@@ -25,6 +25,8 @@ from app.middleware.request_id import RequestIdMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.routers.health_router import router as health_router
 from app.routers.produto_router import router as produto_router
+from app.routers.usuario_router import router as usuario_router
+from app.routers.portal_router import router as portal_router
 
 logger = structlog.get_logger(__name__)
 
@@ -100,3 +102,5 @@ register_exception_handlers(app)
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(produto_router)
+app.include_router(usuario_router)
+app.include_router(portal_router)

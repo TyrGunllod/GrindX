@@ -1,7 +1,9 @@
 /**
- * DASHBOARD CONTROLLER - SGI
- * Boas Práticas: Clean Code, SOLID, Component-Driven
+ * DASHBOARD CONTROLLER - SGI (Versão Dinâmica)
+ * Gerencia a navegação baseada na estrutura vinda da API.
  */
+
+const API_BASE_URL = 'http://localhost:8002/v1';
 
 class DashboardController {
     constructor() {
@@ -9,55 +11,72 @@ class DashboardController {
         this.mainNav = document.getElementById('mainNav');
         this.viewport = document.getElementById('moduleViewport');
         this.loader = document.getElementById('moduleLoader');
+        this.token = localStorage.getItem('access_token');
         
         this.init();
     }
 
-    init() {
+    async init() {
         this.checkAuth();
         this.setupEvents();
+        await this.loadDynamicMenu();
         this.loadInitialView();
     }
 
     checkAuth() {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
+        if (!this.token) {
             window.location.href = 'index.html';
             return;
         }
 
-        const user = this.parseJwt(token);
+        const user = this.parseJwt(this.token);
+        this.user = user;
         this.updateUserUI(user);
-        
-        // Controle de acesso administrativo (SOLID)
-        if (user.role === 'admin') {
-            document.getElementById('adminNav').style.display = 'block';
-        }
     }
 
     setupEvents() {
-        // Menu Hambúrguer (Mobile)
         document.getElementById('openSidebar')?.addEventListener('click', () => this.toggleSidebar(true));
         document.getElementById('closeSidebar')?.addEventListener('click', () => this.toggleSidebar(false));
-
-        // Navegação
         this.mainNav.addEventListener('click', (e) => this.handleNavigation(e));
-
-        // Logout
         document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
-
-        // Alternância de Tema
+        
         document.getElementById('themeToggle')?.addEventListener('click', () => {
             window.sgi.theme.toggle();
             this.updateThemeIcon();
         });
     }
 
-    updateThemeIcon() {
-        const icon = document.querySelector('#themeToggle i');
-        if (icon) {
-            icon.className = window.sgi.theme.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    async loadDynamicMenu() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/portal/menu`, {
+                headers: { 'Authorization': `Bearer ${this.token}` }
+            });
+
+            if (!response.ok) throw new Error('Erro ao carregar menu');
+
+            const menuData = await response.json();
+            this.renderSidebar(menuData);
+        } catch (err) {
+            console.error('Falha ao carregar menu dinâmico:', err);
         }
+    }
+
+    renderSidebar(abas) {
+        this.mainNav.innerHTML = abas.map(aba => `
+            <div class="nav-group">
+                <span class="nav-title">${aba.nome}</span>
+                ${aba.modulos.map(mod => {
+                    // Verificar permissão no front (SOLID: dupla checagem)
+                    if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
+                    
+                    return `
+                        <a href="#" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}" role="button">
+                            <i class="${mod.icone || 'fas fa-cube'}"></i> <span>${mod.nome}</span>
+                        </a>
+                    `;
+                }).join('')}
+            </div>
+        `).join('');
     }
 
     handleNavigation(e) {
@@ -65,29 +84,15 @@ class DashboardController {
         if (!link) return;
 
         e.preventDefault();
-        
-        // Atualizar UI de navegação
         this.mainNav.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         link.classList.add('active');
 
-        // Carregar Módulo
-        const module = link.dataset.module;
-        this.navigateToModule(module);
-
-        // Fechar sidebar no mobile após clique
+        this.navigateToModule(link.dataset.url);
         if (window.innerWidth < 1024) this.toggleSidebar(false);
     }
 
-    navigateToModule(name) {
-        const routes = {
-            'home': 'modules/home/index.html',
-            'estoque': 'modules/estoque/index.html',
-            'admin-users': 'modules/users/index.html'
-        };
-
-        const url = routes[name];
+    navigateToModule(url) {
         if (!url) return;
-
         this.showLoader(true);
         
         const iframe = document.createElement('iframe');
@@ -103,13 +108,18 @@ class DashboardController {
     }
 
     updateUserUI(user) {
-        document.getElementById('userName').textContent = user.sub === '1' ? 'Admin' : 'Usuário';
+        document.getElementById('userName').textContent = user.sub === '1' ? 'Administrador' : 'Usuário';
         document.getElementById('userRole').textContent = user.role.toUpperCase();
         document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${user.role}&background=4f46e5&color=fff`;
     }
 
+    updateThemeIcon() {
+        const icon = document.querySelector('#themeToggle i');
+        if (icon) icon.className = window.sgi.theme.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
     showLoader(show) {
-        this.loader.style.display = show ? 'flex' : 'none';
+        if (this.loader) this.loader.style.display = show ? 'flex' : 'none';
     }
 
     logout() {
@@ -126,9 +136,12 @@ class DashboardController {
     }
 
     loadInitialView() {
-        this.navigateToModule('home');
+        // Tenta carregar o primeiro módulo disponível ou o dashboard
+        setTimeout(() => {
+            const firstLink = this.mainNav.querySelector('.nav-link');
+            if (firstLink) firstLink.click();
+        }, 500);
     }
 }
 
-// Inicialização
 document.addEventListener('DOMContentLoaded', () => new DashboardController());
