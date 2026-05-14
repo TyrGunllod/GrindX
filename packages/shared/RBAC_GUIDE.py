@@ -78,16 +78,29 @@ def gerar_relatorio(current_user = Depends(get_current_user)):
     pass
 
 # ============================================================================
-# 4. MATRIX DE PERMISSÕES — PRODUTOS
+# 4. MATRIX DE PERMISSÕES
 # ============================================================================
 
+# CATEGORIA: PRODUTOS
 # Endpoint           | Admin | Operador | Leitura
 # ------------------|-------|----------|--------
 # GET /produtos       |  ✓    |    ✓     |   ✓
-# GET /produtos/{id}  |  ✓    |    ✓     |   ✓
 # POST /produtos      |  ✓    |    ✓     |   ✗
-# PUT /produtos/{id}  |  ✓    |    ✓     |   ✗
 # DELETE /produtos/{id}| ✓    |    ✗     |   ✗
+
+# CATEGORIA: USUÁRIOS
+# Endpoint           | Admin | Operador | Leitura
+# ------------------|-------|----------|--------
+# GET /usuarios       |  ✓    |    ✗     |   ✗
+# POST /usuarios      |  ✓    |    ✗     |   ✗
+# DELETE /usuarios/{id}| ✓    |    ✗     |   ✗
+
+# CATEGORIA: PORTAL (ESTRUTURA)
+# Endpoint           | Admin | Operador | Leitura
+# ------------------|-------|----------|--------
+# GET /portal/menu    |  ✓    |    ✓     |   ✓
+# POST /portal/abas   |  ✓    |    ✗     |   ✗
+# PUT /portal/modulos |  ✓    |    ✗     |   ✗
 
 # ============================================================================
 # 5. ACESSAR ROLE DO USUÁRIO NA ROTA

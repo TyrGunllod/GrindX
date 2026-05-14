@@ -5,10 +5,10 @@ Esta é a API principal do sistema ERP, responsável pela persistência centrali
 ## 🚀 Funcionalidades
 
 - **Autenticação:** Sistema de login com JWT (Access & Refresh Tokens).
+- **Portal Dinâmico:** Gerenciamento centralizado da árvore de menus (Abas e Módulos) via API.
 - **RBAC (Role-Based Access Control):** Controle de acesso baseado em perfis (Admin, Operador, Leitura).
+- **Gestão de Usuários:** CRUD completo com validação rigorosa de e-mails e hashing de senhas.
 - **Gestão de Estoque:** CRUD completo de produtos com soft delete.
-- **Segurança:** Middlewares para Rate Limiting, Security Headers e CORS configuráveis.
-- **Observabilidade:** Logs estruturados em JSON (structlog) e endpoint de health check.
 
 ## 🛠️ Tecnologias
 

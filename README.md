@@ -1,65 +1,51 @@
-# ERP — Sistema de Gestão Integrado
+# SGI - Sistema de Gestão Integrado (Monorepo)
 
-Monorepo para sistema ERP local com duas APIs FastAPI conectadas a bancos distintos.
+O **SGI** é um ERP modular construído com uma arquitetura moderna de monorepo, focado em alta escalabilidade, segurança e experiência do usuário premium.
 
-## Arquitetura
+## 🏗️ Arquitetura do Sistema
 
-| Serviço | Porta | Banco | Função |
-|---|---|---|---|
-| `api-postgres` | 8002 | PostgreSQL (LAN) | CRUD completo + Autenticação |
-| `api-sqlserver` | 8001 | SQL Server (WAN) | Somente consulta |
+O projeto utiliza uma abordagem de **Micro-serviços no Backend** e um **Portal Orquestrador (Shell) no Frontend**.
 
-## Estrutura
+### Backend
+- **api-postgres (Porta 8002):** API principal em FastAPI. Gerencia persistência, autenticação centralizada (JWT), RBAC e a estrutura dinâmica do portal.
+- **api-sqlserver (Porta 8003):** API dedicada para integração com bases legadas ou extração de dados complexos em SQL Server.
+- **shared (Pacote):** Código compartilhado entre as APIs (Segurança, Schemas, Exceções).
 
-```
-packages/
-├── api-sqlserver/    → API read-only (consultas SQL Server)
-├── api-postgres/     → API principal (CRUD + Auth via PostgreSQL)
-└── shared/           → Código compartilhado (schemas, exceptions, security)
-```
+### Frontend
+- **Portal Modular (Porta 5500):** Um orquestrador (Host) que gerencia a navegação e carrega módulos independentes via Viewport isolada.
+- **Micro-módulos:** Cada funcionalidade (Usuários, Estoque, Vendas) é um projeto standalone, permitindo desenvolvimento e testes isolados.
 
-## Stack
+## 🚀 Como Rodar o Projeto
 
-- **Linguagem:** Python 3.12+
-- **Framework:** FastAPI + Uvicorn
-- **ORM:** SQLAlchemy 2.x (DeclarativeBase)
-- **Auth:** JWT (python-jose) + bcrypt
-- **Config:** pydantic-settings + python-dotenv
-- **Logging:** structlog (JSON)
-- **Testes:** pytest + httpx
-- **Containers:** Podman rootless + podman-compose
+### Pré-requisitos
+- Python 3.11+
+- PostgreSQL
+- SQL Server (Opcional para módulos de consulta)
 
-## Setup Local
-
+### Inicialização Rápida (Makefile)
 ```bash
-# 1. Criar ambiente virtual em cada API
-cd packages/api-postgres
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
+# Instalar dependências (Virtualenv)
+make install
 
-# 2. Copiar e configurar variáveis de ambiente
-copy .env.example .env
+# Rodar a API Postgres
+make dev-postgres
 
-# 3. Executar a API
-uvicorn app.main:app --reload --port 8002
+# Rodar o Front-end (em outro terminal)
+python -m http.server 5500 --directory packages/frontend-webapp
 ```
 
-## Comandos (Makefile)
+### Credenciais de Teste (Seed)
+| Usuário | Senha | Perfil |
+| :--- | :--- | :--- |
+| `admin` | `admin123` | Administrador |
+| `operador` | `operador123` | Operador |
 
-```bash
-make build          # Build das imagens
-make up             # Subir containers
-make down           # Parar containers
-make logs           # Acompanhar logs
-make test-postgres  # Testes api-postgres
-make test-sqlserver # Testes api-sqlserver
-make test-all       # Todos os testes
-```
+## 🛠️ Design System
+O projeto utiliza um design system proprietário baseado em:
+- **Glassmorphism:** Interfaces modernas e translúcidas.
+- **Accessibility First:** Conformidade com WCAG (Cores, Contrastes e ARIA).
+- **Dark/Light Mode:** Suporte nativo a temas.
+- **UIFactory:** Geração programática de componentes para consistência visual absoluta.
 
-## Documentação das APIs
-
-| API | Swagger | ReDoc |
-|---|---|---|
-| api-postgres | http://localhost:8002/v1/docs | http://localhost:8002/v1/redoc |
-| api-sqlserver | http://localhost:8001/v1/docs | http://localhost:8001/v1/redoc |
+---
+Desenvolvido com foco em **SOLID**, **Clean Code** e **Performance**.
