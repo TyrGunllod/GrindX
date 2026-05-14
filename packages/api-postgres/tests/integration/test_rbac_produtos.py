@@ -324,7 +324,7 @@ class TestDeleteProdutosRbac:
         )
 
         assert response.status_code == 403
-        assert response.json()["error"] == "ACESO_NEGADO"
+        assert response.json()["error"] == "ACESSO_NEGADO"
 
     def test_leitura_nao_consegue_desativar_produto(
         self, client: TestClient, token_leitura: str, produto_teste: Produto

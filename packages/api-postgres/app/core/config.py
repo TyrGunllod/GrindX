@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # --- CORS ---
-    ALLOWED_ORIGINS: str = "http://localhost:3000"
+    CORS_ORIGINS: str = "http://localhost:3000"
 
     # --- Aplicação ---
     APP_NAME: str = "ERP API Postgres"
@@ -35,12 +35,15 @@ class Settings(BaseSettings):
     @property
     def allowed_origins_list(self) -> list[str]:
         """Retorna lista de origens CORS permitidas."""
-        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
+        # Se for um formato de lista JSON ["*"], removemos os caracteres extras
+        clean_value = self.CORS_ORIGINS.replace("[", "").replace("]", "").replace('"', "").replace("'", "")
+        return [origin.strip() for origin in clean_value.split(",")]
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=True,
+        extra="ignore",
     )
 
 

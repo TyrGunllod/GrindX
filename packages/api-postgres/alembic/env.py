@@ -19,6 +19,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from app.database import Base
 from app.core.config import settings
 
+# Importar todos os modelos aqui para que o 'autogenerate' os detecte
+from app.models.usuario import Usuario
+from app.models.produto import Produto
+
 # this is the Alembic Config object, which provides
 # the values of the [alembic] section of the .ini
 # file in use.

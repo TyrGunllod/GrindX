@@ -17,6 +17,7 @@ from app.services.produto_service import ProdutoService
 from shared.exceptions.base import TokenInvalidoError
 from shared.schemas.auth import TokenPayload
 from shared.security.jwt import verificar_jwt
+from shared.security.permissions import Role
 
 # Scheme que extrai o token do header Authorization: Bearer <token>
 _bearer_scheme = HTTPBearer(auto_error=False)
@@ -58,13 +59,23 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
 
 
 def get_produto_service(db: Session = Depends(get_db)) -> ProdutoService:
-    """Factory para o ProdutoService com injeção do repositório.
-
-    Args:
-        db: Sessão do SQLAlchemy injetada via Depends.
-
-    Returns:
-        Instância do ProdutoService.
-    """
+    """Factory para o ProdutoService com injeção do repositório."""
     repository = ProdutoRepository(db)
     return ProdutoService(repository)
+
+
+# --- Versões vinculadas das permissões ---
+
+
+def require_role(*roles_permitidas: str | Role):
+    """Atalho para shared.require_role vinculado ao get_current_user desta API."""
+    from shared.security import permissions
+
+    return permissions.require_role(*roles_permitidas, get_user=get_current_user)
+
+
+def require_role_or_higher(role_minimo: str | Role):
+    """Atalho para shared.require_role_or_higher vinculado ao get_current_user desta API."""
+    from shared.security import permissions
+
+    return permissions.require_role_or_higher(role_minimo, get_user=get_current_user)

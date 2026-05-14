@@ -99,6 +99,9 @@ class TestAutenticacaoIntegrada:
         tokens_iniciais = auth_service.autenticar("carlos", "senha_teste")
 
         # 2. Usar refresh token para gerar novos tokens
+        import time
+
+        time.sleep(1.1)
         tokens_novos = auth_service.refresh_token(tokens_iniciais.refresh_token)
 
         # 3. Validar que novo access_token é diferente
@@ -141,7 +144,7 @@ class TestRotasAutenticacao:
         """Testa login com credenciais inválidas."""
         response = client.post(
             "/v1/auth/token",
-            json={"username": "inexistente", "password": "erro"},
+            json={"username": "inexistente", "password": "senha_invalida"},
         )
 
         assert response.status_code == 401

@@ -11,12 +11,17 @@ Controle de acesso por role:
 
 from fastapi import APIRouter, Depends, Query
 
-from app.auth.dependencies import get_current_user, get_produto_service
+from app.auth.dependencies import (
+    get_current_user,
+    get_produto_service,
+    require_role,
+    require_role_or_higher,
+)
 from app.schemas.produto import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 from app.services.produto_service import ProdutoService
 from shared.schemas.auth import TokenPayload
 from shared.schemas.base import ErrorResponse, MessageResponse, PaginatedResponse
-from shared.security.permissions import Role, require_role, require_role_or_higher
+from shared.security.permissions import Role
 
 router = APIRouter(prefix="/v1/estoque", tags=["Estoque"])
 

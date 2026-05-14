@@ -46,36 +46,20 @@ _ROLE_HIERARCHY = {
 }
 
 
-def require_role(*roles_permitidas: str | Role) -> Callable:
+def require_role(
+    *roles_permitidas: str | Role, get_user: Callable | None = None
+) -> Callable:
     """Cria uma dependency que verifica se o usuário possui uma das roles permitidas.
 
-    Suporta tanto strings quanto enums de Role.
-    Respeita a hierarquia: admin > operador > leitura.
-
-    Uso em rotas:
-        @router.post(
-            "/produtos",
-            dependencies=[Depends(require_role(Role.OPERADOR))]
-        )
-        def criar_produto(...):
-            ...
-
-        @router.delete(
-            "/produtos/{id}",
-            dependencies=[Depends(require_role(Role.ADMIN))]
-        )
-        def deletar_produto(...):
-            ...
+    Se get_user for fornecido, a função retornada será uma dependência FastAPI completa.
+    Caso contrário, ela espera receber o current_user como argumento (útil para composição).
 
     Args:
         roles_permitidas: Uma ou mais roles que têm acesso ao recurso.
-                         Pode ser string ou Role enum.
+        get_user: Função de dependência que retorna o TokenPayload (ex: get_current_user).
 
     Returns:
         Dependency function que valida a role do usuário.
-
-    Raises:
-        ForbiddenError: Se o usuário não possuir a role necessária.
     """
     # Normaliza as roles para strings
     roles_normalizadas = set()
@@ -85,8 +69,17 @@ def require_role(*roles_permitidas: str | Role) -> Callable:
         else:
             roles_normalizadas.add(str(role))
 
-    def _verificar_role(current_user: TokenPayload) -> TokenPayload:
+    # Define a função de verificação
+    def _verificar_role(
+        current_user: TokenPayload = Depends(get_user) if get_user else None,
+    ) -> TokenPayload:
         """Valida se o usuário tem acesso baseado em sua role."""
+        # Se current_user não foi injetado (get_user=None), assumimos que virá por argumento
+        if current_user is None:
+            raise RuntimeError(
+                "require_role deve ser chamado com get_user ou o current_user deve ser passado manualmente."
+            )
+
         user_role = current_user.role
 
         # Verifica se o role do usuário está na lista de permitidos
@@ -100,34 +93,20 @@ def require_role(*roles_permitidas: str | Role) -> Callable:
     return _verificar_role
 
 
-def require_role_or_higher(role_minimo: str | Role) -> Callable:
-    """Cria uma dependency que verifica se o usuário tem a role ou superior (hierarquia).
-
-    Usa a hierarquia: admin > operador > leitura
-
-    Uso em rotas:
-        @router.get(
-            "/relatorios",
-            dependencies=[Depends(require_role_or_higher(Role.OPERADOR))]
-        )
-        def gerar_relatorio(...):
-            # Permite admin e operador, nega leitura
-            ...
-
-    Args:
-        role_minimo: Role mínima requerida. Roles superiores também têm acesso.
-
-    Returns:
-        Dependency function que valida a role do usuário.
-
-    Raises:
-        ForbiddenError: Se o usuário não tiver a role mínima ou superior.
-    """
+def require_role_or_higher(role_minimo: str | Role, get_user: Callable | None = None) -> Callable:
+    """Cria uma dependency que verifica se o usuário tem a role ou superior (hierarquia)."""
     # Normaliza a role mínima
     role_str = role_minimo.value if isinstance(role_minimo, Role) else str(role_minimo)
 
-    def _verificar_role_hierarquica(current_user: TokenPayload) -> TokenPayload:
+    def _verificar_role_hierarquica(
+        current_user: TokenPayload = Depends(get_user) if get_user else None,
+    ) -> TokenPayload:
         """Valida se o usuário tem a role mínima ou superior."""
+        if current_user is None:
+            raise RuntimeError(
+                "require_role_or_higher deve ser chamado com get_user ou o current_user deve ser passado manualmente."
+            )
+
         user_role = current_user.role
 
         # Obtém as roles permitidas para este user

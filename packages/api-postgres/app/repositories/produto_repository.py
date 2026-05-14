@@ -5,7 +5,7 @@ Encapsula todas as queries SQL para a tabela produtos.
 Nenhuma regra de negócio deve existir nesta camada.
 """
 
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.produto import Produto
@@ -27,7 +27,8 @@ class ProdutoRepository:
         Returns:
             Produto encontrado ou None.
         """
-        return self.db.query(Produto).filter(Produto.id == produto_id).first()
+        stmt = select(Produto).where(Produto.id == produto_id)
+        return self.db.execute(stmt).scalar_one_or_none()
 
     def listar_ativos(self, page: int = 1, page_size: int = 20) -> tuple[list[Produto], int]:
         """Lista produtos ativos com paginação.
@@ -39,14 +40,19 @@ class ProdutoRepository:
         Returns:
             Tupla com (lista de produtos, total de registros).
         """
-        query = self.db.query(Produto).filter(Produto.ativo.is_(True))
-        total = query.count()
-        items = (
-            query.order_by(Produto.nome)
+        # Query para total
+        count_stmt = select(func.count()).select_from(Produto).where(Produto.ativo.is_(True))
+        total = self.db.scalar(count_stmt) or 0
+
+        # Query para itens
+        stmt = (
+            select(Produto)
+            .where(Produto.ativo.is_(True))
+            .order_by(Produto.nome)
             .offset((page - 1) * page_size)
             .limit(page_size)
-            .all()
         )
+        items = list(self.db.scalars(stmt).all())
         return items, total
 
     def listar_todos(self, page: int = 1, page_size: int = 20) -> tuple[list[Produto], int]:
@@ -59,14 +65,18 @@ class ProdutoRepository:
         Returns:
             Tupla com (lista de produtos, total de registros).
         """
-        query = self.db.query(Produto)
-        total = query.count()
-        items = (
-            query.order_by(Produto.nome)
+        # Query para total
+        count_stmt = select(func.count()).select_from(Produto)
+        total = self.db.scalar(count_stmt) or 0
+
+        # Query para itens
+        stmt = (
+            select(Produto)
+            .order_by(Produto.nome)
             .offset((page - 1) * page_size)
             .limit(page_size)
-            .all()
         )
+        items = list(self.db.scalars(stmt).all())
         return items, total
 
     def buscar_por_nome(self, nome: str) -> list[Produto]:
@@ -78,11 +88,8 @@ class ProdutoRepository:
         Returns:
             Lista de produtos que contêm o termo no nome.
         """
-        return (
-            self.db.query(Produto)
-            .filter(func.lower(Produto.nome).contains(nome.lower()))
-            .all()
-        )
+        stmt = select(Produto).where(func.lower(Produto.nome).contains(nome.lower()))
+        return list(self.db.scalars(stmt).all())
 
     def criar(self, dados: ProdutoCreate) -> Produto:
         """Cria um novo produto no banco.

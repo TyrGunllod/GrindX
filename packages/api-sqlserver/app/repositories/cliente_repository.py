@@ -5,7 +5,7 @@ Encapsula todas as queries de consulta na tabela clientes do SQL Server.
 Nenhuma operação de escrita é permitida nesta API.
 """
 
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.cliente import Cliente
@@ -19,11 +19,13 @@ class ClienteRepository:
 
     def buscar_por_id(self, cliente_id: int) -> Cliente | None:
         """Busca um cliente pelo ID."""
-        return self.db.query(Cliente).filter(Cliente.id == cliente_id).first()
+        stmt = select(Cliente).where(Cliente.id == cliente_id)
+        return self.db.execute(stmt).scalar_one_or_none()
 
     def buscar_por_cnpj(self, cnpj: str) -> Cliente | None:
         """Busca um cliente pelo CNPJ."""
-        return self.db.query(Cliente).filter(Cliente.cnpj == cnpj).first()
+        stmt = select(Cliente).where(Cliente.cnpj == cnpj)
+        return self.db.execute(stmt).scalar_one_or_none()
 
     def listar(
         self,
@@ -47,29 +49,31 @@ class ClienteRepository:
         Returns:
             Tupla com (lista de clientes, total de registros).
         """
-        query = self.db.query(Cliente)
+        stmt = select(Cliente)
 
         if apenas_ativos:
-            query = query.filter(Cliente.ativo.is_(True))
+            stmt = stmt.where(Cliente.ativo.is_(True))
 
         if razao_social:
-            query = query.filter(
+            stmt = stmt.where(
                 func.lower(Cliente.razao_social).contains(razao_social.lower())
             )
 
         if cidade:
-            query = query.filter(
-                func.lower(Cliente.cidade) == cidade.lower()
-            )
+            stmt = stmt.where(func.lower(Cliente.cidade) == cidade.lower())
 
         if uf:
-            query = query.filter(Cliente.uf == uf.upper())
+            stmt = stmt.where(Cliente.uf == uf.upper())
 
-        total = query.count()
-        items = (
-            query.order_by(Cliente.razao_social)
+        # Query para total (clonamos o stmt atual e trocamos o que selecionamos)
+        count_stmt = select(func.count()).select_from(stmt.subquery())
+        total = self.db.scalar(count_stmt) or 0
+
+        # Query para itens
+        stmt = (
+            stmt.order_by(Cliente.razao_social)
             .offset((page - 1) * page_size)
             .limit(page_size)
-            .all()
         )
+        items = list(self.db.scalars(stmt).all())
         return items, total
