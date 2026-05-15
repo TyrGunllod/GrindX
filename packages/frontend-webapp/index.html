@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Portal de Acesso Seguro - ERP SGI">
-    <title>SGI — Login</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Portal de Acesso Seguro — GrindX">
+    <title>GrindX — Login</title>
     
     <!-- Shared Design System -->
     <link rel="stylesheet" href="shared/core.css">
@@ -21,12 +17,14 @@
     </div>
 
     <main class="container">
-        <div class="card login-card animate-in">
+         <div class="card login-card animate-in">
             <header class="text-center mb-8">
-                <div class="logo-circle" aria-hidden="true">SGI</div>
-                <h1 id="mainTitle">Bem-vindo</h1>
-                <p class="text-muted" id="subTitle">Acesse sua conta para continuar</p>
-            </header>
+                 <div class="font-display" style="font-size: 2.5rem; letter-spacing: 4px; margin-bottom: 1rem; color: var(--text-main);" aria-hidden="true">
+                     GRIND<span style="color: var(--brand-is);">X</span>
+                 </div>
+                  <h1 id="mainTitle" style="font-size: 1.25rem; font-weight: 600;">Bem-vindo</h1>
+                 <p class="text-muted" id="subTitle">Acesse sua conta para continuar</p>
+             </header>
 
             <form id="loginForm" class="grid" novalidate>
                 <div class="form-group">
@@ -38,13 +36,11 @@
                 </div>
 
                 <div class="form-group">
-                    <div class="flex justify-between">
-                        <label for="password" id="labelPass">Senha</label>
-                        <a href="#" class="link-sm" id="linkForgot">Esqueceu a senha?</a>
-                    </div>
+                    <label for="password" id="labelPass">Senha</label>
                     <input type="password" id="password" name="password" 
                            autocomplete="current-password" required
                            placeholder="••••••••">
+                    <a href="#" class="link-sm forgot-link" id="linkForgot">Esqueceu a senha?</a>
                 </div>
 
                 <div class="flex items-center gap-2 mb-4">
@@ -58,11 +54,18 @@
 
                 <div id="errorMessage" class="alert alert-error" role="alert" aria-live="polite"></div>
             </form>
+
+            <div style="text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                © 2026 GrindX. Desenvolvido por Alex Grellet.
+            </div>
         </div>
     </main>
 
     <!-- Core Scripts -->
     <script src="shared/app.js"></script>
+    <script src="shared/apiService.js"></script>
+    <script src="shared/validation.js"></script>
+    <script src="shared/components/LoadingSpinner.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

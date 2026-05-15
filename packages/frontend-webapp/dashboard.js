@@ -1,9 +1,7 @@
 /**
- * DASHBOARD CONTROLLER - SGI (Versão Dinâmica)
+ * DASHBOARD CONTROLLER - GrindX (Versão Dinâmica)
  * Gerencia a navegação baseada na estrutura vinda da API.
  */
-
-const API_BASE_URL = window.sgi.config.API_BASE_URL;
 
 class DashboardController {
     constructor() {
@@ -20,6 +18,7 @@ class DashboardController {
         this.checkAuth();
         this.checkSidebarState();
         this.setupEvents();
+        await this.loadCurrentUserProfile();
         await this.loadDynamicMenu();
         this.loadInitialView();
     }
@@ -30,9 +29,29 @@ class DashboardController {
             return;
         }
 
-        const user = this.parseJwt(this.token);
+        const user = {
+            ...this.parseJwt(this.token),
+            ...this.getStoredUserProfile()
+        };
         this.user = user;
         this.updateUserUI(user);
+    }
+
+    async loadCurrentUserProfile() {
+        try {
+            const result = await window.grindx.api.get('/usuarios');
+            const users = Array.isArray(result?.items) ? result.items : [];
+            const profile = users.find(user => String(user.id) === String(this.user?.sub))
+                || users.find(user => user.username === this.user?.username);
+
+            if (!profile) return;
+
+            this.user = { ...this.user, ...profile };
+            localStorage.setItem('grindx_user_profile', JSON.stringify(profile));
+            this.updateUserUI(this.user);
+        } catch (err) {
+            console.warn('Não foi possível carregar o perfil do usuário logado:', err);
+        }
     }
 
     setupEvents() {
@@ -42,7 +61,7 @@ class DashboardController {
         document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
         
         document.getElementById('themeToggle')?.addEventListener('click', () => {
-            window.sgi.theme.toggle();
+            window.grindx.theme.toggle();
             this.updateThemeIcon();
             this.syncIframeTheme();
         });
@@ -65,13 +84,7 @@ class DashboardController {
 
     async loadDynamicMenu() {
         try {
-            const response = await fetch(`${API_BASE_URL}/portal/menu`, {
-                headers: { 'Authorization': `Bearer ${this.token}` }
-            });
-
-            if (!response.ok) throw new Error('Erro ao carregar menu');
-
-            const menuData = await response.json();
+            const menuData = await window.grindx.api.get('/portal/menu');
             this.renderSidebar(menuData);
         } catch (err) {
             console.error('Falha ao carregar menu dinâmico:', err);
@@ -82,7 +95,10 @@ class DashboardController {
         this.mainNav.innerHTML = abas.map(aba => `
             <div class="nav-group" id="group-${aba.id}">
                 <div class="nav-title" onclick="window.dashboard.toggleGroup('${aba.id}')">
-                    <span>${aba.nome}</span>
+                    <div class="nav-title-label">
+                        <i class="${aba.icone || 'fas fa-folder'} icon-lg"></i>
+                        <span>${aba.nome}</span>
+                    </div>
                     <i class="fas fa-chevron-down chevron"></i>
                 </div>
                 <div class="nav-links-container">
@@ -90,7 +106,7 @@ class DashboardController {
                         if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
                         return `
                             <a href="#" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}" role="button">
-                                <i class="${mod.icone || 'fas fa-cube'}"></i> <span>${mod.nome}</span>
+                                <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
                             </a>
                         `;
                     }).join('')}
@@ -137,30 +153,58 @@ class DashboardController {
     }
 
     syncIframeTheme(targetIframe) {
-        const iframe = targetIframe || this.viewport.querySelector('iframe');
-        if (iframe && iframe.contentDocument) {
-            const theme = window.sgi.theme.theme;
-            const body = iframe.contentDocument.body;
-            if (body) {
-                body.classList.remove('light-theme', 'dark-theme');
-                body.classList.add(`${theme}-theme`);
-            }
-        }
-    }
+         const iframe = targetIframe || this.viewport.querySelector('iframe');
+         if (iframe && iframe.contentDocument) {
+             const theme = window.grindx.theme.theme;
+             const body = iframe.contentDocument.body;
+             if (body) {
+                 body.classList.remove('light-theme', 'dark-theme');
+                 body.classList.add(`${theme}-theme`);
+             }
+         }
+     }
 
     toggleSidebar(isOpen) {
         this.sidebar.classList.toggle('open', isOpen);
     }
 
     updateUserUI(user) {
-        document.getElementById('userName').textContent = user.sub === '1' ? 'Administrador' : 'Usuário';
-        document.getElementById('userRole').textContent = user.role.toUpperCase();
-        document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${user.role}&background=4f46e5&color=fff`;
+        const displayName = this.getUserDisplayName(user);
+        document.getElementById('userName').textContent = displayName;
+        document.getElementById('userRole').textContent = this.formatRole(user.role);
+        document.getElementById('userAvatar').textContent = this.getInitials(displayName);
+    }
+
+    getUserDisplayName(user) {
+        return user?.nome_completo
+            || user.name
+            || user.username
+            || user.email
+            || (user.sub === '1' ? 'Administrador' : 'Usuário');
+    }
+
+    getInitials(name) {
+        return name
+            .split(' ')
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(part => part[0])
+            .join('')
+            .toUpperCase();
+    }
+
+    formatRole(role) {
+        const labels = {
+            admin: 'Administrador',
+            operador: 'Operador',
+            leitura: 'Leitura'
+        };
+        return labels[role] || String(role || 'Usuário').toUpperCase();
     }
 
     updateThemeIcon() {
         const icon = document.querySelector('#themeToggle i');
-        if (icon) icon.className = window.sgi.theme.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        if (icon) icon.className = window.grindx.theme.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     }
 
     showLoader(show) {
@@ -174,9 +218,18 @@ class DashboardController {
 
     parseJwt(token) {
         try {
-            return JSON.parse(atob(token.split('.')[1]));
+            const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+            return JSON.parse(atob(payload));
         } catch (e) {
-            return null;
+            return {};
+        }
+    }
+
+    getStoredUserProfile() {
+        try {
+            return JSON.parse(localStorage.getItem('grindx_user_profile')) || {};
+        } catch (e) {
+            return {};
         }
     }
 
