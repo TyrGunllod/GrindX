@@ -1,9 +1,7 @@
 /**
- * LOGIN MODULE - SGI
+ * LOGIN MODULE - GrindX
  * Boas Práticas: Clean Code, SOLID, i18n
  */
-
-const API_BASE_URL = 'http://localhost:8002/v1';
 
 class AuthController {
     constructor() {
@@ -18,19 +16,21 @@ class AuthController {
     }
 
     localize() {
-        // Exemplo de i18n em ação
-        document.getElementById('btnSubmit').querySelector('span').textContent = window.sgi.i18n.t('login');
-    }
+         // Exemplo de i18n em ação
+         document.getElementById('btnSubmit').querySelector('span').textContent = window.grindx.i18n.t('login');
+     }
 
     async handleSubmit(e) {
         e.preventDefault();
+        if (!this.validateForm()) return;
+
         this.setLoading(true);
 
         const credentials = Object.fromEntries(new FormData(this.form));
 
         try {
             const data = await this.performLogin(credentials);
-            this.handleSuccess(data);
+            this.handleSuccess(data, credentials);
         } catch (err) {
             this.handleError(err);
         } finally {
@@ -39,21 +39,16 @@ class AuthController {
     }
 
     async performLogin({ username, password }) {
-        const response = await fetch(`${API_BASE_URL}/auth/token`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
-        });
-
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.message || 'Erro de autenticação');
-        
-        return result;
+        return window.grindx.api.post('/auth/token', { username, password }, { auth: false });
     }
 
-    handleSuccess(result) {
+    handleSuccess(result, credentials) {
         localStorage.setItem('access_token', result.access_token);
         localStorage.setItem('refresh_token', result.refresh_token);
+        localStorage.setItem('grindx_user_profile', JSON.stringify({
+            ...(result.user || result.usuario || result.profile || {}),
+            username: credentials.username
+        }));
         
         // Feedback visual amigável (A11y)
         this.errorMsg.className = 'alert alert-success';
@@ -63,16 +58,27 @@ class AuthController {
     }
 
     handleError(err) {
-        this.errorMsg.textContent = err.message;
+        this.errorMsg.textContent = window.grindx.components.LoadingSpinner.toUserMessage(err);
         this.errorMsg.style.display = 'block';
     }
 
-    setLoading(isLoading) {
-        const btn = document.getElementById('btnSubmit');
-        btn.disabled = isLoading;
-        btn.style.opacity = isLoading ? '0.7' : '1';
-        btn.querySelector('span').textContent = isLoading ? 'Aguarde...' : window.sgi.i18n.t('login');
+    validateForm() {
+        const result = window.grindx.validation.validateRules([
+            { id: 'username', required: true, message: 'Informe seu usuário.' },
+            { id: 'password', required: true, message: 'Informe sua senha.' }
+        ]);
+
+        this.errorMsg.style.display = result.valid ? 'none' : 'block';
+        this.errorMsg.textContent = result.valid ? '' : 'Preencha os campos destacados.';
+        return result.valid;
     }
+
+     setLoading(isLoading) {
+         const btn = document.getElementById('btnSubmit');
+         btn.disabled = isLoading;
+         btn.style.opacity = isLoading ? '0.7' : '1';
+         btn.querySelector('span').textContent = isLoading ? 'Aguarde...' : window.grindx.i18n.t('login');
+     }
 }
 
 // Bootstrap

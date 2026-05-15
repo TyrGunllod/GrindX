@@ -1,19 +1,24 @@
 /**
- * CORE APP FRAMEWORK - SGI
+ * CORE APP FRAMEWORK - GrindX
  * Boas Práticas: i18n, SOLID, Clean Code
  */
 
-const SGI_CONFIG = {
+const DEFAULT_GRINDX_CONFIG = {
     DEFAULT_LANG: 'pt-BR',
     SUPPORTED_LANGS: ['pt-BR', 'en-US', 'es-ES'],
     API_BASE_URL: 'http://127.0.0.1:8002/v1'
+};
+
+const GRINDX_CONFIG = {
+    ...DEFAULT_GRINDX_CONFIG,
+    ...(window.GRINDX_CONFIG || {})
 };
 
 // 1. i18n / Localization System
 const TRANSLATIONS = {
     'pt-BR': {
         login: 'Entrar',
-        welcome: 'Bem-vindo ao SGI',
+        welcome: 'Bem-vindo ao GrindX',
         user: 'Usuário',
         pass: 'Senha',
         logout: 'Sair',
@@ -22,7 +27,7 @@ const TRANSLATIONS = {
     },
     'en-US': {
         login: 'Login',
-        welcome: 'Welcome to SGI',
+        welcome: 'Welcome to GrindX',
         user: 'Username',
         pass: 'Password',
         logout: 'Logout',
@@ -33,7 +38,7 @@ const TRANSLATIONS = {
 
 class I18nManager {
     constructor() {
-        this.lang = localStorage.getItem('sgi_lang') || SGI_CONFIG.DEFAULT_LANG;
+        this.lang = localStorage.getItem('grindx_lang') || GRINDX_CONFIG.DEFAULT_LANG;
     }
 
     t(key) {
@@ -41,8 +46,8 @@ class I18nManager {
     }
 
     setLang(lang) {
-        if (SGI_CONFIG.SUPPORTED_LANGS.includes(lang)) {
-            localStorage.setItem('sgi_lang', lang);
+        if (GRINDX_CONFIG.SUPPORTED_LANGS.includes(lang)) {
+            localStorage.setItem('grindx_lang', lang);
             location.reload();
         }
     }
@@ -62,7 +67,7 @@ const UIFactory = {
         return btn;
     },
 
-    createInput({ type = 'text', label, id, placeholder, required = false }) {
+    createInput({ type = 'text', label, id, placeholder, required = false, value }) {
         const container = document.createElement('div');
         container.className = 'form-group';
         
@@ -76,6 +81,7 @@ const UIFactory = {
         input.placeholder = placeholder;
         input.required = required;
         input.className = 'form-control';
+        if (value !== undefined) input.value = value;
         
         container.appendChild(labelEl);
         container.appendChild(input);
@@ -85,7 +91,7 @@ const UIFactory = {
 
 class ThemeManager {
     constructor() {
-        this.theme = localStorage.getItem('sgi_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        this.theme = localStorage.getItem('grindx_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         this.apply();
         this.initSync();
     }
@@ -93,7 +99,7 @@ class ThemeManager {
     initSync() {
         // Sincronizar entre janelas/iframes (Cross-context theme sync)
         window.addEventListener('storage', (e) => {
-            if (e.key === 'sgi_theme') {
+            if (e.key === 'grindx_theme') {
                 this.theme = e.newValue;
                 this.apply();
             }
@@ -102,7 +108,7 @@ class ThemeManager {
 
     toggle() {
         this.theme = this.theme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('sgi_theme', this.theme);
+        localStorage.setItem('grindx_theme', this.theme);
         this.apply();
     }
 
@@ -113,11 +119,11 @@ class ThemeManager {
 }
 
 // Export Singleton Instance
-const sgi = {
-    config: SGI_CONFIG,
+const grindx = {
+    config: GRINDX_CONFIG,
     i18n: new I18nManager(),
     ui: UIFactory,
     theme: new ThemeManager()
 };
 
-window.sgi = sgi; // Global accessibility
+window.grindx = grindx; // Global accessibility

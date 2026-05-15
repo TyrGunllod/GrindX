@@ -1,6 +1,6 @@
 # Arquitetura do Portal Modular (Frontend)
 
-Este documento descreve como funciona o sistema de "Micro-módulos" do SGI e como estender o portal.
+Este documento descreve como funciona o sistema de "Micro-módulos" do GrindX e como estender o portal.
 
 ## 📐 Conceito Central
 
@@ -34,7 +34,7 @@ Sempre que precisar criar um elemento de interface (Input, Botão, Card), utiliz
 
 Exemplo de uso:
 ```javascript
-const input = window.sgi.ui.createInput({
+const input = window.grindx.ui.createInput({
     label: 'Nome do Produto',
     id: 'nome',
     placeholder: 'Digite aqui...'
@@ -42,11 +42,58 @@ const input = window.sgi.ui.createInput({
 document.body.appendChild(input);
 ```
 
-## 🔐 Autenticação nos Módulos
+### 3. Constantes e Componentes Compartilhados
 
-Os módulos têm acesso ao `localStorage` do domínio. Para realizar chamadas à API:
-1. Recupere o token: `const token = localStorage.getItem('access_token');`
-2. Envie no header: `Authorization: Bearer <token>`
+Use `shared/constants.js` para listas de domínio reutilizáveis, como ícones, perfis de usuário e itens protegidos do portal.
+
+```html
+<script src="../../shared/constants.js"></script>
+```
+
+Componentes compartilhados ficam em `shared/components/`:
+- `FormField.js`: helpers para campos, selects e seletor de ícones.
+- `ReusableModal.js`: abertura/fechamento de modal com foco inicial, restauração de foco, `Escape` e contenção de `Tab`.
+- `DataTable.js`: renderização simples de tabelas baseadas em colunas.
+- `LoadingSpinner.js`: estados de carregamento, vazio e toast.
+
+```html
+<script src="../../shared/components/FormField.js"></script>
+<script src="../../shared/components/ReusableModal.js"></script>
+<script src="../../shared/components/LoadingSpinner.js"></script>
+<script src="../../shared/components/DataTable.js"></script>
+```
+
+Para validação client-side, use `shared/validation.js` e destaque erros inline antes de chamar a API.
+
+## 🔐 API e Autenticação nos Módulos
+
+A URL base da API fica centralizada em `window.grindx.config.API_BASE_URL`, definida em `shared/app.js`.
+Para mudar o ambiente, defina `window.GRINDX_CONFIG` antes de carregar `shared/app.js`:
+
+```html
+<script>
+    window.GRINDX_CONFIG = {
+        API_BASE_URL: 'https://api.exemplo.com/v1'
+    };
+</script>
+<script src="../../shared/app.js"></script>
+```
+
+Para realizar chamadas à API, use o serviço centralizado em `shared/apiService.js`. Ele monta URLs, aplica o token `Authorization: Bearer <token>` quando disponível, serializa JSON e padroniza erros.
+
+```html
+<script src="../../shared/app.js"></script>
+<script src="../../shared/apiService.js"></script>
+```
+
+```javascript
+const usuarios = await window.grindx.api.get('/usuarios');
+await window.grindx.api.post('/usuarios', formData);
+await window.grindx.api.request('/portal/abas', {
+    method: 'POST',
+    params: { nome, icone, ordem }
+});
+```
 
 ---
 Para criar um novo módulo:

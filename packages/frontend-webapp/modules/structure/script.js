@@ -3,8 +3,6 @@
  * Gerencia Abas e Módulos com Edição e Exclusão.
  */
 
-const API_BASE_URL = 'http://localhost:8002/v1';
-
 class StructureController {
     constructor() {
         this.container = document.getElementById('structureContainer');
@@ -13,6 +11,14 @@ class StructureController {
         // Modais
         this.abaModal = document.getElementById('abaModal');
         this.moduloModal = document.getElementById('moduloModal');
+        this.abaModalController = new window.grindx.components.ReusableModal(this.abaModal, {
+            initialFocusSelector: '#abaNome',
+            onClose: () => this.resetForms()
+        });
+        this.moduloModalController = new window.grindx.components.ReusableModal(this.moduloModal, {
+            initialFocusSelector: '#modAbaId',
+            onClose: () => this.resetForms()
+        });
         
         // Forms
         this.abaForm = document.getElementById('abaForm');
@@ -35,25 +41,32 @@ class StructureController {
     setupForms() {
         const abaFields = [
             { label: 'Nome da Aba', id: 'abaNome', required: true },
-            { label: 'Ícone', id: 'abaIcone', placeholder: 'fas fa-folder' },
             { label: 'Ordem', id: 'abaOrdem', type: 'number', value: 0 }
         ];
 
-        const modFields = [
+        const moduleFields = [
             { label: 'Nome do Módulo', id: 'modNome', required: true },
             { label: 'URL do Arquivo', id: 'modUrl', required: true },
             { label: 'Identificador (Slug)', id: 'modSlug', required: true }
         ];
 
         this.abaForm.innerHTML = '';
-        abaFields.forEach(f => this.abaForm.appendChild(window.sgi.ui.createInput(f)));
+        window.grindx.components.FormField.appendFields(this.abaForm, abaFields);
+        this.abaForm.appendChild(window.grindx.components.FormField.createIconSelect({
+            id: 'abaIcone',
+            label: 'Ícone da Aba'
+        }));
 
         this.moduloForm.innerHTML = '';
-        const selectGroup = document.createElement('div');
-        selectGroup.className = 'form-group';
-        selectGroup.innerHTML = `<label>Aba Destino</label><select id="modAbaId" class="form-control"></select>`;
-        this.moduloForm.appendChild(selectGroup);
-        modFields.forEach(f => this.moduloForm.appendChild(window.sgi.ui.createInput(f)));
+        this.moduloForm.appendChild(window.grindx.components.FormField.createSelect({
+            id: 'modAbaId',
+            label: 'Aba Destino'
+        }));
+        window.grindx.components.FormField.appendFields(this.moduloForm, moduleFields);
+        this.moduloForm.appendChild(window.grindx.components.FormField.createIconSelect({
+            id: 'modIcone',
+            label: 'Ícone do Módulo'
+        }));
     }
 
     bindEvents() {
@@ -61,6 +74,10 @@ class StructureController {
         document.getElementById('btnAddModulo').onclick = () => this.openModuloModal();
         document.getElementById('btnSaveAba').onclick = () => this.saveAba();
         document.getElementById('btnSaveModulo').onclick = () => this.saveModulo();
+        document.getElementById('btnCloseAba').onclick = () => this.abaModalController.close();
+        document.getElementById('btnCancelAba').onclick = () => this.abaModalController.close();
+        document.getElementById('btnCloseModulo').onclick = () => this.moduloModalController.close();
+        document.getElementById('btnCancelModulo').onclick = () => this.moduloModalController.close();
         document.getElementById('btnRefresh').onclick = () => this.loadStructure();
         
         // Eventos delegados para botões dinâmicos
@@ -68,12 +85,35 @@ class StructureController {
     }
 
     async loadStructure() {
-        const response = await fetch(`${API_BASE_URL}/portal/menu`, {
-            headers: { 'Authorization': `Bearer ${this.token}` }
-        });
-        this.data = await response.json();
-        this.renderStructure(this.data);
-        this.updateAbaSelect(this.data);
+        window.grindx.components.LoadingSpinner.setContainerState(
+            this.container,
+            window.grindx.components.LoadingSpinner.create('Carregando estrutura...')
+        );
+
+        try {
+            this.data = await window.grindx.api.get('/portal/menu');
+            if (Array.isArray(this.data) && this.data.length) {
+                this.renderStructure(this.data);
+            } else {
+                window.grindx.components.LoadingSpinner.setContainerState(
+                    this.container,
+                    window.grindx.components.LoadingSpinner.createEmpty({
+                        icon: 'fas fa-folder-open',
+                        title: 'Nenhuma estrutura cadastrada.'
+                    })
+                );
+            }
+            this.updateAbaSelect(this.data || []);
+        } catch (err) {
+            console.error('Falha ao carregar estrutura:', err);
+            window.grindx.components.LoadingSpinner.setContainerState(
+                this.container,
+                window.grindx.components.LoadingSpinner.createEmpty({
+                    icon: 'fas fa-triangle-exclamation',
+                    title: window.grindx.components.LoadingSpinner.toUserMessage(err)
+                })
+            );
+        }
     }
 
     renderStructure(abas) {
@@ -83,7 +123,7 @@ class StructureController {
                     <h3><i class="${aba.icone}"></i> ${aba.nome}</h3>
                     <div class="actions-group">
                         <button class="btn-icon" data-action="edit-aba" data-id="${aba.id}" title="Editar Aba"><i class="fas fa-edit"></i></button>
-                        ${(aba.nome.toLowerCase() === 'principal' || aba.nome.toLowerCase() === 'gestão' || aba.nome.toLowerCase() === 'gestao') 
+                        ${this.isProtectedAba(aba.nome) 
                             ? '' 
                             : `<button class="btn-icon text-danger" data-action="delete-aba" data-id="${aba.id}" title="Excluir Aba"><i class="fas fa-trash"></i></button>`}
                     </div>
@@ -97,7 +137,9 @@ class StructureController {
                             </div>
                             <div class="actions-group">
                                 <button class="btn-icon" data-action="edit-mod" data-id="${mod.id}" data-aba-id="${aba.id}"><i class="fas fa-pen"></i></button>
-                                <button class="btn-icon text-danger" data-action="delete-mod" data-id="${mod.id}"><i class="fas fa-trash"></i></button>
+                                ${this.isProtectedModule(mod.nome)
+                                    ? '' 
+                                    : `<button class="btn-icon text-danger" data-action="delete-mod" data-id="${mod.id}"><i class="fas fa-trash"></i></button>`}
                             </div>
                         </div>
                     `).join('')}
@@ -123,38 +165,55 @@ class StructureController {
         const aba = this.data.find(a => a.id == id);
         this.currentAbaId = id;
         document.getElementById('abaNome').value = aba.nome;
-        document.getElementById('abaIcone').value = aba.icone;
+        const iconeSelect = document.getElementById('abaIcone');
+        iconeSelect.value = aba.icone || 'fas fa-folder';
+        iconeSelect.dispatchEvent(new Event('change'));
         document.getElementById('abaOrdem').value = aba.ordem;
         this.openAbaModal('Editar Aba');
     }
 
     async saveAba() {
+        if (!this.validateAbaForm()) return;
+
         const nome = document.getElementById('abaNome').value;
         const icone = document.getElementById('abaIcone').value;
         const ordem = document.getElementById('abaOrdem').value;
         
         const method = this.currentAbaId ? 'PUT' : 'POST';
-        const url = this.currentAbaId 
-            ? `${API_BASE_URL}/portal/abas/${this.currentAbaId}?nome=${encodeURIComponent(nome)}&icone=${encodeURIComponent(icone)}&ordem=${ordem}`
-            : `${API_BASE_URL}/portal/abas?nome=${encodeURIComponent(nome)}&icone=${encodeURIComponent(icone)}&ordem=${ordem}`;
-
-        await fetch(url, { method, headers: { 'Authorization': `Bearer ${this.token}` } });
-        this.closeModals();
-        this.loadStructure();
+        const endpoint = this.currentAbaId ? `/portal/abas/${this.currentAbaId}` : '/portal/abas';
+        try {
+            await window.grindx.api.request(endpoint, { method, params: { nome, icone, ordem } });
+            window.grindx.components.LoadingSpinner.toast('Aba salva com sucesso.', 'success');
+            this.closeModals();
+            this.loadStructure();
+        } catch (err) {
+            window.grindx.components.LoadingSpinner.toast(
+                window.grindx.components.LoadingSpinner.toUserMessage(err),
+                'error'
+            );
+        }
     }
 
     async deleteAba(id) {
         const aba = this.data.find(a => a.id == id);
-        if (aba && (aba.nome.toLowerCase() === 'principal' || aba.nome.toLowerCase() === 'gestão' || aba.nome.toLowerCase() === 'gestao')) {
-            alert('A aba "' + aba.nome + '" é essencial para o sistema e não pode ser excluída.');
+        if (aba && this.isProtectedAba(aba.nome)) {
+            window.grindx.components.LoadingSpinner.toast(
+                `A aba "${aba.nome}" é essencial para o sistema e não pode ser excluída.`,
+                'warning'
+            );
             return;
         }
         if (!confirm('Excluir esta aba e todos os seus módulos?')) return;
-        await fetch(`${API_BASE_URL}/portal/abas/${id}`, { 
-            method: 'DELETE', 
-            headers: { 'Authorization': `Bearer ${this.token}` } 
-        });
-        this.loadStructure();
+        try {
+            await window.grindx.api.delete(`/portal/abas/${id}`);
+            window.grindx.components.LoadingSpinner.toast('Aba excluída com sucesso.', 'success');
+            this.loadStructure();
+        } catch (err) {
+            window.grindx.components.LoadingSpinner.toast(
+                window.grindx.components.LoadingSpinner.toUserMessage(err),
+                'error'
+            );
+        }
     }
 
     // --- Lógica de Módulos ---
@@ -167,32 +226,61 @@ class StructureController {
         document.getElementById('modNome').value = mod.nome;
         document.getElementById('modUrl').value = mod.url;
         document.getElementById('modSlug').value = mod.slug;
+        const iconeSelect = document.getElementById('modIcone');
+        iconeSelect.value = mod.icone || 'fas fa-cube';
+        iconeSelect.dispatchEvent(new Event('change'));
         this.openModuloModal('Editar Módulo');
     }
 
     async saveModulo() {
+        if (!this.validateModuloForm()) return;
+
         const abaId = document.getElementById('modAbaId').value;
         const nome = document.getElementById('modNome').value;
-        const url_mod = document.getElementById('modUrl').value;
+        const moduleUrl = document.getElementById('modUrl').value;
         const slug = document.getElementById('modSlug').value;
+        const icone = document.getElementById('modIcone').value;
 
         const method = this.currentModuloId ? 'PUT' : 'POST';
-        const url = this.currentModuloId
-            ? `${API_BASE_URL}/portal/modulos/${this.currentModuloId}?nome=${encodeURIComponent(nome)}&slug=${slug}&url=${encodeURIComponent(url_mod)}&icone=fas fa-cube`
-            : `${API_BASE_URL}/portal/modulos?aba_id=${abaId}&nome=${encodeURIComponent(nome)}&slug=${slug}&url=${encodeURIComponent(url_mod)}&icone=fas fa-cube`;
-
-        await fetch(url, { method, headers: { 'Authorization': `Bearer ${this.token}` } });
-        this.closeModals();
-        this.loadStructure();
+        const endpoint = this.currentModuloId ? `/portal/modulos/${this.currentModuloId}` : '/portal/modulos';
+        const params = this.currentModuloId
+            ? { nome, slug, url: moduleUrl, icone }
+            : { aba_id: abaId, nome, slug, url: moduleUrl, icone };
+        try {
+            await window.grindx.api.request(endpoint, { method, params });
+            window.grindx.components.LoadingSpinner.toast('Módulo salvo com sucesso.', 'success');
+            this.closeModals();
+            this.loadStructure();
+        } catch (err) {
+            window.grindx.components.LoadingSpinner.toast(
+                window.grindx.components.LoadingSpinner.toUserMessage(err),
+                'error'
+            );
+        }
     }
 
     async deleteModulo(id) {
+        const mod = this.data?.flatMap(a => a.modulos).find(m => m.id == id);
+        if (mod) {
+            if (this.isProtectedModule(mod.nome)) {
+                window.grindx.components.LoadingSpinner.toast(
+                    `O módulo "${mod.nome}" é essencial para o sistema e não pode ser excluído.`,
+                    'warning'
+                );
+                return;
+            }
+        }
         if (!confirm('Excluir este módulo?')) return;
-        await fetch(`${API_BASE_URL}/portal/modulos/${id}`, { 
-            method: 'DELETE', 
-            headers: { 'Authorization': `Bearer ${this.token}` } 
-        });
-        this.loadStructure();
+        try {
+            await window.grindx.api.delete(`/portal/modulos/${id}`);
+            window.grindx.components.LoadingSpinner.toast('Módulo excluído com sucesso.', 'success');
+            this.loadStructure();
+        } catch (err) {
+            window.grindx.components.LoadingSpinner.toast(
+                window.grindx.components.LoadingSpinner.toUserMessage(err),
+                'error'
+            );
+        }
     }
 
     updateAbaSelect(abas) {
@@ -200,19 +288,60 @@ class StructureController {
         if (select) select.innerHTML = abas.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
     }
 
+    isProtectedAba(nome) {
+        return window.grindx.constants.PROTECTED_ABA_NAMES.includes(nome.toLowerCase());
+    }
+
+    isProtectedModule(nome) {
+        return window.grindx.constants.PROTECTED_MODULE_NAMES.includes(nome.toLowerCase());
+    }
+
+    validateAbaForm() {
+        const result = window.grindx.validation.validateRules([
+            { id: 'abaNome', required: true, message: 'Informe o nome da aba.' },
+            { id: 'abaOrdem', number: true }
+        ]);
+
+        if (!result.valid) {
+            window.grindx.components.LoadingSpinner.toast('Revise os campos destacados.', 'warning');
+        }
+
+        return result.valid;
+    }
+
+    validateModuloForm() {
+        const result = window.grindx.validation.validateRules([
+            { id: 'modAbaId', required: true, message: 'Selecione a aba de destino.' },
+            { id: 'modNome', required: true, message: 'Informe o nome do módulo.' },
+            { id: 'modUrl', required: true, urlPath: true, message: 'Informe a URL do arquivo.' },
+            { id: 'modSlug', required: true, minLength: 2, message: 'Informe o identificador.' }
+        ]);
+
+        if (!result.valid) {
+            window.grindx.components.LoadingSpinner.toast('Revise os campos destacados.', 'warning');
+        }
+
+        return result.valid;
+    }
+
     openAbaModal(title = 'Nova Aba') {
         document.getElementById('abaModalTitle').textContent = title;
-        this.abaModal.style.display = 'flex';
+        this.abaModalController.open();
     }
 
     openModuloModal(title = 'Novo Módulo') {
         document.getElementById('moduloModalTitle').textContent = title;
-        this.moduloModal.style.display = 'flex';
+        this.moduloModalController.open();
     }
 
     closeModals() {
-        this.abaModal.style.display = 'none';
-        this.moduloModal.style.display = 'none';
+        this.abaModalController.close();
+        this.moduloModalController.close();
+    }
+
+    resetForms() {
+        window.grindx.validation.clearForm(this.abaForm);
+        window.grindx.validation.clearForm(this.moduloForm);
         this.abaForm.reset();
         this.moduloForm.reset();
         this.currentAbaId = null;
