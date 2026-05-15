@@ -43,6 +43,7 @@ class DashboardController {
         document.getElementById('themeToggle')?.addEventListener('click', () => {
             window.sgi.theme.toggle();
             this.updateThemeIcon();
+            this.syncIframeTheme();
         });
     }
 
@@ -97,10 +98,25 @@ class DashboardController {
         
         const iframe = document.createElement('iframe');
         iframe.src = url;
-        iframe.onload = () => this.showLoader(false);
+        iframe.onload = () => {
+            this.showLoader(false);
+            this.syncIframeTheme(iframe);
+        };
         
         this.viewport.innerHTML = '';
         this.viewport.appendChild(iframe);
+    }
+
+    syncIframeTheme(targetIframe) {
+        const iframe = targetIframe || this.viewport.querySelector('iframe');
+        if (iframe && iframe.contentDocument) {
+            const theme = window.sgi.theme.theme;
+            const body = iframe.contentDocument.body;
+            if (body) {
+                body.classList.remove('light-theme', 'dark-theme');
+                body.classList.add(`${theme}-theme`);
+            }
+        }
     }
 
     toggleSidebar(isOpen) {

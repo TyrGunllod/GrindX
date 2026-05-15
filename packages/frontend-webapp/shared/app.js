@@ -87,6 +87,17 @@ class ThemeManager {
     constructor() {
         this.theme = localStorage.getItem('sgi_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         this.apply();
+        this.initSync();
+    }
+
+    initSync() {
+        // Sincronizar entre janelas/iframes (Cross-context theme sync)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'sgi_theme') {
+                this.theme = e.newValue;
+                this.apply();
+            }
+        });
     }
 
     toggle() {
