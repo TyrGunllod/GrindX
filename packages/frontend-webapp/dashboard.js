@@ -3,13 +3,13 @@
  * Gerencia a navegação baseada na estrutura vinda da API.
  */
 
-class DashboardController {
+class DashboardController extends window.grindx.controllers.BaseController {
     constructor() {
+        super();
         this.sidebar = document.getElementById('sidebar');
         this.mainNav = document.getElementById('mainNav');
         this.viewport = document.getElementById('moduleViewport');
         this.loader = document.getElementById('moduleLoader');
-        this.token = localStorage.getItem('access_token');
         
         this.init();
     }
@@ -47,7 +47,7 @@ class DashboardController {
             if (!profile) return;
 
             this.user = { ...this.user, ...profile };
-            localStorage.setItem('grindx_user_profile', JSON.stringify(profile));
+            window.grindx.session.setUserProfile(profile);
             this.updateUserUI(this.user);
         } catch (err) {
             console.warn('Não foi possível carregar o perfil do usuário logado:', err);
@@ -72,11 +72,11 @@ class DashboardController {
     toggleSidebarCollapse() {
         this.sidebar.classList.toggle('collapsed');
         // Salvar estado no localStorage para persistência
-        localStorage.setItem('sidebar_collapsed', this.sidebar.classList.contains('collapsed'));
+        window.grindx.storage.set('sidebar_collapsed', this.sidebar.classList.contains('collapsed'));
     }
 
     checkSidebarState() {
-        if (localStorage.getItem('sidebar_collapsed') === 'true') {
+        if (window.grindx.storage.get('sidebar_collapsed') === 'true') {
             this.sidebar.classList.add('collapsed');
         }
     }
@@ -212,7 +212,7 @@ class DashboardController {
     }
 
     logout() {
-        localStorage.clear();
+        window.grindx.session.clear();
         window.location.href = 'index.html';
     }
 
@@ -226,11 +226,7 @@ class DashboardController {
     }
 
     getStoredUserProfile() {
-        try {
-            return JSON.parse(localStorage.getItem('grindx_user_profile')) || {};
-        } catch (e) {
-            return {};
-        }
+        return window.grindx.session.getUserProfile();
     }
 
     loadInitialView() {

@@ -43,12 +43,14 @@ class AuthController {
     }
 
     handleSuccess(result, credentials) {
-        localStorage.setItem('access_token', result.access_token);
-        localStorage.setItem('refresh_token', result.refresh_token);
-        localStorage.setItem('grindx_user_profile', JSON.stringify({
+        window.grindx.session.setTokens({
+            accessToken: result.access_token,
+            refreshToken: result.refresh_token
+        });
+        window.grindx.session.setUserProfile({
             ...(result.user || result.usuario || result.profile || {}),
             username: credentials.username
-        }));
+        });
         
         // Feedback visual amigável (A11y)
         this.errorMsg.className = 'alert alert-success';
@@ -63,10 +65,7 @@ class AuthController {
     }
 
     validateForm() {
-        const result = window.grindx.validation.validateRules([
-            { id: 'username', required: true, message: 'Informe seu usuário.' },
-            { id: 'password', required: true, message: 'Informe sua senha.' }
-        ]);
+        const result = window.grindx.validation.validateSchema('login');
 
         this.errorMsg.style.display = result.valid ? 'none' : 'block';
         this.errorMsg.textContent = result.valid ? '' : 'Preencha os campos destacados.';

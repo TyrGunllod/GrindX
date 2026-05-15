@@ -3,8 +3,9 @@
  * Consome a API /v1/usuarios da api-postgres.
  */
 
-class UsersController {
+class UsersController extends window.grindx.controllers.BaseController {
     constructor() {
+        super();
         this.tableBody = document.getElementById('userTableBody');
         this.userModal = document.getElementById('userModal');
         this.modalController = new window.grindx.components.ReusableModal(this.userModal, {
@@ -34,7 +35,7 @@ class UsersController {
                 `
             }
         ]);
-        this.token = localStorage.getItem('access_token');
+        this.users = [];
         this.currentUserId = null;
         
         this.init();
@@ -43,10 +44,7 @@ class UsersController {
     async init() {
         console.log('Módulo de Usuários Inicializado');
         
-        // Garantir que pegamos o token mais atualizado
-        this.token = localStorage.getItem('access_token');
-        
-        if (!this.token) {
+        if (!this.requireAuth('../../index.html')) {
             console.error('Token não encontrado no LocalStorage!');
             this.userTable.renderEmpty('Sessão expirada. Faça login novamente.', 4);
             return;
@@ -99,11 +97,7 @@ class UsersController {
 
             if (result && Array.isArray(result.items)) {
                 this.users = result.items; // Guardar no estado
-                if (this.users.length) {
-                    this.renderTable(this.users);
-                } else {
-                    this.userTable.renderEmpty('Nenhum usuário encontrado.', 4);
-                }
+                this.renderTableOrEmpty();
             } else {
                 console.warn('Formato de dados inesperado:', result);
                 this.userTable.renderEmpty('Nenhum usuário encontrado.', 4);
@@ -141,13 +135,11 @@ class UsersController {
         if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
         try {
             await window.grindx.api.delete(`/usuarios/${id}`);
-            window.grindx.components.LoadingSpinner.toast('Usuário excluído com sucesso.', 'success');
-            await this.loadUsers();
+            this.users = this.users.filter(user => String(user.id) !== String(id));
+            this.renderTableOrEmpty();
+            this.toastSuccess('Usuário excluído com sucesso.');
         } catch (err) {
-            window.grindx.components.LoadingSpinner.toast(
-                window.grindx.components.LoadingSpinner.toUserMessage(err),
-                'error'
-            );
+            this.toastError(err);
         }
     }
 
@@ -165,33 +157,44 @@ class UsersController {
 
         try {
             if (this.currentUserId) {
-                await window.grindx.api.put(`/usuarios/${this.currentUserId}`, formData);
+                const updatedUser = await window.grindx.api.put(`/usuarios/${this.currentUserId}`, formData);
+                this.upsertUser(updatedUser);
             } else {
-                await window.grindx.api.post('/usuarios', formData);
+                const createdUser = await window.grindx.api.post('/usuarios', formData);
+                this.upsertUser(createdUser);
             }
 
-            window.grindx.components.LoadingSpinner.toast('Usuário salvo com sucesso.', 'success');
+            this.toastSuccess('Usuário salvo com sucesso.');
             this.closeModal();
-            await this.loadUsers();
+            this.renderTableOrEmpty();
         } catch (err) {
-            window.grindx.components.LoadingSpinner.toast(
-                window.grindx.components.LoadingSpinner.toUserMessage(err),
-                'error'
-            );
+            this.toastError(err);
         }
     }
 
+    upsertUser(user) {
+        if (!user?.id) return;
+
+        const index = this.users.findIndex(item => String(item.id) === String(user.id));
+        if (index >= 0) {
+            this.users[index] = user;
+        } else {
+            this.users = [user, ...this.users];
+        }
+    }
+
+    renderTableOrEmpty() {
+        if (this.users.length) {
+            this.renderTable(this.users);
+            return;
+        }
+
+        this.userTable.renderEmpty('Nenhum usuário encontrado.', 4);
+    }
+
     validateUserForm() {
-        const passwordRules = this.currentUserId
-            ? []
-            : [{ id: 'password', required: true, minLength: 6, message: 'Informe uma senha.' }];
-        const result = window.grindx.validation.validateRules([
-            { id: 'nome_completo', required: true, message: 'Informe o nome completo.' },
-            { id: 'email', required: true, email: true, message: 'Informe o e-mail.' },
-            { id: 'username', required: true, minLength: 3, message: 'Informe o username.' },
-            ...passwordRules,
-            { id: 'role', required: true, message: 'Selecione o perfil.' }
-        ]);
+        const schemaName = this.currentUserId ? 'userUpdate' : 'userCreate';
+        const result = window.grindx.validation.validateSchema(schemaName);
 
         if (!result.valid) {
             window.grindx.components.LoadingSpinner.toast('Revise os campos destacados.', 'warning');

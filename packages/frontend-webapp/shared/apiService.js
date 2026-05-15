@@ -22,7 +22,7 @@
     }
 
     function authHeaders() {
-        const token = localStorage.getItem('access_token');
+        const token = window.grindx?.session?.getToken();
         return token ? { Authorization: `Bearer ${token}` } : {};
     }
 

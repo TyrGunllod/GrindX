@@ -3,10 +3,10 @@
  * Gerencia Abas e Módulos com Edição e Exclusão.
  */
 
-class StructureController {
+class StructureController extends window.grindx.controllers.BaseController {
     constructor() {
+        super();
         this.container = document.getElementById('structureContainer');
-        this.token = localStorage.getItem('access_token');
         
         // Modais
         this.abaModal = document.getElementById('abaModal');
@@ -32,7 +32,7 @@ class StructureController {
     }
 
     async init() {
-        if (!this.token) return;
+        if (!this.requireAuth('../../index.html')) return;
         this.setupForms();
         this.bindEvents();
         await this.loadStructure();
@@ -182,15 +182,14 @@ class StructureController {
         const method = this.currentAbaId ? 'PUT' : 'POST';
         const endpoint = this.currentAbaId ? `/portal/abas/${this.currentAbaId}` : '/portal/abas';
         try {
-            await window.grindx.api.request(endpoint, { method, params: { nome, icone, ordem } });
-            window.grindx.components.LoadingSpinner.toast('Aba salva com sucesso.', 'success');
+            const savedAba = await window.grindx.api.request(endpoint, { method, params: { nome, icone, ordem } });
+            this.upsertAba(savedAba);
+            this.renderStructure(this.data);
+            this.updateAbaSelect(this.data);
+            this.toastSuccess('Aba salva com sucesso.');
             this.closeModals();
-            this.loadStructure();
         } catch (err) {
-            window.grindx.components.LoadingSpinner.toast(
-                window.grindx.components.LoadingSpinner.toUserMessage(err),
-                'error'
-            );
+            this.toastError(err);
         }
     }
 
@@ -206,13 +205,12 @@ class StructureController {
         if (!confirm('Excluir esta aba e todos os seus módulos?')) return;
         try {
             await window.grindx.api.delete(`/portal/abas/${id}`);
-            window.grindx.components.LoadingSpinner.toast('Aba excluída com sucesso.', 'success');
-            this.loadStructure();
+            this.data = this.data.filter(aba => String(aba.id) !== String(id));
+            this.renderStructureOrEmpty();
+            this.updateAbaSelect(this.data);
+            this.toastSuccess('Aba excluída com sucesso.');
         } catch (err) {
-            window.grindx.components.LoadingSpinner.toast(
-                window.grindx.components.LoadingSpinner.toUserMessage(err),
-                'error'
-            );
+            this.toastError(err);
         }
     }
 
@@ -247,15 +245,13 @@ class StructureController {
             ? { nome, slug, url: moduleUrl, icone }
             : { aba_id: abaId, nome, slug, url: moduleUrl, icone };
         try {
-            await window.grindx.api.request(endpoint, { method, params });
-            window.grindx.components.LoadingSpinner.toast('Módulo salvo com sucesso.', 'success');
+            const savedModule = await window.grindx.api.request(endpoint, { method, params });
+            this.upsertModulo(savedModule, abaId);
+            this.renderStructure(this.data);
+            this.toastSuccess('Módulo salvo com sucesso.');
             this.closeModals();
-            this.loadStructure();
         } catch (err) {
-            window.grindx.components.LoadingSpinner.toast(
-                window.grindx.components.LoadingSpinner.toUserMessage(err),
-                'error'
-            );
+            this.toastError(err);
         }
     }
 
@@ -273,13 +269,14 @@ class StructureController {
         if (!confirm('Excluir este módulo?')) return;
         try {
             await window.grindx.api.delete(`/portal/modulos/${id}`);
-            window.grindx.components.LoadingSpinner.toast('Módulo excluído com sucesso.', 'success');
-            this.loadStructure();
+            this.data = this.data.map(aba => ({
+                ...aba,
+                modulos: aba.modulos.filter(module => String(module.id) !== String(id))
+            }));
+            this.renderStructure(this.data);
+            this.toastSuccess('Módulo excluído com sucesso.');
         } catch (err) {
-            window.grindx.components.LoadingSpinner.toast(
-                window.grindx.components.LoadingSpinner.toUserMessage(err),
-                'error'
-            );
+            this.toastError(err);
         }
     }
 
@@ -296,11 +293,54 @@ class StructureController {
         return window.grindx.constants.PROTECTED_MODULE_NAMES.includes(nome.toLowerCase());
     }
 
+    upsertAba(aba) {
+        if (!aba?.id) return;
+
+        const normalizedAba = { ...aba, modulos: aba.modulos || [] };
+        const index = this.data.findIndex(item => String(item.id) === String(aba.id));
+
+        if (index >= 0) {
+            normalizedAba.modulos = this.data[index].modulos || [];
+            this.data[index] = normalizedAba;
+        } else {
+            this.data = [...this.data, normalizedAba];
+        }
+
+        this.data.sort((first, second) => first.ordem - second.ordem);
+    }
+
+    upsertModulo(module, fallbackAbaId) {
+        if (!module?.id) return;
+
+        const targetAbaId = module.aba_id || fallbackAbaId;
+        this.data = this.data.map(aba => ({
+            ...aba,
+            modulos: aba.modulos.filter(item => String(item.id) !== String(module.id))
+        }));
+
+        const targetAba = this.data.find(aba => String(aba.id) === String(targetAbaId));
+        if (targetAba) {
+            targetAba.modulos = [...targetAba.modulos, module];
+        }
+    }
+
+    renderStructureOrEmpty() {
+        if (this.data.length) {
+            this.renderStructure(this.data);
+            return;
+        }
+
+        window.grindx.components.LoadingSpinner.setContainerState(
+            this.container,
+            window.grindx.components.LoadingSpinner.createEmpty({
+                icon: 'fas fa-folder-open',
+                title: 'Nenhuma estrutura cadastrada.'
+            })
+        );
+    }
+
     validateAbaForm() {
-        const result = window.grindx.validation.validateRules([
-            { id: 'abaNome', required: true, message: 'Informe o nome da aba.' },
-            { id: 'abaOrdem', number: true }
-        ]);
+        const result = window.grindx.validation.validateSchema('portalAba');
 
         if (!result.valid) {
             window.grindx.components.LoadingSpinner.toast('Revise os campos destacados.', 'warning');
@@ -310,12 +350,7 @@ class StructureController {
     }
 
     validateModuloForm() {
-        const result = window.grindx.validation.validateRules([
-            { id: 'modAbaId', required: true, message: 'Selecione a aba de destino.' },
-            { id: 'modNome', required: true, message: 'Informe o nome do módulo.' },
-            { id: 'modUrl', required: true, urlPath: true, message: 'Informe a URL do arquivo.' },
-            { id: 'modSlug', required: true, minLength: 2, message: 'Informe o identificador.' }
-        ]);
+        const result = window.grindx.validation.validateSchema('portalModulo');
 
         if (!result.valid) {
             window.grindx.components.LoadingSpinner.toast('Revise os campos destacados.', 'warning');

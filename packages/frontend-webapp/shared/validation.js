@@ -76,9 +76,45 @@
         form.querySelectorAll('.field-error').forEach(error => error.remove());
     }
 
+    const schemas = {
+        login: [
+            { id: 'username', required: true, message: 'Informe seu usuário.' },
+            { id: 'password', required: true, message: 'Informe sua senha.' }
+        ],
+        userCreate: [
+            { id: 'nome_completo', required: true, message: 'Informe o nome completo.' },
+            { id: 'email', required: true, email: true, message: 'Informe o e-mail.' },
+            { id: 'username', required: true, minLength: 3, message: 'Informe o username.' },
+            { id: 'password', required: true, minLength: 6, message: 'Informe uma senha.' },
+            { id: 'role', required: true, message: 'Selecione o perfil.' }
+        ],
+        userUpdate: [
+            { id: 'nome_completo', required: true, message: 'Informe o nome completo.' },
+            { id: 'email', required: true, email: true, message: 'Informe o e-mail.' },
+            { id: 'username', required: true, minLength: 3, message: 'Informe o username.' },
+            { id: 'role', required: true, message: 'Selecione o perfil.' }
+        ],
+        portalAba: [
+            { id: 'abaNome', required: true, message: 'Informe o nome da aba.' },
+            { id: 'abaOrdem', number: true }
+        ],
+        portalModulo: [
+            { id: 'modAbaId', required: true, message: 'Selecione a aba de destino.' },
+            { id: 'modNome', required: true, message: 'Informe o nome do módulo.' },
+            { id: 'modUrl', required: true, urlPath: true, message: 'Informe a URL do arquivo.' },
+            { id: 'modSlug', required: true, minLength: 2, message: 'Informe o identificador.' }
+        ]
+    };
+
+    function validateSchema(schemaName) {
+        return validateRules(schemas[schemaName] || []);
+    }
+
     window.grindx = window.grindx || {};
     window.grindx.validation = {
         clearForm,
-        validateRules
+        schemas,
+        validateRules,
+        validateSchema
     };
 })();
