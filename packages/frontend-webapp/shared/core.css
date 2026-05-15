@@ -174,3 +174,18 @@ h2 { font-size: clamp(1.25rem, 4vw, 2rem); font-weight: 600; }
     color: var(--danger);
     background: rgba(239, 68, 68, 0.1);
 }
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.role-admin { background: rgba(79, 70, 229, 0.1); color: var(--primary); }
+.role-operador { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.role-leitura { background: rgba(100, 116, 139, 0.1); color: var(--text-muted); }

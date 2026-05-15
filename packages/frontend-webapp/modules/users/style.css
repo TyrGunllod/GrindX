@@ -76,3 +76,24 @@ td {
 
 .flex-wrap { flex-wrap: wrap; }
 .text-right { text-align: right; }
+
+/* Avatar Standardization */
+.avatar-mini {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px; /* Matching the system squircle style */
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+td strong {
+    font-weight: 600;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.flex.items-center.gap-2 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}

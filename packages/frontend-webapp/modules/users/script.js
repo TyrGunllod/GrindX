@@ -110,7 +110,7 @@ class UsersController {
             <tr>
                 <td>
                     <div class="flex items-center gap-2">
-                        <img src="https://ui-avatars.com/api/?name=${user.nome_completo}&background=random" class="avatar-mini" alt="">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo)}&background=4f46e5&color=fff&bold=true" class="avatar-mini" alt="">
                         <strong>${user.nome_completo}</strong>
                     </div>
                 </td>
