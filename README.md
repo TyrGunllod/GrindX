@@ -18,7 +18,7 @@ O projeto utiliza uma abordagem de **Micro-serviços no Backend** e um **Portal 
 ## 🚀 Como Rodar o Projeto
 
 ### Pré-requisitos
-- Python 3.11+
+- Python 3.12+
 - PostgreSQL
 - SQL Server (Opcional para módulos de consulta)
 

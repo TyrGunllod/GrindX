@@ -41,13 +41,14 @@
     </div>
 
     <!-- Modal para Aba -->
-    <div class="modal-overlay" id="abaModal" style="display: none;">
+    <div class="modal-overlay" id="abaModal" role="dialog" aria-modal="true" style="display: none;">
         <div class="modal-card">
-            <header class="modal-header">
-                <h3>Gerenciar Aba</h3>
+            <header class="modal-header flex justify-between">
+                <h3 id="abaModalTitle">Gerenciar Aba</h3>
+                <button class="btn-icon close-modal-btn" onclick="document.getElementById('abaModal').style.display='none'">&times;</button>
             </header>
-            <form id="abaForm" class="p-4"></form>
-            <footer class="modal-footer flex justify-end gap-2 mt-4 p-4">
+            <form id="abaForm" class="grid grid-md-2 p-4"></form>
+            <footer class="modal-footer flex justify-end gap-2 mt-4">
                 <button class="btn" onclick="document.getElementById('abaModal').style.display='none'">Cancelar</button>
                 <button class="btn btn-primary" id="btnSaveAba">Salvar Aba</button>
             </footer>
@@ -55,13 +56,14 @@
     </div>
 
     <!-- Modal para Módulo -->
-    <div class="modal-overlay" id="moduloModal" style="display: none;">
+    <div class="modal-overlay" id="moduloModal" role="dialog" aria-modal="true" style="display: none;">
         <div class="modal-card">
-            <header class="modal-header">
-                <h3>Gerenciar Módulo</h3>
+            <header class="modal-header flex justify-between">
+                <h3 id="moduloModalTitle">Gerenciar Módulo</h3>
+                <button class="btn-icon close-modal-btn" onclick="document.getElementById('moduloModal').style.display='none'">&times;</button>
             </header>
-            <form id="moduloForm" class="p-4"></form>
-            <footer class="modal-footer flex justify-end gap-2 mt-4 p-4">
+            <form id="moduloForm" class="grid grid-md-2 p-4"></form>
+            <footer class="modal-footer flex justify-end gap-2 mt-4">
                 <button class="btn" onclick="document.getElementById('moduloModal').style.display='none'">Cancelar</button>
                 <button class="btn btn-primary" id="btnSaveModulo">Salvar Módulo</button>
             </footer>

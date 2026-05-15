@@ -82,8 +82,10 @@ class StructureController {
                 <header class="aba-header">
                     <h3><i class="${aba.icone}"></i> ${aba.nome}</h3>
                     <div class="flex gap-1">
-                        <button class="btn-icon" data-action="edit-aba" data-id="${aba.id}"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon text-danger" data-action="delete-aba" data-id="${aba.id}"><i class="fas fa-trash"></i></button>
+                        <button class="btn-icon" data-action="edit-aba" data-id="${aba.id}" title="Editar Aba"><i class="fas fa-edit"></i></button>
+                        ${(aba.nome.toLowerCase() === 'principal' || aba.nome.toLowerCase() === 'gestão' || aba.nome.toLowerCase() === 'gestao') 
+                            ? '' 
+                            : `<button class="btn-icon text-danger" data-action="delete-aba" data-id="${aba.id}" title="Excluir Aba"><i class="fas fa-trash"></i></button>`}
                     </div>
                 </header>
                 <div class="modulos-list">
@@ -142,6 +144,11 @@ class StructureController {
     }
 
     async deleteAba(id) {
+        const aba = this.data.find(a => a.id == id);
+        if (aba && (aba.nome.toLowerCase() === 'principal' || aba.nome.toLowerCase() === 'gestão' || aba.nome.toLowerCase() === 'gestao')) {
+            alert('A aba "' + aba.nome + '" é essencial para o sistema e não pode ser excluída.');
+            return;
+        }
         if (!confirm('Excluir esta aba e todos os seus módulos?')) return;
         await fetch(`${API_BASE_URL}/portal/abas/${id}`, { 
             method: 'DELETE', 
@@ -194,12 +201,12 @@ class StructureController {
     }
 
     openAbaModal(title = 'Nova Aba') {
-        this.abaModal.querySelector('h3').textContent = title;
+        document.getElementById('abaModalTitle').textContent = title;
         this.abaModal.style.display = 'flex';
     }
 
     openModuloModal(title = 'Novo Módulo') {
-        this.moduloModal.querySelector('h3').textContent = title;
+        document.getElementById('moduloModalTitle').textContent = title;
         this.moduloModal.style.display = 'flex';
     }
 

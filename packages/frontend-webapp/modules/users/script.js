@@ -10,7 +10,9 @@ class UsersController {
         this.tableBody = document.getElementById('userTableBody');
         this.userModal = document.getElementById('userModal');
         this.userForm = document.getElementById('userForm');
+        this.modalTitle = document.getElementById('modalTitle');
         this.token = localStorage.getItem('access_token');
+        this.currentUserId = null;
         
         this.init();
     }
@@ -89,7 +91,8 @@ class UsersController {
             console.log('Dados recebidos:', result);
 
             if (result && Array.isArray(result.items)) {
-                this.renderTable(result.items);
+                this.users = result.items; // Guardar no estado
+                this.renderTable(this.users);
             } else {
                 console.warn('Formato de dados inesperado:', result);
                 this.tableBody.innerHTML = `<tr><td colspan="4" class="text-center">Nenhum usuário encontrado.</td></tr>`;
@@ -114,11 +117,44 @@ class UsersController {
                 <td class="hide-mobile">${user.email}</td>
                 <td><span class="badge role-${user.role}">${user.role.toUpperCase()}</span></td>
                 <td class="text-right">
-                    <button class="btn-icon" onclick="alert('Editar ID: ${user.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon text-danger" onclick="alert('Desativar ID: ${user.id}')"><i class="fas fa-trash"></i></button>
+                    <button class="btn-icon" onclick="window.usersController.editUser('${user.id}')" title="Editar Usuário"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon text-danger" onclick="window.usersController.deleteUser('${user.id}')" title="Excluir Usuário"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>
         `).join('');
+    }
+
+    editUser(id) {
+        // Encontrar usuário nos dados carregados (seria melhor via API se dados parciais, mas aqui ok)
+        // Como não temos a lista guardada no state, vamos buscar do DOM ou recarregar.
+        // Melhorei o controller para guardar 'this.users' no loadUsers.
+        const user = this.users.find(u => u.id == id);
+        if (!user) return;
+
+        this.currentUserId = id;
+        this.modalTitle.textContent = 'Editar Usuário';
+        
+        document.getElementById('nome_completo').value = user.nome_completo;
+        document.getElementById('email').value = user.email;
+        document.getElementById('username').value = user.username;
+        document.getElementById('password').value = ''; // Senha em branco por segurança
+        document.getElementById('role').value = user.role;
+
+        this.openModal();
+    }
+
+    async deleteUser(id) {
+        if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
+        try {
+            const response = await fetch(`${API_BASE_URL}/usuarios/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${this.token}` }
+            });
+            if (!response.ok) throw new Error('Erro ao excluir');
+            await this.loadUsers();
+        } catch (err) {
+            alert(err.message);
+        }
     }
 
     async saveUser() {
@@ -132,8 +168,11 @@ class UsersController {
         };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/usuarios`, {
-                method: 'POST',
+            const method = this.currentUserId ? 'PUT' : 'POST';
+            const url = this.currentUserId ? `${API_BASE_URL}/usuarios/${this.currentUserId}` : `${API_BASE_URL}/usuarios`;
+            
+            const response = await fetch(url, {
+                method: method,
                 headers: { 
                     'Authorization': `Bearer ${this.token}`,
                     'Content-Type': 'application/json'
@@ -154,9 +193,21 @@ class UsersController {
         }
     }
 
-    openModal() { this.userModal.style.display = 'flex'; }
-    closeModal() { this.userModal.style.display = 'none'; }
+    openModal() { 
+        if (!this.currentUserId) {
+            this.modalTitle.textContent = 'Cadastrar Usuário';
+            this.userForm.reset();
+        }
+        this.userModal.style.display = 'flex'; 
+    }
+    closeModal() { 
+        this.userModal.style.display = 'none'; 
+        this.currentUserId = null;
+        this.userForm.reset();
+    }
 }
 
-// Inicializar
-document.addEventListener('DOMContentLoaded', () => new UsersController());
+// Expor para o escopo global para os botões inline (onclick)
+document.addEventListener('DOMContentLoaded', () => {
+    window.usersController = new UsersController();
+});
