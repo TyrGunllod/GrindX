@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrindX — Usuários</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="module-page">
+
+    <div class="container animate-in">
+        <header class="page-header flex justify-between items-center mb-8">
+            <div>
+                <h1>Gerenciamento de Usuários</h1>
+                <p class="text-muted">Controle de acesso e permissões modulares.</p>
+            </div>
+            <div class="actions-group">
+                <button class="btn" id="btnRefresh" title="Recarregar">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="btn btn-primary" id="addUserBtn" aria-haspopup="dialog">
+                    <i class="fas fa-plus"></i> <span class="hide-mobile">Novo Usuário</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Responsive Table Container -->
+        <div class="table-responsive" style="margin-top: 1.5rem;">
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th scope="col">Usuário</th>
+                        <th scope="col" class="hide-mobile">E-mail</th>
+                        <th scope="col">Perfil</th>
+                        <th scope="col" class="text-right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- Gerado dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal (Componente Acessível) -->
+    <div class="modal-overlay" id="userModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" style="display: none;">
+        <div class="modal-card">
+            <header class="modal-header flex justify-between">
+                <h3 id="modalTitle">Cadastrar Usuário</h3>
+                <button class="btn-icon" id="closeModal" aria-label="Fechar">&times;</button>
+            </header>
+            <form id="userForm" class="grid grid-md-2">
+                <!-- Inputs gerados via UIFactory no script.js -->
+            </form>
+            <footer class="modal-footer flex justify-end gap-2">
+                <button class="btn" id="btnCancel">Cancelar</button>
+                <button class="btn btn-primary" id="btnSave">Salvar</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../../shared/app.js"></script>
+    <script src="../../shared/constants.js"></script>
+    <script src="../../shared/apiService.js"></script>
+    <script src="../../shared/validation.js"></script>
+    <script src="../../shared/components/FormField.js"></script>
+    <script src="../../shared/components/ReusableModal.js"></script>
+    <script src="../../shared/components/LoadingSpinner.js"></script>
+    <script src="../../shared/components/DataTable.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

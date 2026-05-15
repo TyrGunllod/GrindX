@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrindX — Estrutura do Portal</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="module-page">
+
+    <div class="container animate-in">
+        <header class="page-header flex justify-between items-center mb-8">
+            <div>
+                <h1>Estrutura do Portal</h1>
+                <p class="text-muted">Gerencie as abas do menu lateral e os módulos do sistema.</p>
+            </div>
+            <div class="actions-group">
+                <button class="btn" id="btnRefresh" title="Recarregar">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="btn" id="btnAddAba">
+                    <i class="fas fa-folder-plus"></i> <span class="hide-mobile">Nova Aba</span>
+                </button>
+                <button class="btn btn-primary" id="btnAddModulo">
+                    <i class="fas fa-plus"></i> <span class="hide-mobile">Novo Módulo</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Visualizador de Estrutura -->
+        <div id="structureContainer" class="grid grid-md-2" style="margin-top: 1.5rem;">
+            <div class="loading-state">Carregando estrutura...</div>
+        </div>
+    </div>
+
+    <!-- Modal para Aba -->
+    <div class="modal-overlay" id="abaModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-card">
+            <header class="modal-header flex justify-between">
+                <h3 id="abaModalTitle">Gerenciar Aba</h3>
+                <button class="btn-icon close-modal-btn" id="btnCloseAba" aria-label="Fechar">&times;</button>
+            </header>
+            <form id="abaForm" class="grid grid-md-2 p-4"></form>
+            <footer class="modal-footer flex justify-end gap-2 mt-4">
+                <button class="btn" id="btnCancelAba">Cancelar</button>
+                <button class="btn btn-primary" id="btnSaveAba">Salvar Aba</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal para Módulo -->
+    <div class="modal-overlay" id="moduloModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-card">
+            <header class="modal-header flex justify-between">
+                <h3 id="moduloModalTitle">Gerenciar Módulo</h3>
+                <button class="btn-icon close-modal-btn" id="btnCloseModulo" aria-label="Fechar">&times;</button>
+            </header>
+            <form id="moduloForm" class="grid grid-md-2 p-4"></form>
+            <footer class="modal-footer flex justify-end gap-2 mt-4">
+                <button class="btn" id="btnCancelModulo">Cancelar</button>
+                <button class="btn btn-primary" id="btnSaveModulo">Salvar Módulo</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../../shared/app.js"></script>
+    <script src="../../shared/constants.js"></script>
+    <script src="../../shared/apiService.js"></script>
+    <script src="../../shared/validation.js"></script>
+    <script src="../../shared/components/FormField.js"></script>
+    <script src="../../shared/components/ReusableModal.js"></script>
+    <script src="../../shared/components/LoadingSpinner.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

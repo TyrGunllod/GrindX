@@ -1,0 +1,333 @@
+/* ==========================================
+   DASHBOARD SHELL STYLES
+   Boas Práticas: Mobile First, A11y, Clean Code
+   ========================================== */
+
+.dashboard-layout {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+/* Sidebar (Mobile First: Off-canvas) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 280px;
+    height: 100%;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border-color);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-4);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: 88px;
+    padding: var(--space-4) var(--space-2);
+}
+
+.logo-short {
+    display: none;
+}
+
+.sidebar.collapsed .logo-full {
+    display: none;
+}
+
+.sidebar.collapsed .logo-short {
+    display: inline;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+/* Sidebar header/footer */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-8);
+    position: relative;
+    justify-content: space-between;
+}
+
+.sidebar.collapsed .brand-text {
+    display: none;
+}
+
+.sidebar.collapsed .collapse-btn i {
+    transform: rotate(180deg);
+}
+
+.collapse-btn {
+    transition: transform 0.3s;
+}
+
+/* Nav Groups & Links */
+.nav-group {
+    margin-bottom: var(--space-4);
+}
+
+.nav-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
+}
+
+.nav-title:hover {
+    color: var(--text-main);
+}
+
+.nav-title-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.nav-title-label i {
+    font-size: 0.85rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+.sidebar.collapsed .nav-title-label i {
+    font-size: 1.25rem;
+    width: auto;
+}
+
+.nav-title i.chevron {
+    transition: transform 0.3s;
+    font-size: 0.7rem;
+}
+
+.nav-group.collapsed .nav-links-container {
+    display: none;
+}
+
+.nav-group.collapsed .nav-title i.chevron {
+    transform: rotate(-90deg);
+}
+
+.sidebar.collapsed .nav-title {
+    justify-content: center;
+    padding: 0.5rem 0;
+}
+
+.sidebar.collapsed .nav-title .nav-title-label span,
+.sidebar.collapsed .nav-title i.chevron {
+    display: none;
+}
+
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: 0.75rem 1rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 0.75rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 0.75rem 0;
+}
+
+.sidebar.collapsed .nav-link span {
+    display: none;
+}
+
+.sidebar.collapsed .nav-link i {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Icon Size Classes */
+.icon-sm { font-size: 0.7rem; }
+.icon-md { font-size: 0.85rem; }
+.icon-lg { font-size: 1.1rem; }
+
+.sidebar.collapsed .icon-sm { font-size: 0.85rem; }
+.sidebar.collapsed .icon-md { font-size: 1rem; }
+.sidebar.collapsed .icon-lg { font-size: 1.4rem; }
+
+
+.nav-link:hover, .nav-link.active {
+    background: rgba(79, 70, 229, 0.1);
+    color: var(--primary);
+}
+
+/* Main Viewport */
+.main-viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-main);
+    width: 100%;
+}
+
+.top-bar {
+    height: 72px;
+    padding: 0 var(--space-4);
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.top-bar-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--text-main);
+}
+
+
+/* Content Area */
+.content-area {
+    flex: 1;
+    position: relative;
+    padding: var(--space-4);
+    overflow-y: auto;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 1rem;
+}
+
+/* Helper Utilities */
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px; /* Modern squircle */
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-icon i {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+.btn-icon:hover { 
+    background: rgba(79, 70, 229, 0.1); 
+    color: var(--primary); 
+}
+
+
+/* Responsive Adjustments */
+@media (min-width: 1024px) {
+    .sidebar {
+        position: static;
+        left: 0;
+    }
+    
+    .search-wrapper {
+        display: flex;
+    }
+    
+    .md-hide { display: none !important; }
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1);
+}
+
+.sidebar.collapsed .footer-actions {
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.user-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0;
+}
+
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.user-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.user-meta strong {
+    font-size: 0.875rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-meta span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.sidebar.collapsed .user-pill {
+    padding: 0;
+    justify-content: center;
+}
+
+.sidebar.collapsed .user-meta {
+    display: none;
+}
