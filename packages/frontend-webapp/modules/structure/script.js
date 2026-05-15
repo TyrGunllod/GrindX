@@ -81,7 +81,7 @@ class StructureController {
             <div class="aba-card">
                 <header class="aba-header">
                     <h3><i class="${aba.icone}"></i> ${aba.nome}</h3>
-                    <div class="flex gap-1">
+                    <div class="actions-group">
                         <button class="btn-icon" data-action="edit-aba" data-id="${aba.id}" title="Editar Aba"><i class="fas fa-edit"></i></button>
                         ${(aba.nome.toLowerCase() === 'principal' || aba.nome.toLowerCase() === 'gestão' || aba.nome.toLowerCase() === 'gestao') 
                             ? '' 
@@ -95,7 +95,7 @@ class StructureController {
                                 <strong>${mod.nome}</strong>
                                 <span class="modulo-url">${mod.url}</span>
                             </div>
-                            <div class="flex gap-1">
+                            <div class="actions-group">
                                 <button class="btn-icon" data-action="edit-mod" data-id="${mod.id}" data-aba-id="${aba.id}"><i class="fas fa-pen"></i></button>
                                 <button class="btn-icon text-danger" data-action="delete-mod" data-id="${mod.id}"><i class="fas fa-trash"></i></button>
                             </div>

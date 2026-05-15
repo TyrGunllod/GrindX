@@ -117,8 +117,10 @@ class UsersController {
                 <td class="hide-mobile">${user.email}</td>
                 <td><span class="badge role-${user.role}">${user.role.toUpperCase()}</span></td>
                 <td class="text-right">
-                    <button class="btn-icon" onclick="window.usersController.editUser('${user.id}')" title="Editar Usuário"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon text-danger" onclick="window.usersController.deleteUser('${user.id}')" title="Excluir Usuário"><i class="fas fa-trash"></i></button>
+                    <div class="actions-group justify-end">
+                        <button class="btn-icon" onclick="window.usersController.editUser('${user.id}')" title="Editar Usuário"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon text-danger" onclick="window.usersController.deleteUser('${user.id}')" title="Excluir Usuário"><i class="fas fa-trash"></i></button>
+                    </div>
                 </td>
             </tr>
         `).join('');
