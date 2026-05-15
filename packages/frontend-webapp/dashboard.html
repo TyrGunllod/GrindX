@@ -24,6 +24,9 @@
         <header class="sidebar-header">
             <div class="logo-box" aria-hidden="true">SGI</div>
             <span class="brand-text">Sistema Integrado</span>
+            <button class="btn-icon collapse-btn hide-mobile" id="toggleCollapse" aria-label="Recolher menu">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             <button class="btn-close-mobile md-hide" id="closeSidebar" aria-label="Fechar menu">
                 <i class="fas fa-times"></i>
             </button>
@@ -56,9 +59,18 @@
                     <span id="userRole">...</span>
                 </div>
             </div>
-            <button id="logoutBtn" class="btn-icon" aria-label="Encerrar sessão">
-                <i class="fas fa-power-off"></i>
-            </button>
+            <div class="footer-actions">
+                <button class="btn-icon" aria-label="Notificações">
+                    <i class="far fa-bell"></i>
+                    <span class="dot-indicator"></span>
+                </button>
+                <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Alternar tema">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="logoutBtn" class="btn-icon" aria-label="Encerrar sessão">
+                    <i class="fas fa-power-off"></i>
+                </button>
+            </div>
         </footer>
     </aside>
 
@@ -68,22 +80,7 @@
             <button class="btn-icon md-hide" id="openSidebar" aria-label="Abrir menu">
                 <i class="fas fa-bars"></i>
             </button>
-            
-            <div class="search-wrapper">
-                <label for="globalSearch" class="sr-only">Pesquisar no sistema</label>
-                <i class="fas fa-search" aria-hidden="true"></i>
-                <input type="search" id="globalSearch" placeholder="Pesquisar...">
-            </div>
-
-            <div class="top-actions">
-                <button class="btn-icon" aria-label="Notificações">
-                    <i class="far fa-bell"></i>
-                    <span class="dot-indicator"></span>
-                </button>
-                <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Alternar tema">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
+            <div class="top-bar-title" id="activeModuleTitle">Painel de Controle</div>
         </header>
 
         <section class="content-area" id="moduleViewport" role="region" aria-live="polite">

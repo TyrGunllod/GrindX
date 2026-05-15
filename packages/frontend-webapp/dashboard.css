@@ -23,8 +23,14 @@
     display: flex;
     flex-direction: column;
     padding: var(--space-4);
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease;
 }
+
+.sidebar.collapsed {
+    width: 88px;
+    padding: var(--space-4) var(--space-2);
+}
+
 
 .sidebar.open {
     left: 0;
@@ -36,7 +42,22 @@
     align-items: center;
     gap: var(--space-2);
     margin-bottom: var(--space-8);
+    position: relative;
+    justify-content: space-between;
 }
+
+.sidebar.collapsed .brand-text {
+    display: none;
+}
+
+.sidebar.collapsed .collapse-btn i {
+    transform: rotate(180deg);
+}
+
+.collapse-btn {
+    transition: transform 0.3s;
+}
+
 
 .logo-box {
     width: 40px;
@@ -48,7 +69,55 @@
     justify-content: center;
     color: white;
     font-weight: 700;
+    flex-shrink: 0;
 }
+
+/* Nav Groups & Links */
+.nav-group {
+    margin-bottom: var(--space-4);
+}
+
+.nav-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
+}
+
+.nav-title:hover {
+    color: var(--text-main);
+}
+
+.nav-title i.chevron {
+    transition: transform 0.3s;
+    font-size: 0.7rem;
+}
+
+.nav-group.collapsed .nav-links-container {
+    display: none;
+}
+
+.nav-group.collapsed .nav-title i.chevron {
+    transform: rotate(-90deg);
+}
+
+.sidebar.collapsed .nav-title {
+    justify-content: center;
+    padding: 0.5rem 0;
+}
+
+.sidebar.collapsed .nav-title span,
+.sidebar.collapsed .nav-title i.chevron {
+    display: none;
+}
+
 
 .nav-link {
     display: flex;
@@ -60,7 +129,24 @@
     border-radius: 0.75rem;
     margin-bottom: 0.5rem;
     transition: all 0.2s;
+    overflow: hidden;
+    white-space: nowrap;
 }
+
+.sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 0.75rem 0;
+}
+
+.sidebar.collapsed .nav-link span {
+    display: none;
+}
+
+.sidebar.collapsed .nav-link i {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
 
 .nav-link:hover, .nav-link.active {
     background: rgba(79, 70, 229, 0.1);
@@ -86,23 +172,12 @@
     justify-content: space-between;
 }
 
-.search-wrapper {
-    display: none; /* Hide on small mobile */
-    background: var(--bg-main);
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    align-items: center;
-    gap: 0.5rem;
-    flex: 0.6;
+.top-bar-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--text-main);
 }
 
-.search-wrapper input {
-    border: none;
-    background: transparent;
-    color: var(--text-main);
-    width: 100%;
-    outline: none;
-}
 
 /* Content Area */
 .content-area {
@@ -126,14 +201,26 @@ iframe {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 10px; /* Modern squircle */
     border: none;
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
 }
 
-.btn-icon:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
+.btn-icon i {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+.btn-icon:hover { 
+    background: rgba(79, 70, 229, 0.1); 
+    color: var(--primary); 
+}
+
 
 /* Responsive Adjustments */
 @media (min-width: 1024px) {
@@ -149,15 +236,36 @@ iframe {
     .md-hide { display: none !important; }
 }
 
-/* User Pill */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1);
+}
+
+.sidebar.collapsed .footer-actions {
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
 .user-pill {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.5rem;
+    padding: 0.75rem;
     background: var(--bg-main);
-    border-radius: 1rem;
+    border-radius: 12px;
 }
+
 
 .avatar {
     width: 36px;
@@ -173,3 +281,13 @@ iframe {
 
 .user-meta strong { font-size: 0.875rem; }
 .user-meta span { font-size: 0.75rem; color: var(--text-muted); }
+
+.sidebar.collapsed .user-pill {
+    padding: 0.25rem;
+    justify-content: center;
+}
+
+.sidebar.collapsed .user-meta {
+    display: none;
+}
+

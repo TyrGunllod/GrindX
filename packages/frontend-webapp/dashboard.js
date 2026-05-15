@@ -18,6 +18,7 @@ class DashboardController {
 
     async init() {
         this.checkAuth();
+        this.checkSidebarState();
         this.setupEvents();
         await this.loadDynamicMenu();
         this.loadInitialView();
@@ -45,7 +46,22 @@ class DashboardController {
             this.updateThemeIcon();
             this.syncIframeTheme();
         });
+
+        document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
     }
+
+    toggleSidebarCollapse() {
+        this.sidebar.classList.toggle('collapsed');
+        // Salvar estado no localStorage para persistência
+        localStorage.setItem('sidebar_collapsed', this.sidebar.classList.contains('collapsed'));
+    }
+
+    checkSidebarState() {
+        if (localStorage.getItem('sidebar_collapsed') === 'true') {
+            this.sidebar.classList.add('collapsed');
+        }
+    }
+
 
     async loadDynamicMenu() {
         try {
@@ -64,21 +80,30 @@ class DashboardController {
 
     renderSidebar(abas) {
         this.mainNav.innerHTML = abas.map(aba => `
-            <div class="nav-group">
-                <span class="nav-title">${aba.nome}</span>
-                ${aba.modulos.map(mod => {
-                    // Verificar permissão no front (SOLID: dupla checagem)
-                    if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
-                    
-                    return `
-                        <a href="#" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}" role="button">
-                            <i class="${mod.icone || 'fas fa-cube'}"></i> <span>${mod.nome}</span>
-                        </a>
-                    `;
-                }).join('')}
+            <div class="nav-group" id="group-${aba.id}">
+                <div class="nav-title" onclick="window.dashboard.toggleGroup('${aba.id}')">
+                    <span>${aba.nome}</span>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div class="nav-links-container">
+                    ${aba.modulos.map(mod => {
+                        if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
+                        return `
+                            <a href="#" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}" role="button">
+                                <i class="${mod.icone || 'fas fa-cube'}"></i> <span>${mod.nome}</span>
+                            </a>
+                        `;
+                    }).join('')}
+                </div>
             </div>
         `).join('');
     }
+
+    toggleGroup(abaId) {
+        const group = document.getElementById(`group-${abaId}`);
+        if (group) group.classList.toggle('collapsed');
+    }
+
 
     handleNavigation(e) {
         const link = e.target.closest('.nav-link');
@@ -87,6 +112,10 @@ class DashboardController {
         e.preventDefault();
         this.mainNav.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         link.classList.add('active');
+
+        // Atualizar título no topo
+        const moduleName = link.querySelector('span').textContent;
+        document.getElementById('activeModuleTitle').textContent = moduleName;
 
         this.navigateToModule(link.dataset.url);
         if (window.innerWidth < 1024) this.toggleSidebar(false);
@@ -160,4 +189,6 @@ class DashboardController {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => new DashboardController());
+document.addEventListener('DOMContentLoaded', () => {
+    window.dashboard = new DashboardController();
+});
