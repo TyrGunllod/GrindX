@@ -23,7 +23,6 @@ from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
 from app.models.usuario import Usuario
-from app.models.produto import Produto
 from app.models.portal import Aba, Modulo
 from app.database import Base
 from shared.security.jwt import gerar_hash_senha
@@ -56,18 +55,7 @@ def seed_database():
         else:
             print("[SKIP] Usuários já existem")
 
-        # 2. Criar produtos
-        if session.query(Produto).count() == 0:
-            produtos = [
-                Produto(nome="Caneta Azul", descricao="Caneta", preco=Decimal("2.50")),
-                Produto(nome="Caderno", descricao="Caderno", preco=Decimal("15.90")),
-            ]
-            session.add_all(produtos)
-            print(f"[OK] Criados produtos")
-        else:
-            print("[SKIP] Produtos já existem")
-
-        # 3. Criar Estrutura do Portal
+        # 2. Criar Estrutura do Portal
         if session.query(Aba).count() == 0:
             aba_principal = Aba(nome="Principal", icone="fas fa-th-large", ordem=1)
             aba_gestao = Aba(nome="Gestão", icone="fas fa-users-cog", ordem=2)

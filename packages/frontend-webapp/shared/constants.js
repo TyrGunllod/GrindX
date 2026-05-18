@@ -27,11 +27,16 @@
         { value: 'admin', label: 'Administrador' }
     ];
 
-    const PROTECTED_ABA_NAMES = ['principal', 'gestão', 'gestao'];
+    const PROTECTED_ABA_NAMES = ['principal', 'gestão', 'gestao', 'menu'];
 
     const PROTECTED_MODULE_NAMES = [
-        'usuários', 'usuarios', 'módulos', 'modulos', 'módulo', 'modulo',
-        'dashboard', 'painel de controle', 'início', 'inicio'
+        'usuários', 'usuarios',
+        'módulos & abas', 'modulos & abas',
+        'módulos e abas', 'modulos e abas',
+        'módulos', 'modulos',
+        'estrutura do portal',
+        'dashboard', 'painel de controle',
+        'início', 'inicio'
     ];
 
     window.grindx = window.grindx || {};

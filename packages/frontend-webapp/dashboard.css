@@ -331,3 +331,12 @@ iframe {
 .sidebar.collapsed .user-meta {
     display: none;
 }
+
+/* App Footer - Minimal Width */
+.app-footer {
+    display: inline-block;
+    width: fit-content;
+    align-self: center;
+    padding: var(--space-4) 0;
+    margin: 0 auto;
+}

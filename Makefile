@@ -64,6 +64,6 @@ logs:
 # ==========================================
 
 clean:
-	@echo "Limpando arquivos temporários..."
+	@echo "Limpando arquivos temporarios..."
 	if exist .pytest_cache (rmdir /s /q .pytest_cache)
 	for /d /r . %%d in (__pycache__) do @if exist "%%d" rmdir /s /q "%%d"

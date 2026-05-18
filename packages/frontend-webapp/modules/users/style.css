@@ -97,3 +97,33 @@ td strong {
     align-items: center;
     gap: 0.75rem;
 }
+
+/* Status Badges */
+.badge-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.badge-muted {
+    background: rgba(100, 116, 139, 0.1);
+    color: var(--text-muted);
+}
+
+/* Text Color Utilities */
+.text-success {
+    color: var(--success);
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+.btn-icon.text-success:hover {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.btn-icon.text-muted:hover {
+    background: rgba(100, 116, 139, 0.1);
+    color: var(--text-muted);
+}

@@ -27,6 +27,14 @@
     }
 
     async function parseResponse(response) {
+        // Handle 204 No Content - no body expected
+        if (response.status === 204) {
+            if (!response.ok) {
+                throw new Error('Erro na requisição');
+            }
+            return null;
+        }
+
         const contentType = response.headers.get('content-type') || '';
         const hasJson = contentType.includes('application/json');
         const payload = hasJson ? await response.json() : await response.text();

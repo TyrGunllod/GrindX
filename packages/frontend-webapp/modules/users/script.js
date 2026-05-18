@@ -25,12 +25,16 @@ class UsersController extends window.grindx.controllers.BaseController {
             },
             { className: 'hide-mobile', render: user => user.email },
             { render: user => `<span class="badge role-${user.role}">${user.role.toUpperCase()}</span>` },
+            { render: user => `<span class="badge ${user.ativo ? 'badge-success' : 'badge-muted'}">${user.ativo ? 'Ativo' : 'Inativo'}</span>` },
             {
                 className: 'text-right',
                 render: user => `
                     <div class="actions-group justify-end">
                         <button class="btn-icon" onclick="window.usersController.editUser('${user.id}')" title="Editar Usuário"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon text-danger" onclick="window.usersController.deleteUser('${user.id}')" title="Excluir Usuário"><i class="fas fa-trash"></i></button>
+                        ${user.ativo 
+                            ? `<button class="btn-icon text-success" onclick="window.usersController.toggleUserStatus('${user.id}', false)" title="Desativar usuário"><i class="fas fa-toggle-on"></i></button>`
+                            : `<button class="btn-icon text-muted" onclick="window.usersController.toggleUserStatus('${user.id}', true)" title="Ativar usuário"><i class="fas fa-toggle-off"></i></button>`
+                        }
                     </div>
                 `
             }
@@ -84,7 +88,7 @@ class UsersController extends window.grindx.controllers.BaseController {
     async loadUsers() {
         this.tableBody.innerHTML = `
             <tr>
-                <td colspan="4"></td>
+                <td colspan="5"></td>
             </tr>
         `;
         const loadingCell = this.tableBody.querySelector('td');
@@ -100,11 +104,11 @@ class UsersController extends window.grindx.controllers.BaseController {
                 this.renderTableOrEmpty();
             } else {
                 console.warn('Formato de dados inesperado:', result);
-                this.userTable.renderEmpty('Nenhum usuário encontrado.', 4);
+                this.userTable.renderEmpty('Nenhum usuário encontrado.', 5);
             }
         } catch (err) {
             console.error('Falha no loadUsers:', err);
-            this.userTable.renderEmpty(window.grindx.components.LoadingSpinner.toUserMessage(err), 4);
+            this.userTable.renderEmpty(window.grindx.components.LoadingSpinner.toUserMessage(err), 5);
         }
     }
 
@@ -138,6 +142,17 @@ class UsersController extends window.grindx.controllers.BaseController {
             this.users = this.users.filter(user => String(user.id) !== String(id));
             this.renderTableOrEmpty();
             this.toastSuccess('Usuário excluído com sucesso.');
+        } catch (err) {
+            this.toastError(err);
+        }
+    }
+
+    async toggleUserStatus(id, novoStatus) {
+        try {
+            const updatedUser = await window.grindx.api.put(`/usuarios/${id}`, { ativo: novoStatus });
+            this.upsertUser(updatedUser);
+            this.renderTableOrEmpty();
+            this.toastSuccess(`Usuário ${novoStatus ? 'ativado' : 'desativado'} com sucesso.`);
         } catch (err) {
             this.toastError(err);
         }
@@ -189,7 +204,7 @@ class UsersController extends window.grindx.controllers.BaseController {
             return;
         }
 
-        this.userTable.renderEmpty('Nenhum usuário encontrado.', 4);
+        this.userTable.renderEmpty('Nenhum usuário encontrado.', 5);
     }
 
     validateUserForm() {
