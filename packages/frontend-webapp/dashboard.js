@@ -93,7 +93,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
     renderSidebar(abas) {
         this.mainNav.innerHTML = abas.map(aba => `
-            <div class="nav-group" id="group-${aba.id}">
+            <div class="nav-group collapsed" id="group-${aba.id}">
                 <div class="nav-title" onclick="window.dashboard.toggleGroup('${aba.id}')">
                     <div class="nav-title-label">
                         <i class="${aba.icone || 'fas fa-folder'} icon-lg"></i>
