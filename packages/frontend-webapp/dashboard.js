@@ -10,7 +10,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         this.mainNav = document.getElementById('mainNav');
         this.viewport = document.getElementById('moduleViewport');
         this.loader = document.getElementById('moduleLoader');
-        
+
         this.init();
     }
 
@@ -59,7 +59,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         document.getElementById('closeSidebar')?.addEventListener('click', () => this.toggleSidebar(false));
         this.mainNav.addEventListener('click', (e) => this.handleNavigation(e));
         document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
-        
+
         document.getElementById('themeToggle')?.addEventListener('click', () => {
             window.grindx.theme.toggle();
             this.updateThemeIcon();
@@ -140,14 +140,14 @@ class DashboardController extends window.grindx.controllers.BaseController {
      navigateToModule(url) {
          if (!url) return;
          this.showLoader(true);
-         
+
          const iframe = document.createElement('iframe');
          iframe.src = url;
          iframe.onload = () => {
              this.showLoader(false);
              this.syncIframeTheme(iframe);
          };
-         
+
          this.viewport.innerHTML = '';
          this.viewport.appendChild(iframe);
      }

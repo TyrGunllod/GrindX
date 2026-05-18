@@ -69,6 +69,13 @@
     transition: transform 0.3s;
 }
 
+/* Sidebar Nav — cresce para preencher o espaço entre header e footer */
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 /* Nav Groups & Links */
 .nav-group {
     margin-bottom: var(--space-4);
@@ -222,11 +229,11 @@
 
 
 
-/* Content Area */
+/* Content Area — módulos ocupam toda a área com pequeno espaçamento */
 .content-area {
     flex: 1;
     position: relative;
-    padding: var(--space-2) var(--space-4) var(--space-2) 250px;
+    padding: var(--space-2);   /* espaçamento uniforme e mínimo em todos os lados */
     overflow-y: auto;
 }
 
@@ -242,7 +249,7 @@
     justify-content: center;
 }
 
-/* Module Container - Visual offset for loaded modules */
+/* Module Container */
 .module-container {
     padding: var(--space-4);
     background: var(--bg-card);
@@ -254,7 +261,8 @@ iframe {
     width: 100%;
     height: 100%;
     border: none;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
+    display: block;
 }
 
 /* Helper Utilities */
@@ -294,6 +302,7 @@ iframe {
     }
     
     .main-viewport {
+        margin-left: 0;
         transition: margin-left 0.3s ease;
     }
     
@@ -302,27 +311,7 @@ iframe {
     }
     
     .sidebar:not(.collapsed) ~ .main-viewport {
-        margin-left: 320px;
-    }
-    
-    .search-wrapper {
-        display: flex;
-    }
-    
-    .md-hide { display: none !important; }
-}
-    
-    .main-viewport {
-        margin-left: 0;
-        transition: margin-left 0.3s ease;
-    }
-    
-    .sidebar.collapsed ~ .main-viewport {
-        margin-left: 104px; /* 88px + 16px extra */
-    }
-    
-    .sidebar:not(.collapsed) ~ .main-viewport {
-        margin-left: 320px; /* 280px + 40px extra */
+        margin-left: 296px;
     }
     
     .search-wrapper {
@@ -333,7 +322,7 @@ iframe {
 }
 
 .sidebar-footer {
-    margin-top: auto;
+    flex-shrink: 0;            /* nunca comprime — fica sempre no fundo */
     padding-top: var(--space-4);
     padding-bottom: var(--space-2);
     border-top: 1px solid var(--border-color);
@@ -358,12 +347,14 @@ iframe {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0;
+    width: 100%;
+    min-width: 0;
 }
 
 .user-meta {
     display: flex;
     flex-direction: column;
+    flex: 1;                   /* empurra o logout para a direita */
     min-width: 0;
 }
 
@@ -372,20 +363,35 @@ iframe {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: block;
 }
 
 .user-meta span {
     font-size: 0.75rem;
     color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+/* Logout sempre fixo na direita */
+#logoutBtn {
+    flex-shrink: 0;
 }
 
 .sidebar.collapsed .user-pill {
-    padding: 0;
-    justify-content: center;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: center;
 }
 
 .sidebar.collapsed .user-meta {
     display: none;
+}
+
+.sidebar.collapsed #logoutBtn {
+    margin-left: 0;
 }
 
 /* App Footer - Removed */
