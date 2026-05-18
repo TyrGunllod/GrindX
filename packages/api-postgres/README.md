@@ -1,6 +1,6 @@
-# ERP — API Postgres (Principal)
+# GrindX — API Postgres (Principal)
 
-Esta é a API principal do sistema ERP, responsável pela persistência centralizada no PostgreSQL, gerenciamento de usuários, autenticação JWT e controle de estoque.
+Esta é a API principal do sistema GrindX, responsável pela persistência centralizada no PostgreSQL, gerenciamento de usuários, autenticação JWT e controle de estoque.
 
 ## 🚀 Funcionalidades
 

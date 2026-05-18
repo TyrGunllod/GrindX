@@ -1,5 +1,5 @@
 # ==========================================
-# ERP — Sistema de Gestão Integrado
+# GrindX — Sistema de Gestão Integrado
 # Makefile para Windows (PowerShell/GnuMake)
 # ==========================================
 

@@ -1,4 +1,4 @@
-# ERP — API SQL Server (Consulta)
+# GrindX — API SQL Server (Consulta)
 
 Esta API é responsável por realizar consultas de leitura no banco de dados SQL Server legado (WAN). Por design, esta API não permite operações de escrita, servindo apenas para integração de dados de clientes e faturamento.
 

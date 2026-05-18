@@ -1,6 +1,6 @@
-# SGI - Sistema de Gestão Integrado (Monorepo)
+# GrindX - Sistema de Gestão Integrado (Monorepo)
 
-O **SGI** é um ERP modular construído com uma arquitetura moderna de monorepo, focado em alta escalabilidade, segurança e experiência do usuário premium.
+O **GrindX** é um ERP modular construído com uma arquitetura moderna de monorepo, focado em alta escalabilidade, segurança e experiência do usuário premium.
 
 ## 🏗️ Arquitetura do Sistema
 
@@ -8,7 +8,7 @@ O projeto utiliza uma abordagem de **Micro-serviços no Backend** e um **Portal 
 
 ### Backend
 - **api-postgres (Porta 8002):** API principal em FastAPI. Gerencia persistência, autenticação centralizada (JWT), RBAC e a estrutura dinâmica do portal.
-- **api-sqlserver (Porta 8003):** API dedicada para integração com bases legadas ou extração de dados complexos em SQL Server.
+- **api-sqlserver (Porta 8001):** API dedicada para integração com bases legadas ou extração de dados complexos em SQL Server.
 - **shared (Pacote):** Código compartilhado entre as APIs (Segurança, Schemas, Exceções).
 
 ### Frontend
