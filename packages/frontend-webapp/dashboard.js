@@ -137,20 +137,20 @@ class DashboardController extends window.grindx.controllers.BaseController {
         if (window.innerWidth < 1024) this.toggleSidebar(false);
     }
 
-    navigateToModule(url) {
-        if (!url) return;
-        this.showLoader(true);
-        
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        iframe.onload = () => {
-            this.showLoader(false);
-            this.syncIframeTheme(iframe);
-        };
-        
-        this.viewport.innerHTML = '';
-        this.viewport.appendChild(iframe);
-    }
+     navigateToModule(url) {
+         if (!url) return;
+         this.showLoader(true);
+         
+         const iframe = document.createElement('iframe');
+         iframe.src = url;
+         iframe.onload = () => {
+             this.showLoader(false);
+             this.syncIframeTheme(iframe);
+         };
+         
+         this.viewport.innerHTML = '';
+         this.viewport.appendChild(iframe);
+     }
 
     syncIframeTheme(targetIframe) {
          const iframe = targetIframe || this.viewport.querySelector('iframe');
@@ -168,12 +168,12 @@ class DashboardController extends window.grindx.controllers.BaseController {
         this.sidebar.classList.toggle('open', isOpen);
     }
 
-    updateUserUI(user) {
-        const displayName = this.getUserDisplayName(user);
-        document.getElementById('userName').textContent = displayName;
-        document.getElementById('userRole').textContent = this.formatRole(user.role);
-        document.getElementById('userAvatar').textContent = this.getInitials(displayName);
-    }
+     updateUserUI(user) {
+         const displayName = this.getUserDisplayName(user);
+         document.getElementById('userName').textContent = displayName;
+         document.getElementById('userRole').textContent = this.formatRole(user.role);
+         document.getElementById('userAvatar').innerHTML = '<i class="fas fa-user"></i>';
+     }
 
     getUserDisplayName(user) {
         return user?.nome_completo
