@@ -225,7 +225,7 @@
 .content-area {
     flex: 1;
     position: relative;
-    padding: 0;
+    padding: 0 var(--space-4) var(--space-4) var(--space-10);
     overflow-y: auto;
 }
 
