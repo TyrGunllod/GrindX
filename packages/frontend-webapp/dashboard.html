@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<!doctype html>
+<html lang="pt-BR"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrindX — Dashboard</title>
@@ -19,7 +18,7 @@
      <!-- Navigation Sidebar (Mobile Overlay + Desktop Persistent) -->
       <aside class="sidebar" id="sidebar" aria-label="Navegação Principal">
            <header class="sidebar-header">
-               <div class="logo-grindx font-display" style="font-size: 1.3rem; letter-spacing: 3px; color: var(--text-main);" aria-hidden="true">
+               <div class="logo-grindx font-display" style="font-size: 1.3rem; letter-spacing: 3px; color: var(--text-main);padding: 5px" aria-hidden="true">
                     G<span class="logo-full">RIND</span><span style="color: var(--brand-is);">X</span>
                </div>
                <button class="btn-icon collapse-btn hide-mobile" id="toggleCollapse" aria-label="Recolher menu">
@@ -76,7 +75,7 @@
 
      <!-- Main Viewport -->
      <main class="main-viewport">
-         <header class="top-bar">
+         <header class="top-bar" style="padding: 15px;">
              <button class="btn-icon md-hide" id="openSidebar" aria-label="Abrir menu">
                  <i class="fas fa-bars"></i>
              </button>
@@ -86,7 +85,7 @@
              </button>
          </header>
 
-         <section class="content-area" id="moduleViewport" role="region" aria-live="polite">
+         <section class="content-area" id="moduleViewport" role="region" aria-live="polite" style="padding: 5px; margin: 0px;">
              <!-- Os módulos serão injetados aqui -->
              <div class="loader-overlay" id="moduleLoader" style="display: none;">
                  <div class="spinner"></div>
@@ -99,5 +98,6 @@
     <script src="shared/apiService.js"></script>
     <script src="shared/baseController.js"></script>
     <script src="dashboard.js"></script>
-</body>
-</html>
+
+
+</body></html>
