@@ -3,7 +3,7 @@
 O **GrindX** é um ERP modular construído com uma arquitetura moderna de monorepo, focado em alta escalabilidade, segurança e experiência do usuário premium.
 
 ## 📊 Status do Projeto
-✅ **80% Completo** - Funcionalidades principais implementadas, documentação criada, frontend módulos funcionais
+✅ **90% Completo** - Funcionalidades principais, documentação e testes implementados
 
 ## 🏗️ Arquitetura do Sistema
 
@@ -43,6 +43,29 @@ python -m http.server 5500 --directory packages/frontend-webapp
 | :--- | :--- | :--- |
 | `admin` | `admin123` | Administrador |
 | `operador` | `operador123` | Operador |
+
+## 🧪 Testes
+
+O projeto possui suite de testes abrangente com **150+ testes**:
+
+| Pacote | Testes | Tipo |
+|--------|--------|------|
+| `api-postgres` | 110 | Unitários + Integração |
+| `api-sqlserver` | 8+ | Unitários + Integração |
+| `shared` | 26 | Unitários (RBAC) |
+| `tests/` (raiz) | 21 | Validação de pacotes |
+
+```bash
+# Rodar testes da raiz
+pytest
+
+# Rodar testes de um pacote específico
+make test-postgres
+make test-sqlserver
+
+# Rodar todos os testes
+make test-all
+```
 
 ## 📚 Documentação
 

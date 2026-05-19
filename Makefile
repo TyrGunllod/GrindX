@@ -41,7 +41,15 @@ test-sqlserver:
 	@echo "Executando testes da API SQL Server..."
 	cd packages/api-sqlserver && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
 
-test-all: test-postgres test-sqlserver
+test-shared:
+	@echo "Executando testes do pacote shared..."
+	cd packages/shared && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+
+test-root:
+	@echo "Executando testes da raiz do monorepo..."
+	set PYTHONPATH=packages\\api-postgres;packages\\api-sqlserver;packages&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+
+test-all: test-postgres test-sqlserver test-shared test-root
 
 # ==========================================
 # Infraestrutura (Containers)

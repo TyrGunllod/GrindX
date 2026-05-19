@@ -238,11 +238,15 @@ GrindX/
 - ✅ `docs/DATABASE.md` - Schema do banco de dados
 - ✅ `docs/SECURITY.md` - Guia de segurança
 
-### 5. **Testes (Faltando)**
-- ❌ `tests/` - Suite de testes
-- ❌ `tests/test_api.py` - Testes da API
-- ❌ `tests/test_modules.py` - Testes dos módulos
-- ❌ `.github/workflows/` - CI/CD pipelines
+### 5. **Testes (Concluídos)**
+- ✅ `tests/` - Suite de testes unificada na raiz
+- ✅ `tests/unit/test_shared_modules.py` - Testes dos módulos compartilhados
+- ✅ `tests/integration/test_pacotes.py` - Testes de integração dos pacotes
+- ✅ `tests/conftest.py` - Fixtures globais
+- ✅ `pytest.ini` - Configuração unificada de testes
+- ✅ `packages/api-postgres/tests/` - 110 testes (auth, RBAC, produtos, usuários)
+- ✅ `packages/api-sqlserver/tests/` - Testes de cliente
+- ✅ `packages/shared/tests/` - 26 testes de permissões RBAC
 
 ### 6. **Configuração do Projeto**
 - ⚠️ `package.json` - Se usar npm/yarn
@@ -265,7 +269,8 @@ GrindX/
 - [X] `docs/SETUP.md` com guia de instalação
 - [X] `modules/structure/` com componentes de administração
 - [X] `shared/components/` já existente e verificado
-- [ ] `tests/` com suite de testes básicos
+- [X] `tests/` com suite de testes unificada na raiz
+- [X] `pytest.ini` com configuração de testes
 
 ### 🔄 Verificar e Validar
 
@@ -381,4 +386,4 @@ pyodbc >= 4.0
 
 ---
 
-**Status Geral:** ✅ **80% Completo** - Faltam apenas testes e configuração de CI/CD
+**Status Geral:** ✅ **90% Completo** - Faltam apenas CI/CD e assets
