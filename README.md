@@ -195,3 +195,8 @@ GrindX/
 ---
 
 Desenvolvido com foco em **SOLID**, **Clean Code** e **Performance**.
+
+---
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

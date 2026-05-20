@@ -64,10 +64,9 @@ pytest           # testes da raiz
 
 ## O Que Ainda Falta
 
-1. Preencher `DB_PASSWORD` em `packages/api-sqlserver/.env` com a senha real do LEITURAPROD
-2. Trocar `SECRET_KEY` para valor gerado aleatoriamente antes do deploy em produção
-3. Adicionar `favicon.ico` em `packages/frontend-webapp/`
-4. Decidir próximo módulo do ERP (produtos, estoque, vendas)
+1. Trocar `SECRET_KEY` para valor gerado aleatoriamente antes do deploy em produção
+2. Adicionar `favicon.ico` em `packages/frontend-webapp/`
+3. Decidir próximo módulo do ERP (produtos, estoque, vendas)
 
 ---
 
