@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="GrindX favicon">
+  <title>GrindX Favicon</title>
+  <rect width="64" height="64" rx="12" fill="#0f172a"/>
+  <polygon points="32,8 56,32 32,56 8,32" fill="none" stroke="#00c2e0" stroke-width="3"/>
+  <text x="32" y="40" text-anchor="middle" font-family="'Barlow Condensed', Arial, sans-serif" font-size="20" font-weight="700" fill="#00c2e0">GX</text>
+</svg>
