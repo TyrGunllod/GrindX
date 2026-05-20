@@ -21,7 +21,6 @@ def _criar_cliente(db_session, **kwargs) -> Cliente:
 
 
 class TestClienteRepository:
-
     def test_buscar_por_id(self, db_session):
         _criar_cliente(db_session, id=1)
         repo = ClienteRepository(db_session)

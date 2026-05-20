@@ -27,7 +27,9 @@ def listar_clientes(
     page: int = Query(default=1, ge=1, description="Número da página"),
     page_size: int = Query(default=20, ge=1, le=100, description="Itens por página"),
     apenas_ativos: bool = Query(default=True, description="Filtrar somente ativos"),
-    razao_social: str | None = Query(default=None, description="Filtro por razão social"),
+    razao_social: str | None = Query(
+        default=None, description="Filtro por razão social"
+    ),
     cidade: str | None = Query(default=None, description="Filtro por cidade"),
     uf: str | None = Query(default=None, max_length=2, description="Filtro por UF"),
     service: ClienteService = Depends(get_cliente_service),

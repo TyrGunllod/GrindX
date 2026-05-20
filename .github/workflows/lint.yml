@@ -32,5 +32,8 @@ jobs:
       - name: Check (erros de sintaxe e imports)
         run: ruff check packages/ --select E,F,I --ignore E501
 
+      - name: Format (auto-corrigivel)
+        run: ruff format packages/
+
       - name: Format check
         run: ruff format packages/ --check

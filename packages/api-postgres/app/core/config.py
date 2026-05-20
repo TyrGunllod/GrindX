@@ -36,7 +36,12 @@ class Settings(BaseSettings):
     def allowed_origins_list(self) -> list[str]:
         """Retorna lista de origens CORS permitidas."""
         # Se for um formato de lista JSON ["*"], removemos os caracteres extras
-        clean_value = self.CORS_ORIGINS.replace("[", "").replace("]", "").replace('"', "").replace("'", "")
+        clean_value = (
+            self.CORS_ORIGINS.replace("[", "")
+            .replace("]", "")
+            .replace('"', "")
+            .replace("'", "")
+        )
         return [origin.strip() for origin in clean_value.split(",")]
 
     model_config = SettingsConfigDict(

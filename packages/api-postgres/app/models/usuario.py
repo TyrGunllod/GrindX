@@ -53,4 +53,6 @@ class Usuario(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<Usuario(id={self.id}, username='{self.username}', role='{self.role}')>"
+        return (
+            f"<Usuario(id={self.id}, username='{self.username}', role='{self.role}')>"
+        )

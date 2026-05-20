@@ -92,7 +92,9 @@ def require_role(
     return _verificar_role
 
 
-def require_role_or_higher(role_minimo: str | Role, get_user: Callable | None = None) -> Callable:
+def require_role_or_higher(
+    role_minimo: str | Role, get_user: Callable | None = None
+) -> Callable:
     """Cria uma dependency que verifica se o usuário tem a role ou superior (hierarquia)."""
     # Normaliza a role mínima
     role_str = role_minimo.value if isinstance(role_minimo, Role) else str(role_minimo)

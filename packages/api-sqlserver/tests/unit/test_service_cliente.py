@@ -18,7 +18,6 @@ def service(mock_repo):
 
 
 class TestBuscarCliente:
-
     def test_cliente_encontrado(self, service, mock_repo):
         mock_cliente = MagicMock()
         mock_cliente.id = 1
@@ -34,7 +33,6 @@ class TestBuscarCliente:
 
 
 class TestBuscarPorCnpj:
-
     def test_cnpj_encontrado(self, service, mock_repo):
         mock_cliente = MagicMock()
         mock_cliente.cnpj = "12.345.678/0001-90"
@@ -50,7 +48,6 @@ class TestBuscarPorCnpj:
 
 
 class TestListarClientes:
-
     def test_listar_retorna_paginado(self, service, mock_repo):
         mock_repo.listar.return_value = ([], 0)
 

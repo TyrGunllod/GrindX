@@ -34,32 +34,36 @@ from shared.security.permissions import Role, require_role, require_role_or_high
 
 router = APIRouter()
 
+
 # Exemplo 1: Rota somente para admin
 @router.delete(
     "/recurso/{id}",
     dependencies=[Depends(require_role(Role.ADMIN))],
 )
-def deletar_recurso(id: int, current_user = Depends(get_current_user)):  # noqa: F821  # noqa: F821
+def deletar_recurso(id: int, current_user=Depends(get_current_user)):  # noqa: F821  # noqa: F821
     """Somente admin pode deletar."""
     pass
+
 
 # Exemplo 2: Rota para admin e operador
 @router.post(
     "/recurso",
     dependencies=[Depends(require_role(Role.ADMIN, Role.OPERADOR))],
 )
-def criar_recurso(dados: dict, current_user = Depends(get_current_user)):  # noqa: F821  # noqa: F821
+def criar_recurso(dados: dict, current_user=Depends(get_current_user)):  # noqa: F821  # noqa: F821
     """Admin e operador podem criar."""
     pass
+
 
 # Exemplo 3: Rota para todos
 @router.get(
     "/recurso",
     dependencies=[Depends(require_role(Role.ADMIN, Role.OPERADOR, Role.LEITURA))],
 )
-def listar_recursos(current_user = Depends(get_current_user)):  # noqa: F821  # noqa: F821
+def listar_recursos(current_user=Depends(get_current_user)):  # noqa: F821  # noqa: F821
     """Todos podem ler."""
     pass
+
 
 # ============================================================================
 # 3. USANDO @require_role_or_higher (Hierarquia)
@@ -67,16 +71,18 @@ def listar_recursos(current_user = Depends(get_current_user)):  # noqa: F821  # 
 
 # Use quando quer permitir a role e todas as superiores
 
+
 # Exemplo: Requer operador ou superior (admin)
 @router.post(
     "/relatorio",
     dependencies=[Depends(require_role_or_higher(Role.OPERADOR))],
 )
-def gerar_relatorio(current_user = Depends(get_current_user)):  # noqa: F821  # noqa: F821
+def gerar_relatorio(current_user=Depends(get_current_user)):  # noqa: F821  # noqa: F821
     """Admin e operador podem gerar relatório.
     Leitura não consegue (é inferior a operador).
     """
     pass
+
 
 # ============================================================================
 # 4. MATRIX DE PERMISSÕES
@@ -118,6 +124,7 @@ def meu_perfil(current_user: TokenPayload = Depends(get_current_user)):  # noqa:
         "role": current_user.role,  # "admin", "operador" ou "leitura"
     }
 
+
 # ============================================================================
 # 6. VERIFICAR HIERARQUIA PROGRAMATICAMENTE
 # ============================================================================
@@ -135,6 +142,7 @@ def exemplo_hierarquia():
 
     roles_da_leitura = get_user_roles_hierarchy("leitura")  # noqa: F841  # noqa: F841
     # Resultado: ["leitura"]
+
 
 # ============================================================================
 # 7. MENSAGENS DE ERRO

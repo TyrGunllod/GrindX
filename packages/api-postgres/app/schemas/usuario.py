@@ -11,8 +11,10 @@ class UsuarioBase(BaseModel):
     role: str = Field(default="leitura")
     ativo: bool = True
 
+
 class UsuarioCreate(UsuarioBase):
     password: str = Field(..., min_length=6)
+
 
 class UsuarioUpdate(BaseModel):
     nome_completo: Optional[str] = None
@@ -20,6 +22,7 @@ class UsuarioUpdate(BaseModel):
     role: Optional[str] = None
     ativo: Optional[bool] = None
     password: Optional[str] = None
+
 
 class UsuarioResponse(UsuarioBase):
     id: int

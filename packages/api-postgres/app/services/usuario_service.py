@@ -16,7 +16,7 @@ class UsuarioService:
             items, total = self.repo.listar_por_role(role, page, page_size)
         else:
             items, total = self.repo.listar_todos(page, page_size)
-        
+
         return items or [], total or 0
 
     def buscar_por_id(self, usuario_id: int):
@@ -38,17 +38,17 @@ class UsuarioService:
             nome_completo=schema.nome_completo,
             senha_hash=gerar_hash_senha(schema.password),
             role=schema.role,
-            ativo=schema.ativo
+            ativo=schema.ativo,
         )
         return self.repo.criar(usuario)
 
     def atualizar_usuario(self, usuario_id: int, schema: UsuarioUpdate):
         usuario = self.buscar_por_id(usuario_id)
         dados = schema.model_dump(exclude_unset=True)
-        
+
         if "password" in dados:
             dados["senha_hash"] = gerar_hash_senha(dados.pop("password"))
-        
+
         return self.repo.atualizar(usuario, dados)
 
     def desativar_usuario(self, usuario_id: int):

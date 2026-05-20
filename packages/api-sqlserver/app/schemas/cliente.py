@@ -49,7 +49,9 @@ class ClienteResponse(BaseModel):
 class ClienteFiltros(BaseModel):
     """Schema para filtros de busca de clientes."""
 
-    razao_social: str | None = Field(None, description="Filtro por razão social (parcial)")
+    razao_social: str | None = Field(
+        None, description="Filtro por razão social (parcial)"
+    )
     cnpj: str | None = Field(None, description="Filtro por CNPJ exato")
     cidade: str | None = Field(None, description="Filtro por cidade")
     uf: str | None = Field(None, description="Filtro por UF")

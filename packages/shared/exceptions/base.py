@@ -83,7 +83,9 @@ class BusinessValidationError(AppException):
 class DatabaseError(AppException):
     """Erro de comunicação com o banco de dados."""
 
-    def __init__(self, message: str = "Erro de comunicação com o banco de dados.") -> None:
+    def __init__(
+        self, message: str = "Erro de comunicação com o banco de dados."
+    ) -> None:
         super().__init__(
             error_code="ERRO_BANCO_DADOS",
             message=message,

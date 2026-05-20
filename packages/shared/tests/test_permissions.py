@@ -5,7 +5,6 @@ Testa require_role, require_role_or_higher e a hierarquia de permissões.
 Usa mocks para não depender de HTTP real.
 """
 
-
 import pytest
 from shared.exceptions.base import ForbiddenError
 from shared.schemas.auth import TokenPayload

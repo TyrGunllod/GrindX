@@ -1,9 +1,7 @@
 """Testes de integração dos endpoints de Produto via TestClient."""
 
 
-
 class TestProdutoRouter:
-
     def test_criar_produto(self, client, auth_headers):
         response = client.post(
             "/v1/estoque/produtos",

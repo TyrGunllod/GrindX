@@ -78,8 +78,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 requests_count=len(self._requests[client_ip]),
             )
             retry_after = int(
-                self.window_seconds
-                - (now - self._requests[client_ip][0])
+                self.window_seconds - (now - self._requests[client_ip][0])
             )
             return JSONResponse(
                 status_code=429,

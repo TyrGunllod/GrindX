@@ -7,7 +7,6 @@ from app.schemas.produto import ProdutoCreate, ProdutoUpdate
 
 
 class TestProdutoRepository:
-
     def test_criar_produto(self, db_session):
         repo = ProdutoRepository(db_session)
         dados = ProdutoCreate(nome="Caneta", preco=Decimal("2.50"))

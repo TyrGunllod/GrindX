@@ -40,9 +40,7 @@ class Cliente(Base):
     cidade: Mapped[str | None] = mapped_column(
         String(100), nullable=True, comment="Cidade"
     )
-    uf: Mapped[str | None] = mapped_column(
-        String(2), nullable=True, comment="UF"
-    )
+    uf: Mapped[str | None] = mapped_column(String(2), nullable=True, comment="UF")
     ativo: Mapped[bool] = mapped_column(
         default=True, nullable=False, comment="Se o cliente está ativo"
     )

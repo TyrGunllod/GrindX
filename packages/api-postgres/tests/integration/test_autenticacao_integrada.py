@@ -150,7 +150,9 @@ class TestRotasAutenticacao:
         data = response.json()
         assert data["error"] == "NAO_AUTORIZADO"
 
-    def test_refresh_endpoint_sucesso(self, client: TestClient, auth_headers: dict, db_session):
+    def test_refresh_endpoint_sucesso(
+        self, client: TestClient, auth_headers: dict, db_session
+    ):
         """Testa POST /v1/auth/refresh com refresh_token válido."""
         # auth_headers já cria um usuário e obtém tokens
         # Agora extrair o refresh_token

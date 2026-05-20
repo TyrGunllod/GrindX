@@ -78,7 +78,10 @@ def buscar_produto(
     description="Cria um novo produto no sistema. Acesso: operador, admin.",
     responses={
         401: {"model": ErrorResponse, "description": "Não autenticado"},
-        403: {"model": ErrorResponse, "description": "Permissão insuficiente (requer operador ou admin)"},
+        403: {
+            "model": ErrorResponse,
+            "description": "Permissão insuficiente (requer operador ou admin)",
+        },
         422: {"model": ErrorResponse, "description": "Erro de validação"},
     },
     dependencies=[Depends(require_role(Role.OPERADOR, Role.ADMIN))],
@@ -99,7 +102,10 @@ def criar_produto(
     description="Atualiza campos de um produto existente. Acesso: operador, admin.",
     responses={
         401: {"model": ErrorResponse, "description": "Não autenticado"},
-        403: {"model": ErrorResponse, "description": "Permissão insuficiente (requer operador ou admin)"},
+        403: {
+            "model": ErrorResponse,
+            "description": "Permissão insuficiente (requer operador ou admin)",
+        },
         404: {"model": ErrorResponse, "description": "Produto não encontrado"},
         422: {"model": ErrorResponse, "description": "Erro de validação"},
     },
@@ -122,7 +128,10 @@ def atualizar_produto(
     description="Realiza soft delete (desativação) de um produto. Acesso: admin.",
     responses={
         401: {"model": ErrorResponse, "description": "Não autenticado"},
-        403: {"model": ErrorResponse, "description": "Permissão insuficiente (requer admin)"},
+        403: {
+            "model": ErrorResponse,
+            "description": "Permissão insuficiente (requer admin)",
+        },
         404: {"model": ErrorResponse, "description": "Produto não encontrado"},
     },
     dependencies=[Depends(require_role(Role.ADMIN))],

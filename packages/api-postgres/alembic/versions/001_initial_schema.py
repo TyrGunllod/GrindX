@@ -5,6 +5,7 @@ Revises: None
 Create Date: 2025-01-15 10:00:00.000000
 
 """
+
 import sqlalchemy as sa
 from alembic import op
 
@@ -17,7 +18,7 @@ depends_on = None
 
 def upgrade() -> None:
     """Cria as tabelas iniciais: usuarios e produtos."""
-    
+
     # Criar tabela usuarios
     op.create_table(
         "usuarios",

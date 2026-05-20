@@ -20,7 +20,7 @@ def main():
     """Executa CLI do Alembic."""
     # Garante que o diretório raiz está no path
     sys.path.insert(0, str(Path(__file__).parent))
-    
+
     # Executa o comando do Alembic
     cli = CommandLine()
     cli.main()

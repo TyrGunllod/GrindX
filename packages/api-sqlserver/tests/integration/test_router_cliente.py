@@ -2,7 +2,6 @@
 
 
 class TestClienteRouter:
-
     def test_listar_clientes_sem_dados(self, client, auth_headers):
         response = client.get("/v1/cadastro/clientes", headers=auth_headers)
         assert response.status_code == 200
@@ -70,8 +69,24 @@ class TestClienteRouter:
     def test_filtro_por_uf(self, client, auth_headers, db_session):
         from app.models.cliente import Cliente
 
-        db_session.add(Cliente(id=1, razao_social="SP Ltda", cnpj="11.111.111/0001-11", uf="SP", ativo=True))
-        db_session.add(Cliente(id=2, razao_social="RJ Ltda", cnpj="22.222.222/0001-22", uf="RJ", ativo=True))
+        db_session.add(
+            Cliente(
+                id=1,
+                razao_social="SP Ltda",
+                cnpj="11.111.111/0001-11",
+                uf="SP",
+                ativo=True,
+            )
+        )
+        db_session.add(
+            Cliente(
+                id=2,
+                razao_social="RJ Ltda",
+                cnpj="22.222.222/0001-22",
+                uf="RJ",
+                ativo=True,
+            )
+        )
         db_session.commit()
 
         response = client.get("/v1/cadastro/clientes?uf=SP", headers=auth_headers)

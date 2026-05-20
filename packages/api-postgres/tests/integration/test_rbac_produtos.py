@@ -123,7 +123,9 @@ class TestGetProdutosRbac:
         assert response.status_code == 200
         assert "items" in response.json()
 
-    def test_operador_consegue_listar_produtos(self, client: TestClient, token_operador: str):
+    def test_operador_consegue_listar_produtos(
+        self, client: TestClient, token_operador: str
+    ):
         """Testa que operador consegue listar produtos."""
         response = client.get(
             "/v1/estoque/produtos",
@@ -132,7 +134,9 @@ class TestGetProdutosRbac:
 
         assert response.status_code == 200
 
-    def test_leitura_consegue_listar_produtos(self, client: TestClient, token_leitura: str):
+    def test_leitura_consegue_listar_produtos(
+        self, client: TestClient, token_leitura: str
+    ):
         """Testa que leitura consegue listar produtos."""
         response = client.get(
             "/v1/estoque/produtos",
@@ -204,7 +208,9 @@ class TestPostProdutosRbac:
         assert response.status_code == 201
         assert response.json()["nome"] == "Caneta Vermelha"
 
-    def test_operador_consegue_criar_produto(self, client: TestClient, token_operador: str):
+    def test_operador_consegue_criar_produto(
+        self, client: TestClient, token_operador: str
+    ):
         """Testa que operador consegue criar produto."""
         response = client.post(
             "/v1/estoque/produtos",
@@ -218,7 +224,9 @@ class TestPostProdutosRbac:
 
         assert response.status_code == 201
 
-    def test_leitura_nao_consegue_criar_produto(self, client: TestClient, token_leitura: str):
+    def test_leitura_nao_consegue_criar_produto(
+        self, client: TestClient, token_leitura: str
+    ):
         """Testa que leitura NÃO consegue criar produto (403)."""
         response = client.post(
             "/v1/estoque/produtos",
@@ -337,7 +345,9 @@ class TestDeleteProdutosRbac:
 
         assert response.status_code == 403
 
-    def test_sem_autenticacao_nao_consegue_desativar(self, client: TestClient, produto_teste: Produto):
+    def test_sem_autenticacao_nao_consegue_desativar(
+        self, client: TestClient, produto_teste: Produto
+    ):
         """Testa que sem autenticação não consegue desativar."""
         response = client.delete(
             f"/v1/estoque/produtos/{produto_teste.id}",
@@ -369,7 +379,9 @@ class TestRbacMatrizCompleta:
 
         # GET — todos conseguem
         for token in [token_admin, token_operador, token_leitura]:
-            response = client.get(url_lista, headers={"Authorization": f"Bearer {token}"})
+            response = client.get(
+                url_lista, headers={"Authorization": f"Bearer {token}"}
+            )
             assert response.status_code == 200, f"GET falhou para token {token[:10]}..."
 
         # POST — admin e operador conseguem, leitura não
@@ -383,7 +395,9 @@ class TestRbacMatrizCompleta:
                 headers={"Authorization": f"Bearer {token}"},
                 json={"nome": "Novo Produto", "preco": 1.00},
             )
-            assert response.status_code == esperado, f"POST retornou {response.status_code}, esperava {esperado}"
+            assert response.status_code == esperado, (
+                f"POST retornou {response.status_code}, esperava {esperado}"
+            )
 
         # PUT — admin e operador conseguem, leitura não
         for token, esperado in [
@@ -396,7 +410,9 @@ class TestRbacMatrizCompleta:
                 headers={"Authorization": f"Bearer {token}"},
                 json={"preco": 5.00},
             )
-            assert response.status_code == esperado, f"PUT retornou {response.status_code}, esperava {esperado}"
+            assert response.status_code == esperado, (
+                f"PUT retornou {response.status_code}, esperava {esperado}"
+            )
 
         # DELETE — somente admin consegue
         for token, esperado in [
@@ -408,4 +424,6 @@ class TestRbacMatrizCompleta:
                 url_item,
                 headers={"Authorization": f"Bearer {token}"},
             )
-            assert response.status_code == esperado, f"DELETE retornou {response.status_code}, esperava {esperado}"
+            assert response.status_code == esperado, (
+                f"DELETE retornou {response.status_code}, esperava {esperado}"
+            )

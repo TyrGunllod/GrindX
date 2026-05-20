@@ -37,28 +37,30 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL(self) -> str:
         """Constrói a URL de conexão baseada nas configurações.
-        
+
         Se DB_DRIVER contiver 'ODBC', utiliza pyodbc. Caso contrário, pymssql.
         """
         import urllib.parse
-        
+
         # URL encode do password (pode conter caracteres especiais como @)
         password = urllib.parse.quote_plus(self.DB_PASSWORD)
-        
+
         if "ODBC" in self.DB_DRIVER:
             # Para pyodbc (Microsoft ODBC Driver)
             driver = urllib.parse.quote_plus(self.DB_DRIVER)
             return f"mssql+pyodbc://{self.DB_USERNAME}:{password}@{self.DB_SERVER}/{self.DB_DATABASE}?driver={driver}"
-        
+
         # Fallback para pymssql (usa dois pontos para porta e não precisa de driver string)
         server = self.DB_SERVER.replace(",", ":")
-        return f"mssql+pymssql://{self.DB_USERNAME}:{password}@{server}/{self.DB_DATABASE}"
+        return (
+            f"mssql+pymssql://{self.DB_USERNAME}:{password}@{server}/{self.DB_DATABASE}"
+        )
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=True,
-        extra="ignore", # Ignora variáveis extras no .env
+        extra="ignore",  # Ignora variáveis extras no .env
     )
 
 

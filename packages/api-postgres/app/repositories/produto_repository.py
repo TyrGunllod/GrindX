@@ -30,7 +30,9 @@ class ProdutoRepository:
         stmt = select(Produto).where(Produto.id == produto_id)
         return self.db.execute(stmt).scalar_one_or_none()
 
-    def listar_ativos(self, page: int = 1, page_size: int = 20) -> tuple[list[Produto], int]:
+    def listar_ativos(
+        self, page: int = 1, page_size: int = 20
+    ) -> tuple[list[Produto], int]:
         """Lista produtos ativos com paginação.
 
         Args:
@@ -41,7 +43,9 @@ class ProdutoRepository:
             Tupla com (lista de produtos, total de registros).
         """
         # Query para total
-        count_stmt = select(func.count()).select_from(Produto).where(Produto.ativo.is_(True))
+        count_stmt = (
+            select(func.count()).select_from(Produto).where(Produto.ativo.is_(True))
+        )
         total = self.db.scalar(count_stmt) or 0
 
         # Query para itens
@@ -55,7 +59,9 @@ class ProdutoRepository:
         items = list(self.db.scalars(stmt).all())
         return items, total
 
-    def listar_todos(self, page: int = 1, page_size: int = 20) -> tuple[list[Produto], int]:
+    def listar_todos(
+        self, page: int = 1, page_size: int = 20
+    ) -> tuple[list[Produto], int]:
         """Lista todos os produtos com paginação.
 
         Args:

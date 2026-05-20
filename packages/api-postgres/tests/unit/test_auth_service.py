@@ -45,7 +45,9 @@ def auth_service_mock() -> AuthService:
 class TestAuthServiceAutenticacao:
     """Testes de autenticação."""
 
-    def test_autenticar_sucesso(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_autenticar_sucesso(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa autenticação bem-sucedida."""
         auth_service_mock.usuario_repo.buscar_por_username.return_value = usuario_mock
 
@@ -63,7 +65,9 @@ class TestAuthServiceAutenticacao:
         with pytest.raises(CredenciaisInvalidasError):
             auth_service_mock.autenticar("inexistente", "senha123")
 
-    def test_autenticar_usuario_inativo(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_autenticar_usuario_inativo(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa autenticação com usuário inativo."""
         usuario_mock.ativo = False
         auth_service_mock.usuario_repo.buscar_por_username.return_value = usuario_mock
@@ -71,26 +75,34 @@ class TestAuthServiceAutenticacao:
         with pytest.raises(CredenciaisInvalidasError):
             auth_service_mock.autenticar("testuser", "senha123")
 
-    def test_autenticar_senha_incorreta(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_autenticar_senha_incorreta(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa autenticação com senha incorreta."""
         auth_service_mock.usuario_repo.buscar_por_username.return_value = usuario_mock
 
         with pytest.raises(CredenciaisInvalidasError):
             auth_service_mock.autenticar("testuser", "senha_errada")
 
-    def test_autenticar_chama_repositorio(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_autenticar_chama_repositorio(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa que autenticar chama o repositório corretamente."""
         auth_service_mock.usuario_repo.buscar_por_username.return_value = usuario_mock
 
         auth_service_mock.autenticar("testuser", "senha123")
 
-        auth_service_mock.usuario_repo.buscar_por_username.assert_called_once_with("testuser")
+        auth_service_mock.usuario_repo.buscar_por_username.assert_called_once_with(
+            "testuser"
+        )
 
 
 class TestAuthServiceRefreshToken:
     """Testes de refresh de token."""
 
-    def test_refresh_token_sucesso(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_refresh_token_sucesso(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa refresh de token com sucesso."""
         from app.core.config import settings
 
@@ -131,7 +143,9 @@ class TestAuthServiceRefreshToken:
         with pytest.raises(CredenciaisInvalidasError):
             auth_service_mock.refresh_token(refresh_token)
 
-    def test_refresh_token_usuario_inativo(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_refresh_token_usuario_inativo(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa refresh quando usuário foi desativado."""
         from app.core.config import settings
 
@@ -152,7 +166,9 @@ class TestAuthServiceRefreshToken:
 class TestAuthServiceRegistro:
     """Testes de registro de novos usuários."""
 
-    def test_registrar_usuario_sucesso(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_registrar_usuario_sucesso(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa registro bem-sucedido de novo usuário."""
         auth_service_mock.usuario_repo.buscar_por_username.return_value = None
         auth_service_mock.usuario_repo.buscar_por_email.return_value = None
@@ -170,7 +186,9 @@ class TestAuthServiceRegistro:
         assert resultado.username == "testuser"
         auth_service_mock.usuario_repo.criar.assert_called_once()
 
-    def test_registrar_username_duplicado(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_registrar_username_duplicado(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa registro com username duplicado."""
         auth_service_mock.usuario_repo.buscar_por_username.return_value = usuario_mock
 
@@ -182,7 +200,9 @@ class TestAuthServiceRegistro:
                 senha="senha123",
             )
 
-    def test_registrar_email_duplicado(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_registrar_email_duplicado(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa registro com email duplicado."""
         auth_service_mock.usuario_repo.buscar_por_username.return_value = None
         auth_service_mock.usuario_repo.buscar_por_email.return_value = usuario_mock
@@ -195,7 +215,9 @@ class TestAuthServiceRegistro:
                 senha="senha123",
             )
 
-    def test_registrar_gera_hash_senha(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_registrar_gera_hash_senha(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa que a senha é hasheada corretamente."""
         auth_service_mock.usuario_repo.buscar_por_username.return_value = None
         auth_service_mock.usuario_repo.buscar_por_email.return_value = None
@@ -211,7 +233,7 @@ class TestAuthServiceRegistro:
         # Verifica que criar foi chamado com um usuário
         chamada = auth_service_mock.usuario_repo.criar.call_args
         usuario_criado = chamada[0][0]  # Primeiro argumento posicional
-        
+
         # Verifica que a senha foi hashada (não é a mesma que foi passada)
         assert usuario_criado.senha_hash != "minha_senha_secreta"
 
@@ -219,7 +241,9 @@ class TestAuthServiceRegistro:
 class TestAuthServiceTokenGeração:
     """Testes de geração de tokens."""
 
-    def test_gerar_tokens_contém_payload_correto(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_gerar_tokens_contém_payload_correto(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa que tokens contêm payload correto."""
         from app.core.config import settings
         from shared.security.jwt import verificar_jwt
@@ -231,7 +255,9 @@ class TestAuthServiceTokenGeração:
         assert payload.sub == "1"
         assert payload.role == "admin"
 
-    def test_access_token_expires_soon(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_access_token_expires_soon(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa que access_token tem expiration curta."""
         from app.core.config import settings
         from shared.security.jwt import verificar_jwt
@@ -242,7 +268,9 @@ class TestAuthServiceTokenGeração:
         # Verifica que expiration foi setada
         assert payload.exp is not None
 
-    def test_token_response_tem_bearer_type(self, auth_service_mock: AuthService, usuario_mock: Usuario):
+    def test_token_response_tem_bearer_type(
+        self, auth_service_mock: AuthService, usuario_mock: Usuario
+    ):
         """Testa que TokenResponse retorna tipo 'bearer'."""
         tokens = auth_service_mock._gerar_tokens(usuario_mock)
         assert tokens.token_type == "bearer"
