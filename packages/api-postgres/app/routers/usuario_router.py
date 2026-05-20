@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, Query, status
-from sqlalchemy.orm import Session
 from typing import Optional
 
-from app.database import get_db
-from app.schemas.usuario import UsuarioCreate, UsuarioUpdate, UsuarioResponse
-from app.services.usuario_service import UsuarioService
-from app.auth.dependencies import require_role
+from fastapi import APIRouter, Depends, Query, status
 from shared.schemas.base import PaginatedResponse
+from sqlalchemy.orm import Session
+
+from app.auth.dependencies import require_role
+from app.database import get_db
+from app.schemas.usuario import UsuarioCreate, UsuarioResponse, UsuarioUpdate
+from app.services.usuario_service import UsuarioService
 
 router = APIRouter(prefix="/v1/usuarios", tags=["Gestão de Usuários"])
 

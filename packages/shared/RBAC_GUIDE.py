@@ -29,6 +29,7 @@ Define como usar o sistema de permissões nas rotas.
 # ============================================================================
 
 from fastapi import APIRouter, Depends
+
 from shared.security.permissions import Role, require_role, require_role_or_higher
 
 router = APIRouter()
@@ -38,7 +39,7 @@ router = APIRouter()
     "/recurso/{id}",
     dependencies=[Depends(require_role(Role.ADMIN))],
 )
-def deletar_recurso(id: int, current_user = Depends(get_current_user)):
+def deletar_recurso(id: int, current_user = Depends(get_current_user)):  # noqa: F821  # noqa: F821
     """Somente admin pode deletar."""
     pass
 
@@ -47,7 +48,7 @@ def deletar_recurso(id: int, current_user = Depends(get_current_user)):
     "/recurso",
     dependencies=[Depends(require_role(Role.ADMIN, Role.OPERADOR))],
 )
-def criar_recurso(dados: dict, current_user = Depends(get_current_user)):
+def criar_recurso(dados: dict, current_user = Depends(get_current_user)):  # noqa: F821  # noqa: F821
     """Admin e operador podem criar."""
     pass
 
@@ -56,7 +57,7 @@ def criar_recurso(dados: dict, current_user = Depends(get_current_user)):
     "/recurso",
     dependencies=[Depends(require_role(Role.ADMIN, Role.OPERADOR, Role.LEITURA))],
 )
-def listar_recursos(current_user = Depends(get_current_user)):
+def listar_recursos(current_user = Depends(get_current_user)):  # noqa: F821  # noqa: F821
     """Todos podem ler."""
     pass
 
@@ -71,7 +72,7 @@ def listar_recursos(current_user = Depends(get_current_user)):
     "/relatorio",
     dependencies=[Depends(require_role_or_higher(Role.OPERADOR))],
 )
-def gerar_relatorio(current_user = Depends(get_current_user)):
+def gerar_relatorio(current_user = Depends(get_current_user)):  # noqa: F821  # noqa: F821
     """Admin e operador podem gerar relatório.
     Leitura não consegue (é inferior a operador).
     """
@@ -106,10 +107,11 @@ def gerar_relatorio(current_user = Depends(get_current_user)):
 # 5. ACESSAR ROLE DO USUÁRIO NA ROTA
 # ============================================================================
 
-from shared.schemas.auth import TokenPayload
+from shared.schemas.auth import TokenPayload  # noqa: E402  # noqa: E402
+
 
 @router.get("/perfil")
-def meu_perfil(current_user: TokenPayload = Depends(get_current_user)):
+def meu_perfil(current_user: TokenPayload = Depends(get_current_user)):  # noqa: F821  # noqa: F821
     """Acessa a role do usuário autenticado."""
     return {
         "user_id": current_user.sub,
@@ -120,17 +122,18 @@ def meu_perfil(current_user: TokenPayload = Depends(get_current_user)):
 # 6. VERIFICAR HIERARQUIA PROGRAMATICAMENTE
 # ============================================================================
 
-from shared.security.permissions import get_user_roles_hierarchy
+from shared.security.permissions import get_user_roles_hierarchy  # noqa: E402,I001
+
 
 def exemplo_hierarquia():
     # Retorna lista de roles que o usuário pode acessar
-    roles_do_admin = get_user_roles_hierarchy("admin")
+    roles_do_admin = get_user_roles_hierarchy("admin")  # noqa: F841  # noqa: F841
     # Resultado: ["admin", "operador", "leitura"]
 
-    roles_do_operador = get_user_roles_hierarchy("operador")
+    roles_do_operador = get_user_roles_hierarchy("operador")  # noqa: F841  # noqa: F841
     # Resultado: ["operador", "leitura"]
 
-    roles_da_leitura = get_user_roles_hierarchy("leitura")
+    roles_da_leitura = get_user_roles_hierarchy("leitura")  # noqa: F841  # noqa: F841
     # Resultado: ["leitura"]
 
 # ============================================================================

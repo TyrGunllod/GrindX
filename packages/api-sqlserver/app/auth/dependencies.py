@@ -7,15 +7,15 @@ Tokens são emitidos exclusivamente pela api-postgres.
 
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from shared.exceptions.base import TokenInvalidoError
+from shared.schemas.auth import TokenPayload
+from shared.security.jwt import verificar_jwt
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.database import get_db
 from app.repositories.cliente_repository import ClienteRepository
 from app.services.cliente_service import ClienteService
-from shared.exceptions.base import TokenInvalidoError
-from shared.schemas.auth import TokenPayload
-from shared.security.jwt import verificar_jwt
 
 _bearer_scheme = HTTPBearer(auto_error=False)
 

@@ -3,7 +3,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from app.services.cliente_service import ClienteService
 from shared.exceptions.base import ClienteNaoEncontradoError, CnpjNaoEncontradoError
 

@@ -5,16 +5,15 @@ Testa require_role, require_role_or_higher e a hierarquia de permissões.
 Usa mocks para não depender de HTTP real.
 """
 
-import pytest
-from unittest.mock import MagicMock
 
+import pytest
 from shared.exceptions.base import ForbiddenError
 from shared.schemas.auth import TokenPayload
 from shared.security.permissions import (
     Role,
+    get_user_roles_hierarchy,
     require_role,
     require_role_or_higher,
-    get_user_roles_hierarchy,
 )
 
 

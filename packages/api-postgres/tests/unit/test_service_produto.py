@@ -4,7 +4,6 @@ from decimal import Decimal
 from unittest.mock import MagicMock
 
 import pytest
-
 from app.schemas.produto import ProdutoCreate, ProdutoUpdate
 from app.services.produto_service import ProdutoService
 from shared.exceptions.base import PrecoInvalidoError, ProdutoNaoEncontradoError

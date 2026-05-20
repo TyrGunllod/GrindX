@@ -8,15 +8,9 @@ e realizar refresh de tokens. Toda a persistência está no PostgreSQL.
 from datetime import timedelta
 
 import structlog
-from sqlalchemy.orm import Session
-
-from app.core.config import settings
-from app.models.usuario import Usuario
-from app.repositories.usuario_repository import UsuarioRepository
 from shared.exceptions.base import (
     ConflictError,
     CredenciaisInvalidasError,
-    TokenInvalidoError,
 )
 from shared.schemas.auth import TokenResponse
 from shared.security.jwt import (
@@ -25,6 +19,11 @@ from shared.security.jwt import (
     verificar_jwt,
     verificar_senha,
 )
+from sqlalchemy.orm import Session
+
+from app.core.config import settings
+from app.models.usuario import Usuario
+from app.repositories.usuario_repository import UsuarioRepository
 
 logger = structlog.get_logger(__name__)
 

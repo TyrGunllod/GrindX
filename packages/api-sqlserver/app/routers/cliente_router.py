@@ -6,12 +6,12 @@ Todas as rotas são protegidas por JWT (emitido pela api-postgres).
 """
 
 from fastapi import APIRouter, Depends, Query
+from shared.schemas.auth import TokenPayload
+from shared.schemas.base import ErrorResponse, PaginatedResponse
 
 from app.auth.dependencies import get_cliente_service, get_current_user
 from app.schemas.cliente import ClienteResponse
 from app.services.cliente_service import ClienteService
-from shared.schemas.auth import TokenPayload
-from shared.schemas.base import ErrorResponse, PaginatedResponse
 
 router = APIRouter(prefix="/v1/cadastro", tags=["Cadastro"])
 

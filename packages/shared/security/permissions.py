@@ -21,7 +21,6 @@ Exemplos de uso:
 """
 
 from enum import StrEnum
-from functools import wraps
 from typing import Callable
 
 from fastapi import Depends

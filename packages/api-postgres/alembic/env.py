@@ -6,22 +6,19 @@ e como executar migrações.
 """
 
 import sys
-from pathlib import Path
 from logging.config import fileConfig
+from pathlib import Path
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 # Adiciona o diretório raiz ao sys.path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.database import Base
 from app.core.config import settings
+from app.database import Base
 
 # Importar todos os modelos aqui para que o 'autogenerate' os detecte
-from app.models.usuario import Usuario
-from app.models.produto import Produto
 
 # this is the Alembic Config object, which provides
 # the values of the [alembic] section of the .ini

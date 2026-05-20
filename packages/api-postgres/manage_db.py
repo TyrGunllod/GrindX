@@ -15,6 +15,7 @@ from pathlib import Path
 
 from alembic.config import CommandLine
 
+
 def main():
     """Executa CLI do Alembic."""
     # Garante que o diretório raiz está no path

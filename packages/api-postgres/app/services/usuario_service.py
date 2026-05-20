@@ -1,12 +1,11 @@
+from shared.exceptions.base import ConflictError, NotFoundError
+from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
+
 from app.models.usuario import Usuario
 from app.repositories.usuario_repository import UsuarioRepository
 from app.schemas.usuario import UsuarioCreate, UsuarioUpdate
-from shared.security.jwt import gerar_hash_senha
-from shared.exceptions.base import (
-    NotFoundError,
-    ConflictError
-)
+
 
 class UsuarioService:
     def __init__(self, db: Session):

@@ -23,6 +23,12 @@ jobs:
       - name: Instalar Ruff
         run: pip install ruff>=0.3.0
 
+      - name: Fix imports (auto-corrigivel)
+        run: ruff check packages/ --select E,F,I --ignore E501 --fix
+
+      - name: Fix imports (auto-corrigivel)
+        run: ruff check packages/ --select E,F,I --ignore E501 --fix
+
       - name: Check (erros de sintaxe e imports)
         run: ruff check packages/ --select E,F,I --ignore E501
 

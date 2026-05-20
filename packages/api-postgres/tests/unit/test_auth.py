@@ -3,7 +3,6 @@
 from datetime import timedelta
 
 import pytest
-
 from shared.exceptions.base import TokenExpiradoError, TokenInvalidoError
 from shared.security.jwt import (
     criar_jwt,

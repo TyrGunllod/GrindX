@@ -6,11 +6,11 @@ Centralizado na api-postgres — ambas as APIs validam tokens stateless.
 """
 
 from fastapi import APIRouter, Depends
+from shared.schemas.auth import RefreshTokenRequest, TokenRequest, TokenResponse
+from shared.schemas.base import ErrorResponse
 
 from app.auth.dependencies import get_auth_service
 from app.auth.service import AuthService
-from shared.schemas.auth import RefreshTokenRequest, TokenRequest, TokenResponse
-from shared.schemas.base import ErrorResponse
 
 router = APIRouter(prefix="/v1/auth", tags=["Autenticação"])
 

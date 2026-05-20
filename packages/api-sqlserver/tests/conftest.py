@@ -15,8 +15,8 @@ _packages_dir = str(Path(__file__).resolve().parent.parent.parent)
 if _packages_dir not in sys.path:
     sys.path.insert(0, _packages_dir)
 
-from app.database import Base, get_db
-from app.main import app
+from app.database import Base, get_db  # noqa: E402
+from app.main import app  # noqa: E402
 
 
 @pytest.fixture(scope="function")

@@ -2,7 +2,6 @@
 
 from decimal import Decimal
 
-from app.models.produto import Produto
 from app.repositories.produto_repository import ProdutoRepository
 from app.schemas.produto import ProdutoCreate, ProdutoUpdate
 

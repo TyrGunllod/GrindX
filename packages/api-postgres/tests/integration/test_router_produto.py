@@ -1,6 +1,5 @@
 """Testes de integração dos endpoints de Produto via TestClient."""
 
-from decimal import Decimal
 
 
 class TestProdutoRouter:

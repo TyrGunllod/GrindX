@@ -12,19 +12,17 @@ Cria:
 
 import sys
 from pathlib import Path
-from decimal import Decimal
 
 # Adiciona diretório raiz ao path
 sys.path.insert(0, str(Path(__file__).parent))
 
+from app.core.config import settings
+from app.database import Base
+from app.models.portal import Aba, Modulo
+from app.models.usuario import Usuario
+from shared.security.jwt import gerar_hash_senha
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-from app.core.config import settings
-from app.models.usuario import Usuario
-from app.models.portal import Aba, Modulo
-from app.database import Base
-from shared.security.jwt import gerar_hash_senha
 
 
 def seed_database():

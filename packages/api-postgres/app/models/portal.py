@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, func
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
 from app.database import Base
+
 
 class Aba(Base):
     """Representa uma seção/categoria no menu lateral (ex: Cadastro, Estoque)."""

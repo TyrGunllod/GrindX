@@ -5,19 +5,19 @@ Testa autenticação, geração de tokens e refresh.
 Usa mocks do repositório para não depender do banco.
 """
 
-import pytest
 from datetime import timedelta
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
+import pytest
 from app.auth.service import AuthService
 from app.models.usuario import Usuario
 from shared.exceptions.base import (
+    ConflictError,
     CredenciaisInvalidasError,
     TokenInvalidoError,
-    ConflictError,
 )
-from shared.security.jwt import gerar_hash_senha, criar_jwt
 from shared.schemas.auth import TokenResponse
+from shared.security.jwt import criar_jwt, gerar_hash_senha
 
 
 @pytest.fixture

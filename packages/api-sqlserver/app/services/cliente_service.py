@@ -7,10 +7,10 @@ Contém regras de negócio de leitura. Nenhuma operação de escrita.
 import math
 
 import structlog
-
-from app.repositories.cliente_repository import ClienteRepository
 from shared.exceptions.base import ClienteNaoEncontradoError, CnpjNaoEncontradoError
 from shared.schemas.base import PaginatedResponse
+
+from app.repositories.cliente_repository import ClienteRepository
 
 logger = structlog.get_logger(__name__)
 

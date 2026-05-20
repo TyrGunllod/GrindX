@@ -8,11 +8,11 @@ Depende do ProdutoRepository para acesso a dados.
 import math
 
 import structlog
+from shared.exceptions.base import PrecoInvalidoError, ProdutoNaoEncontradoError
+from shared.schemas.base import PaginatedResponse
 
 from app.repositories.produto_repository import ProdutoRepository
 from app.schemas.produto import ProdutoCreate, ProdutoUpdate
-from shared.exceptions.base import PrecoInvalidoError, ProdutoNaoEncontradoError
-from shared.schemas.base import PaginatedResponse
 
 logger = structlog.get_logger(__name__)
 

@@ -9,12 +9,12 @@ from datetime import datetime, timezone
 
 import structlog
 from fastapi import APIRouter, Depends
+from shared.schemas.base import HealthCheckResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.database import get_db
-from shared.schemas.base import HealthCheckResponse
 
 logger = structlog.get_logger(__name__)
 

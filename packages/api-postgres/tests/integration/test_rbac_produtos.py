@@ -8,14 +8,14 @@ Testa que cada endpoint respeita as permissões por role:
 - DELETE: admin
 """
 
-import pytest
-from fastapi.testclient import TestClient
-
-from app.models.usuario import Usuario
-from app.models.produto import Produto
-from app.repositories.usuario_repository import UsuarioRepository
-from shared.security.jwt import gerar_hash_senha
 from decimal import Decimal
+
+import pytest
+from app.models.produto import Produto
+from app.models.usuario import Usuario
+from app.repositories.usuario_repository import UsuarioRepository
+from fastapi.testclient import TestClient
+from shared.security.jwt import gerar_hash_senha
 
 
 @pytest.fixture

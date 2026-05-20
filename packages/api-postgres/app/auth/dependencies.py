@@ -7,6 +7,10 @@ autenticado via JWT nas rotas do FastAPI.
 
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from shared.exceptions.base import TokenInvalidoError
+from shared.schemas.auth import TokenPayload
+from shared.security.jwt import verificar_jwt
+from shared.security.permissions import Role
 from sqlalchemy.orm import Session
 
 from app.auth.service import AuthService
@@ -14,10 +18,6 @@ from app.core.config import settings
 from app.database import get_db
 from app.repositories.produto_repository import ProdutoRepository
 from app.services.produto_service import ProdutoService
-from shared.exceptions.base import TokenInvalidoError
-from shared.schemas.auth import TokenPayload
-from shared.security.jwt import verificar_jwt
-from shared.security.permissions import Role
 
 # Scheme que extrai o token do header Authorization: Bearer <token>
 _bearer_scheme = HTTPBearer(auto_error=False)

@@ -1,13 +1,13 @@
-import sys
 import os
+import sys
 
 # Garante que o diretório base está no PYTHONPATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".")))
 
 try:
+    from app.core.config import settings
     from app.database import engine
     from sqlalchemy import text
-    from app.core.config import settings
 
     print("\n" + "="*50)
     print("🧪 TESTE DE CONEXÃO - ERP SQL SERVER")
@@ -35,7 +35,7 @@ except ImportError as ie:
     print(f"\n❌ ERRO DE IMPORTAÇÃO: {ie}")
     print("Certifique-se de que as dependências estão instaladas: pip install -r requirements.txt")
 except Exception as e:
-    print(f"\n❌ FALHA NA CONEXÃO:")
+    print("\n❌ FALHA NA CONEXÃO:")
     print(f"Erro: {type(e).__name__}")
     print(f"Detalhes: {str(e)}")
     
