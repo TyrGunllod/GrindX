@@ -1,0 +1,22 @@
+{
+  "name": "GrindX — Sistema de Gestão Integrado",
+  "short_name": "GrindX",
+  "description": "ERP modular com arquitetura de monorepo",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#00c2e0",
+  "icons": [
+    {
+      "src": "/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
