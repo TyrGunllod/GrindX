@@ -22,6 +22,16 @@ def _get_theme_service(db: Session = Depends(get_db)) -> ThemeService:
     return ThemeService(repo)
 
 
+def _require_company_id(current_user) -> int:
+    """Valida que o usuário possui empresa vinculada."""
+    if not current_user.company_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Usuário não possui empresa vinculada. Vincule uma empresa antes de gerenciar temas.",
+        )
+    return current_user.company_id
+
+
 @router.get(
     "/active",
     response_model=ThemeResponse,
@@ -54,7 +64,8 @@ def list_themes(
     service: ThemeService = Depends(_get_theme_service),
 ) -> list[dict]:
     """Lista todos os temas da empresa."""
-    return service.list_themes(current_user.company_id)
+    company_id = _require_company_id(current_user)
+    return service.list_themes(company_id)
 
 
 @router.get(
@@ -70,8 +81,9 @@ def get_theme(
     service: ThemeService = Depends(_get_theme_service),
 ) -> dict:
     """Retorna detalhes de um tema."""
+    company_id = _require_company_id(current_user)
     theme = service.get_theme_by_id(theme_id)
-    if theme is None or theme["company_id"] != current_user.company_id:
+    if theme is None or theme["company_id"] != company_id:
         raise HTTPException(status_code=404, detail="Tema não encontrado")
     return theme
 
@@ -89,7 +101,8 @@ def create_theme(
     service: ThemeService = Depends(_get_theme_service),
 ) -> dict:
     """Cria um novo tema."""
-    return service.create_theme(company_id=current_user.company_id, **dados.model_dump())
+    company_id = _require_company_id(current_user)
+    return service.create_theme(company_id=company_id, **dados.model_dump())
 
 
 @router.put(
@@ -106,8 +119,9 @@ def update_theme(
     service: ThemeService = Depends(_get_theme_service),
 ) -> dict:
     """Atualiza um tema."""
+    company_id = _require_company_id(current_user)
     update_data = dados.model_dump(exclude_unset=True)
-    return service.update_theme(theme_id, company_id=current_user.company_id, **update_data)
+    return service.update_theme(theme_id, company_id=company_id, **update_data)
 
 
 @router.post(
@@ -123,8 +137,9 @@ def activate_theme(
     service: ThemeService = Depends(_get_theme_service),
 ) -> dict:
     """Ativa um tema."""
+    company_id = _require_company_id(current_user)
     try:
-        return service.activate_theme(theme_id, company_id=current_user.company_id)
+        return service.activate_theme(theme_id, company_id=company_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -145,6 +160,7 @@ def delete_theme(
     service: ThemeService = Depends(_get_theme_service),
 ) -> None:
     """Deleta um tema."""
+    _require_company_id(current_user)
     try:
         service.delete_theme(theme_id)
     except NotFoundError:
