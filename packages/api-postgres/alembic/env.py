@@ -19,6 +19,8 @@ from app.core.config import settings
 from app.database import Base
 
 # Importar todos os modelos aqui para que o 'autogenerate' os detecte
+from app.models.portal import Aba, Modulo  # noqa: F401
+from app.models.usuario import Usuario, UsuarioModulo  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # the values of the [alembic] section of the .ini
