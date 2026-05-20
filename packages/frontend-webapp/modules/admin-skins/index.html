@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Skins</title>
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="module-page">
+        <header class="skins-header">
+            <h1 class="font-display">Gestão de Skins</h1>
+            <button class="btn btn-primary" id="btnNewSkin">
+                <i class="fas fa-plus"></i> Nova Skin
+            </button>
+        </header>
+
+        <div class="skins-grid" id="skinsGrid">
+            <!-- Skins serão renderizadas aqui -->
+        </div>
+
+        <!-- Modal de Edição -->
+        <div class="modal-overlay" id="skinModal" style="display: none;">
+            <div class="modal-card skin-modal">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Nova Skin</h2>
+                    <button class="btn-icon" id="btnCloseModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form id="skinForm" class="skin-form">
+                    <!-- Identidade -->
+                    <fieldset class="form-section">
+                        <legend>Identidade</legend>
+                        <div class="form-row">
+                            <label for="skinName">Nome da Skin</label>
+                            <input type="text" id="skinName" required placeholder="Ex: Acme Corp Blue">
+                        </div>
+                        <div class="form-row">
+                            <label for="companyName">Nome da Empresa no Sistema</label>
+                            <input type="text" id="companyName" placeholder="Ex: Acme Corporation">
+                        </div>
+                        <div class="form-row">
+                            <label for="copyrightText">Copyright</label>
+                            <input type="text" id="copyrightText" placeholder="© 2026 Acme Corp. Todos os direitos reservados.">
+                        </div>
+                        <div class="form-row">
+                            <label for="logoUrl">URL do Logo</label>
+                            <input type="text" id="logoUrl" placeholder="https://exemplo.com/logo.svg">
+                        </div>
+                        <div class="form-row">
+                            <label for="logoShortUrl">URL do Logo Curto (favicon)</label>
+                            <input type="text" id="logoShortUrl" placeholder="https://exemplo.com/favicon.ico">
+                        </div>
+                    </fieldset>
+
+                    <!-- Cores -->
+                    <fieldset class="form-section">
+                        <legend>Cores</legend>
+                        <div class="color-grid">
+                            <div class="color-picker-group">
+                                <label for="colorPrimary">Primary</label>
+                                <input type="color" id="colorPrimary" value="#00c2e0">
+                                <span class="color-value" id="colorPrimaryValue">#00c2e0</span>
+                            </div>
+                            <div class="color-picker-group">
+                                <label for="colorDanger">Danger</label>
+                                <input type="color" id="colorDanger" value="#ef4444">
+                                <span class="color-value" id="colorDangerValue">#ef4444</span>
+                            </div>
+                            <div class="color-picker-group">
+                                <label for="colorSuccess">Success</label>
+                                <input type="color" id="colorSuccess" value="#10b981">
+                                <span class="color-value" id="colorSuccessValue">#10b981</span>
+                            </div>
+                            <div class="color-picker-group">
+                                <label for="colorWarning">Warning</label>
+                                <input type="color" id="colorWarning" value="#f59e0b">
+                                <span class="color-value" id="colorWarningValue">#f59e0b</span>
+                            </div>
+                            <div class="color-picker-group">
+                                <label for="colorBgMain">Background Main</label>
+                                <input type="color" id="colorBgMain" value="#f8fafc">
+                                <span class="color-value" id="colorBgMainValue">#f8fafc</span>
+                            </div>
+                            <div class="color-picker-group">
+                                <label for="colorBgCard">Background Card</label>
+                                <input type="color" id="colorBgCard" value="#ffffff">
+                                <span class="color-value" id="colorBgCardValue">#ffffff</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Fontes -->
+                    <fieldset class="form-section">
+                        <legend>Fontes</legend>
+                        <div class="form-row">
+                            <label for="fontHeading">Fonte de Títulos</label>
+                            <select id="fontHeading">
+                                <option value="Barlow Condensed">Barlow Condensed</option>
+                                <option value="DM Sans">DM Sans</option>
+                                <option value="Inter">Inter</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Open Sans">Open Sans</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="fontBody">Fonte de Texto</label>
+                            <select id="fontBody">
+                                <option value="DM Sans">DM Sans</option>
+                                <option value="Barlow Condensed">Barlow Condensed</option>
+                                <option value="Inter">Inter</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Open Sans">Open Sans</option>
+                            </select>
+                        </div>
+                    </fieldset>
+
+                    <!-- Ícones -->
+                    <fieldset class="form-section">
+                        <legend>Biblioteca de Ícones</legend>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="iconLibrary" value="fontawesome" checked>
+                                Font Awesome
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="iconLibrary" value="lucide">
+                                Lucide
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="iconLibrary" value="material">
+                                Material Icons
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <!-- Tokens Extras -->
+                    <fieldset class="form-section">
+                        <legend>Tokens Extras</legend>
+                        <div class="form-row">
+                            <label for="radiusMd">Border Radius (md)</label>
+                            <input type="text" id="radiusMd" placeholder="0.5rem" value="0.5rem">
+                        </div>
+                        <div class="form-row">
+                            <label for="radiusLg">Border Radius (lg)</label>
+                            <input type="text" id="radiusLg" placeholder="0.75rem" value="0.75rem">
+                        </div>
+                    </fieldset>
+                </form>
+
+                <!-- Preview -->
+                <div class="preview-section">
+                    <h3>Preview</h3>
+                    <div class="preview-card" id="previewCard">
+                        <div class="preview-header">Título de Exemplo</div>
+                        <div class="preview-body">
+                            <p>Texto de exemplo para visualizar as cores e fontes.</p>
+                            <button class="btn btn-primary">Botão Primary</button>
+                            <button class="btn" style="background: var(--skin-danger); color: white;">Botão Danger</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn" id="btnPreviewSkin" type="button">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                    <button class="btn" id="btnResetSkin" type="button">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button class="btn btn-primary" id="btnSaveSkin" type="submit" form="skinForm">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../shared/app.js"></script>
+    <script src="../../shared/skinLoader.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

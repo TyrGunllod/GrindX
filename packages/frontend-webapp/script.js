@@ -47,15 +47,21 @@ class AuthController {
             accessToken: result.access_token,
             refreshToken: result.refresh_token
         });
-        window.grindx.session.setUserProfile({
+        const userProfile = {
             ...(result.user || result.usuario || result.profile || {}),
             username: credentials.username
-        });
-        
+        };
+        window.grindx.session.setUserProfile(userProfile);
+
+        // Salvar company_id para skin do próximo login
+        if (userProfile?.empresa_id) {
+            window.grindx.storage.set('last_skin_company_id', String(userProfile.empresa_id));
+        }
+
         // Feedback visual amigável (A11y)
         this.errorMsg.className = 'alert alert-success';
         this.errorMsg.textContent = 'Sucesso! Redirecionando...';
-        
+
         setTimeout(() => window.location.href = 'dashboard.html', 800);
     }
 
@@ -81,4 +87,12 @@ class AuthController {
 }
 
 // Bootstrap
-document.addEventListener('DOMContentLoaded', () => new AuthController());
+document.addEventListener('DOMContentLoaded', () => {
+    new AuthController();
+
+    // Aplicar skin da última empresa usada
+    const lastCompanyId = window.grindx?.storage?.get('last_skin_company_id');
+    if (lastCompanyId && window.skinLoader) {
+        window.skinLoader.load(parseInt(lastCompanyId));
+    }
+});

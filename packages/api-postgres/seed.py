@@ -100,7 +100,15 @@ def seed_database():
                 icone="fas fa-cubes",
                 role_minima="admin",
             )
-            session.add_all([mod_home, mod_users, mod_struct])
+            mod_skins = Modulo(
+                aba_id=aba_gestao.id,
+                nome="Skins",
+                slug="admin-skins",
+                url="modules/admin-skins/index.html",
+                icone="fas fa-palette",
+                role_minima="admin",
+            )
+            session.add_all([mod_home, mod_users, mod_struct, mod_skins])
             print("[OK] Estrutura do Portal criada")
         else:
             print("[SKIP] Estrutura do portal já existe")

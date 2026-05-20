@@ -55,7 +55,7 @@
     --space-2: 0.5rem;
     --space-4: 1rem;
     --space-8: 2rem;
-    
+
     /* GrindX Brand Tokens */
     --brand-natt: #06090f;
     --brand-fjord: #0d1e35;
@@ -63,45 +63,82 @@
     --brand-eld: #ff4d00;
     --brand-rimfrost: #ddeaf2;
     --brand-askr: #4a5e72;
+
+    /* === SKIN TOKENS (overrideáveis pelo skinLoader) === */
+
+    /* Colors */
+    --skin-primary: #00c2e0;
+    --skin-primary-hover: #00a8c4;
+    --skin-danger: #ef4444;
+    --skin-success: #10b981;
+    --skin-warning: #f59e0b;
+    --skin-bg-main: #f8fafc;
+    --skin-bg-card: #ffffff;
+    --skin-text-main: #1e293b;
+    --skin-text-muted: #64748b;
+    --skin-border-color: #e2e8f0;
+    --skin-focus-ring: rgba(0, 194, 224, 0.35);
+
+    /* Dark mode color overrides (opcionais, com fallback) */
+    --skin-bg-main-dark: #0f172a;
+    --skin-bg-card-dark: #1e293b;
+    --skin-text-main-dark: #f8fafc;
+    --skin-text-muted-dark: #94a3b8;
+    --skin-border-color-dark: rgba(255, 255, 255, 0.05);
+
+    /* Fonts */
+    --skin-font-heading: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --skin-font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+
+    /* Tokens */
+    --skin-radius-sm: 0.25rem;
+    --skin-radius-md: 0.5rem;
+    --skin-radius-lg: 0.75rem;
+    --skin-radius-xl: 1.5rem;
+    --skin-shadow-card: 0 10px 25px rgba(0,0,0,0.1);
+    --skin-shadow-modal: 0 20px 25px -5px rgba(0,0,0,0.2);
+
+    /* === SEMANTIC ALIASES (usados pelo CSS, não sobrescrever diretamente) === */
+    --primary: var(--skin-primary);
+    --primary-hover: var(--skin-primary-hover);
+    --danger: var(--skin-danger);
+    --success: var(--skin-success);
+    --warning: var(--skin-warning);
+    --bg-main: var(--skin-bg-main);
+    --bg-card: var(--skin-bg-card);
+    --text-main: var(--skin-text-main);
+    --text-muted: var(--skin-text-muted);
+    --border-color: var(--skin-border-color);
+    --focus-ring: var(--skin-focus-ring);
 }
 
 /* Semantic Colors - Shared (Initial defaults) */
 :root, .light-theme {
-    --bg-main: #f8fafc;
-    --bg-card: #ffffff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
-    --primary: #00c2e0;
-    --primary-hover: #00a8c4;
-    --danger: #ef4444;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --focus-ring: rgba(0, 194, 224, 0.35);
+    /* Herda dos skin tokens via semantic aliases */
 }
 
 /* Dark Mode (Class based or Auto) */
 @media (prefers-color-scheme: dark) {
     :root:not(.light-theme) {
-        --bg-main: #0f172a;
-        --bg-card: #1e293b;
-        --text-main: #f8fafc;
-        --text-muted: #94a3b8;
-        --border-color: rgba(255, 255, 255, 0.05);
+        --bg-main: var(--skin-bg-main-dark, #0f172a);
+        --bg-card: var(--skin-bg-card-dark, #1e293b);
+        --text-main: var(--skin-text-main-dark, #f8fafc);
+        --text-muted: var(--skin-text-muted-dark, #94a3b8);
+        --border-color: var(--skin-border-color-dark, rgba(255, 255, 255, 0.05));
     }
 }
 
 .dark-theme {
-    --bg-main: #0f172a;
-    --bg-card: #1e293b;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: rgba(255, 255, 255, 0.05);
+    --bg-main: var(--skin-bg-main-dark, #0f172a);
+    --bg-card: var(--skin-bg-card-dark, #1e293b);
+    --text-main: var(--skin-text-main-dark, #f8fafc);
+    --text-muted: var(--skin-text-muted-dark, #94a3b8);
+    --border-color: var(--skin-border-color-dark, rgba(255, 255, 255, 0.05));
 }
 
-/* Manual Theme Classes (SOLID) */
-.light-theme { /* ... variaveis light ... */ }
-.dark-theme { /* ... variaveis dark ... */ }
+/* Typography (Responsive) */
+h1 { font-size: clamp(1.5rem, 5vw, 2.5rem); font-weight: 700; }
+h2 { font-size: clamp(1.25rem, 4vw, 2rem); font-weight: 600; }
 
 * {
     margin: 0;
@@ -121,10 +158,6 @@ body {
     line-height: 1.5;
     text-rendering: optimizeLegibility;
 }
-
-/* Typography (Responsive) */
-h1 { font-size: clamp(1.5rem, 5vw, 2.5rem); font-weight: 700; }
-h2 { font-size: clamp(1.25rem, 4vw, 2rem); font-weight: 600; }
 
 /* Font Display Utility */
 .font-display {

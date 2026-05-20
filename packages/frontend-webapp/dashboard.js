@@ -21,6 +21,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         await this.loadCurrentUserProfile();
         await this.loadDynamicMenu();
         this.loadInitialView();
+        this.loadCompanySkin();
     }
 
     checkAuth() {
@@ -235,6 +236,15 @@ class DashboardController extends window.grindx.controllers.BaseController {
             const firstLink = this.mainNav.querySelector('.nav-link');
             if (firstLink) firstLink.click();
         }, 500);
+    }
+
+    loadCompanySkin() {
+        const companyId = this.user?.company_id;
+        if (companyId && window.skinLoader) {
+            window.skinLoader.load(parseInt(companyId)).then(() => {
+                window.grindx.storage.set('last_skin_company_id', String(companyId));
+            });
+        }
     }
 }
 
