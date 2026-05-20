@@ -31,3 +31,12 @@ class UsuarioResponse(UsuarioBase):
 
     class Config:
         from_attributes = True
+
+
+class UsuarioModulosUpdate(BaseModel):
+    modulo_ids: list[int]
+
+
+class UsuarioModulosResponse(BaseModel):
+    usuario_id: int
+    modulos: list[int]

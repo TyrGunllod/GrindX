@@ -8,6 +8,10 @@ from app.auth.dependencies import require_role
 from app.database import get_db
 from app.models.portal import Aba, Modulo
 
+from app.auth.dependencies import get_current_user
+from app.models.usuario import UsuarioModulo
+from shared.schemas.auth import TokenPayload
+
 router = APIRouter(prefix="/v1/portal", tags=["Estrutura do Portal"])
 
 
@@ -31,8 +35,25 @@ class AbaResponse(BaseModel):
 
 
 @router.get("/menu", response_model=List[AbaResponse])
-def obter_menu_dinamico(db: Session = Depends(get_db)):
-    abas = db.query(Aba).filter(Aba.ativo).order_by(Aba.ordem).all()
+def obter_menu_dinamico(
+    db: Session = Depends(get_db), current_user: TokenPayload = Depends(get_current_user)
+):
+    if current_user.role == "admin":
+        abas = db.query(Aba).filter(Aba.ativo == True).order_by(Aba.ordem).all()
+    else:
+        # Só retorna módulos que o usuário tem permissão
+        modulos_ids = (
+            db.query(UsuarioModulo.modulo_id)
+            .filter(UsuarioModulo.usuario_id == int(current_user.sub))
+            .subquery()
+        )
+        abas = (
+            db.query(Aba)
+            .join(Modulo)
+            .filter(Aba.ativo == True, Modulo.id.in_(modulos_ids))
+            .order_by(Aba.ordem)
+            .all()
+        )
     return abas
 
 

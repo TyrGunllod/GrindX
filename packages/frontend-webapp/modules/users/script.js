@@ -12,6 +12,10 @@ class UsersController extends window.grindx.controllers.BaseController {
             initialFocusSelector: '#nome_completo',
             onClose: () => this.resetForm()
         });
+
+        this.permissoesModal = document.getElementById('permissoesModal');
+        this.permissoesController = new window.grindx.components.ReusableModal(this.permissoesModal);
+
         this.userForm = document.getElementById('userForm');
         this.modalTitle = document.getElementById('modalTitle');
         this.userTable = new window.grindx.components.DataTable(this.tableBody, [
@@ -31,6 +35,7 @@ class UsersController extends window.grindx.controllers.BaseController {
                 render: user => `
                     <div class="actions-group justify-end">
                         <button class="btn-icon" onclick="window.usersController.editUser('${user.id}')" title="Editar Usuário"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon" onclick="window.usersController.openPermissoes('${user.id}')" title="Permissões"><i class="fas fa-shield-alt"></i></button>
                         ${user.ativo 
                             ? `<button class="btn-icon text-success" onclick="window.usersController.toggleUserStatus('${user.id}', false)" title="Desativar usuário"><i class="fas fa-toggle-on"></i></button>`
                             : `<button class="btn-icon text-muted" onclick="window.usersController.toggleUserStatus('${user.id}', true)" title="Ativar usuário"><i class="fas fa-toggle-off"></i></button>`
@@ -83,6 +88,10 @@ class UsersController extends window.grindx.controllers.BaseController {
         document.getElementById('closeModal').onclick = () => this.closeModal();
         document.getElementById('btnCancel').onclick = () => this.closeModal();
         document.getElementById('btnSave').onclick = () => this.saveUser();
+
+        document.getElementById('closePermissoesModal').onclick = () => this.permissoesController.close();
+        document.getElementById('btnCancelPermissoes').onclick = () => this.permissoesController.close();
+        document.getElementById('btnSavePermissoes').onclick = () => this.savePermissoes();
     }
 
     async loadUsers() {
@@ -218,15 +227,55 @@ class UsersController extends window.grindx.controllers.BaseController {
         return result.valid;
     }
 
-    openModal() { 
-        if (!this.currentUserId) {
-            this.modalTitle.textContent = 'Cadastrar Usuário';
-            this.userForm.reset();
+    async openPermissoes(id) {
+        this.currentUserId = id;
+        const container = document.getElementById('permissoesContent');
+        container.innerHTML = '<p>Carregando permissões...</p>';
+        this.permissoesController.open();
+
+        try {
+            // Busca módulos do usuário e menu completo
+            const [userModulos, menu] = await Promise.all([
+                window.grindx.api.get(`/usuarios/${id}/modulos`),
+                window.grindx.api.get('/portal/menu') // Assumindo que este endpoint existe e retorna tudo para admin ou já foi filtrado no backend para admin
+            ]);
+
+            const liberados = userModulos.modulos || [];
+            
+            // Renderiza checkboxes agrupados
+            let html = '<div class="grid grid-1 gap-4">';
+            menu.forEach(aba => {
+                html += `<div><strong>${aba.nome}</strong><div class="grid grid-md-2 gap-2 mt-2">`;
+                aba.modulos.forEach(mod => {
+                    const checked = liberados.includes(mod.id) ? 'checked' : '';
+                    html += `
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="modulo" value="${mod.id}" ${checked}>
+                            ${mod.nome}
+                        </label>
+                    `;
+                });
+                html += '</div></div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        } catch (err) {
+            console.error('Falha ao carregar permissões:', err);
+            container.innerHTML = '<p class="text-danger">Erro ao carregar permissões.</p>';
         }
-        this.modalController.open();
     }
-    closeModal() { 
-        this.modalController.close();
+
+    async savePermissoes() {
+        const checkboxes = document.querySelectorAll('#permissoesContent input[name="modulo"]:checked');
+        const moduloIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+        try {
+            await window.grindx.api.put(`/usuarios/${this.currentUserId}/modulos`, { modulo_ids: moduloIds });
+            this.toastSuccess('Permissões atualizadas com sucesso.');
+            this.permissoesController.close();
+        } catch (err) {
+            this.toastError(err);
+        }
     }
 
     resetForm() {

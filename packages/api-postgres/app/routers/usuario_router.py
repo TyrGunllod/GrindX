@@ -6,7 +6,14 @@ from sqlalchemy.orm import Session
 
 from app.auth.dependencies import require_role
 from app.database import get_db
-from app.schemas.usuario import UsuarioCreate, UsuarioResponse, UsuarioUpdate
+from app.models.usuario import Usuario, UsuarioModulo
+from app.schemas.usuario import (
+    UsuarioCreate,
+    UsuarioModulosResponse,
+    UsuarioModulosUpdate,
+    UsuarioResponse,
+    UsuarioUpdate,
+)
 from app.services.usuario_service import UsuarioService
 
 router = APIRouter(prefix="/v1/usuarios", tags=["Gestão de Usuários"])
@@ -77,3 +84,37 @@ def desativar_usuario(
     service = UsuarioService(db)
     service.desativar_usuario(usuario_id)
     return None
+
+
+@router.get("/{usuario_id}/modulos", response_model=UsuarioModulosResponse)
+def listar_modulos_usuario(
+    usuario_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    """Retorna lista de modulo_ids liberados para o usuário. Acesso: admin."""
+    modulos = db.query(UsuarioModulo.modulo_id).filter(UsuarioModulo.usuario_id == usuario_id).all()
+    return UsuarioModulosResponse(
+        usuario_id=usuario_id, modulos=[m[0] for m in modulos]
+    )
+
+
+@router.put("/{usuario_id}/modulos", response_model=UsuarioModulosResponse)
+def atualizar_modulos_usuario(
+    usuario_id: int,
+    schema: UsuarioModulosUpdate,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    """Substitui a lista completa de módulos liberados. Acesso: admin."""
+    # Deleta existentes
+    db.query(UsuarioModulo).filter(UsuarioModulo.usuario_id == usuario_id).delete()
+    
+    # Insere novos
+    for mod_id in schema.modulo_ids:
+        db.add(UsuarioModulo(usuario_id=usuario_id, modulo_id=mod_id))
+    
+    db.commit()
+    return UsuarioModulosResponse(
+        usuario_id=usuario_id, modulos=schema.modulo_ids
+    )

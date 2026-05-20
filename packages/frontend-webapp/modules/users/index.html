@@ -47,6 +47,23 @@
         </div>
     </div>
 
+    <!-- Modal de Permissões -->
+    <div class="modal-overlay" id="permissoesModal" role="dialog" aria-modal="true" aria-labelledby="permissoesTitle" style="display: none;">
+        <div class="modal-card">
+            <header class="modal-header flex justify-between">
+                <h3 id="permissoesTitle">Gerenciar Permissões</h3>
+                <button class="btn-icon" id="closePermissoesModal" aria-label="Fechar">&times;</button>
+            </header>
+            <div id="permissoesContent" class="py-4">
+                <!-- Checkboxes gerados via script.js -->
+            </div>
+            <footer class="modal-footer flex justify-end gap-2">
+                <button class="btn" id="btnCancelPermissoes">Cancelar</button>
+                <button class="btn btn-primary" id="btnSavePermissoes">Salvar Permissões</button>
+            </footer>
+        </div>
+    </div>
+
     <!-- Modal (Componente Acessível) -->
     <div class="modal-overlay" id="userModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" style="display: none;">
         <div class="modal-card">

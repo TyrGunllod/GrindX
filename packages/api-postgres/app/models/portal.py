@@ -37,3 +37,11 @@ class Modulo(Base):
     ativo = Column(Boolean, default=True)
 
     aba = relationship("Aba", back_populates="modulos")
+    usuarios_permitidos = relationship(
+        "Usuario",
+        secondary="usuario_modulos",
+        back_populates="modulos_permitidos",
+        lazy="select",
+        primaryjoin="and_(Modulo.id == UsuarioModulo.modulo_id)",
+        secondaryjoin="UsuarioModulo.usuario_id == Usuario.id"
+    )
