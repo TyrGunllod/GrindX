@@ -67,6 +67,21 @@ def client(db_session: Session) -> TestClient:
 
 
 @pytest.fixture
+def auth_service(db_session: Session):
+    """Cria uma instância do AuthService para testes.
+
+    Args:
+        db_session: Sessão do banco de teste.
+
+    Returns:
+        AuthService configurado para testes.
+    """
+    from app.auth.service import AuthService
+
+    return AuthService(db_session)
+
+
+@pytest.fixture
 def auth_headers(client: TestClient, db_session: Session) -> dict[str, str]:
     """Cria um usuário de teste e retorna headers com token JWT válido.
 

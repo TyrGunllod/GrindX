@@ -44,6 +44,9 @@ class Usuario(Base):
     ativo: Mapped[bool] = mapped_column(
         default=True, nullable=False, comment="Se o usuário está ativo"
     )
+    empresa_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("empresas.id", ondelete="SET NULL"), nullable=True, comment="Empresa do usuário"
+    )
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

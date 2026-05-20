@@ -10,6 +10,7 @@ from shared.security.jwt import (
     verificar_jwt,
     verificar_senha,
 )
+from app.core.config import settings
 
 _TEST_SECRET = "test-secret-key-for-unit-tests-only"
 
@@ -67,3 +68,29 @@ class TestSenha:
         assert hash1 != hash2  # bcrypt gera salt aleatório
         assert verificar_senha(senha, hash1)
         assert verificar_senha(senha, hash2)
+
+
+def test_jwt_payload_includes_company_id(db_session, auth_service):
+    """Testa que o JWT inclui company_id do usuário."""
+    from app.models.empresa import Empresa
+    from app.models.usuario import Usuario
+
+    empresa = Empresa(nome="Test Corp", dominio="test.com")
+    db_session.add(empresa)
+    db_session.commit()
+
+    usuario = Usuario(
+        username="companyuser",
+        email="company@test.com",
+        nome_completo="User da Empresa",
+        senha_hash=gerar_hash_senha("senha123"),
+        role="operador",
+        empresa_id=empresa.id,
+    )
+    db_session.add(usuario)
+    db_session.commit()
+
+    tokens = auth_service.autenticar("companyuser", "senha123")
+
+    payload = verificar_jwt(tokens.access_token, settings.SECRET_KEY)
+    assert payload.company_id == empresa.id

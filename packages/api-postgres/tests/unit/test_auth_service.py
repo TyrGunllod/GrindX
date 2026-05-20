@@ -31,6 +31,7 @@ def usuario_mock() -> Usuario:
     usuario.senha_hash = gerar_hash_senha("senha123")
     usuario.role = "admin"
     usuario.ativo = True
+    usuario.empresa_id = None
     return usuario
 
 
