@@ -1,3 +1,5 @@
+<!-- title: Guia de Instalação — GrindX | updated: 2026-05-20 -->
+
 # Guia de Instalação — GrindX
 
 ---
@@ -5,25 +7,25 @@
 ## Pré-requisitos
 
 | Ferramenta | Versão mínima | Uso |
-|-----------|--------------|-----|
+|------------|--------------|-----|
 | Python | 3.12 | Runtime das APIs |
 | PostgreSQL | 14+ | Banco principal |
-| ODBC Driver 17 for SQL Server | — | Apenas para api-sqlserver |
+| ODBC Driver 17 for SQL Server | — | Apenas para `api-sqlserver` |
 | Git | qualquer | Versionamento |
 | make (GnuMake) | qualquer | Automação de tasks |
 
 ---
 
-## 1. Clonar o repositório
+## 1. Clonar o Repositório
 
 ```powershell
-git@github.com:TyrGunllod/GrindX.git
+git clone git@github.com:TyrGunllod/GrindX.git
 cd GrindX
 ```
 
 ---
 
-## 2. Configurar api-postgres
+## 2. Configurar `api-postgres`
 
 ```powershell
 cd packages/api-postgres
@@ -58,7 +60,7 @@ python seed.py
 
 ---
 
-## 3. Configurar api-sqlserver (opcional)
+## 3. Configurar `api-sqlserver` (opcional)
 
 ```powershell
 cd packages/api-sqlserver
@@ -85,7 +87,7 @@ SECRET_KEY=chave-secreta-forte-com-pelo-menos-32-caracteres
 
 ---
 
-## 4. Rodar o projeto
+## 4. Rodar o Projeto
 
 Abrir três terminais a partir da raiz do projeto:
 
@@ -104,7 +106,7 @@ Acessar: `http://localhost:5500`
 
 ---
 
-## 5. Credenciais de teste
+## 5. Credenciais de Teste
 
 | Usuário | Senha | Perfil |
 |---------|-------|--------|
@@ -113,7 +115,7 @@ Acessar: `http://localhost:5500`
 
 ---
 
-## 6. Rodar testes
+## 6. Rodar Testes
 
 ```powershell
 # Da raiz do projeto
@@ -132,7 +134,7 @@ Os testes usam SQLite in-memory — não precisam de PostgreSQL real rodando.
 
 ---
 
-## 7. Migrações de banco (Alembic)
+## 7. Migrações de Banco (Alembic)
 
 ```powershell
 cd packages/api-postgres
@@ -164,7 +166,7 @@ make logs    # ver logs em tempo real
 
 ---
 
-## 9. Criar um novo módulo frontend
+## 9. Criar um Novo Módulo Frontend
 
 1. Criar pasta em `packages/frontend-webapp/modules/nome-do-modulo/`
 2. Criar `index.html`, `script.js`, `style.css`
@@ -178,24 +180,28 @@ make logs    # ver logs em tempo real
 
 4. Cadastrar a URL do módulo no painel de **Gestão de Estrutura** dentro do portal
 
-Ver `packages/frontend-webapp/ARCHITECTURE_PORTAL.md` para o guia completo.
+Ver [`ARCHITECTURE_PORTAL.md`](../packages/frontend-webapp/ARCHITECTURE_PORTAL.md) para o guia completo.
 
 ---
 
-## Resolução de problemas
+## Resolução de Problemas
 
-**API não sobe — erro de importação do `shared`**
+### API não sobe — erro de importação do `shared`
+
 ```powershell
 # Garantir que PYTHONPATH aponta para packages/
-set PYTHONPATH=D:\_Projects\GrindX\packages
+set PYTHONPATH=D:\_Projetos\GrindX\packages
 ```
 
-**Erro de conexão com PostgreSQL**
+### Erro de conexão com PostgreSQL
+
 - Verificar se o serviço está rodando: `pg_ctl status`
 - Verificar `DATABASE_URL` no `.env`
 
-**Erro de autenticação JWT entre as APIs**
+### Erro de autenticação JWT entre as APIs
+
 - Confirmar que `SECRET_KEY` é idêntica nos dois `.env`
 
-**Rate limit no CI**
+### Rate limit no CI
+
 - O workflow usa variável `RATE_LIMIT_REQUESTS=100` — valores baixos podem causar flaky tests; aumentar se necessário.

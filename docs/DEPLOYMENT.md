@@ -1,8 +1,10 @@
+<!-- title: Deploy — GrindX | updated: 2026-05-20 -->
+
 # Deploy — GrindX
 
 ---
 
-## Estratégia de deploy
+## Estratégia de Deploy
 
 O GrindX foi projetado para rodar em containers. O `podman-compose.yml` na raiz orquestra todos os serviços.
 
@@ -23,13 +25,13 @@ push para main
 
 Os workflows em `.github/workflows/` executam automaticamente em push e pull requests para `main` e `develop`.
 
-### tests.yml
+### `tests.yml`
 
 Três jobs em sequência:
 
-1. **test-api-postgres** — roda os 110 testes com SQLite in-memory (sem banco real no CI)
-2. **test-api-sqlserver** — instala ODBC Driver 17 no runner Ubuntu e roda os testes
-3. **test-root** — depende dos dois anteriores, valida o monorepo completo
+1. **`test-api-postgres`** — roda os 110 testes com SQLite in-memory (sem banco real no CI)
+2. **`test-api-sqlserver`** — instala ODBC Driver 17 no runner Ubuntu e roda os testes
+3. **`test-root`** — depende dos dois anteriores, valida o monorepo completo
 
 Variáveis de ambiente sensíveis devem ser adicionadas em **Settings → Secrets and variables → Actions** no GitHub:
 
@@ -38,13 +40,13 @@ Variáveis de ambiente sensíveis devem ser adicionadas em **Settings → Secret
 | `SQLSERVER_PASSWORD` | Senha real do usuário (para testes de integração reais) |
 | `PROD_SECRET_KEY` | Chave JWT de produção |
 
-### lint.yml
+### `lint.yml`
 
 Executa `ruff check` (erros e imports) e `ruff format --check` em todo `packages/`.
 
 ---
 
-## Variáveis de ambiente em produção
+## Variáveis de Ambiente em Produção
 
 **Nunca usar** os arquivos `.env` de desenvolvimento em produção. Injetar variáveis via:
 
@@ -54,7 +56,8 @@ Executa `ruff check` (erros e imports) e `ruff format --check` em todo `packages
 
 Variáveis obrigatórias em produção:
 
-**api-postgres:**
+**`api-postgres`:**
+
 ```
 DATABASE_URL=postgresql+psycopg://user:senha@host:5432/grindx
 SECRET_KEY=<chave-forte-aleatória-32-chars-mínimo>
@@ -63,7 +66,8 @@ LOG_LEVEL=INFO
 CORS_ORIGINS=["https://seu-dominio.com"]
 ```
 
-**api-sqlserver:**
+**`api-sqlserver`:**
+
 ```
 DB_SERVER=host,porta
 DB_DATABASE=nome_banco
@@ -77,7 +81,7 @@ CORS_ORIGINS=["https://seu-dominio.com"]
 
 ---
 
-## Deploy com containers
+## Deploy com Containers
 
 ```powershell
 # Build das imagens
@@ -138,7 +142,7 @@ server {
 
 ---
 
-## Checklist de deploy
+## Checklist de Deploy
 
 - [ ] Variáveis de ambiente de produção configuradas
 - [ ] `SECRET_KEY` idêntica nas duas APIs

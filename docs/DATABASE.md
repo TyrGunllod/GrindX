@@ -1,3 +1,5 @@
+<!-- title: Banco de Dados — GrindX | updated: 2026-05-20 -->
+
 # Banco de Dados — GrindX
 
 ---
@@ -5,14 +7,14 @@
 ## Tecnologia
 
 - **ORM:** SQLAlchemy 2.0 (estilo declarativo moderno)
-- **Banco:** PostgreSQL 14+ (api-postgres) e SQL Server (api-sqlserver, somente leitura)
+- **Banco:** PostgreSQL 14+ (`api-postgres`) e SQL Server (`api-sqlserver`, somente leitura)
 - **Driver PostgreSQL:** `psycopg` (psycopg3) — `postgresql+psycopg://`
 - **Driver SQL Server:** `pymssql` ou `pyodbc` — escolhido automaticamente pelo `config.py`
 - **Migrações:** Alembic
 
 ---
 
-## Modelos (api-postgres)
+## Modelos (`api-postgres`)
 
 ### Usuario
 
@@ -20,14 +22,14 @@ Gerencia autenticação e controle de acesso.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| id | Integer PK | Identificador |
-| username | String (único) | Login do usuário |
-| email | String (único) | E-mail |
-| nome_completo | String | Nome exibido |
-| senha_hash | String | Hash bcrypt |
-| role | Enum | `admin` ou `operador` |
-| ativo | Boolean | Se pode fazer login |
-| created_at | DateTime | Data de criação |
+| `id` | Integer PK | Identificador |
+| `username` | String (único) | Login do usuário |
+| `email` | String (único) | E-mail |
+| `nome_completo` | String | Nome exibido |
+| `senha_hash` | String | Hash bcrypt |
+| `role` | Enum | `admin` ou `operador` |
+| `ativo` | Boolean | Se pode fazer login |
+| `created_at` | DateTime | Data de criação |
 
 ### Produto
 
@@ -35,14 +37,14 @@ Gerencia o catálogo transacional.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| id | Integer PK | Identificador |
-| nome | String | Nome do produto |
-| descricao | Text | Descrição longa |
-| preco | Numeric(10,2) | Preço unitário |
-| estoque | Integer | Quantidade disponível |
-| ativo | Boolean | Se está disponível |
-| created_at | DateTime | Data de criação |
-| updated_at | DateTime | Última atualização |
+| `id` | Integer PK | Identificador |
+| `nome` | String | Nome do produto |
+| `descricao` | Text | Descrição longa |
+| `preco` | Numeric(10,2) | Preço unitário |
+| `estoque` | Integer | Quantidade disponível |
+| `ativo` | Boolean | Se está disponível |
+| `created_at` | DateTime | Data de criação |
+| `updated_at` | DateTime | Última atualização |
 
 ### Portal (Aba + Modulo)
 
@@ -52,23 +54,23 @@ Gerencia a árvore de navegação dinâmica do frontend.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| id | Integer PK | Identificador |
-| nome | String | Nome exibido no menu |
-| icone | String | Nome do ícone |
-| ordem | Integer | Posição no menu |
-| ativo | Boolean | Se aparece no menu |
+| `id` | Integer PK | Identificador |
+| `nome` | String | Nome exibido no menu |
+| `icone` | String | Nome do ícone |
+| `ordem` | Integer | Posição no menu |
+| `ativo` | Boolean | Se aparece no menu |
 
 **Modulo:**
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| id | Integer PK | Identificador |
-| aba_id | Integer FK | Referência à Aba |
-| nome | String | Nome exibido |
-| url | String | Caminho relativo do HTML |
-| icone | String | Nome do ícone |
-| ordem | Integer | Posição dentro da aba |
-| ativo | Boolean | Se aparece no menu |
+| `id` | Integer PK | Identificador |
+| `aba_id` | Integer FK | Referência à Aba |
+| `nome` | String | Nome exibido |
+| `url` | String | Caminho relativo do HTML |
+| `icone` | String | Nome do ícone |
+| `ordem` | Integer | Posição dentro da aba |
+| `ativo` | Boolean | Se aparece no menu |
 
 ---
 
@@ -118,7 +120,7 @@ As migrações ficam em `packages/api-postgres/alembic/versions/`.
 
 ---
 
-## Dados iniciais (seed)
+## Dados Iniciais (seed)
 
 ```powershell
 cd packages/api-postgres
@@ -126,6 +128,7 @@ python seed.py
 ```
 
 Cria:
+
 - Usuário `admin` / `admin123` com role `admin`
 - Usuário `operador` / `operador123` com role `operador`
 - Estrutura inicial de abas e módulos no portal

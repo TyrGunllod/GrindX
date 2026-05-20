@@ -1,3 +1,5 @@
+<!-- title: Segurança — GrindX | updated: 2026-05-20 -->
+
 # Segurança — GrindX
 
 ---
@@ -9,14 +11,14 @@ O GrindX usa JSON Web Tokens (JWT) com par de tokens de curta e longa duração.
 ### Fluxo
 
 1. Cliente envia `POST /v1/auth/token` com `username` e `password`
-2. A api-postgres valida as credenciais contra o hash bcrypt no banco
+2. A `api-postgres` valida as credenciais contra o hash bcrypt no banco
 3. Retorna `access_token` (expira em 30 min) e `refresh_token` (expira em 7 dias)
 4. Cliente inclui `Authorization: Bearer <access_token>` em todas as requisições
 5. Quando o access token expira, cliente usa `POST /v1/auth/refresh` com o refresh token
 
-### Validação cruzada
+### Validação Cruzada
 
-A api-sqlserver **não emite tokens** — apenas valida tokens emitidos pela api-postgres. Para isso, as duas APIs precisam da mesma `SECRET_KEY` no `.env`.
+A `api-sqlserver` **não emite tokens** — apenas valida tokens emitidos pela `api-postgres`. Para isso, as duas APIs precisam da mesma `SECRET_KEY` no `.env`.
 
 ### Configuração
 
@@ -31,6 +33,7 @@ SECRET_KEY=chave-forte-aleatória-mínimo-32-chars
 ```
 
 Para gerar uma chave segura:
+
 ```powershell
 python -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
@@ -48,26 +51,26 @@ O acesso é controlado por perfis definidos no campo `role` do model `Usuario`.
 | `admin` | Acesso total — CRUD em todos os recursos |
 | `operador` | Leitura e criação — sem delete e sem gestão de usuários |
 
-### Matriz de permissões
+### Matriz de Permissões
 
 | Recurso | admin | operador |
-|---------|-------|---------|
-| GET /usuarios/ | ✅ | ❌ |
-| POST /usuarios/ | ✅ | ❌ |
-| PUT /usuarios/{id} | ✅ | ❌ |
-| DELETE /usuarios/{id} | ✅ | ❌ |
-| GET /produtos/ | ✅ | ✅ |
-| POST /produtos/ | ✅ | ✅ |
-| PUT /produtos/{id} | ✅ | ✅ |
-| DELETE /produtos/{id} | ✅ | ❌ |
-| GET /portal/menu | ✅ | ✅ |
-| POST/PUT/DELETE /portal/* | ✅ | ❌ |
+|---------|-------|----------|
+| `GET /usuarios/` | ✅ | ❌ |
+| `POST /usuarios/` | ✅ | ❌ |
+| `PUT /usuarios/{id}` | ✅ | ❌ |
+| `DELETE /usuarios/{id}` | ✅ | ❌ |
+| `GET /produtos/` | ✅ | ✅ |
+| `POST /produtos/` | ✅ | ✅ |
+| `PUT /produtos/{id}` | ✅ | ✅ |
+| `DELETE /produtos/{id}` | ✅ | ❌ |
+| `GET /portal/menu` | ✅ | ✅ |
+| `POST/PUT/DELETE /portal/*` | ✅ | ❌ |
 
 A implementação fica em `packages/shared/security/` e `packages/api-postgres/app/auth/dependencies.py`.
 
 ---
 
-## Hash de senha
+## Hash de Senha
 
 Todas as senhas são armazenadas com bcrypt via `passlib`:
 
@@ -82,7 +85,7 @@ Nunca armazenar senha em texto plano. Nunca logar senhas.
 
 ---
 
-## Middlewares de segurança
+## Middlewares de Segurança
 
 Ambas as APIs aplicam três middlewares automáticos:
 
@@ -129,16 +132,16 @@ CORS_ORIGINS=["*"]
 CORS_ORIGINS=["https://seu-dominio.com"]
 ```
 
-A api-sqlserver aceita apenas método GET (read-only), reforçado pelo middleware CORS.
+A `api-sqlserver` aceita apenas método GET (read-only), reforçado pelo middleware CORS.
 
 ---
 
-## Boas práticas de produção
+## Boas Práticas de Produção
 
 - Trocar `SECRET_KEY` para valor gerado aleatoriamente antes do deploy
 - Usar `DEBUG=false` em produção — evita exposição de stack traces
 - Restringir `CORS_ORIGINS` ao domínio real
-- Rodar atrás de reverse proxy com SSL/HTTPS (ver `docs/DEPLOYMENT.md`)
+- Rodar atrás de reverse proxy com SSL/HTTPS (ver [`DEPLOYMENT.md`](DEPLOYMENT.md))
 - Agendar rotação periódica da `SECRET_KEY` (invalida todos os tokens ativos)
 - Monitorar logs de autenticação para detectar força bruta
 - Nunca versionar arquivos `.env` com credenciais reais

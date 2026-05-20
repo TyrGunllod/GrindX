@@ -1,38 +1,50 @@
+<!-- title: Arquitetura do Portal Modular — GrindX | updated: 2026-05-20 -->
+
 # Arquitetura do Portal Modular (Frontend)
 
-Este documento descreve como funciona o sistema de "Micro-módulos" do GrindX e como estender o portal.
+Este documento descreve o sistema de micro-módulos do GrindX e como estender o portal.
 
-## 📐 Conceito Central
+---
+
+## Conceito Central
 
 O Portal funciona como um **Shell (Host)**. Ele não contém a lógica de negócio das páginas, mas sim o "esqueleto" (Menu Lateral, Topbar, Autenticação).
 
 As páginas de negócio são carregadas dentro de um `<iframe>` no Viewport central. Isso garante:
-1.  **Isolamento de Erros:** Um erro em um módulo não derruba o portal inteiro.
-2.  **Tecnologia Agnóstica:** Você pode ter módulos em HTML Puro, React, Vue ou qualquer outra tecnologia, desde que rodem no navegador.
-3.  **Desenvolvimento Standalone:** Cada módulo pode ser testado abrindo o seu próprio arquivo `index.html` diretamente.
 
-## 🛠️ O Sistema Dinâmico
+1. **Isolamento de Erros:** Um erro em um módulo não derruba o portal inteiro
+2. **Tecnologia Agnóstica:** Módulos podem ser HTML puro, React, Vue ou qualquer tecnologia que rode no navegador
+3. **Desenvolvimento Standalone:** Cada módulo pode ser testado abrindo seu próprio `index.html` diretamente
+
+---
+
+## O Sistema Dinâmico
 
 A árvore de navegação é definida no banco de dados através de duas entidades:
-- **Aba:** Uma categoria no menu lateral (ex: "Logística").
-- **Módulo:** Um item dentro da aba (ex: "Entrada de Estoque") que aponta para uma URL.
+
+- **Aba:** Uma categoria no menu lateral (ex: "Logística")
+- **Módulo:** Um item dentro da aba (ex: "Entrada de Estoque") que aponta para uma URL
 
 O `dashboard.js` consome o endpoint `/v1/portal/menu` e renderiza os links em tempo real.
 
-## 🎨 Design System & UIFactory
+---
 
-Para manter a consistência, todos os módulos devem utilizar o pacote `shared` do frontend:
+## Design System e UIFactory
+
+Todos os módulos devem utilizar o pacote `shared` do frontend para manter consistência.
 
 ### 1. Core CSS (`shared/core.css`)
-Contém todas as variáveis de cores (Tokens), tipografia e utilitários de layout (Grid/Flex).
+
+Contém variáveis de cores (Tokens), tipografia e utilitários de layout (Grid/Flex).
+
 ```html
 <link rel="stylesheet" href="../../shared/core.css">
 ```
 
 ### 2. UI Factory (`shared/app.js`)
-Sempre que precisar criar um elemento de interface (Input, Botão, Card), utilize a `UIFactory` via JavaScript. Isso garante que se mudarmos o design do sistema, todos os módulos se atualizem automaticamente.
 
-Exemplo de uso:
+Sempre que precisar criar um elemento de interface (Input, Botão, Card), utilize a `UIFactory` via JavaScript. Isso garante que mudanças no design system se propaguem automaticamente.
+
 ```javascript
 const input = window.grindx.ui.createInput({
     label: 'Nome do Produto',
@@ -42,19 +54,22 @@ const input = window.grindx.ui.createInput({
 document.body.appendChild(input);
 ```
 
-### 3. Constantes e Componentes Compartilhados
+### 3. Constantes (`shared/constants.js`)
 
-Use `shared/constants.js` para listas de domínio reutilizáveis, como ícones, perfis de usuário e itens protegidos do portal.
+Listas de domínio reutilizáveis: ícones, perfis de usuário e itens protegidos do portal.
 
 ```html
 <script src="../../shared/constants.js"></script>
 ```
 
-Componentes compartilhados ficam em `shared/components/`:
-- `FormField.js`: helpers para campos, selects e seletor de ícones.
-- `ReusableModal.js`: abertura/fechamento de modal com foco inicial, restauração de foco, `Escape` e contenção de `Tab`.
-- `DataTable.js`: renderização simples de tabelas baseadas em colunas.
-- `LoadingSpinner.js`: estados de carregamento, vazio e toast.
+### 4. Componentes Compartilhados (`shared/components/`)
+
+| Componente | Uso |
+|------------|-----|
+| `FormField.js` | Helpers para campos, selects e seletor de ícones |
+| `ReusableModal.js` | Modal com foco, `Escape`, contenção de `Tab` |
+| `DataTable.js` | Renderização de tabelas baseadas em colunas |
+| `LoadingSpinner.js` | Estados de carregamento, vazio e toast |
 
 ```html
 <script src="../../shared/components/FormField.js"></script>
@@ -65,9 +80,12 @@ Componentes compartilhados ficam em `shared/components/`:
 
 Para validação client-side, use `shared/validation.js` e destaque erros inline antes de chamar a API.
 
-## 🔐 API e Autenticação nos Módulos
+---
+
+## API e Autenticação nos Módulos
 
 A URL base da API fica centralizada em `window.grindx.config.API_BASE_URL`, definida em `shared/app.js`.
+
 Para mudar o ambiente, defina `window.GRINDX_CONFIG` antes de carregar `shared/app.js`:
 
 ```html
@@ -79,7 +97,7 @@ Para mudar o ambiente, defina `window.GRINDX_CONFIG` antes de carregar `shared/a
 <script src="../../shared/app.js"></script>
 ```
 
-Para realizar chamadas à API, use o serviço centralizado em `shared/apiService.js`. Ele monta URLs, aplica o token `Authorization: Bearer <token>` quando disponível, serializa JSON e padroniza erros.
+Para chamadas à API, use o serviço centralizado em `shared/apiService.js`. Ele monta URLs, aplica o token `Authorization: Bearer <token>` quando disponível, serializa JSON e padroniza erros.
 
 ```html
 <script src="../../shared/app.js"></script>
@@ -96,7 +114,9 @@ await window.grindx.api.request('/portal/abas', {
 ```
 
 ---
-Para criar um novo módulo:
-1. Crie uma pasta em `packages/frontend-webapp/modules/nome-do-modulo/`.
-2. Crie um `index.html` e um `script.js`.
-3. Cadastre a URL no menu de **Gestão de Estrutura** dentro do portal.
+
+## Como Criar um Novo Módulo
+
+1. Criar pasta em `packages/frontend-webapp/modules/nome-do-modulo/`
+2. Criar `index.html` e `script.js`
+3. Cadastrar a URL no menu de **Gestão de Estrutura** dentro do portal

@@ -1,47 +1,55 @@
-# GrindX — Resumo Executivo
+<!-- title: GrindX — Resumo Executivo | updated: 2026-05-20 -->
 
-Última atualização: 19/05/2026
+# GrindX — Resumo Executivo
 
 ---
 
-## Status atual
+## Status Atual
 
 **97% completo.**
 
 | Área | Status |
 |------|--------|
-| Backend api-postgres (FastAPI + PostgreSQL) | ✅ |
-| Backend api-sqlserver (FastAPI + SQL Server) | ✅ |
+| Backend `api-postgres` (FastAPI + PostgreSQL) | ✅ |
+| Backend `api-sqlserver` (FastAPI + SQL Server) | ✅ |
 | Frontend Portal Modular | ✅ |
 | Design System (Glassmorphism + UIFactory) | ✅ |
-| Módulos: home, users, structure | ✅ |
+| Módulos: `home`, `users`, `structure` | ✅ |
 | Autenticação JWT + RBAC | ✅ |
-| Suite de testes (150+) | ✅ |
+| Suite de testes (160+) | ✅ |
 | Documentação técnica completa | ✅ |
 | CI/CD — GitHub Actions | ✅ |
-| Assets visuais (favicon, fontes) | ⚠️ pendente |
+| Assets visuais (favicon, fontes) | ⚠️ Pendente |
 
 ---
 
-## Arquitetura em uma linha
+## Arquitetura em Uma Linha
 
 Monorepo Python + Vanilla JS. Dois backends FastAPI independentes compartilhando JWT. Frontend Shell que carrega micro-módulos via iframe isolado. Menu de navegação dinâmico gerenciado pelo banco.
 
 ---
 
-## Acesso rápido
+## Acesso Rápido
 
 ```powershell
-cd D:\_Projects\GrindX
+cd D:\_Projetos\GrindX
 
 make dev-postgres    # API Postgres — porta 8002
 make dev-sqlserver   # API SQL Server — porta 8001
 python -m http.server 5500 --directory packages/frontend-webapp
 ```
 
-- Frontend: http://localhost:5500
-- Swagger: http://localhost:8002/v1/docs
-- Credenciais: admin/admin123 · operador/operador123
+| Serviço | URL |
+|---------|-----|
+| Frontend | `http://localhost:5500` |
+| Swagger | `http://localhost:8002/v1/docs` |
+
+### Credenciais
+
+| Usuário | Senha | Perfil |
+|---------|-------|--------|
+| `admin` | `admin123` | Administrador |
+| `operador` | `operador123` | Operador |
 
 ---
 
@@ -54,17 +62,18 @@ pytest           # testes da raiz
 
 ---
 
-## O que ainda falta
+## O Que Ainda Falta
 
 1. Preencher `DB_PASSWORD` em `packages/api-sqlserver/.env` com a senha real do LEITURAPROD
 2. Trocar `SECRET_KEY` para valor gerado aleatoriamente antes do deploy em produção
 3. Adicionar `favicon.ico` em `packages/frontend-webapp/`
-4. Remover `dashboard_backup.js` após validar `dashboard.js`
-5. Decidir próximo módulo do ERP (produtos, estoque, vendas)
+4. Decidir próximo módulo do ERP (produtos, estoque, vendas)
 
 ---
 
 ## Documentação
+
+Portal de entrada: [`docs/README.md`](docs/README.md)
 
 | Arquivo | Conteúdo |
 |---------|----------|

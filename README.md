@@ -1,7 +1,6 @@
-# GrindX — Sistema de Gestão Integrado (Monorepo)
+<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-05-20 -->
 
-![Tests](https://github.com/seu-usuario/grindx/actions/workflows/tests.yml/badge.svg)
-![Lint](https://github.com/seu-usuario/grindx/actions/workflows/lint.yml/badge.svg)
+# GrindX — Sistema de Gestão Integrado (Monorepo)
 
 O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado em escalabilidade, segurança e experiência do usuário premium.
 
@@ -9,7 +8,7 @@ O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado e
 
 ## Status do Projeto
 
-**97% Completo** — CI/CD, testes, documentação e todos os módulos implementados. Pendente apenas assets visuais (favicon, fontes).
+**97% completo** — CI/CD, testes, documentação e todos os módulos implementados. Pendente apenas assets visuais (favicon, fontes).
 
 | Área | Status |
 |------|--------|
@@ -17,7 +16,7 @@ O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado e
 | Backend (FastAPI + SQL Server) | ✅ Completo |
 | Frontend Portal Modular | ✅ Completo |
 | Design System | ✅ Completo |
-| Testes (150+) | ✅ Completo |
+| Testes (160+) | ✅ Completo |
 | Documentação | ✅ Completo |
 | CI/CD (GitHub Actions) | ✅ Completo |
 | Assets visuais (favicon, fontes) | ⚠️ Pendente |
@@ -30,15 +29,15 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 
 ### Backend
 
-- **api-postgres (porta 8002):** API principal em FastAPI. Gerencia autenticação JWT, RBAC, usuários, produtos e a estrutura dinâmica do portal.
-- **api-sqlserver (porta 8001):** API somente leitura para integração com bases SQL Server legadas. Valida tokens JWT emitidos pela api-postgres.
-- **shared:** Pacote Python compartilhado entre as APIs — segurança, schemas e exceções.
+- **`api-postgres` (porta 8002):** API principal em FastAPI. Gerencia autenticação JWT, RBAC, usuários, produtos e a estrutura dinâmica do portal.
+- **`api-sqlserver` (porta 8001):** API somente leitura para integração com bases SQL Server legadas. Valida tokens JWT emitidos pela `api-postgres`.
+- **`shared`:** Pacote Python compartilhado entre as APIs — segurança, schemas e exceções.
 
 ### Frontend
 
 - **Portal Modular (porta 5500):** Shell que gerencia navegação e carrega módulos via iframe isolado.
-- **Módulos:** home, users, structure — cada um é standalone e testável independentemente.
-- **Design System:** Glassmorphism + tokens CSS + UIFactory para consistência absoluta.
+- **Módulos:** `home`, `users`, `structure` — cada um é standalone e testável independentemente.
+- **Design System:** Glassmorphism + tokens CSS + `UIFactory` para consistência absoluta.
 
 ---
 
@@ -48,9 +47,9 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 
 - Python 3.12+
 - PostgreSQL rodando localmente
-- ODBC Driver 17 for SQL Server (apenas para api-sqlserver)
+- ODBC Driver 17 for SQL Server (apenas para `api-sqlserver`)
 
-### Setup inicial
+### Setup Inicial
 
 ```powershell
 # 1. Clonar
@@ -62,7 +61,7 @@ python -m venv .venv && .\.venv\Scripts\activate
 pip install -r requirements.txt
 
 # 3. Configurar banco
-cp .env.example .env   # editar DATABASE_URL e SECRET_KEY
+copy .env.example .env   # editar DATABASE_URL e SECRET_KEY
 python manage_db.py upgrade head
 python seed.py
 
@@ -76,7 +75,7 @@ python -m http.server 5500 --directory packages/frontend-webapp
 
 Acesse em `http://localhost:5500`.
 
-### Credenciais de teste
+### Credenciais de Teste
 
 | Usuário | Senha | Perfil |
 |---------|-------|--------|
@@ -87,7 +86,7 @@ Acesse em `http://localhost:5500`.
 
 ## Testes
 
-Suite com 150+ testes cobrindo unitários, integração e validação do monorepo.
+Suite com 160+ testes cobrindo unitários, integração e validação do monorepo.
 
 | Pacote | Testes | Cobertura |
 |--------|--------|-----------|
@@ -109,28 +108,32 @@ pytest                # testes da raiz
 
 Workflows em `.github/workflows/`:
 
-- **tests.yml** — executa os três conjuntos de testes em push/PR para `main` e `develop`. Os testes da api-postgres usam SQLite in-memory (sem PostgreSQL real no CI).
-- **lint.yml** — executa `ruff check` e `ruff format --check` em todo `packages/`.
+- **`tests.yml`** — executa os três conjuntos de testes em push/PR para `main` e `develop`. Os testes da `api-postgres` usam SQLite in-memory (sem PostgreSQL real no CI).
+- **`lint.yml`** — executa `ruff check` e `ruff format --check` em todo `packages/`.
 
 ---
 
 ## Documentação
 
-Disponível em `/docs`:
+Portal de entrada: [`docs/README.md`](docs/README.md)
 
-- `API.md` — referência completa dos endpoints REST
-- `SETUP.md` — guia detalhado de instalação
-- `DEPLOYMENT.md` — instruções de deploy com containers
-- `DATABASE.md` — schema, modelos e migrações
-- `SECURITY.md` — autenticação JWT e RBAC
+| Documento | Conteúdo |
+|-----------|----------|
+| [`docs/API.md`](docs/API.md) | Referência completa dos endpoints REST |
+| [`docs/SETUP.md`](docs/SETUP.md) | Guia detalhado de instalação |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Instruções de deploy com containers |
+| [`docs/DATABASE.md`](docs/DATABASE.md) | Schema, modelos e migrações |
+| [`docs/SECURITY.md`](docs/SECURITY.md) | Autenticação JWT e RBAC |
+| [`docs/SKILLS.md`](docs/SKILLS.md) | Skills do assistente |
+| [`MAPA-ARQUIVOS.md`](MAPA-ARQUIVOS.md) | Inventário completo de arquivos |
 
 ---
 
 ## Design System
 
 - **Glassmorphism** com tokens CSS centralizados em `shared/core.css`
-- **UIFactory** (`shared/app.js`) para criação programática de componentes
-- **Componentes:** FormField, DataTable, ReusableModal, LoadingSpinner
+- **`UIFactory`** (`shared/app.js`) para criação programática de componentes
+- **Componentes:** `FormField`, `DataTable`, `ReusableModal`, `LoadingSpinner`
 - **Dark/Light Mode** nativo
 - **WCAG** — acessibilidade como primeira camada
 
@@ -140,68 +143,53 @@ Disponível em `/docs`:
 
 ```
 GrindX/
-├── .github/
-│   └── workflows/
-│       ├── tests.yml           # CI — testes automatizados
-│       └── lint.yml            # CI — qualidade de código
-├── docs/                       # Documentação técnica
+├── .github/workflows/
+│   ├── tests.yml           # CI — testes automatizados
+│   └── lint.yml            # CI — qualidade de código
+├── docs/                   # Documentação técnica
+│   ├── README.md           # Portal de entrada
 │   ├── API.md
 │   ├── SETUP.md
 │   ├── DEPLOYMENT.md
 │   ├── DATABASE.md
-│   └── SECURITY.md
+│   ├── SECURITY.md
+│   └── SKILLS.md
 ├── packages/
-│   ├── api-postgres/           # API principal (FastAPI + PostgreSQL)
+│   ├── api-postgres/       # API principal (FastAPI + PostgreSQL)
 │   │   ├── app/
-│   │   │   ├── auth/           # JWT — router, service, dependencies
-│   │   │   ├── core/           # config, exceptions, logging
-│   │   │   ├── middleware/     # rate limit, request id, security headers
-│   │   │   ├── models/         # usuario, produto, portal
-│   │   │   ├── repositories/   # produto, usuario
-│   │   │   ├── routers/        # auth, health, portal, produto, usuario
-│   │   │   ├── schemas/        # Pydantic schemas
-│   │   │   └── services/       # produto, usuario
-│   │   ├── alembic/            # Migrações do banco
-│   │   ├── tests/              # 110 testes
-│   │   ├── .env                # Variáveis locais (não versionar)
-│   │   ├── .env.example        # Template de variáveis
-│   │   ├── manage_db.py        # CLI de migrações
-│   │   └── seed.py             # Dados iniciais
-│   ├── api-sqlserver/          # API somente leitura (SQL Server)
+│   │   │   ├── auth/       # JWT — router, service, dependencies
+│   │   │   ├── core/       # config, exceptions, logging
+│   │   │   ├── middleware/ # rate limit, request id, security headers
+│   │   │   ├── models/     # usuario, produto, portal
+│   │   │   ├── repositories/
+│   │   │   ├── routers/    # auth, health, portal, produto, usuario
+│   │   │   ├── schemas/
+│   │   │   └── services/
+│   │   ├── alembic/        # Migrações do banco
+│   │   ├── tests/          # 110 testes
+│   │   └── ...
+│   ├── api-sqlserver/      # API somente leitura (SQL Server)
 │   │   ├── app/
-│   │   │   ├── auth/           # Validação JWT (sem emissão)
-│   │   │   ├── core/           # config, exceptions, logging
-│   │   │   ├── middleware/     # rate limit, request id, security headers
-│   │   │   ├── routers/        # cliente, health
-│   │   │   └── services/       # cliente
-│   │   ├── .env                # Variáveis locais (não versionar)
-│   │   └── .env.example        # Template de variáveis
-│   ├── frontend-webapp/        # Portal Frontend
-│   │   ├── index.html          # Shell/Host
-│   │   ├── dashboard.html      # Dashboard principal
-│   │   ├── modules/
-│   │   │   ├── home/           # Módulo Home
-│   │   │   ├── users/          # Módulo Usuários
-│   │   │   └── structure/      # Módulo Gestão de Estrutura
-│   │   └── shared/             # Design System
-│   │       ├── components/     # FormField, DataTable, ReusableModal, LoadingSpinner
-│   │       ├── core.css        # Tokens CSS
-│   │       ├── app.js          # UIFactory + config global
-│   │       ├── apiService.js   # Cliente HTTP
-│   │       ├── constants.js    # Constantes do sistema
-│   │       ├── validation.js   # Validação client-side
-│   │       └── baseController.js
-│   └── shared/                 # Pacote Python compartilhado
-│       ├── security/           # JWT e bcrypt
-│       ├── schemas/            # Schemas base
-│       └── exceptions/         # Exceções customizadas
-├── tests/                      # Testes do monorepo (raiz)
-│   ├── unit/
-│   ├── integration/
-│   └── conftest.py
-├── Makefile                    # Automação de tasks
-├── podman-compose.yml          # Orquestração de containers
-└── pytest.ini                  # Configuração de testes
+│   │   │   ├── auth/       # Validação JWT (sem emissão)
+│   │   │   ├── core/
+│   │   │   ├── middleware/
+│   │   │   ├── routers/    # cliente, health
+│   │   │   └── services/
+│   │   ├── tests/
+│   │   └── ...
+│   ├── frontend-webapp/    # Portal Frontend
+│   │   ├── index.html      # Shell/Host
+│   │   ├── dashboard.html
+│   │   ├── modules/        # home, users, structure
+│   │   └── shared/         # Design System
+│   └── shared/             # Pacote Python compartilhado
+│       ├── security/       # JWT e bcrypt
+│       ├── schemas/        # Schemas base
+│       └── exceptions/     # Exceções customizadas
+├── tests/                  # Testes do monorepo (raiz)
+├── Makefile                # Automação de tasks
+├── podman-compose.yml      # Orquestração de containers
+└── pytest.ini              # Configuração de testes
 ```
 
 ---
