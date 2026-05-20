@@ -39,7 +39,7 @@ def obter_menu_dinamico(
     db: Session = Depends(get_db), current_user: TokenPayload = Depends(get_current_user)
 ):
     if current_user.role == "admin":
-        abas = db.query(Aba).filter(Aba.ativo == True).order_by(Aba.ordem).all()
+        abas = db.query(Aba).filter(Aba.ativo).order_by(Aba.ordem).all()
     else:
         # Só retorna módulos que o usuário tem permissão
         modulos_ids = (
@@ -50,7 +50,7 @@ def obter_menu_dinamico(
         abas = (
             db.query(Aba)
             .join(Modulo)
-            .filter(Aba.ativo == True, Modulo.id.in_(modulos_ids))
+            .filter(Aba.ativo, Modulo.id.in_(modulos_ids))
             .order_by(Aba.ordem)
             .all()
         )
