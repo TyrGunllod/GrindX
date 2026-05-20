@@ -63,3 +63,26 @@ def test_activate_theme_deactivates_others(db_session: Session):
 
     assert theme1.is_active is False
     assert theme2.is_active is True
+
+
+def test_insert_active_theme_deactivates_existing(db_session: Session):
+    """Testa que inserir um tema ativo desativa o tema existente da mesma empresa."""
+    empresa = Empresa(nome="Insert Test Corp", dominio="insert.com")
+    db_session.add(empresa)
+    db_session.commit()
+
+    theme1 = CompanyTheme(company_id=empresa.id, name="Theme 1", is_active=True, icon_library="fontawesome")
+    db_session.add(theme1)
+    db_session.commit()
+    db_session.refresh(theme1)
+    assert theme1.is_active is True
+
+    theme2 = CompanyTheme(company_id=empresa.id, name="Theme 2", is_active=True, icon_library="fontawesome")
+    db_session.add(theme2)
+    db_session.commit()
+
+    db_session.refresh(theme1)
+    db_session.refresh(theme2)
+
+    assert theme1.is_active is False
+    assert theme2.is_active is True

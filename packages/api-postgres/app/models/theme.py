@@ -7,7 +7,7 @@ Armazena personalizações visuais por empresa.
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, String, event, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, String, event, func, text
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
 from app.database import Base
@@ -18,11 +18,13 @@ def _deactivate_other_themes(session, flush_context, instances):
     """Quando um tema é ativado, desativa os outros da mesma empresa."""
     for obj in list(session.new) + list(session.dirty):
         if isinstance(obj, CompanyTheme) and obj.is_active:
-            session.query(CompanyTheme).filter(
+            query = session.query(CompanyTheme).filter(
                 CompanyTheme.company_id == obj.company_id,
-                CompanyTheme.id != obj.id,
                 CompanyTheme.is_active.is_(True),
-            ).update({"is_active": False}, synchronize_session="fetch")
+            )
+            if obj.id is not None:
+                query = query.filter(CompanyTheme.id != obj.id)
+            query.update({"is_active": False}, synchronize_session="fetch")
 
 
 class CompanyTheme(Base):
@@ -39,7 +41,7 @@ class CompanyTheme(Base):
     colors: Mapped[dict | None] = mapped_column(JSON, nullable=True, comment="Overrides de cores")
     fonts: Mapped[dict | None] = mapped_column(JSON, nullable=True, comment="Overrides de fontes")
     icon_library: Mapped[str] = mapped_column(
-        String(50), nullable=False, server_default="fontawesome", comment="Biblioteca de ícones"
+        String(50), nullable=False, server_default=text("'fontawesome'"), comment="Biblioteca de ícones"
     )
     tokens: Mapped[dict | None] = mapped_column(JSON, nullable=True, comment="Tokens extras (radius, shadows)")
     logo_url: Mapped[str | None] = mapped_column(String(500), nullable=True, comment="URL do logo")
@@ -52,6 +54,8 @@ class CompanyTheme(Base):
     atualizado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )
+
+    company: Mapped["Empresa"] = relationship(back_populates="themes")
 
     def __repr__(self) -> str:
         return f"<CompanyTheme(id={self.id}, company_id={self.company_id}, name='{self.name}')>"
