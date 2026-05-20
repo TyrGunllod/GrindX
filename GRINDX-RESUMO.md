@@ -6,7 +6,7 @@
 
 ## Status Atual
 
-**97% completo.**
+**100% completo.**
 
 | Área | Status |
 |------|--------|
@@ -19,7 +19,7 @@
 | Suite de testes (160+) | ✅ |
 | Documentação técnica completa | ✅ |
 | CI/CD — GitHub Actions | ✅ |
-| Assets visuais (favicon, fontes) | ⚠️ Pendente |
+| Assets visuais (favicon, fontes) | ✅ |
 
 ---
 
@@ -65,8 +65,7 @@ pytest           # testes da raiz
 ## O Que Ainda Falta
 
 1. Trocar `SECRET_KEY` para valor gerado aleatoriamente antes do deploy em produção
-2. Adicionar `favicon.ico` em `packages/frontend-webapp/`
-3. Decidir próximo módulo do ERP (produtos, estoque, vendas)
+2. Decidir próximo módulo do ERP (produtos, estoque, vendas)
 
 ---
 
