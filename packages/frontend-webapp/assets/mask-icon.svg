@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="GrindX pinned tab icon">
+  <title>GrindX Safari Pinned Tab Icon</title>
+  <polygon points="32,8 56,32 32,56 8,32" fill="context-fill" stroke="context-stroke" stroke-width="3"/>
+  <text x="32" y="40" text-anchor="middle" font-family="'Barlow Condensed', Arial, sans-serif" font-size="20" font-weight="700" fill="context-fill">GX</text>
+</svg>
