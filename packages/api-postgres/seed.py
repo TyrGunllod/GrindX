@@ -8,7 +8,6 @@ Cria:
     - 1 usuário admin
     - 1 usuário operador
     - 1 usuário leitura
-    - 5 produtos de exemplo
 """
 
 import sys
@@ -57,8 +56,8 @@ def seed_database():
 
         # 2. Criar Estrutura do Portal
         if session.query(Aba).count() == 0:
-            aba_principal = Aba(nome="Principal", icone="fas fa-th-large", ordem=1)
-            aba_gestao = Aba(nome="Gestão", icone="fas fa-users-cog", ordem=2)
+            aba_principal = Aba(nome="Principal", icone="fas fa-th-large", ordem=0)
+            aba_gestao = Aba(nome="Gestão", icone="fas fa-users-cog", ordem=100)
             session.add_all([aba_principal, aba_gestao])
             session.commit()
 

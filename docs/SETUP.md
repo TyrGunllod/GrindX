@@ -1,43 +1,201 @@
 # Guia de Instalação — GrindX
 
-Este guia descreve como configurar o ambiente de desenvolvimento do GrindX em uma máquina local.
+---
 
-## 📋 Pré-requisitos
+## Pré-requisitos
 
-- **Python 3.12+**
-- **PostgreSQL**
-- **Git**
+| Ferramenta | Versão mínima | Uso |
+|-----------|--------------|-----|
+| Python | 3.12 | Runtime das APIs |
+| PostgreSQL | 14+ | Banco principal |
+| ODBC Driver 17 for SQL Server | — | Apenas para api-sqlserver |
+| Git | qualquer | Versionamento |
+| make (GnuMake) | qualquer | Automação de tasks |
 
-## 🚀 Setup Inicial
+---
 
-1. **Clonar o Repositório:**
-   ```powershell
-   git clone <url-do-repositorio>
-   cd GrindX
-   ```
+## 1. Clonar o repositório
 
-2. **Configurar Ambiente Python:**
-   Cada pacote possui suas próprias dependências.
-   ```powershell
-   # Backend (Postgres)
-   cd packages/api-postgres
-   python -m venv .venv
-   .\.venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+```powershell
+git clone <url-do-repositorio>
+cd GrindX
+```
 
-3. **Configurar Banco de Dados:**
-   - Crie o banco de dados no PostgreSQL conforme definido no seu `.env`.
-   - Execute as migrações:
-     ```powershell
-     python manage_db.py upgrade head
-     ```
-   - Popule os dados iniciais:
-     ```powershell
-     python seed.py
-     ```
+---
 
-4. **Rodar a Aplicação:**
-   - **API Postgres:** `make dev-postgres` (ou manualmente via uvicorn)
-   - **Frontend:** `python -m http.server 5500 --directory packages/frontend-webapp`
-   - Acesse em `http://localhost:5500`
+## 2. Configurar api-postgres
+
+```powershell
+cd packages/api-postgres
+
+# Criar e ativar virtualenv
+python -m venv .venv
+.\.venv\Scripts\activate
+
+# Instalar dependências
+pip install -r requirements.txt
+
+# Configurar variáveis de ambiente
+copy .env.example .env
+```
+
+Editar `.env` com seus valores reais:
+
+```env
+DATABASE_URL=postgresql+psycopg://postgres:SUA_SENHA@localhost:5432/grindxdb
+SECRET_KEY=chave-secreta-forte-com-pelo-menos-32-caracteres
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+REFRESH_TOKEN_EXPIRE_DAYS=7
+```
+
+```powershell
+# Criar banco e rodar migrações
+python manage_db.py upgrade head
+
+# Popular dados iniciais (usuários admin/operador)
+python seed.py
+```
+
+---
+
+## 3. Configurar api-sqlserver (opcional)
+
+```powershell
+cd packages/api-sqlserver
+
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+
+copy .env.example .env
+```
+
+Editar `.env`:
+
+```env
+DB_SERVER=181.41.161.145,10371
+DB_DATABASE=C5MS0I_204354_PR_PD
+DB_USERNAME=LEITURAPROD
+DB_PASSWORD=senha_real_aqui
+DB_DRIVER=ODBC Driver 17 for SQL Server
+
+# Deve ser IDÊNTICA à SECRET_KEY da api-postgres
+SECRET_KEY=chave-secreta-forte-com-pelo-menos-32-caracteres
+```
+
+---
+
+## 4. Rodar o projeto
+
+Abrir três terminais a partir da raiz do projeto:
+
+```powershell
+# Terminal 1 — api-postgres (porta 8002)
+make dev-postgres
+
+# Terminal 2 — api-sqlserver (porta 8001, opcional)
+make dev-sqlserver
+
+# Terminal 3 — frontend (porta 5500)
+python -m http.server 5500 --directory packages/frontend-webapp
+```
+
+Acessar: `http://localhost:5500`
+
+---
+
+## 5. Credenciais de teste
+
+| Usuário | Senha | Perfil |
+|---------|-------|--------|
+| `admin` | `admin123` | Administrador — acesso total |
+| `operador` | `operador123` | Operador — leitura e criação |
+
+---
+
+## 6. Rodar testes
+
+```powershell
+# Da raiz do projeto
+pytest                   # testes da raiz (21 testes)
+
+# Por pacote
+make test-postgres       # 110 testes — api-postgres
+make test-sqlserver      # testes api-sqlserver
+make test-shared         # 26 testes RBAC
+
+# Todos de uma vez
+make test-all
+```
+
+Os testes usam SQLite in-memory — não precisam de PostgreSQL real rodando.
+
+---
+
+## 7. Migrações de banco (Alembic)
+
+```powershell
+cd packages/api-postgres
+
+# Criar nova migração após alterar models/
+alembic revision --autogenerate -m "descricao da mudanca"
+
+# Aplicar migrações pendentes
+python manage_db.py upgrade head
+
+# Ver estado atual
+alembic current
+
+# Reverter uma migração
+alembic downgrade -1
+```
+
+---
+
+## 8. Containers (Podman/Docker)
+
+```powershell
+# Da raiz do projeto
+make build   # build das imagens
+make up      # subir todos os serviços
+make down    # parar os serviços
+make logs    # ver logs em tempo real
+```
+
+---
+
+## 9. Criar um novo módulo frontend
+
+1. Criar pasta em `packages/frontend-webapp/modules/nome-do-modulo/`
+2. Criar `index.html`, `script.js`, `style.css`
+3. Usar o design system:
+
+```html
+<link rel="stylesheet" href="../../shared/core.css">
+<script src="../../shared/app.js"></script>
+<script src="../../shared/apiService.js"></script>
+```
+
+4. Cadastrar a URL do módulo no painel de **Gestão de Estrutura** dentro do portal
+
+Ver `packages/frontend-webapp/ARCHITECTURE_PORTAL.md` para o guia completo.
+
+---
+
+## Resolução de problemas
+
+**API não sobe — erro de importação do `shared`**
+```powershell
+# Garantir que PYTHONPATH aponta para packages/
+set PYTHONPATH=D:\_Projects\GrindX\packages
+```
+
+**Erro de conexão com PostgreSQL**
+- Verificar se o serviço está rodando: `pg_ctl status`
+- Verificar `DATABASE_URL` no `.env`
+
+**Erro de autenticação JWT entre as APIs**
+- Confirmar que `SECRET_KEY` é idêntica nos dois `.env`
+
+**Rate limit no CI**
+- O workflow usa variável `RATE_LIMIT_REQUESTS=100` — valores baixos podem causar flaky tests; aumentar se necessário.

@@ -1,0 +1,30 @@
+name: Lint
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  ruff:
+    name: Ruff
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar Ruff
+        run: pip install ruff>=0.3.0
+
+      - name: Check (erros de sintaxe e imports)
+        run: ruff check packages/ --select E,F,I --ignore E501
+
+      - name: Format check
+        run: ruff format packages/ --check
