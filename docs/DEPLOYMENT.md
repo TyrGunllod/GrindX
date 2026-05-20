@@ -35,7 +35,7 @@ Variáveis de ambiente sensíveis devem ser adicionadas em **Settings → Secret
 
 | Secret | Descrição |
 |--------|-----------|
-| `SQLSERVER_PASSWORD` | Senha real do LEITURAPROD (para testes de integração reais) |
+| `SQLSERVER_PASSWORD` | Senha real do usuário (para testes de integração reais) |
 | `PROD_SECRET_KEY` | Chave JWT de produção |
 
 ### lint.yml
@@ -56,7 +56,7 @@ Variáveis obrigatórias em produção:
 
 **api-postgres:**
 ```
-DATABASE_URL=postgresql+psycopg://user:senha@host:5432/grindxdb
+DATABASE_URL=postgresql+psycopg://user:senha@host:5432/grindx
 SECRET_KEY=<chave-forte-aleatória-32-chars-mínimo>
 DEBUG=false
 LOG_LEVEL=INFO

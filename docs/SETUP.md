@@ -17,7 +17,7 @@
 ## 1. Clonar o repositório
 
 ```powershell
-git clone <url-do-repositorio>
+git@github.com:TyrGunllod/GrindX.git
 cd GrindX
 ```
 
@@ -73,9 +73,9 @@ copy .env.example .env
 Editar `.env`:
 
 ```env
-DB_SERVER=181.41.161.145,10371
-DB_DATABASE=C5MS0I_204354_PR_PD
-DB_USERNAME=LEITURAPROD
+DB_SERVER=XXX.XXX.XXX.XXX,XXXXX
+DB_DATABASE=Database_Name
+DB_USERNAME=User_Name
 DB_PASSWORD=senha_real_aqui
 DB_DRIVER=ODBC Driver 17 for SQL Server
 

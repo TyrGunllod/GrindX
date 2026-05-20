@@ -136,10 +136,10 @@ Cria:
 
 ```powershell
 # Dump completo
-pg_dump -U postgres grindxdb > grindxdb_backup.sql
+pg_dump -U postgres grindx > grindx_backup.sql
 
 # Restaurar
-psql -U postgres grindxdb < grindxdb_backup.sql
+psql -U postgres grindx < grindx_backup.sql
 ```
 
 Em produção, agendar backup diário via cron ou ferramenta do provedor de banco.

@@ -84,9 +84,9 @@ class UsersController extends window.grindx.controllers.BaseController {
 
     bindEvents() {
         document.getElementById('btnRefresh').onclick = () => this.loadUsers();
-        document.getElementById('addUserBtn').onclick = () => this.openModal();
-        document.getElementById('closeModal').onclick = () => this.closeModal();
-        document.getElementById('btnCancel').onclick = () => this.closeModal();
+        document.getElementById('addUserBtn').onclick = () => this.modalController.open();
+        document.getElementById('closeModal').onclick = () => this.modalController.close();
+        document.getElementById('btnCancel').onclick = () => this.modalController.close();
         document.getElementById('btnSave').onclick = () => this.saveUser();
 
         document.getElementById('closePermissoesModal').onclick = () => this.permissoesController.close();
@@ -141,7 +141,7 @@ class UsersController extends window.grindx.controllers.BaseController {
         document.getElementById('password').value = ''; // Senha em branco por segurança
         document.getElementById('role').value = user.role;
 
-        this.openModal();
+        this.modalController.open();
     }
 
     async deleteUser(id) {
@@ -189,7 +189,7 @@ class UsersController extends window.grindx.controllers.BaseController {
             }
 
             this.toastSuccess('Usuário salvo com sucesso.');
-            this.closeModal();
+            this.modalController.close();
             this.renderTableOrEmpty();
         } catch (err) {
             this.toastError(err);
