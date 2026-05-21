@@ -59,6 +59,11 @@ desktop.ini
 logs/
 
 # =========================
+# Uploads (test artifacts)
+# =========================
+packages/api-postgres/app/uploads/
+
+# =========================
 # Containers
 # =========================
 *.tar
