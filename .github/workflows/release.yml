@@ -52,18 +52,14 @@ jobs:
         run: pytest tests/ -v --tb=short --strict-markers
 
   # ==========================================
-  # API SQL Server — testes
+  # API SQL Server — testes (SQLite in-memory)
   # ==========================================
   test-api-sqlserver:
     name: Test API SQL Server
     runs-on: ubuntu-latest
 
     env:
-      DB_SERVER: "127.0.0.1,1433"
-      DB_DATABASE: grindx_test
-      DB_USERNAME: sa
-      DB_PASSWORD: Test@Password123
-      DB_DRIVER: "ODBC Driver 17 for SQL Server"
+      DB_URL_OVERRIDE: "sqlite:///:memory:"
       SECRET_KEY: test-secret-key-for-unit-tests-only-change-in-production
       APP_NAME: "GrindX API SQL Server"
       APP_VERSION: 0.1.0
@@ -83,13 +79,6 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: packages/api-sqlserver/requirements.txt
-
-      - name: Instalar dependências do sistema (ODBC)
-        run: |
-          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor --batch -o /usr/share/keyrings/microsoft-prod.gpg
-          curl -fsSL https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-          sudo apt-get update
-          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
 
       - name: Instalar dependências Python
         working-directory: packages/api-sqlserver
@@ -111,14 +100,10 @@ jobs:
 
     env:
       DATABASE_URL: "sqlite:///:memory:"
+      DB_URL_OVERRIDE: "sqlite:///:memory:"
       SECRET_KEY: test-secret-key-for-unit-tests-only-change-in-production
       ACCESS_TOKEN_EXPIRE_MINUTES: 30
       REFRESH_TOKEN_EXPIRE_DAYS: 7
-      DB_SERVER: "127.0.0.1,1433"
-      DB_DATABASE: grindx_test
-      DB_USERNAME: sa
-      DB_PASSWORD: Test@Password123
-      DB_DRIVER: "ODBC Driver 17 for SQL Server"
       APP_NAME: "GrindX"
       APP_VERSION: 0.1.0
       DEBUG: "false"
