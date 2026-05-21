@@ -22,12 +22,21 @@ def upgrade() -> None:
         "usuario_modulos",
         sa.Column("usuario_id", sa.Integer(), nullable=False),
         sa.Column("modulo_id", sa.Integer(), nullable=False),
-        sa.Column("concedido_em", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column(
+            "concedido_em",
+            sa.DateTime(timezone=True),
+            server_default=sa.func.now(),
+            nullable=False,
+        ),
         sa.Column("concedido_por_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(["usuario_id"], ["usuarios.id"], ondelete="CASCADE"),
         # Assuming portal_modulos table exists
-        sa.ForeignKeyConstraint(["modulo_id"], ["portal_modulos.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["concedido_por_id"], ["usuarios.id"], ondelete="SET NULL"),
+        sa.ForeignKeyConstraint(
+            ["modulo_id"], ["portal_modulos.id"], ondelete="CASCADE"
+        ),
+        sa.ForeignKeyConstraint(
+            ["concedido_por_id"], ["usuarios.id"], ondelete="SET NULL"
+        ),
         sa.PrimaryKeyConstraint("usuario_id", "modulo_id"),
     )
 

@@ -67,15 +67,15 @@ class ThemeService:
             copyright_text=copyright_text,
         )
         theme = self.repo.create(theme)
-        
+
         # Log creation to history
         self._log_history(
             theme_id=theme.id,
             company_id=theme.company_id,
             action="created",
-            theme_snapshot=self._to_dict(theme)
+            theme_snapshot=self._to_dict(theme),
         )
-        
+
         logger.info("Tema criado", theme_id=theme.id, company_id=company_id)
         return self._to_dict(theme)
 
@@ -102,42 +102,39 @@ class ThemeService:
         }
 
         theme = self.repo.update(theme, **kwargs)
-        
+
         # Calculate changes (only include fields that actually changed)
         changes = {}
         updated_dict = self._to_dict(theme)
         for key, original_value in original_values.items():
             new_value = updated_dict.get(key)
             if new_value != original_value:
-                changes[key] = {
-                    "from": original_value,
-                    "to": new_value
-                }
-        
+                changes[key] = {"from": original_value, "to": new_value}
+
         # Log update to history
         self._log_history(
             theme_id=theme.id,
             company_id=theme.company_id,
             action="updated",
             theme_snapshot=updated_dict,
-            changes=changes if changes else None
+            changes=changes if changes else None,
         )
-        
+
         logger.info("Tema atualizado", theme_id=theme.id)
         return self._to_dict(theme)
 
     def activate_theme(self, theme_id: int, company_id: int) -> dict:
         """Ativa um tema e desativa os outros da mesma empresa."""
         theme = self.repo.activate_theme(theme_id, company_id)
-        
+
         # Log activation to history
         self._log_history(
             theme_id=theme.id,
             company_id=theme.company_id,
             action="activated",
-            theme_snapshot=self._to_dict(theme)
+            theme_snapshot=self._to_dict(theme),
         )
-        
+
         logger.info("Tema ativado", theme_id=theme.id, company_id=company_id)
         return self._to_dict(theme)
 
@@ -154,7 +151,7 @@ class ThemeService:
             theme_id=theme_id,
             company_id=theme.company_id,
             action="deleted",
-            theme_snapshot=theme_snapshot
+            theme_snapshot=theme_snapshot,
         )
 
         self.repo.delete(theme_id)
@@ -178,7 +175,9 @@ class ThemeService:
             "company_name": theme.company_name,
             "copyright_text": theme.copyright_text,
             "criado_em": theme.criado_em.isoformat() if theme.criado_em else None,
-            "atualizado_em": theme.atualizado_em.isoformat() if theme.atualizado_em else None,
+            "atualizado_em": theme.atualizado_em.isoformat()
+            if theme.atualizado_em
+            else None,
         }
 
     def _log_history(
@@ -191,7 +190,7 @@ class ThemeService:
         performed_by: int | None = None,
     ) -> None:
         """Log a theme history entry.
-        
+
         Args:
             theme_id: ID of the theme
             company_id: ID of the company
@@ -204,7 +203,7 @@ class ThemeService:
         # we'll add it directly here. In a real implementation, you'd want
         # to inject a ThemeHistoryRepository.
         from app.database import SessionLocal
-        
+
         db = SessionLocal()
         try:
             history_entry = ThemeHistory(
@@ -226,14 +225,14 @@ class ThemeService:
     def get_theme_history(self, theme_id: int, company_id: int) -> list[dict]:
         """Get history of changes for a theme."""
         from app.database import SessionLocal
-        
+
         db = SessionLocal()
         try:
             # Verify theme belongs to company
             theme = self.repo.find_by_id(theme_id)
             if theme is None or theme.company_id != company_id:
                 return []
-            
+
             # Query history entries
             history_entries = (
                 db.query(ThemeHistory)
@@ -241,7 +240,7 @@ class ThemeService:
                 .order_by(ThemeHistory.criado_em.desc())
                 .all()
             )
-            
+
             return [
                 {
                     "id": entry.id,

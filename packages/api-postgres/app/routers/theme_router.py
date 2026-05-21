@@ -44,7 +44,9 @@ def _require_company_id(current_user) -> int:
     response_model=ThemeResponse,
     summary="Tema ativo da empresa",
     description="Retorna o tema ativo da empresa do usuário logado.",
-    responses={404: {"model": ErrorResponse, "description": "Nenhum tema ativo encontrado"}},
+    responses={
+        404: {"model": ErrorResponse, "description": "Nenhum tema ativo encontrado"}
+    },
 )
 def get_active_theme(
     current_user=Depends(get_current_user),
@@ -52,11 +54,15 @@ def get_active_theme(
 ) -> dict:
     """Retorna o tema ativo da empresa do usuário."""
     if not current_user.company_id:
-        raise HTTPException(status_code=404, detail="Usuário não possui empresa vinculada")
+        raise HTTPException(
+            status_code=404, detail="Usuário não possui empresa vinculada"
+        )
 
     theme = service.get_active_theme(current_user.company_id)
     if theme is None:
-        raise HTTPException(status_code=404, detail="Nenhum tema ativo encontrado para esta empresa")
+        raise HTTPException(
+            status_code=404, detail="Nenhum tema ativo encontrado para esta empresa"
+        )
     return theme
 
 
@@ -87,30 +93,45 @@ def list_skin_templates(
     """Lista todos os templates de skin disponíveis."""
     import json
 
-    templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "skin-templates")
+    templates_dir = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "data", "skin-templates"
+    )
     templates = []
 
     if os.path.exists(templates_dir):
         for filename in os.listdir(templates_dir):
             if filename.endswith(".json"):
                 try:
-                    with open(os.path.join(templates_dir, filename), "r", encoding="utf-8") as f:
+                    with open(
+                        os.path.join(templates_dir, filename), "r", encoding="utf-8"
+                    ) as f:
                         template_data = json.load(f)
 
                     preview = {}
                     if "colors" in template_data:
                         colors = template_data["colors"]
-                        for key in ["--skin-primary", "--skin-bg-main", "--skin-text-main", "--skin-danger"]:
+                        for key in [
+                            "--skin-primary",
+                            "--skin-bg-main",
+                            "--skin-text-main",
+                            "--skin-danger",
+                        ]:
                             if key in colors:
                                 preview[key] = colors[key]
 
-                    templates.append({
-                        "slug": filename.replace(".json", ""),
-                        "name": template_data.get("name", filename.replace(".json", "")),
-                        "preview": preview
-                    })
+                    templates.append(
+                        {
+                            "slug": filename.replace(".json", ""),
+                            "name": template_data.get(
+                                "name", filename.replace(".json", "")
+                            ),
+                            "preview": preview,
+                        }
+                    )
                 except Exception as e:
-                    logger.warning("Failed to load template", filename=filename, error=str(e))
+                    logger.warning(
+                        "Failed to load template", filename=filename, error=str(e)
+                    )
 
     return templates
 
@@ -134,13 +155,15 @@ def create_theme_from_template(
 
     import json
 
-    templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "skin-templates")
+    templates_dir = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "data", "skin-templates"
+    )
     template_path = os.path.join(templates_dir, f"{template_slug}.json")
 
     if not os.path.exists(template_path):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Template '{template_slug}' não encontrado"
+            detail=f"Template '{template_slug}' não encontrado",
         )
 
     try:
@@ -149,7 +172,7 @@ def create_theme_from_template(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Erro ao carregar template: {str(e)}"
+            detail=f"Erro ao carregar template: {str(e)}",
         )
 
     colors = template_data.get("colors")
@@ -294,7 +317,7 @@ def get_theme_history(
     theme = service.get_theme_by_id(theme_id)
     if theme is None or theme["company_id"] != company_id:
         raise HTTPException(status_code=404, detail="Tema não encontrado")
-    
+
     # Get history from service
     return service.get_theme_history(theme_id, company_id)
 
@@ -318,34 +341,35 @@ def upload_logo(
 ) -> dict:
     """Faz upload de um logo para o tema."""
     company_id = _require_company_id(current_user)
-    
+
     # Validate file type
     allowed_types = ["image/jpeg", "image/png", "image/svg+xml", "image/gif"]
     if file.content_type not in allowed_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Tipo de arquivo não permitido. Tipos permitidos: {', '.join(allowed_types)}"
+            detail=f"Tipo de arquivo não permitido. Tipos permitidos: {', '.join(allowed_types)}",
         )
-    
+
     # Validate file size (max 5MB)
     max_size = 5 * 1024 * 1024  # 5MB
     file.file.seek(0, 2)  # Seek to end
     file_size = file.file.tell()
     file.file.seek(0)  # Reset to beginning
-    
+
     if file_size > max_size:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail=f"Arquivo muito grande. Tamanho máximo: {max_size // (1024*1024)}MB"
+            detail=f"Arquivo muito grande. Tamanho máximo: {max_size // (1024 * 1024)}MB",
         )
-    
+
     # Verify theme belongs to company
     theme = service.get_theme_by_id(theme_id)
     if theme is None or theme["company_id"] != company_id:
         raise HTTPException(status_code=404, detail="Tema não encontrado")
-    
+
     # Generate unique filename
     import uuid
+
     file_extension = file.filename.split(".")[-1] if "." in file.filename else ""
     if file_extension.lower() not in ["jpg", "jpeg", "png", "svg", "gif"]:
         # Default extension based on content type
@@ -353,31 +377,31 @@ def upload_logo(
             "image/jpeg": "jpg",
             "image/png": "png",
             "image/svg+xml": "svg",
-            "image/gif": "gif"
+            "image/gif": "gif",
         }
         file_extension = ext_map.get(file.content_type, "jpg")
-    
+
     unique_filename = f"{uuid.uuid4()}.{file_extension}"
-    
+
     # Ensure uploads directory exists
     uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
     logos_dir = os.path.join(uploads_dir, "logos")
     os.makedirs(logos_dir, exist_ok=True)
-    
+
     # Save file
     file_path = os.path.join(logos_dir, unique_filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    
+
     # Construct URL
     logo_url = f"/uploads/logos/{unique_filename}"
-    
+
     # Update theme with logo URL
     updated_theme = service.update_theme(
-        theme_id=theme_id,
-        company_id=company_id,
-        logo_url=logo_url
+        theme_id=theme_id, company_id=company_id, logo_url=logo_url
     )
-    
-    logger.info("Logo uploaded", theme_id=theme_id, filename=unique_filename, size=file_size)
+
+    logger.info(
+        "Logo uploaded", theme_id=theme_id, filename=unique_filename, size=file_size
+    )
     return updated_theme

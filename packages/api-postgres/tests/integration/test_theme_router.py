@@ -64,7 +64,9 @@ def test_create_and_get_active_theme(client: TestClient, admin_auth_headers: dic
     theme_id = create_resp.json()["id"]
 
     # Ativar tema
-    activate_resp = client.post(f"/v1/themes/{theme_id}/activate", headers=admin_auth_headers)
+    activate_resp = client.post(
+        f"/v1/themes/{theme_id}/activate", headers=admin_auth_headers
+    )
     assert activate_resp.status_code == 200
     assert activate_resp.json()["is_active"] is True
 
@@ -77,8 +79,16 @@ def test_create_and_get_active_theme(client: TestClient, admin_auth_headers: dic
 
 def test_list_themes(client: TestClient, admin_auth_headers: dict):
     """Testa listagem de temas."""
-    client.post("/v1/themes", json={"name": "T1", "icon_library": "fontawesome"}, headers=admin_auth_headers)
-    client.post("/v1/themes", json={"name": "T2", "icon_library": "fontawesome"}, headers=admin_auth_headers)
+    client.post(
+        "/v1/themes",
+        json={"name": "T1", "icon_library": "fontawesome"},
+        headers=admin_auth_headers,
+    )
+    client.post(
+        "/v1/themes",
+        json={"name": "T2", "icon_library": "fontawesome"},
+        headers=admin_auth_headers,
+    )
 
     response = client.get("/v1/themes", headers=admin_auth_headers)
     assert response.status_code == 200
@@ -118,18 +128,33 @@ def test_delete_inactive_theme_succeeds(client: TestClient, admin_auth_headers: 
 # --- Task 3: History endpoint tests ---
 
 
-def test_get_theme_history(client: TestClient, admin_auth_headers: dict, empresa: Empresa, db_session):
+def test_get_theme_history(
+    client: TestClient, admin_auth_headers: dict, empresa: Empresa, db_session
+):
     """Testa busca do histórico de um tema."""
     from unittest.mock import MagicMock, patch
 
     from app.models.theme_history import ThemeHistory
 
-    theme = CompanyTheme(company_id=empresa.id, name="History Theme", icon_library="fontawesome")
+    theme = CompanyTheme(
+        company_id=empresa.id, name="History Theme", icon_library="fontawesome"
+    )
     db_session.add(theme)
     db_session.commit()
 
-    h1 = ThemeHistory(theme_id=theme.id, company_id=empresa.id, action="created", theme_snapshot={"name": "History Theme"})
-    h2 = ThemeHistory(theme_id=theme.id, company_id=empresa.id, action="updated", theme_snapshot={"name": "Updated Name"}, changes={"name": {"from": "History Theme", "to": "Updated Name"}})
+    h1 = ThemeHistory(
+        theme_id=theme.id,
+        company_id=empresa.id,
+        action="created",
+        theme_snapshot={"name": "History Theme"},
+    )
+    h2 = ThemeHistory(
+        theme_id=theme.id,
+        company_id=empresa.id,
+        action="updated",
+        theme_snapshot={"name": "Updated Name"},
+        changes={"name": {"from": "History Theme", "to": "Updated Name"}},
+    )
     db_session.add_all([h1, h2])
     db_session.commit()
 
@@ -147,7 +172,9 @@ def test_get_theme_history(client: TestClient, admin_auth_headers: dict, empresa
     assert "updated" in actions
 
 
-def test_get_theme_history_theme_not_found(client: TestClient, admin_auth_headers: dict):
+def test_get_theme_history_theme_not_found(
+    client: TestClient, admin_auth_headers: dict
+):
     """Testa que retorna 404 para histórico de tema inexistente."""
     resp = client.get("/v1/themes/99999/history", headers=admin_auth_headers)
     assert resp.status_code == 404
@@ -156,10 +183,14 @@ def test_get_theme_history_theme_not_found(client: TestClient, admin_auth_header
 # --- Task 4: Logo upload test ---
 
 
-def test_upload_logo(client: TestClient, admin_auth_headers: dict, empresa: Empresa, db_session):
+def test_upload_logo(
+    client: TestClient, admin_auth_headers: dict, empresa: Empresa, db_session
+):
     """Testa upload de logo para um tema."""
 
-    theme = CompanyTheme(company_id=empresa.id, name="Logo Test", icon_library="fontawesome")
+    theme = CompanyTheme(
+        company_id=empresa.id, name="Logo Test", icon_library="fontawesome"
+    )
     db_session.add(theme)
     db_session.commit()
 

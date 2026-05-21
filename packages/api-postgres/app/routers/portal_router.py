@@ -34,7 +34,8 @@ class AbaResponse(BaseModel):
 
 @router.get("/menu", response_model=List[AbaResponse])
 def obter_menu_dinamico(
-    db: Session = Depends(get_db), current_user: TokenPayload = Depends(get_current_user)
+    db: Session = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
 ):
     if current_user.role == "admin":
         abas = db.query(Aba).filter(Aba.ativo).order_by(Aba.ordem).all()

@@ -22,11 +22,28 @@ def upgrade() -> None:
         sa.Column("theme_id", sa.Integer(), nullable=False),
         sa.Column("company_id", sa.Integer(), nullable=False),
         sa.Column("action", sa.String(50), nullable=False),
-        sa.Column("performed_by", sa.Integer(), nullable=True, comment="ID do usuário que executou a ação"),
-        sa.Column("theme_snapshot", sa.JSON(), nullable=True, comment="Snapshot completo do tema após a ação"),
+        sa.Column(
+            "performed_by",
+            sa.Integer(),
+            nullable=True,
+            comment="ID do usuário que executou a ação",
+        ),
+        sa.Column(
+            "theme_snapshot",
+            sa.JSON(),
+            nullable=True,
+            comment="Snapshot completo do tema após a ação",
+        ),
         sa.Column("changes", sa.JSON(), nullable=True, comment="Diff das alterações"),
-        sa.Column("criado_em", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-        sa.ForeignKeyConstraint(["theme_id"], ["company_themes.id"], ondelete="CASCADE"),
+        sa.Column(
+            "criado_em",
+            sa.DateTime(timezone=True),
+            server_default=sa.func.now(),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["theme_id"], ["company_themes.id"], ondelete="CASCADE"
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index("ix_theme_history_theme_id", "theme_history", ["theme_id"])

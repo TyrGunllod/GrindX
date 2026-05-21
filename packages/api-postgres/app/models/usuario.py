@@ -45,7 +45,10 @@ class Usuario(Base):
         default=True, nullable=False, comment="Se o usuário está ativo"
     )
     empresa_id: Mapped[int | None] = mapped_column(
-        Integer, ForeignKey("empresas.id", ondelete="SET NULL"), nullable=True, comment="Empresa do usuário"
+        Integer,
+        ForeignKey("empresas.id", ondelete="SET NULL"),
+        nullable=True,
+        comment="Empresa do usuário",
     )
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -65,7 +68,7 @@ class Usuario(Base):
         back_populates="usuarios_permitidos",
         lazy="select",
         primaryjoin="and_(Usuario.id == UsuarioModulo.usuario_id)",
-        secondaryjoin="UsuarioModulo.modulo_id == Modulo.id"
+        secondaryjoin="UsuarioModulo.modulo_id == Modulo.id",
     )
 
     def __repr__(self) -> str:
@@ -97,4 +100,6 @@ class UsuarioModulo(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<UsuarioModulo(usuario_id={self.usuario_id}, modulo_id={self.modulo_id})>"
+        return (
+            f"<UsuarioModulo(usuario_id={self.usuario_id}, modulo_id={self.modulo_id})>"
+        )

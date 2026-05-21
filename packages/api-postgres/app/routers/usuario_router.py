@@ -93,7 +93,11 @@ def listar_modulos_usuario(
     current_user=Depends(require_role("admin")),
 ):
     """Retorna lista de modulo_ids liberados para o usuário. Acesso: admin."""
-    modulos = db.query(UsuarioModulo.modulo_id).filter(UsuarioModulo.usuario_id == usuario_id).all()
+    modulos = (
+        db.query(UsuarioModulo.modulo_id)
+        .filter(UsuarioModulo.usuario_id == usuario_id)
+        .all()
+    )
     return UsuarioModulosResponse(
         usuario_id=usuario_id, modulos=[m[0] for m in modulos]
     )
@@ -109,12 +113,10 @@ def atualizar_modulos_usuario(
     """Substitui a lista completa de módulos liberados. Acesso: admin."""
     # Deleta existentes
     db.query(UsuarioModulo).filter(UsuarioModulo.usuario_id == usuario_id).delete()
-    
+
     # Insere novos
     for mod_id in schema.modulo_ids:
         db.add(UsuarioModulo(usuario_id=usuario_id, modulo_id=mod_id))
-    
+
     db.commit()
-    return UsuarioModulosResponse(
-        usuario_id=usuario_id, modulos=schema.modulo_ids
-    )
+    return UsuarioModulosResponse(usuario_id=usuario_id, modulos=schema.modulo_ids)

@@ -26,7 +26,11 @@ class ThemeRepository:
 
     def find_all_by_company_id(self, company_id: int) -> list[CompanyTheme]:
         """Busca todos os temas de uma empresa."""
-        return self.db.query(CompanyTheme).filter(CompanyTheme.company_id == company_id).all()
+        return (
+            self.db.query(CompanyTheme)
+            .filter(CompanyTheme.company_id == company_id)
+            .all()
+        )
 
     def find_by_id(self, theme_id: int) -> CompanyTheme | None:
         """Busca tema por ID."""
@@ -70,6 +74,8 @@ class ThemeRepository:
         if theme is None:
             raise ValueError(f"Tema {theme_id} não encontrado")
         if theme.is_active:
-            raise ConflictError("Não é possível deletar um tema ativo. Desative-o primeiro.")
+            raise ConflictError(
+                "Não é possível deletar um tema ativo. Desative-o primeiro."
+            )
         self.db.delete(theme)
         self.db.commit()

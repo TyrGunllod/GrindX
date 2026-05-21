@@ -46,8 +46,18 @@ def test_activate_theme_deactivates_others(db_session: Session):
     db_session.add(empresa)
     db_session.commit()
 
-    theme1 = CompanyTheme(company_id=empresa.id, name="Theme 1", is_active=True, icon_library="fontawesome")
-    theme2 = CompanyTheme(company_id=empresa.id, name="Theme 2", is_active=False, icon_library="fontawesome")
+    theme1 = CompanyTheme(
+        company_id=empresa.id,
+        name="Theme 1",
+        is_active=True,
+        icon_library="fontawesome",
+    )
+    theme2 = CompanyTheme(
+        company_id=empresa.id,
+        name="Theme 2",
+        is_active=False,
+        icon_library="fontawesome",
+    )
     db_session.add_all([theme1, theme2])
     db_session.commit()
 
@@ -68,13 +78,23 @@ def test_insert_active_theme_deactivates_existing(db_session: Session):
     db_session.add(empresa)
     db_session.commit()
 
-    theme1 = CompanyTheme(company_id=empresa.id, name="Theme 1", is_active=True, icon_library="fontawesome")
+    theme1 = CompanyTheme(
+        company_id=empresa.id,
+        name="Theme 1",
+        is_active=True,
+        icon_library="fontawesome",
+    )
     db_session.add(theme1)
     db_session.commit()
     db_session.refresh(theme1)
     assert theme1.is_active is True
 
-    theme2 = CompanyTheme(company_id=empresa.id, name="Theme 2", is_active=True, icon_library="fontawesome")
+    theme2 = CompanyTheme(
+        company_id=empresa.id,
+        name="Theme 2",
+        is_active=True,
+        icon_library="fontawesome",
+    )
     db_session.add(theme2)
     db_session.commit()
 

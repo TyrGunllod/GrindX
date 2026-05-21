@@ -46,25 +46,52 @@ class CompanyTheme(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     company_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("empresas.id", ondelete="CASCADE"), nullable=False, index=True
+        Integer,
+        ForeignKey("empresas.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
-    name: Mapped[str] = mapped_column(String(100), nullable=False, comment="Nome da skin")
-    is_active: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False, comment="Skin ativa")
-    colors: Mapped[dict | None] = mapped_column(JSON, nullable=True, comment="Overrides de cores")
-    fonts: Mapped[dict | None] = mapped_column(JSON, nullable=True, comment="Overrides de fontes")
+    name: Mapped[str] = mapped_column(
+        String(100), nullable=False, comment="Nome da skin"
+    )
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False, comment="Skin ativa"
+    )
+    colors: Mapped[dict | None] = mapped_column(
+        JSON, nullable=True, comment="Overrides de cores"
+    )
+    fonts: Mapped[dict | None] = mapped_column(
+        JSON, nullable=True, comment="Overrides de fontes"
+    )
     icon_library: Mapped[str] = mapped_column(
-        String(50), nullable=False, server_default=text("'fontawesome'"), comment="Biblioteca de ícones"
+        String(50),
+        nullable=False,
+        server_default=text("'fontawesome'"),
+        comment="Biblioteca de ícones",
     )
-    tokens: Mapped[dict | None] = mapped_column(JSON, nullable=True, comment="Tokens extras (radius, shadows)")
-    logo_url: Mapped[str | None] = mapped_column(String(500), nullable=True, comment="URL do logo")
-    logo_short_url: Mapped[str | None] = mapped_column(String(500), nullable=True, comment="URL do logo curto")
-    company_name: Mapped[str | None] = mapped_column(String(100), nullable=True, comment="Nome exibido no sistema")
-    copyright_text: Mapped[str | None] = mapped_column(String(200), nullable=True, comment="Texto do rodapé")
+    tokens: Mapped[dict | None] = mapped_column(
+        JSON, nullable=True, comment="Tokens extras (radius, shadows)"
+    )
+    logo_url: Mapped[str | None] = mapped_column(
+        String(500), nullable=True, comment="URL do logo"
+    )
+    logo_short_url: Mapped[str | None] = mapped_column(
+        String(500), nullable=True, comment="URL do logo curto"
+    )
+    company_name: Mapped[str | None] = mapped_column(
+        String(100), nullable=True, comment="Nome exibido no sistema"
+    )
+    copyright_text: Mapped[str | None] = mapped_column(
+        String(200), nullable=True, comment="Texto do rodapé"
+    )
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     atualizado_em: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
     )
 
     company: Mapped["Empresa"] = relationship(back_populates="themes")  # noqa: F821

@@ -14,10 +14,18 @@ class ThemeCreate(BaseModel):
     fonts: Optional[dict] = Field(default=None, description="Overrides de fontes")
     icon_library: str = Field(default="fontawesome", description="Biblioteca de ícones")
     tokens: Optional[dict] = Field(default=None, description="Tokens extras")
-    logo_url: Optional[str] = Field(default=None, max_length=500, description="URL do logo")
-    logo_short_url: Optional[str] = Field(default=None, max_length=500, description="URL do logo curto")
-    company_name: Optional[str] = Field(default=None, max_length=100, description="Nome exibido no sistema")
-    copyright_text: Optional[str] = Field(default=None, max_length=200, description="Texto do rodapé")
+    logo_url: Optional[str] = Field(
+        default=None, max_length=500, description="URL do logo"
+    )
+    logo_short_url: Optional[str] = Field(
+        default=None, max_length=500, description="URL do logo curto"
+    )
+    company_name: Optional[str] = Field(
+        default=None, max_length=100, description="Nome exibido no sistema"
+    )
+    copyright_text: Optional[str] = Field(
+        default=None, max_length=200, description="Texto do rodapé"
+    )
 
 
 class ThemeUpdate(BaseModel):

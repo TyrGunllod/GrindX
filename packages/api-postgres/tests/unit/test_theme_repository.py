@@ -34,7 +34,9 @@ def active_theme(db_session: Session, empresa: Empresa) -> CompanyTheme:
     return theme
 
 
-def test_find_active_by_company_id(theme_repo: ThemeRepository, empresa: Empresa, active_theme: CompanyTheme):
+def test_find_active_by_company_id(
+    theme_repo: ThemeRepository, empresa: Empresa, active_theme: CompanyTheme
+):
     """Testa busca do tema ativo por empresa."""
     result = theme_repo.find_active_by_company_id(empresa.id)
     assert result is not None
@@ -42,7 +44,9 @@ def test_find_active_by_company_id(theme_repo: ThemeRepository, empresa: Empresa
     assert result.colors["--skin-primary"] == "#ff0000"
 
 
-def test_find_active_returns_none_if_no_theme(theme_repo: ThemeRepository, empresa: Empresa):
+def test_find_active_returns_none_if_no_theme(
+    theme_repo: ThemeRepository, empresa: Empresa
+):
     """Testa que retorna None se não há tema ativo."""
     result = theme_repo.find_active_by_company_id(empresa.id)
     assert result is None
@@ -61,8 +65,12 @@ def test_find_all_by_company_id(theme_repo: ThemeRepository, empresa: Empresa):
 
 def test_activate_deactivates_others(theme_repo: ThemeRepository, empresa: Empresa):
     """Testa que ativar um tema desativa os outros."""
-    t1 = CompanyTheme(company_id=empresa.id, name="T1", is_active=True, icon_library="fontawesome")
-    t2 = CompanyTheme(company_id=empresa.id, name="T2", is_active=False, icon_library="fontawesome")
+    t1 = CompanyTheme(
+        company_id=empresa.id, name="T1", is_active=True, icon_library="fontawesome"
+    )
+    t2 = CompanyTheme(
+        company_id=empresa.id, name="T2", is_active=False, icon_library="fontawesome"
+    )
     theme_repo.db.add_all([t1, t2])
     theme_repo.db.commit()
 
@@ -74,7 +82,9 @@ def test_activate_deactivates_others(theme_repo: ThemeRepository, empresa: Empre
     assert t2_check.is_active is True
 
 
-def test_delete_raises_if_active(theme_repo: ThemeRepository, empresa: Empresa, active_theme: CompanyTheme):
+def test_delete_raises_if_active(
+    theme_repo: ThemeRepository, empresa: Empresa, active_theme: CompanyTheme
+):
     """Testa que não pode deletar tema ativo."""
     from shared.exceptions.base import ConflictError
 

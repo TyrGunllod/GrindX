@@ -21,16 +21,23 @@ class Empresa(Base):
     __tablename__ = "empresas"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    nome: Mapped[str] = mapped_column(String(100), nullable=False, comment="Nome da empresa")
+    nome: Mapped[str] = mapped_column(
+        String(100), nullable=False, comment="Nome da empresa"
+    )
     dominio: Mapped[str | None] = mapped_column(
         String(255), nullable=True, unique=True, comment="Domínio/subdomínio da empresa"
     )
-    ativo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, comment="Se a empresa está ativa")
+    ativo: Mapped[bool] = mapped_column(
+        Boolean, default=True, nullable=False, comment="Se a empresa está ativa"
+    )
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     atualizado_em: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
     )
 
     themes: Mapped[list["CompanyTheme"]] = relationship(  # noqa: F821

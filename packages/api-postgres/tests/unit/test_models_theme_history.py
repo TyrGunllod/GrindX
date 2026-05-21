@@ -12,11 +12,15 @@ def test_create_theme_history(db_session: Session):
     db_session.add(empresa)
     db_session.commit()
 
-    theme = CompanyTheme(company_id=empresa.id, name="Test Theme", icon_library="fontawesome")
+    theme = CompanyTheme(
+        company_id=empresa.id, name="Test Theme", icon_library="fontawesome"
+    )
     db_session.add(theme)
     db_session.commit()
 
-    history = ThemeHistory(theme_id=theme.id, company_id=empresa.id, action="created", theme_snapshot={})
+    history = ThemeHistory(
+        theme_id=theme.id, company_id=empresa.id, action="created", theme_snapshot={}
+    )
     db_session.add(history)
     db_session.commit()
     db_session.refresh(history)
@@ -35,11 +39,15 @@ def test_history_cascade_on_theme_delete(db_session: Session):
     db_session.add(empresa)
     db_session.commit()
 
-    theme = CompanyTheme(company_id=empresa.id, name="To Delete", icon_library="fontawesome")
+    theme = CompanyTheme(
+        company_id=empresa.id, name="To Delete", icon_library="fontawesome"
+    )
     db_session.add(theme)
     db_session.commit()
 
-    history = ThemeHistory(theme_id=theme.id, company_id=empresa.id, action="created", theme_snapshot={})
+    history = ThemeHistory(
+        theme_id=theme.id, company_id=empresa.id, action="created", theme_snapshot={}
+    )
     db_session.add(history)
     db_session.commit()
 

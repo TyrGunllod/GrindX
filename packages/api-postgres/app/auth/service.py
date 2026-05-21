@@ -137,7 +137,11 @@ class AuthService:
         Returns:
             TokenResponse com os tokens gerados.
         """
-        payload = {"sub": str(usuario.id), "role": usuario.role, "company_id": usuario.empresa_id}
+        payload = {
+            "sub": str(usuario.id),
+            "role": usuario.role,
+            "company_id": usuario.empresa_id,
+        }
 
         access_token = criar_jwt(
             payload=payload,

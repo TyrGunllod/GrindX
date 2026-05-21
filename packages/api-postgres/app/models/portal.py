@@ -43,5 +43,5 @@ class Modulo(Base):
         back_populates="modulos_permitidos",
         lazy="select",
         primaryjoin="and_(Modulo.id == UsuarioModulo.modulo_id)",
-        secondaryjoin="UsuarioModulo.usuario_id == Usuario.id"
+        secondaryjoin="UsuarioModulo.usuario_id == Usuario.id",
     )

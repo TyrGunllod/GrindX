@@ -45,7 +45,9 @@ def seed_database():
         # =========================================================
         # 1. Empresa base GrindX
         # =========================================================
-        empresa_grindx = session.query(Empresa).filter_by(dominio="grindx.local").first()
+        empresa_grindx = (
+            session.query(Empresa).filter_by(dominio="grindx.local").first()
+        )
         if not empresa_grindx:
             empresa_grindx = Empresa(
                 nome="GrindX",
@@ -87,7 +89,9 @@ def seed_database():
 
         criados = 0
         for dados in usuarios_seed:
-            usuario = session.query(Usuario).filter_by(username=dados["username"]).first()
+            usuario = (
+                session.query(Usuario).filter_by(username=dados["username"]).first()
+            )
             if not usuario:
                 usuario = Usuario(
                     username=dados["username"],
@@ -122,7 +126,9 @@ def seed_database():
         for dados in abas_seed:
             aba = session.query(Aba).filter_by(nome=dados["nome"]).first()
             if not aba:
-                aba = Aba(nome=dados["nome"], icone=dados["icone"], ordem=dados["ordem"])
+                aba = Aba(
+                    nome=dados["nome"], icone=dados["icone"], ordem=dados["ordem"]
+                )
                 session.add(aba)
                 session.flush()
                 print(f"[OK] Aba '{aba.nome}' criada")
