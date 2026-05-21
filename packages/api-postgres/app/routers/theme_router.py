@@ -4,7 +4,11 @@ Router para gestão de temas/skins de empresas.
 Endpoints para CRUD de temas e ativação.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+import os
+import shutil
+
+import structlog
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from shared.exceptions.base import ConflictError, NotFoundError
 from shared.schemas.base import ErrorResponse
 from sqlalchemy.orm import Session
@@ -14,12 +18,7 @@ from app.repositories.theme_repository import ThemeRepository
 from app.schemas.theme import ThemeCreate, ThemeResponse, ThemeUpdate
 from app.schemas.theme_history import ThemeHistoryResponse
 from app.services.theme_service import ThemeService
-import os
-import shutil
-from fastapi import File, UploadFile
-from shared.exceptions.base import NotFoundError
 
-import structlog
 logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/v1/themes", tags=["Temas"])

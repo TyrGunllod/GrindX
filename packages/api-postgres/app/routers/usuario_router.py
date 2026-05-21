@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.auth.dependencies import require_role
 from app.database import get_db
-from app.models.usuario import Usuario, UsuarioModulo
+from app.models.usuario import UsuarioModulo
 from app.schemas.usuario import (
     UsuarioCreate,
     UsuarioModulosResponse,

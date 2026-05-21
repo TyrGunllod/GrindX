@@ -1,13 +1,12 @@
 """Testes de integração para o router de temas."""
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
-
 from app.models.empresa import Empresa
 from app.models.theme import CompanyTheme
 from app.models.usuario import Usuario
+from fastapi.testclient import TestClient
 from shared.security.jwt import gerar_hash_senha
+from sqlalchemy.orm import Session
 
 
 @pytest.fixture
@@ -123,7 +122,6 @@ def test_get_theme_history(client: TestClient, admin_auth_headers: dict, empresa
     """Testa busca do histórico de um tema."""
     from unittest.mock import MagicMock, patch
 
-    from app.models.theme import CompanyTheme
     from app.models.theme_history import ThemeHistory
 
     theme = CompanyTheme(company_id=empresa.id, name="History Theme", icon_library="fontawesome")
@@ -160,7 +158,6 @@ def test_get_theme_history_theme_not_found(client: TestClient, admin_auth_header
 
 def test_upload_logo(client: TestClient, admin_auth_headers: dict, empresa: Empresa, db_session):
     """Testa upload de logo para um tema."""
-    from app.models.theme import CompanyTheme
 
     theme = CompanyTheme(company_id=empresa.id, name="Logo Test", icon_library="fontawesome")
     db_session.add(theme)

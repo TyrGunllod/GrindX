@@ -1,13 +1,12 @@
 """Testes unitários para ThemeService."""
 
 import pytest
-from sqlalchemy.orm import Session
-
 from app.models.empresa import Empresa
 from app.models.theme import CompanyTheme
 from app.repositories.theme_repository import ThemeRepository
 from app.services.theme_service import ThemeService
-from shared.exceptions.base import NotFoundError, ConflictError
+from shared.exceptions.base import ConflictError
+from sqlalchemy.orm import Session
 
 
 @pytest.fixture
@@ -181,7 +180,6 @@ def test_delete_theme_logs_history(theme_service: ThemeService, empresa: Empresa
         with patch("app.database.SessionLocal", return_value=mock_session):
             original_log(**kwargs)
 
-    from app.models.theme_history import ThemeHistory
 
     with patch.object(theme_service, "_log_history", side_effect=_capture_log, autospec=False):
         theme_service.delete_theme(created["id"])

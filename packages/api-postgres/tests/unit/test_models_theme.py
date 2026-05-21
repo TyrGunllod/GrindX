@@ -1,11 +1,8 @@
 """Testes unitários para os modelos Empresa e CompanyTheme."""
 
-import pytest
-from sqlalchemy.orm import Session
-
-from app.database import Base
 from app.models.empresa import Empresa
 from app.models.theme import CompanyTheme
+from sqlalchemy.orm import Session
 
 
 def test_create_empresa(db_session: Session):

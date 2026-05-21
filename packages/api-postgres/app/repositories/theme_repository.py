@@ -20,7 +20,7 @@ class ThemeRepository:
         """Busca o tema ativo de uma empresa."""
         return (
             self.db.query(CompanyTheme)
-            .filter(CompanyTheme.company_id == company_id, CompanyTheme.is_active == True)
+            .filter(CompanyTheme.company_id == company_id, CompanyTheme.is_active)
             .first()
         )
 

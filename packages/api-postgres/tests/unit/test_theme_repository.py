@@ -1,11 +1,10 @@
 """Testes unitários para ThemeRepository."""
 
 import pytest
-from sqlalchemy.orm import Session
-
 from app.models.empresa import Empresa
 from app.models.theme import CompanyTheme
 from app.repositories.theme_repository import ThemeRepository
+from sqlalchemy.orm import Session
 
 
 @pytest.fixture

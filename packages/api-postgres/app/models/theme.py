@@ -5,9 +5,21 @@ Tabela: company_themes (PostgreSQL)
 Armazena personalizações visuais por empresa.
 """
 
+from __future__ import annotations
+
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, String, event, func, text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    event,
+    func,
+    text,
+)
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
 from app.database import Base
@@ -55,7 +67,7 @@ class CompanyTheme(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )
 
-    company: Mapped["Empresa"] = relationship(back_populates="themes")
+    company: Mapped["Empresa"] = relationship(back_populates="themes")  # noqa: F821
 
     def __repr__(self) -> str:
         return f"<CompanyTheme(id={self.id}, company_id={self.company_id}, name='{self.name}')>"

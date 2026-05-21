@@ -5,7 +5,8 @@ Armazena log de todas as alterações em temas para auditoria.
 """
 
 from datetime import datetime
-from sqlalchemy import DateTime, ForeignKey, Integer, JSON, String, text, func
+
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base

@@ -5,6 +5,8 @@ Tabela: empresas (PostgreSQL)
 Cada empresa pode ter sua própria skin/tema.
 """
 
+from __future__ import annotations
+
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, String, func
@@ -31,7 +33,7 @@ class Empresa(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )
 
-    themes: Mapped[list["CompanyTheme"]] = relationship(
+    themes: Mapped[list["CompanyTheme"]] = relationship(  # noqa: F821
         back_populates="company", cascade="all, delete-orphan"
     )
 

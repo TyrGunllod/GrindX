@@ -2,15 +2,13 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
+from shared.schemas.auth import TokenPayload
 from sqlalchemy.orm import Session
 
-from app.auth.dependencies import require_role
+from app.auth.dependencies import get_current_user, require_role
 from app.database import get_db
 from app.models.portal import Aba, Modulo
-
-from app.auth.dependencies import get_current_user
 from app.models.usuario import UsuarioModulo
-from shared.schemas.auth import TokenPayload
 
 router = APIRouter(prefix="/v1/portal", tags=["Estrutura do Portal"])
 

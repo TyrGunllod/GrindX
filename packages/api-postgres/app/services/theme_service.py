@@ -53,7 +53,6 @@ class ThemeService:
         copyright_text: str | None = None,
     ) -> dict:
         """Cria um novo tema."""
-        from app.models.theme import CompanyTheme
 
         theme = CompanyTheme(
             company_id=company_id,
@@ -204,7 +203,6 @@ class ThemeService:
         # This would typically be done via a repository, but for simplicity
         # we'll add it directly here. In a real implementation, you'd want
         # to inject a ThemeHistoryRepository.
-        from app.repositories.theme_repository import ThemeRepository
         from app.database import SessionLocal
         
         db = SessionLocal()
