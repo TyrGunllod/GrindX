@@ -55,7 +55,9 @@ class Settings(BaseSettings):
             return f"mssql+pyodbc://{self.DB_USERNAME}:{password}@{self.DB_SERVER}/{self.DB_DATABASE}?driver={driver}"
 
         server = self.DB_SERVER.replace(",", ":")
-        return f"mssql+pymssql://{self.DB_USERNAME}:{password}@{server}/{self.DB_DATABASE}"
+        return (
+            f"mssql+pymssql://{self.DB_USERNAME}:{password}@{server}/{self.DB_DATABASE}"
+        )
 
     model_config = SettingsConfigDict(
         env_file=".env",
