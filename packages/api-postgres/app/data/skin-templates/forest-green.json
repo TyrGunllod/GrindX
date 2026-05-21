@@ -1,0 +1,38 @@
+{
+  "name": "Forest Green",
+  "colors": {
+    "--skin-primary": "#16a34a",
+    "--skin-primary-hover": "#15803d",
+    "--skin-danger": "#dc2626",
+    "--skin-success": "#16a34a",
+    "--skin-warning": "#ca8a04",
+    "--skin-bg-main": "#f0fdf4",
+    "--skin-bg-card": "#ffffff",
+    "--skin-text-main": "#1e293b",
+    "--skin-text-muted": "#64748b",
+    "--skin-border-color": "#bbf7d0",
+    "--skin-focus-ring": "rgba(22, 163, 74, 0.35)",
+    "--skin-bg-main-dark": "#064e3b",
+    "--skin-bg-card-dark": "#0f766e",
+    "--skin-text-main-dark": "#f0fdf4",
+    "--skin-text-muted-dark": "#94a3b8",
+    "--skin-border-color-dark": "rgba(255, 255, 255, 0.03)"
+  },
+  "fonts": {
+    "heading": "Barlow Condensed",
+    "body": "DM Sans"
+  },
+  "icon_library": "fontawesome",
+  "tokens": {
+    "--skin-radius-sm": "0.25rem",
+    "--skin-radius-md": "0.5rem",
+    "--skin-radius-lg": "0.75rem",
+    "--skin-radius-xl": "1.5rem",
+    "--skin-shadow-card": "0 10px 20px rgba(0,0,0,0.08)",
+    "--skin-shadow-modal": "0 15px 30px -5px rgba(0,0,0,0.15)"
+  },
+  "company_name": "GrindX",
+  "copyright_text": "© 2026 GrindX. Desenvolvido por Alex Grellet.",
+  "logo_url": null,
+  "logo_short_url": null
+}

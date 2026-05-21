@@ -2,6 +2,7 @@
  * SKIN LOADER - GrindX
  * Runtime do sistema de skins/theming.
  * Carrega e aplica skins do DB (via API) ou JSON fallback.
+ * Inclui cache localStorage e modo preview.
  */
 
 const SKIN_DEFAULTS = {
@@ -56,36 +57,85 @@ class SkinLoader {
         this.currentSkin = null;
         this._iconLinkEl = null;
         this._fontLinkEl = null;
+        this._previewMode = false;
+        this._originalSkin = null;
     }
 
-    async load(companyId) {
-        let skin = null;
+    /**
+     * Carrega uma skin com cache localStorage
+     * @param {number|string} companyId - ID da empresa
+     * @param {boolean} useCache - Se deve usar cache (padrão: true)
+     */
+    async load(companyId, useCache = true) {
+        // 1. Tentar cache localStorage primeiro (se habilitado)
+        if (useCache) {
+            const cached = this._getFromCache(companyId);
+            if (cached) {
+                // Aplicar cache imediatamente (zero flash)
+                const merged = this._deepMerge(SKIN_DEFAULTS, cached);
+                this.currentSkin = merged;
+                this._applySkin(merged);
+                
+                // Atualizar em background
+                this._fetchAndUpdateCache(companyId, merged).catch(() => {});
+                return;
+            }
+        }
 
-        // 1. Tenta API
+        // 2. Tenta API
+        let skin = null;
         if (companyId) {
             skin = await this._fetchFromAPI(companyId);
         }
 
-        // 2. Fallback para JSON local
+        // 3. Fallback para JSON local
         if (!skin) {
             skin = await this._fetchFromJSON('grindx-default');
         }
 
-        // 3. Merge com defaults
+        // 4. Merge com defaults
         const merged = this._deepMerge(SKIN_DEFAULTS, skin || {});
         this.currentSkin = merged;
 
-        // 4. Aplica
-        this._applyColors(merged.colors);
-        this._applyTokens(merged.tokens);
-        this._applyFonts(merged.fonts);
-        this._loadIconLibrary(merged.icon_library);
-        this._updateBranding(merged.company_name, merged.copyright_text);
-        this._updateLogos(merged.logo_url, merged.logo_short_url);
+        // 5. Aplicar e atualizar cache
+        this._applySkin(merged);
+        this._saveToCache(companyId, merged);
     }
 
+    /**
+     * Recarrega a skin, ignorando cache
+     * @param {number|string} companyId - ID da empresa
+     */
     async reload(companyId) {
-        await this.load(companyId);
+        await this.load(companyId, false); // Ignorar cache
+    }
+
+    /**
+     * Aplica cores em modo preview (sem salvar no cache)
+     * @param {Object} colors - Objeto de cores para aplicar
+     */
+    applyPreviewColors(colors) {
+        if (!colors) return;
+        this._previewMode = true;
+        this._originalSkin = this.currentSkin;
+        
+        const root = document.documentElement;
+        for (const [key, value] of Object.entries(colors)) {
+            if (key.startsWith('--skin-')) {
+                root.style.setProperty(key, value);
+            }
+        }
+    }
+
+    /**
+     * Sai do modo preview e restaura a skin original
+     */
+    exitPreviewMode() {
+        if (!this._previewMode || !this._originalSkin) return;
+        
+        this._previewMode = false;
+        this._applySkin(this._originalSkin);
+        this._originalSkin = null;
     }
 
     async _fetchFromAPI(companyId) {
@@ -123,6 +173,15 @@ class SkinLoader {
             }
         }
         return result;
+    }
+
+    _applySkin(skin) {
+        this._applyColors(skin.colors);
+        this._applyTokens(skin.tokens);
+        this._applyFonts(skin.fonts);
+        this._loadIconLibrary(skin.icon_library);
+        this._updateBranding(skin.company_name, skin.copyright_text);
+        this._updateLogos(skin.logo_url, skin.logo_short_url);
     }
 
     _applyColors(colors) {
@@ -247,14 +306,54 @@ class SkinLoader {
         }
     }
 
-    // Live preview para admin module
-    applyPreviewColors(colors) {
-        if (!colors) return;
-        const root = document.documentElement;
-        for (const [key, value] of Object.entries(colors)) {
-            if (key.startsWith('--skin-')) {
-                root.style.setProperty(key, value);
+    _getFromCache(companyId) {
+        try {
+            if (!window.localStorage) return null;
+            const cacheKey = `skin_cache_${companyId}`;
+            const cached = window.localStorage.getItem(cacheKey);
+            if (!cached) return null;
+            
+            const parsed = JSON.parse(cached);
+            // Cache válido por 5 minutos
+            if (Date.now() - parsed.timestamp > 5 * 60 * 1000) {
+                window.localStorage.removeItem(cacheKey);
+                return null;
             }
+            return parsed.data;
+        } catch (e) {
+            console.warn('SkinLoader: Erro ao ler cache', e);
+            return null;
+        }
+    }
+
+    _saveToCache(companyId, skinData) {
+        try {
+            if (!window.localStorage) return;
+            const cacheKey = `skin_cache_${companyId}`;
+            const cacheData = {
+                timestamp: Date.now(),
+                data: skinData
+            };
+            window.localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        } catch (e) {
+            console.warn('SkinLoader: Erro ao salvar cache', e);
+        }
+    }
+
+    async _fetchAndUpdateCache(companyId, currentSkin) {
+        try {
+            const skin = await this._fetchFromAPI(companyId);
+            if (!skin) return;
+            
+            const merged = this._deepMerge(SKIN_DEFAULTS, skin);
+            // Só atualizar se houver diferenças significativas
+            if (JSON.stringify(merged) !== JSON.stringify(currentSkin)) {
+                this.currentSkin = merged;
+                this._applySkin(merged);
+                this._saveToCache(companyId, merged);
+            }
+        } catch (e) {
+            // Silencioso - manter cache atual
         }
     }
 

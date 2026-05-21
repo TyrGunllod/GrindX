@@ -8,13 +8,16 @@ Configura o app FastAPI com:
 - Exception handlers
 - Routers (auth, produto, health)
 - Documentação Swagger/ReDoc em /v1/
+- Arquivos estáticos (uploads)
 """
 
+import os
 from contextlib import asynccontextmanager
 
 import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.auth.router import router as auth_router
 from app.core.config import settings
@@ -101,6 +104,18 @@ app.add_middleware(
 # =========================================================
 
 register_exception_handlers(app)
+
+# =========================================================
+# Static Files (uploads)
+# =========================================================
+
+# Create uploads directory if it doesn't exist
+uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+logos_dir = os.path.join(uploads_dir, "logos")
+os.makedirs(logos_dir, exist_ok=True)
+
+# Mount static files for serving uploaded logos
+app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 # =========================================================
 # Routers

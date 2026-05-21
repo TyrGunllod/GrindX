@@ -78,10 +78,21 @@
                   </button>
               </div>
               <div class="copyright-text">© 2026 GrindX. Desenvolvido por Alex Grellet.</div>
-          </footer>
-      </aside>
+           </footer>
+       </aside>
 
-     <!-- Main Viewport -->
+      <!-- Preview Banner (shown when skin_preview query param is present) -->
+      <div id="skinPreviewBanner" class="skin-preview-banner" style="display: none;">
+          <div class="skin-preview-banner-content">
+              <span id="skinPreviewBannerText">🔍 Preview da skin 'Carregando...'</span>
+              <div class="skin-preview-banner-actions">
+                  <button id="applyPermanentBtn" class="btn btn-primary">Aplicar Permanentemente</button>
+                  <button id="closePreviewBtn" class="btn btn-secondary">Fechar Preview</button>
+              </div>
+          </div>
+      </div>
+
+      <!-- Main Viewport -->
      <main class="main-viewport">
          <header class="top-bar" style="padding: 15px;">
              <button class="btn-icon md-hide" id="openSidebar" aria-label="Abrir menu">

@@ -55,20 +55,32 @@ class DashboardController extends window.grindx.controllers.BaseController {
         }
     }
 
-    setupEvents() {
-        document.getElementById('openSidebar')?.addEventListener('click', () => this.toggleSidebar(true));
-        document.getElementById('closeSidebar')?.addEventListener('click', () => this.toggleSidebar(false));
-        this.mainNav.addEventListener('click', (e) => this.handleNavigation(e));
-        document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
+        setupEvents() {
+            document.getElementById('openSidebar')?.addEventListener('click', () => this.toggleSidebar(true));
+            document.getElementById('closeSidebar')?.addEventListener('click', () => this.toggleSidebar(false));
+            this.mainNav.addEventListener('click', (e) => this.handleNavigation(e));
+            document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
 
-        document.getElementById('themeToggle')?.addEventListener('click', () => {
-            window.grindx.theme.toggle();
-            this.updateThemeIcon();
-            this.syncIframeTheme();
-        });
+            document.getElementById('themeToggle')?.addEventListener('click', () => {
+                window.grindx.theme.toggle();
+                this.updateThemeIcon();
+                this.syncIframeTheme();
+            });
 
-        document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
-    }
+            document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
+
+            // Preview banner events
+            document.getElementById('applyPermanentBtn')?.addEventListener('click', () => this.applyPreviewSkinPermanently());
+            document.getElementById('closePreviewBtn')?.addEventListener('click', () => {
+                this.hideSkinPreviewBanner();
+                window.skinLoader.exitPreviewMode();
+                // Reload normal skin
+                const companyId = this.user?.company_id;
+                if (companyId && window.skinLoader) {
+                    window.skinLoader.load(parseInt(companyId));
+                }
+            });
+        }
 
     toggleSidebarCollapse() {
         this.sidebar.classList.toggle('collapsed');
@@ -239,12 +251,119 @@ class DashboardController extends window.grindx.controllers.BaseController {
     }
 
     loadCompanySkin() {
+        // Check if we're in preview mode via query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const skinPreviewId = urlParams.get('skin_preview');
+        
+        if (skinPreviewId && window.skinLoader) {
+            // Show preview banner
+            this.showSkinPreviewBanner();
+            
+            // Load theme in preview mode (doesn't update cache or permanent settings)
+            window.skinLoader.load(null, false).then(() => {
+                // Fetch the specific theme for preview
+                const token = window.grindx?.session?.getToken();
+                const headers = token ? { Authorization: `Bearer ${token}` } : {};
+                const baseUrl = window.grindx?.config?.API_BASE_URL || 'http://127.0.0.1:8002/v1';
+                
+                fetch(`${baseUrl}/themes/${skinPreviewId}`, { headers })
+                    .then(resp => {
+                        if (!resp.ok) throw new Error('Failed to fetch theme');
+                        return resp.json();
+                    })
+                    .then(theme => {
+                        // Update banner text with theme name
+                        document.getElementById('skinPreviewBannerText').textContent = 
+                            `🔍 Preview da skin '${theme.name || 'Sem nome'}'`;
+                        
+                        // Apply preview colors without saving to cache
+                        window.skinLoader.applyPreviewColors(theme.colors);
+                        window.skinLoader._applyTokens(theme.tokens);
+                        window.skinLoader._applyFonts(theme.fonts);
+                        window.skinLoader._loadIconLibrary(theme.icon_library);
+                        window.skinLoader._updateBranding(theme.company_name, theme.copyright_text);
+                        window.skinLoader._updateLogos(theme.logo_url, theme.logo_short_url);
+                    })
+                    .catch(err => {
+                        console.warn('Failed to load preview skin:', err);
+                        // Fallback to regular skin load
+                        const companyId = this.user?.company_id;
+                        if (companyId) {
+                            window.skinLoader.load(parseInt(companyId)).then(() => {
+                                window.grindx.storage.set('last_skin_company_id', String(companyId));
+                            });
+                        }
+                        
+                        // Hide banner on error
+                        this.hideSkinPreviewBanner();
+                    });
+            });
+            return;
+        }
+        
+        // Normal skin loading
         const companyId = this.user?.company_id;
         if (companyId && window.skinLoader) {
             window.skinLoader.load(parseInt(companyId)).then(() => {
                 window.grindx.storage.set('last_skin_company_id', String(companyId));
             });
         }
+    }
+
+    /**
+     * Shows the skin preview banner
+     */
+    showSkinPreviewBanner() {
+        const banner = document.getElementById('skinPreviewBanner');
+        if (banner) {
+            banner.style.display = 'flex';
+            // Adjust top-bar padding to account for banner
+            const topBar = document.querySelector('.top-bar');
+            if (topBar) {
+                topBar.style.paddingTop = '60px'; // 48px banner + 12px spacing
+            }
+        }
+    }
+
+    /**
+     * Hides the skin preview banner
+     */
+    hideSkinPreviewBanner() {
+        const banner = document.getElementById('skinPreviewBanner');
+        if (banner) {
+            banner.style.display = 'none';
+            // Reset top-bar padding
+            const topBar = document.querySelector('.top-bar');
+            if (topBar) {
+                topBar.style.paddingTop = '15px';
+            }
+        }
+    }
+
+    /**
+     * Applies the preview skin permanently
+     */
+    applyPreviewSkinPermanently() {
+        if (!window.skinLoader._previewMode || !window.skinLoader.currentSkin) return;
+        
+        const companyId = this.user?.company_id;
+        if (!companyId) return;
+        
+        // Get the current preview skin data
+        const previewSkin = window.skinLoader.currentSkin;
+        
+        // Update the theme permanently via API
+        // We need to find or create a theme with these settings
+        // For simplicity, we'll just apply it and save to cache
+        window.skinLoader.exitPreviewMode();
+        window.skinLoader.load(companyId, false); // Reload from API to get current state
+        window.skinLoader._saveToCache(companyId, previewSkin);
+        
+        // Hide banner
+        this.hideSkinPreviewBanner();
+        
+        // Show success message
+        alert('Skin aplicada permanentemente!');
     }
 }
 

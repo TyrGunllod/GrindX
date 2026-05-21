@@ -11,9 +11,14 @@
     <div class="module-page">
         <header class="skins-header">
             <h1 class="font-display">Gestão de Skins</h1>
-            <button class="btn btn-primary" id="btnNewSkin">
-                <i class="fas fa-plus"></i> Nova Skin
-            </button>
+            <div class="header-actions">
+                <button class="btn btn-primary" id="btnNewSkin">
+                    <i class="fas fa-plus"></i> Nova Skin
+                </button>
+                <button class="btn btn-secondary" id="btnTemplatePicker">
+                    <i class="fas fa-th-large"></i> Usar Template
+                </button>
+            </div>
         </header>
 
         <div class="skins-grid" id="skinsGrid">
@@ -25,6 +30,13 @@
             <div class="modal-card skin-modal">
                 <div class="modal-header">
                     <h2 id="modalTitle">Nova Skin</h2>
+                    <div class="modal-header-actions">
+                        <label class="advanced-mode-switch">
+                            <input type="checkbox" id="advancedModeToggle">
+                            <span class="slider"></span>
+                            Modo Avançado
+                        </label>
+                    </div>
                     <button class="btn-icon" id="btnCloseModal">
                         <i class="fas fa-times"></i>
                     </button>
@@ -47,8 +59,18 @@
                             <input type="text" id="copyrightText" placeholder="© 2026 Acme Corp. Todos os direitos reservados.">
                         </div>
                         <div class="form-row">
-                            <label for="logoUrl">URL do Logo</label>
-                            <input type="text" id="logoUrl" placeholder="https://exemplo.com/logo.svg">
+                            <label for="logoUpload">Upload do Logo</label>
+                            <div class="upload-area">
+                                <input type="file" id="logoFile" accept="image/*">
+                                <div class="upload-preview" id="logoPreview">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Arraste um arquivo ou clique para selecionar</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <label for="logoUrl">URL do Logo (alternativa)</label>
+                                <input type="text" id="logoUrl" placeholder="https://exemplo.com/logo.svg">
+                            </div>
                         </div>
                         <div class="form-row">
                             <label for="logoShortUrl">URL do Logo Curto (favicon)</label>
@@ -56,40 +78,181 @@
                         </div>
                     </fieldset>
 
-                    <!-- Cores -->
-                    <fieldset class="form-section">
-                        <legend>Cores</legend>
+                    <!-- Cores Básicas -->
+                    <fieldset class="form-section basic-colors">
+                        <legend>Cores Básicas</legend>
                         <div class="color-grid">
-                            <div class="color-picker-group">
+                            <!-- Primary -->
+                            <div class="color-input-group">
                                 <label for="colorPrimary">Primary</label>
-                                <input type="color" id="colorPrimary" value="#00c2e0">
-                                <span class="color-value" id="colorPrimaryValue">#00c2e0</span>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorPrimary" value="#00c2e0">
+                                    <input type="text" id="colorPrimaryText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#00c2e0">
+                                </div>
                             </div>
-                            <div class="color-picker-group">
+                            <!-- Danger -->
+                            <div class="color-input-group">
                                 <label for="colorDanger">Danger</label>
-                                <input type="color" id="colorDanger" value="#ef4444">
-                                <span class="color-value" id="colorDangerValue">#ef4444</span>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorDanger" value="#ef4444">
+                                    <input type="text" id="colorDangerText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#ef4444">
+                                </div>
                             </div>
-                            <div class="color-picker-group">
+                            <!-- Success -->
+                            <div class="color-input-group">
                                 <label for="colorSuccess">Success</label>
-                                <input type="color" id="colorSuccess" value="#10b981">
-                                <span class="color-value" id="colorSuccessValue">#10b981</span>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorSuccess" value="#10b981">
+                                    <input type="text" id="colorSuccessText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#10b981">
+                                </div>
                             </div>
-                            <div class="color-picker-group">
+                            <!-- Warning -->
+                            <div class="color-input-group">
                                 <label for="colorWarning">Warning</label>
-                                <input type="color" id="colorWarning" value="#f59e0b">
-                                <span class="color-value" id="colorWarningValue">#f59e0b</span>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorWarning" value="#f59e0b">
+                                    <input type="text" id="colorWarningText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#f59e0b">
+                                </div>
                             </div>
-                            <div class="color-picker-group">
+                            <!-- Background Main -->
+                            <div class="color-input-group">
                                 <label for="colorBgMain">Background Main</label>
-                                <input type="color" id="colorBgMain" value="#f8fafc">
-                                <span class="color-value" id="colorBgMainValue">#f8fafc</span>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorBgMain" value="#f8fafc">
+                                    <input type="text" id="colorBgMainText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#f8fafc">
+                                </div>
                             </div>
-                            <div class="color-picker-group">
+                            <!-- Background Card -->
+                            <div class="color-input-group">
                                 <label for="colorBgCard">Background Card</label>
-                                <input type="color" id="colorBgCard" value="#ffffff">
-                                <span class="color-value" id="colorBgCardValue">#ffffff</span>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorBgCard" value="#ffffff">
+                                    <input type="text" id="colorBgCardText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#ffffff">
+                                </div>
                             </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Cores Avançadas (visíveis apenas no modo avançado) -->
+                    <fieldset class="form-section advanced-colors" style="display: none;">
+                        <legend>Cores Avançadas</legend>
+                        <div class="color-grid">
+                            <!-- Primary Hover -->
+                            <div class="color-input-group">
+                                <label for="colorPrimaryHover">Primary Hover</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorPrimaryHover" value="#00a8c4">
+                                    <input type="text" id="colorPrimaryHoverText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#00a8c4">
+                                </div>
+                            </div>
+                            <!-- Text Main -->
+                            <div class="color-input-group">
+                                <label for="colorTextMain">Text Main</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorTextMain" value="#1e293b">
+                                    <input type="text" id="colorTextMainText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#1e293b">
+                                </div>
+                            </div>
+                            <!-- Text Muted -->
+                            <div class="color-input-group">
+                                <label for="colorTextMuted">Text Muted</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorTextMuted" value="#64748b">
+                                    <input type="text" id="colorTextMutedText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#64748b">
+                                </div>
+                            </div>
+                            <!-- Border Color -->
+                            <div class="color-input-group">
+                                <label for="colorBorderColor">Border Color</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorBorderColor" value="#e2e8f0">
+                                    <input type="text" id="colorBorderColorText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#e2e8f0">
+                                </div>
+                            </div>
+                            <!-- Focus Ring -->
+                            <div class="color-input-group">
+                                <label for="colorFocusRing">Focus Ring</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorFocusRing" value="rgba(0, 194, 224, 0.35)">
+                                    <input type="text" id="colorFocusRingText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="rgba(0, 194, 224, 0.35)">
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Dark Mode Tokens (visíveis apenas no modo avançado) -->
+                    <fieldset class="form-section dark-mode-tokens" style="display: none;">
+                        <legend>Dark Mode Tokens</legend>
+                        <div class="color-grid">
+                            <!-- Background Main Dark -->
+                            <div class="color-input-group">
+                                <label for="colorBgMainDark">Background Main Dark</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorBgMainDark" value="#0f172a">
+                                    <input type="text" id="colorBgMainDarkText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#0f172a">
+                                </div>
+                            </div>
+                            <!-- Background Card Dark -->
+                            <div class="color-input-group">
+                                <label for="colorBgCardDark">Background Card Dark</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorBgCardDark" value="#1e293b">
+                                    <input type="text" id="colorBgCardDarkText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#1e293b">
+                                </div>
+                            </div>
+                            <!-- Text Main Dark -->
+                            <div class="color-input-group">
+                                <label for="colorTextMainDark">Text Main Dark</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorTextMainDark" value="#f8fafc">
+                                    <input type="text" id="colorTextMainDarkText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#f8fafc">
+                                </div>
+                            </div>
+                            <!-- Text Muted Dark -->
+                            <div class="color-input-group">
+                                <label for="colorTextMutedDark">Text Muted Dark</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorTextMutedDark" value="#94a3b8">
+                                    <input type="text" id="colorTextMutedDarkText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="#94a3b8">
+                                </div>
+                            </div>
+                            <!-- Border Color Dark -->
+                            <div class="color-input-group">
+                                <label for="colorBorderColorDark">Border Color Dark</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="colorBorderColorDark" value="rgba(255, 255, 255, 0.05)">
+                                    <input type="text" id="colorBorderColorDarkText" placeholder="#hex, rgb(), oklch(), color-mix()..." value="rgba(255, 255, 255, 0.05)">
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Tokens Extras -->
+                    <fieldset class="form-section">
+                        <legend>Tokens Extras</legend>
+                        <div class="form-row">
+                            <label for="radiusMd">Border Radius (md)</label>
+                            <input type="text" id="radiusMd" placeholder="0.5rem" value="0.5rem">
+                        </div>
+                        <div class="form-row">
+                            <label for="radiusLg">Border Radius (lg)</label>
+                            <input type="text" id="radiusLg" placeholder="0.75rem" value="0.75rem">
+                        </div>
+                        <div class="form-row advanced-only" style="display: none;">
+                            <label for="radiusSm">Border Radius (sm)</label>
+                            <input type="text" id="radiusSm" placeholder="0.25rem" value="0.25rem">
+                        </div>
+                        <div class="form-row advanced-only" style="display: none;">
+                            <label for="radiusXl">Border Radius (xl)</label>
+                            <input type="text" id="radiusXl" placeholder="1.5rem" value="1.5rem">
+                        </div>
+                        <div class="form-row">
+                            <label for="shadowCard">Shadow Card</label>
+                            <input type="text" id="shadowCard" placeholder="0 10px 25px rgba(0,0,0,0.1)" value="0 10px 25px rgba(0,0,0,0.1)">
+                        </div>
+                        <div class="form-row advanced-only" style="display: none;">
+                            <label for="shadowModal">Shadow Modal</label>
+                            <input type="text" id="shadowModal" placeholder="0 20px 25px -5px rgba(0,0,0,0.2)" value="0 20px 25px -5px rgba(0,0,0,0.2)">
                         </div>
                     </fieldset>
 
@@ -136,43 +299,115 @@
                             </label>
                         </div>
                     </fieldset>
-
-                    <!-- Tokens Extras -->
-                    <fieldset class="form-section">
-                        <legend>Tokens Extras</legend>
-                        <div class="form-row">
-                            <label for="radiusMd">Border Radius (md)</label>
-                            <input type="text" id="radiusMd" placeholder="0.5rem" value="0.5rem">
-                        </div>
-                        <div class="form-row">
-                            <label for="radiusLg">Border Radius (lg)</label>
-                            <input type="text" id="radiusLg" placeholder="0.75rem" value="0.75rem">
-                        </div>
-                    </fieldset>
                 </form>
 
-                <!-- Preview -->
+                <!-- Preview Expandido -->
                 <div class="preview-section">
-                    <h3>Preview</h3>
-                    <div class="preview-card" id="previewCard">
-                        <div class="preview-header">Título de Exemplo</div>
-                        <div class="preview-body">
-                            <p>Texto de exemplo para visualizar as cores e fontes.</p>
-                            <button class="btn btn-primary">Botão Primary</button>
-                            <button class="btn" style="background: var(--skin-danger); color: white;">Botão Danger</button>
+                    <h3>Preview Expandido</h3>
+                    <div class="preview-dashboard">
+                        <!-- Top Bar -->
+                        <div class="preview-topbar">
+                            <div class="preview-logo">
+                                G<span class="logo-full-preview">RIND</span><span style="color: var(--skin-primary);">X</span>
+                            </div>
+                            <div class="preview-theme-toggle">
+                                <i class="fas fa-moon" id="previewThemeToggle"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Main Content -->
+                        <div class="preview-main">
+                            <!-- Stats -->
+                            <div class="preview-stats">
+                                <div class="preview-stat">
+                                    <div class="preview-stat-value" id="statValue1">1,234</div>
+                                    <div class="preview-stat-label">Vendas</div>
+                                </div>
+                                <div class="preview-stat">
+                                    <div class="preview-stat-value" id="statValue2">567</div>
+                                    <div class="preview-stat-label">Estoque</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Menu -->
+                            <div class="preview-menu">
+                                <div class="preview-menu-item">
+                                    <i class="fas fa-list"></i>
+                                    <span>Menu Principal</span>
+                                </div>
+                                <div class="preview-menu-item">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    <span>Dashboard</span>
+                                </div>
+                                <div class="preview-menu-item">
+                                    <i class="fas fa-users-cog"></i>
+                                    <span>Usuários</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Mini Table -->
+                            <div class="preview-table">
+                                <div class="preview-table-header">
+                                    <span>Nome</span>
+                                    <span>Status</span>
+                                    <span>Valor</span>
+                                </div>
+                                <div class="preview-table-row">
+                                    <span>Item A</span>
+                                    <span class="preview-status active">Ativo</span>
+                                    <span>R$100</span>
+                                </div>
+                                <div class="preview-table-row">
+                                    <span>Item B</span>
+                                    <span class="preview-status pending">Pendente</span>
+                                    <span>R$200</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Buttons and Input -->
+                            <div class="preview-controls">
+                                <button class="preview-btn preview-btn-primary">Primary</button>
+                                <button class="preview-btn preview-btn-danger">Danger</button>
+                                <input type="text" class="preview-input" placeholder="Digite algo...">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn" id="btnPreviewSkin" type="button">
-                        <i class="fas fa-eye"></i> Preview
-                    </button>
                     <button class="btn" id="btnResetSkin" type="button">
                         <i class="fas fa-undo"></i> Reset
                     </button>
+                    <button class="btn" id="btnAutoDarkMode" type="button" style="display: none;">
+                        <i class="fas fa-adjust"></i> Gerar Dark Mode
+                    </button>
+                    <button class="btn" id="btnPreviewSkin" type="button">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
                     <button class="btn btn-primary" id="btnSaveSkin" type="submit" form="skinForm">
                         <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Template Picker Modal -->
+        <div class="modal-overlay" id="templateModal" style="display: none;">
+            <div class="modal-card template-modal">
+                <div class="modal-header">
+                    <h2>Escolher Template</h2>
+                    <button class="btn-icon" id="btnCloseTemplateModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="template-grid" id="templateGrid">
+                        <!-- Templates serão carregados aqui -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="btnCancelTemplate" type="button">
+                        Cancelar
                     </button>
                 </div>
             </div>

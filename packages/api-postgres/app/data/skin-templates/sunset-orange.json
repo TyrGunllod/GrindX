@@ -1,0 +1,38 @@
+{
+  "name": "Sunset Orange",
+  "colors": {
+    "--skin-primary": "#ea580c",
+    "--skin-primary-hover": "#c2410c",
+    "--skin-danger": "#ef4444",
+    "--skin-success": "#10b981",
+    "--skin-warning": "#d97706",
+    "--skin-bg-main": "#fff7ed",
+    "--skin-bg-card": "#ffffff",
+    "--skin-text-main": "#1e293b",
+    "--skin-text-muted": "#64748b",
+    "--skin-border-color": "#fed7aa",
+    "--skin-focus-ring": "rgba(234, 88, 12, 0.35)",
+    "--skin-bg-main-dark": "#451a03",
+    "--skin-bg-card-dark": "#582307",
+    "--skin-text-main-dark": "#ffedd5",
+    "--skin-text-muted-dark": "#a59489",
+    "--skin-border-color-dark": "rgba(255, 255, 255, 0.1)"
+  },
+  "fonts": {
+    "heading": "Barlow Condensed",
+    "body": "DM Sans"
+  },
+  "icon_library": "fontawesome",
+  "tokens": {
+    "--skin-radius-sm": "0.25rem",
+    "--skin-radius-md": "0.5rem",
+    "--skin-radius-lg": "0.75rem",
+    "--skin-radius-xl": "1.5rem",
+    "--skin-shadow-card": "0 8px 20px rgba(0,0,0,0.1)",
+    "--skin-shadow-modal": "0 15px 30px -5px rgba(0,0,0,0.2)"
+  },
+  "company_name": "GrindX",
+  "copyright_text": "© 2026 GrindX. Desenvolvido por Alex Grellet.",
+  "logo_url": null,
+  "logo_short_url": null
+}

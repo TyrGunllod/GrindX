@@ -416,3 +416,48 @@ iframe {
 .sidebar.collapsed .copyright-text {
     display: none;
 }
+
+/* Skin Preview Banner */
+.skin-preview-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: var(--skin-bg-main);
+    border-bottom: 1px solid var(--skin-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-4);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.skin-preview-banner-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex: 1;
+}
+
+.skin-preview-banner-text {
+    font-weight: 600;
+    color: var(--skin-text-main);
+}
+
+.skin-preview-banner-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+/* Responsive adjustments */
+@media (min-width: 1024px) {
+    .skin-preview-banner {
+        height: 56px;
+    }
+    
+    .skin-preview-banner-text {
+        font-size: 1.125rem;
+    }
+}
