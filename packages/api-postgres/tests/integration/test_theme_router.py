@@ -114,3 +114,101 @@ def test_delete_inactive_theme_succeeds(client: TestClient, admin_auth_headers: 
 
     delete_resp = client.delete(f"/v1/themes/{theme_id}", headers=admin_auth_headers)
     assert delete_resp.status_code == 204
+
+
+# --- Task 3: History endpoint tests ---
+
+
+def test_get_theme_history(client: TestClient, admin_auth_headers: dict, empresa: Empresa, db_session):
+    """Testa busca do histórico de um tema."""
+    from unittest.mock import MagicMock, patch
+
+    from app.models.theme import CompanyTheme
+    from app.models.theme_history import ThemeHistory
+
+    theme = CompanyTheme(company_id=empresa.id, name="History Theme", icon_library="fontawesome")
+    db_session.add(theme)
+    db_session.commit()
+
+    h1 = ThemeHistory(theme_id=theme.id, company_id=empresa.id, action="created", theme_snapshot={"name": "History Theme"})
+    h2 = ThemeHistory(theme_id=theme.id, company_id=empresa.id, action="updated", theme_snapshot={"name": "Updated Name"}, changes={"name": {"from": "History Theme", "to": "Updated Name"}})
+    db_session.add_all([h1, h2])
+    db_session.commit()
+
+    mock_session = MagicMock(wraps=db_session)
+    mock_session.close = MagicMock()
+
+    with patch("app.database.SessionLocal", return_value=mock_session):
+        resp = client.get(f"/v1/themes/{theme.id}/history", headers=admin_auth_headers)
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data) == 2
+    actions = [h["action"] for h in data]
+    assert "created" in actions
+    assert "updated" in actions
+
+
+def test_get_theme_history_theme_not_found(client: TestClient, admin_auth_headers: dict):
+    """Testa que retorna 404 para histórico de tema inexistente."""
+    resp = client.get("/v1/themes/99999/history", headers=admin_auth_headers)
+    assert resp.status_code == 404
+
+
+# --- Task 4: Logo upload test ---
+
+
+def test_upload_logo(client: TestClient, admin_auth_headers: dict, empresa: Empresa, db_session):
+    """Testa upload de logo para um tema."""
+    from app.models.theme import CompanyTheme
+
+    theme = CompanyTheme(company_id=empresa.id, name="Logo Test", icon_library="fontawesome")
+    db_session.add(theme)
+    db_session.commit()
+
+    import io
+
+    file_content = io.BytesIO(b"\x89PNG\r\n\x1a\n" + b"fake png content" * 100)
+
+    resp = client.post(
+        f"/v1/themes/{theme.id}/logo",
+        files={"file": ("test-logo.png", file_content, "image/png")},
+        headers=admin_auth_headers,
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "logo_url" in data
+    assert data["logo_url"] is not None
+    assert "test-logo" in data["logo_url"] or "uploads/logos" in data["logo_url"]
+
+    db_session.refresh(theme)
+    assert theme.logo_url is not None
+
+
+# --- Task 5: Template tests ---
+
+
+def test_list_templates(client: TestClient, admin_auth_headers: dict):
+    """Testa listagem de templates disponíveis."""
+    resp = client.get("/v1/themes/templates", headers=admin_auth_headers)
+    assert resp.status_code == 200
+    templates = resp.json()
+    assert len(templates) >= 5
+    slugs = [t["slug"] for t in templates]
+    assert "corporate-blue" in slugs
+    assert "dark-minimal" in slugs
+    assert "warm-earth" in slugs
+    assert "forest-green" in slugs
+    assert "sunset-orange" in slugs
+
+
+def test_create_from_template(client: TestClient, admin_auth_headers: dict):
+    """Testa criação de tema a partir de template."""
+    resp = client.post(
+        "/v1/themes/from-template?template_slug=corporate-blue&name=My+Blue+Theme",
+        headers=admin_auth_headers,
+    )
+    assert resp.status_code == 201
+    data = resp.json()
+    assert data["name"] == "My Blue Theme"
+    assert data["colors"]["--skin-primary"] == "#2563eb"

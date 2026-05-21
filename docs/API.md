@@ -248,6 +248,98 @@ Remove um módulo. Requer `admin`.
 
 ---
 
+## Temas / Skins
+
+Endpoints para gerenciar o sistema de skins visuais por empresa. Requer perfil `admin`.
+
+### `GET /v1/themes/`
+
+Lista todos os temas.
+
+**Query params opcionais:** `company_id` (int), `skip` (int), `limit` (int)
+
+**Response 200:**
+```json
+[
+  {
+    "id": 1,
+    "company_id": 1,
+    "name": "Corporate Blue",
+    "is_active": true,
+    "colors": {"--skin-primary": "#0055aa", ...},
+    "logo_url": "/static/uploads/logos/acme.png",
+    "company_name_display": "Acme Corp"
+  }
+]
+```
+
+### `POST /v1/themes/`
+
+Cria um novo tema para uma empresa.
+
+**Body:**
+```json
+{
+  "company_id": 1,
+  "name": "Acme Blue",
+  "colors": {"--skin-primary": "#0055aa"},
+  "company_name_display": "Acme Corp"
+}
+```
+
+**Response 201:** Objeto do tema criado.
+
+### `GET /v1/themes/{id}`
+
+Retorna um tema pelo ID.
+
+### `PUT /v1/themes/{id}`
+
+Atualiza um tema existente.
+
+### `DELETE /v1/themes/{id}`
+
+Remove um tema. Requer `admin`.
+
+### `POST /v1/themes/{id}/activate`
+
+Ativa um tema para a empresa (desativa automaticamente o tema anterior).
+
+**Response 200:**
+```json
+{"message": "Theme activated", "theme_id": 1}
+```
+
+### `GET /v1/themes/active`
+
+Retorna o tema ativo de uma empresa. Usado pelo frontend no boot.
+
+**Query params:** `company_id` (int, obrigatório)
+
+**Response 200:** Objeto do tema ativo ou 404 se nenhum encontrado.
+
+### `GET /v1/themes/templates`
+
+Lista os templates de skin pré-configurados disponíveis.
+
+**Response 200:**
+```json
+[
+  {"name": "corporate-blue", "label": "Corporate Blue", "colors": {...}},
+  {"name": "dark-minimal", "label": "Dark Minimal", "colors": {...}}
+]
+```
+
+### `POST /v1/themes/{id}/logo`
+
+Upload de logo para o tema (multipart/form-data).
+
+### `GET /v1/themes/{id}/history`
+
+Retorna o histórico de alterações de um tema.
+
+---
+
 ## API SQL Server (porta 8001)
 
 Base URL local: `http://localhost:8001/v1`

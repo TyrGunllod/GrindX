@@ -144,23 +144,22 @@ class ThemeService:
 
     def delete_theme(self, theme_id: int) -> None:
         """Deleta um tema."""
-        # Get theme info before deletion for history
         theme = self.repo.find_by_id(theme_id)
         if theme is None:
             raise NotFoundError(f"Tema {theme_id} não encontrado")
-            
+
         theme_snapshot = self._to_dict(theme)
-        
-        self.repo.delete(theme_id)
-        
-        # Log deletion to history
+
+        # Log deletion to history BEFORE deleting (FK constraint)
         self._log_history(
             theme_id=theme_id,
             company_id=theme.company_id,
             action="deleted",
             theme_snapshot=theme_snapshot
         )
-        
+
+        self.repo.delete(theme_id)
+
         logger.info("Tema deletado", theme_id=theme_id)
 
     @staticmethod

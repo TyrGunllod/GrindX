@@ -77,6 +77,106 @@ def list_themes(
 
 
 @router.get(
+    "/templates",
+    response_model=list[dict],
+    summary="Listar templates de skin",
+    description="Lista todos os templates de skin disponíveis. Requer role admin.",
+)
+def list_skin_templates(
+    current_user=Depends(require_role("admin")),
+) -> list[dict]:
+    """Lista todos os templates de skin disponíveis."""
+    import json
+
+    templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "skin-templates")
+    templates = []
+
+    if os.path.exists(templates_dir):
+        for filename in os.listdir(templates_dir):
+            if filename.endswith(".json"):
+                try:
+                    with open(os.path.join(templates_dir, filename), "r", encoding="utf-8") as f:
+                        template_data = json.load(f)
+
+                    preview = {}
+                    if "colors" in template_data:
+                        colors = template_data["colors"]
+                        for key in ["--skin-primary", "--skin-bg-main", "--skin-text-main", "--skin-danger"]:
+                            if key in colors:
+                                preview[key] = colors[key]
+
+                    templates.append({
+                        "slug": filename.replace(".json", ""),
+                        "name": template_data.get("name", filename.replace(".json", "")),
+                        "preview": preview
+                    })
+                except Exception as e:
+                    logger.warning("Failed to load template", filename=filename, error=str(e))
+
+    return templates
+
+
+@router.post(
+    "/from-template",
+    response_model=ThemeResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Criar tema a partir de template",
+    description="Cria um novo tema baseado em um template existente. Requer role admin.",
+    responses={400: {"model": ErrorResponse, "description": "Template não encontrado"}},
+)
+def create_theme_from_template(
+    template_slug: str,
+    name: str,
+    current_user=Depends(require_role("admin")),
+    service: ThemeService = Depends(_get_theme_service),
+) -> dict:
+    """Cria um novo tema a partir de um template."""
+    company_id = _require_company_id(current_user)
+
+    import json
+
+    templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "skin-templates")
+    template_path = os.path.join(templates_dir, f"{template_slug}.json")
+
+    if not os.path.exists(template_path):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Template '{template_slug}' não encontrado"
+        )
+
+    try:
+        with open(template_path, "r", encoding="utf-8") as f:
+            template_data = json.load(f)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Erro ao carregar template: {str(e)}"
+        )
+
+    colors = template_data.get("colors")
+    fonts = template_data.get("fonts")
+    icon_library = template_data.get("icon_library", "fontawesome")
+    tokens = template_data.get("tokens")
+    company_name = template_data.get("company_name")
+    copyright_text = template_data.get("copyright_text")
+    logo_url = template_data.get("logo_url")
+    logo_short_url = template_data.get("logo_short_url")
+
+    return service.create_theme(
+        company_id=company_id,
+        name=name,
+        colors=colors,
+        fonts=fonts,
+        icon_library=icon_library,
+        tokens=tokens,
+        logo_url=logo_url,
+        logo_short_url=logo_short_url,
+        company_name=company_name,
+        copyright_text=copyright_text,
+    )
+
+
+@router.get(
     "/{theme_id}",
     response_model=ThemeResponse,
     summary="Detalhes do tema",
@@ -282,109 +382,3 @@ def upload_logo(
     
     logger.info("Logo uploaded", theme_id=theme_id, filename=unique_filename, size=file_size)
     return updated_theme
-
-
-@router.get(
-    "/templates",
-    response_model=list[dict],
-    summary="Listar templates de skin",
-    description="Lista todos os templates de skin disponíveis. Requer role admin.",
-)
-def list_skin_templates(
-    current_user=Depends(require_role("admin")),
-) -> list[dict]:
-    """Lista todos os templates de skin disponíveis."""
-    import json
-    import os
-    
-    templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "skin-templates")
-    templates = []
-    
-    if os.path.exists(templates_dir):
-        for filename in os.listdir(templates_dir):
-            if filename.endswith(".json"):
-                try:
-                    with open(os.path.join(templates_dir, filename), "r", encoding="utf-8") as f:
-                        template_data = json.load(f)
-                    
-                    # Create a preview with just a few key colors
-                    preview = {}
-                    if "colors" in template_data:
-                        colors = template_data["colors"]
-                        for key in ["--skin-primary", "--skin-bg-main", "--skin-text-main", "--skin-danger"]:
-                            if key in colors:
-                                preview[key] = colors[key]
-                    
-                    templates.append({
-                        "slug": filename.replace(".json", ""),
-                        "name": template_data.get("name", filename.replace(".json", "")),
-                        "preview": preview
-                    })
-                except Exception as e:
-                    logger.warning("Failed to load template", filename=filename, error=str(e))
-    
-    return templates
-
-
-@router.post(
-    "/from-template",
-    response_model=ThemeResponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Criar tema a partir de template",
-    description="Cria um novo tema baseado em um template existente. Requer role admin.",
-    responses={400: {"model": ErrorResponse, "description": "Template não encontrado"}},
-)
-def create_theme_from_template(
-    template_slug: str,
-    name: str,
-    current_user=Depends(require_role("admin")),
-    service: ThemeService = Depends(_get_theme_service),
-) -> dict:
-    """Cria um novo tema a partir de um template."""
-    company_id = _require_company_id(current_user)
-    
-    # Load template
-    import json
-    import os
-    
-    templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "skin-templates")
-    template_path = os.path.join(templates_dir, f"{template_slug}.json")
-    
-    if not os.path.exists(template_path):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Template '{template_slug}' não encontrado"
-        )
-    
-    try:
-        with open(template_path, "r", encoding="utf-8") as f:
-            template_data = json.load(f)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Erro ao carregar template: {str(e)}"
-        )
-    
-    # Extract data from template
-    colors = template_data.get("colors")
-    fonts = template_data.get("fonts")
-    icon_library = template_data.get("icon_library", "fontawesome")
-    tokens = template_data.get("tokens")
-    company_name = template_data.get("company_name")
-    copyright_text = template_data.get("copyright_text")
-    logo_url = template_data.get("logo_url")
-    logo_short_url = template_data.get("logo_short_url")
-    
-    # Create theme using service
-    return service.create_theme(
-        company_id=company_id,
-        name=name,
-        colors=colors,
-        fonts=fonts,
-        icon_library=icon_library,
-        tokens=tokens,
-        logo_url=logo_url,
-        logo_short_url=logo_short_url,
-        company_name=company_name,
-        copyright_text=copyright_text,
-    )

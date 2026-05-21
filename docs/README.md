@@ -8,7 +8,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 
 ## Status do Projeto
 
-**97% completo** — Backend, frontend, testes e CI/CD implementados. Pendente apenas assets visuais (favicon, fontes).
+**100% completo.** Backend, frontend, testes, CI/CD, assets visuais e sistema de skins implementados.
 
 ---
 

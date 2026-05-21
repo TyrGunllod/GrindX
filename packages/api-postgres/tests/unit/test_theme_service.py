@@ -101,3 +101,91 @@ def test_list_themes(theme_service: ThemeService, empresa: Empresa):
 
     results = theme_service.list_themes(empresa.id)
     assert len(results) == 2
+
+
+def test_create_theme_logs_history(theme_service: ThemeService, empresa: Empresa, db_session: Session):
+    """Testa que criar tema registra histórico."""
+    from unittest.mock import MagicMock, patch
+
+    mock_session = MagicMock(wraps=db_session)
+    mock_session.close = MagicMock()
+
+    with patch("app.database.SessionLocal", return_value=mock_session):
+        theme_service.create_theme(company_id=empresa.id, name="History Test", icon_library="fontawesome")
+
+    from app.models.theme_history import ThemeHistory
+
+    history = db_session.query(ThemeHistory).filter_by(action="created").first()
+    assert history is not None
+    assert history.action == "created"
+    assert history.theme_snapshot is not None
+
+
+def test_update_theme_logs_history(theme_service: ThemeService, empresa: Empresa, db_session: Session):
+    """Testa que atualizar tema registra histórico com snapshot anterior."""
+    from unittest.mock import MagicMock, patch
+
+    mock_session = MagicMock(wraps=db_session)
+    mock_session.close = MagicMock()
+
+    from app.models.theme_history import ThemeHistory
+
+    with patch("app.database.SessionLocal", return_value=mock_session):
+        created = theme_service.create_theme(company_id=empresa.id, name="Old", icon_library="fontawesome")
+        theme_service.update_theme(created["id"], company_id=empresa.id, name="New")
+
+    history = db_session.query(ThemeHistory).filter_by(action="updated").first()
+    assert history is not None
+    assert history.action == "updated"
+    assert history.theme_snapshot["name"] == "New"
+    assert history.changes is not None
+    assert "name" in history.changes
+    assert history.changes["name"]["from"] == "Old"
+    assert history.changes["name"]["to"] == "New"
+
+
+def test_activate_theme_logs_history(theme_service: ThemeService, empresa: Empresa, db_session: Session):
+    """Testa que ativar tema registra histórico."""
+    from unittest.mock import MagicMock, patch
+
+    mock_session = MagicMock(wraps=db_session)
+    mock_session.close = MagicMock()
+
+    from app.models.theme_history import ThemeHistory
+
+    with patch("app.database.SessionLocal", return_value=mock_session):
+        created = theme_service.create_theme(company_id=empresa.id, name="Activate Test", icon_library="fontawesome")
+        theme_service.activate_theme(created["id"], empresa.id)
+
+    history = db_session.query(ThemeHistory).filter_by(action="activated").first()
+    assert history is not None
+    assert history.action == "activated"
+
+
+def test_delete_theme_logs_history(theme_service: ThemeService, empresa: Empresa, db_session: Session):
+    """Testa que deletar tema registra histórico com snapshot completo."""
+    from unittest.mock import patch
+
+    created = theme_service.create_theme(company_id=empresa.id, name="Delete Test", icon_library="fontawesome")
+
+    # Patch _log_history to capture the call arguments
+    captured = {}
+    original_log = theme_service._log_history
+
+    def _capture_log(**kwargs):
+        captured.update(kwargs)
+        # Still call the real method via mocked SessionLocal
+        from unittest.mock import MagicMock
+        mock_session = MagicMock(wraps=db_session)
+        mock_session.close = MagicMock()
+        with patch("app.database.SessionLocal", return_value=mock_session):
+            original_log(**kwargs)
+
+    from app.models.theme_history import ThemeHistory
+
+    with patch.object(theme_service, "_log_history", side_effect=_capture_log, autospec=False):
+        theme_service.delete_theme(created["id"])
+
+    assert captured.get("action") == "deleted"
+    assert captured.get("theme_snapshot") is not None
+    assert captured["theme_snapshot"]["name"] == "Delete Test"
