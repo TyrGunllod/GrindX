@@ -497,29 +497,25 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
         if (this._darkPreview) {
             // Apply dark mode colors to preview
-            const darkVars = {
-                '--skin-bg-main': document.getElementById('colorBgMainDarkText').value,
-                '--skin-bg-card': document.getElementById('colorBgCardDarkText').value,
-                '--skin-text-main': document.getElementById('colorTextMainDarkText').value,
-                '--skin-text-muted': document.getElementById('colorTextMutedDarkText').value,
-                '--skin-border-color': document.getElementById('colorBorderColorDarkText').value,
-            };
-            for (const [key, value] of Object.entries(darkVars)) {
-                preview.style.setProperty(key, value);
-            }
+            [['--bg-main', 'colorBgMainDarkText'],
+             ['--bg-card', 'colorBgCardDarkText'],
+             ['--text-main', 'colorTextMainDarkText'],
+             ['--text-muted', 'colorTextMutedDarkText'],
+             ['--border-color', 'colorBorderColorDarkText'],
+            ].forEach(([prop, elId]) => {
+                preview.style.setProperty(prop, document.getElementById(elId).value);
+            });
             if (icon) icon.className = 'fas fa-sun';
         } else {
             // Restore light mode colors
-            const lightVars = {
-                '--skin-bg-main': document.getElementById('colorBgMainText').value,
-                '--skin-bg-card': document.getElementById('colorBgCardText').value,
-                '--skin-text-main': document.getElementById('colorTextMainText').value,
-                '--skin-text-muted': document.getElementById('colorTextMutedText').value,
-                '--skin-border-color': document.getElementById('colorBorderColorText').value,
-            };
-            for (const [key, value] of Object.entries(lightVars)) {
-                preview.style.setProperty(key, value);
-            }
+            [['--bg-main', 'colorBgMainText'],
+             ['--bg-card', 'colorBgCardText'],
+             ['--text-main', 'colorTextMainText'],
+             ['--text-muted', 'colorTextMutedText'],
+             ['--border-color', 'colorBorderColorText'],
+            ].forEach(([prop, elId]) => {
+                preview.style.setProperty(prop, document.getElementById(elId).value);
+            });
             if (icon) icon.className = 'fas fa-moon';
         }
     }
