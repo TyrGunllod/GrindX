@@ -5,6 +5,7 @@ Usa pydantic-settings para validação e tipagem segura.
 Todas as variáveis são obrigatórias a menos que tenham valor padrão.
 """
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,6 +19,16 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+
+    @field_validator("SECRET_KEY")
+    @classmethod
+    def validar_secret_key(cls, v: str) -> str:
+        if len(v) < 32:
+            raise ValueError(
+                "SECRET_KEY deve ter pelo menos 32 caracteres. "
+                'Gere uma com: python -c "import secrets; print(secrets.token_hex(32))"'
+            )
+        return v
 
     # --- CORS ---
     CORS_ORIGINS: str = "http://localhost:3000"
