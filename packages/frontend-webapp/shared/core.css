@@ -403,7 +403,7 @@ body {
 
 /* Scrollbar fina global */
 * {
-    scrollbar-width: thin;
+    scrollbar-width: initial;
 }
 
 *::-webkit-scrollbar {
