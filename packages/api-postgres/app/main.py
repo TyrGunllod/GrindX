@@ -18,7 +18,6 @@ import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pyrate_limiter import RedisAsync
 
 from app.auth.router import router as auth_router
 from app.core.config import settings
@@ -40,22 +39,10 @@ logger = structlog.get_logger(__name__)
 async def lifespan(app: FastAPI):
     """Gerencia startup e shutdown da aplicação.
 
-    Startup: configura logging, tenta conectar Redis (fallback se indisponível).
-    Shutdown: encerra conexões.
+    Startup: configura logging.
+    Shutdown: encerramento gracioso.
     """
     setup_logging()
-
-    redis_url = getattr(settings, "REDIS_URL", "redis://localhost")
-    app.state.redis = None
-    try:
-        app.state.redis = RedisAsync(redis_url)
-        await app.state.redis.ping()
-        logger.info("Redis conectado para rate limiting distribuido")
-    except Exception as exc:
-        logger.warning(
-            "Redis nao disponivel, rate limiter em memoria como fallback",
-            error=str(exc),
-        )
 
     logger.info(
         "Serviço iniciado",
@@ -64,8 +51,6 @@ async def lifespan(app: FastAPI):
         debug=settings.DEBUG,
     )
     yield
-    if app.state.redis:
-        await app.state.redis.close()
     logger.info("Serviço encerrado", service=settings.APP_NAME)
 
 
