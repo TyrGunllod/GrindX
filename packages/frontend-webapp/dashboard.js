@@ -217,7 +217,8 @@ class DashboardController extends window.grindx.controllers.BaseController {
          const displayName = this.getUserDisplayName(user);
          document.getElementById('userName').textContent = displayName;
          document.getElementById('userRole').textContent = this.formatRole(user.role);
-         document.getElementById('userAvatar').innerHTML = '<i class="fas fa-user"></i>';
+         const icons = { admin: 'user-cog', operador: 'user-tie', leitura: 'user' };
+         document.getElementById('userAvatar').innerHTML = `<i class="fas fa-${icons[user.role] || 'user'}"></i>`;
      }
 
     getUserDisplayName(user) {
