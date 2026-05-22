@@ -36,6 +36,7 @@ class StructureController extends window.grindx.controllers.BaseController {
         this.setupForms();
         this.bindEvents();
         await this.loadStructure();
+        window.grindx.icons.convertAll();
     }
 
     setupForms() {

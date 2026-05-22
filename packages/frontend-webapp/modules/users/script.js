@@ -288,4 +288,5 @@ class UsersController extends window.grindx.controllers.BaseController {
 // Expor para o escopo global para os botões inline (onclick)
 document.addEventListener('DOMContentLoaded', () => {
     window.usersController = new UsersController();
+    window.grindx.icons.convertAll();
 });
