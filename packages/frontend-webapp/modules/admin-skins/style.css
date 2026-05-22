@@ -94,6 +94,22 @@
     max-width: 900px;
     max-height: 90vh;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+}
+
+.skin-modal::-webkit-scrollbar {
+    width: 5px;
+}
+
+.skin-modal::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 2px 0;
+}
+
+.skin-modal::-webkit-scrollbar-thumb {
+    background: var(--border-color, #cbd5e1);
+    border-radius: 3px;
 }
 
 .modal-header {
