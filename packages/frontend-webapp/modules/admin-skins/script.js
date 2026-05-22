@@ -3,15 +3,15 @@
  * Gestão de skins/temas com modo avançado, templates, e preview expandido.
  */
 
-class AdminSkinsController {
+class AdminSkinsController extends window.grindx.controllers.BaseController {
     constructor() {
+        super();
         this.skins = [];
         this.templates = [];
         this.editingSkinId = null;
         this.advancedMode = false;
         this._darkPreview = false;
         this.apiBase = window.grindx.config.API_BASE_URL;
-        this.token = window.grindx.session.getToken();
 
         this.init();
     }
@@ -381,9 +381,10 @@ class AdminSkinsController {
 
             this.closeModal();
             await this.loadSkins();
+            this.toastSuccess('Skin salva com sucesso.');
         } catch (e) {
             console.error('Erro ao salvar skin:', e);
-            alert(e.message);
+            this.toastError(e);
         }
     }
 
@@ -399,9 +400,10 @@ class AdminSkinsController {
             if (companyId && window.skinLoader) {
                 window.skinLoader.reload(parseInt(companyId));
             }
+            this.toastSuccess('Skin ativada com sucesso.');
         } catch (e) {
             console.error('Erro ao ativar skin:', e);
-            alert(e.message);
+            this.toastError(e);
         }
     }
 
@@ -421,9 +423,10 @@ class AdminSkinsController {
                 throw new Error(err.detail || 'Erro ao excluir skin');
             }
             await this.loadSkins();
+            this.toastSuccess('Skin excluída com sucesso.');
         } catch (e) {
             console.error('Erro ao excluir skin:', e);
-            alert(e.message);
+            this.toastError(e);
         }
     }
 
