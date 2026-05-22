@@ -61,6 +61,13 @@ class SkinLoader {
         this._originalSkin = null;
     }
 
+    _resolveUrl(path) {
+        if (!path) return path;
+        if (path.startsWith('http://') || path.startsWith('https://')) return path;
+        const base = (window.grindx?.config?.API_BASE_URL || 'http://127.0.0.1:8002/v1').replace(/\/v1$/, '');
+        return base + path;
+    }
+
     /**
      * Carrega uma skin com cache localStorage
      * @param {number|string} companyId - ID da empresa
@@ -308,7 +315,8 @@ class SkinLoader {
                 const name = (this.currentSkin && this.currentSkin.company_name) || 'GrindX';
                 const initial = name.substring(0, 1);
                 const rest = name.substring(1);
-                logoEl.innerHTML = `<img src="${logoUrl}" alt="Logo" style="max-height: 32px; width: auto;" onerror="this.outerHTML='${initial}<span class=\\"logo-full\\">${rest}</span>'">`;
+                const fullUrl = this._resolveUrl(logoUrl);
+                logoEl.innerHTML = `<img src="${fullUrl}" alt="Logo" style="max-height: 32px; width: auto;" onerror="this.outerHTML='${initial}<span class=\\"logo-full\\">${rest}</span>'">`;
             }
         }
         if (logoShortUrl) {

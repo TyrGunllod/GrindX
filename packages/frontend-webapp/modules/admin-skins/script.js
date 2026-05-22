@@ -268,7 +268,8 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         const logoPreview = document.getElementById('logoPreview');
         if (logoPreview) {
             if (skin.logo_url) {
-                logoPreview.innerHTML = `<img src="${skin.logo_url}" alt="Logo preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cloud-upload-alt\\'></i><span>Logo indisponivel. Envie um novo arquivo.</span>'">`;
+                const fullUrl = window.skinLoader?._resolveUrl(skin.logo_url) || skin.logo_url;
+                logoPreview.innerHTML = `<img src="${fullUrl}" alt="Logo preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cloud-upload-alt\\'></i><span>Logo indisponivel. Envie um novo arquivo.</span>'">`;
             } else {
                 logoPreview.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Arraste um arquivo ou clique para selecionar</span>';
             }
@@ -663,7 +664,8 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
             const preview = document.getElementById('logoPreview');
             if (preview && this.currentLogoUrl) {
-                preview.innerHTML = `<img src="${this.currentLogoUrl}" alt="Logo preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cloud-upload-alt\\'></i><span>Logo indisponivel. Envie um novo arquivo.</span>'">`;
+                const fullUrl = window.skinLoader?._resolveUrl(this.currentLogoUrl) || this.currentLogoUrl;
+                preview.innerHTML = `<img src="${fullUrl}" alt="Logo preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cloud-upload-alt\\'></i><span>Logo indisponivel. Envie um novo arquivo.</span>'">`;
             }
         } catch (e) {
             console.error('Erro ao fazer upload do logo:', e);
