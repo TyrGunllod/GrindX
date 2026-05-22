@@ -500,9 +500,9 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
         // Map icon identifiers to names in each library
         const iconNames = {
-            'list': { fontawesome: 'fa-list', lucide: 'list', material: 'list' },
-            'gauge': { fontawesome: 'fa-tachometer-alt', lucide: 'gauge', material: 'speed' },
-            'users': { fontawesome: 'fa-users-cog', lucide: 'users', material: 'group' },
+            'list': { fontawesome: 'fas fa-list', lucide: 'list', material: 'list' },
+            'gauge': { fontawesome: 'fas fa-tachometer-alt', lucide: 'gauge', material: 'speed' },
+            'users': { fontawesome: 'fas fa-users-cog', lucide: 'users', material: 'group' },
         };
 
         // Determine which icon name the element currently represents
