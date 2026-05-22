@@ -401,9 +401,10 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             this.toastSuccess('Skin salva com sucesso.');
             setTimeout(() => {
                 if (window.parent !== window) {
-                    window.parent.postMessage('skin-saved', '*');
+                    window.parent.location.reload();
+                } else {
+                    location.reload();
                 }
-                location.reload();
             }, 1500);
         } catch (e) {
             console.error('Erro ao salvar skin:', e);
@@ -419,15 +420,17 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             });
             if (!resp.ok) throw new Error('Erro ao ativar skin');
             await this.loadSkins();
-            if (window.parent !== window) {
-                window.parent.postMessage('skin-saved', '*');
-            } else {
-                const companyId = window.grindx.session.getUserProfile()?.empresa_id;
-                if (companyId && window.skinLoader) {
-                    window.skinLoader.reload(parseInt(companyId));
-                }
-            }
             this.toastSuccess('Skin ativada com sucesso.');
+            setTimeout(() => {
+                if (window.parent !== window) {
+                    window.parent.location.reload();
+                } else {
+                    const companyId = window.grindx.session.getUserProfile()?.empresa_id;
+                    if (companyId && window.skinLoader) {
+                        window.skinLoader.reload(parseInt(companyId));
+                    }
+                }
+            }, 1500);
         } catch (e) {
             console.error('Erro ao ativar skin:', e);
             this.toastError(e);
