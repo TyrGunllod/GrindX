@@ -430,8 +430,8 @@ iframe {
     left: 0;
     right: 0;
     height: 48px;
-    background: var(--skin-bg-main);
-    border-bottom: 1px solid var(--skin-border-color);
+    background: var(--bg-main);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -449,7 +449,7 @@ iframe {
 
 .skin-preview-banner-text {
     font-weight: 600;
-    color: var(--skin-text-main);
+    color: var(--text-main);
 }
 
 .skin-preview-banner-actions {
