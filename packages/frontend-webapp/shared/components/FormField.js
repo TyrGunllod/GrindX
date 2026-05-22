@@ -31,9 +31,31 @@
         preview.style.fontSize = '1.5rem';
         group.appendChild(preview);
 
+        function iconLib() {
+            try {
+                const w = window.parent !== window ? window.parent : window;
+                return w.skinLoader?.currentSkin?.icon_library;
+            } catch { return 'fontawesome'; }
+        }
+
         const select = group.querySelector('select');
         const updatePreview = () => {
-            preview.innerHTML = `<i class="${select.value}"></i>`;
+            const lib = iconLib() || 'fontawesome';
+            const faName = select.value;
+            if (lib === 'fontawesome') {
+                preview.innerHTML = `<i class="${faName}"></i>`;
+            } else if (lib === 'lucide') {
+                const name = faName.replace('fas fa-', '');
+                preview.innerHTML = `<i data-lucide="${name}"></i>`;
+                if (window.lucide) window.lucide.createIcons();
+                else {
+                    const w = window.parent !== window ? window.parent : window;
+                    if (w.lucide) w.lucide.createIcons();
+                }
+            } else if (lib === 'material') {
+                const name = faName.replace('fas fa-', '').replace(/-/g, '_');
+                preview.innerHTML = `<span class="material-icons">${name}</span>`;
+            }
         };
         select.addEventListener('change', updatePreview);
         updatePreview();
