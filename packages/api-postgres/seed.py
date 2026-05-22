@@ -28,6 +28,11 @@ from shared.security.jwt import gerar_hash_senha
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+# Guard: Verificar se DEBUG está ativo
+if not settings.DEBUG:
+    print("ERRO: seed.py só pode rodar com DEBUG=true. Abortando.")
+    raise SystemExit(1)
+
 
 def seed_database():
     """Popula o banco com dados iniciais (idempotente)."""
