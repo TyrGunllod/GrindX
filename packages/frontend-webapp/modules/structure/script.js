@@ -135,7 +135,7 @@ class StructureController extends window.grindx.controllers.BaseController {
                             </div>
                             <div class="actions-group">
                                 <button class="btn-icon" data-action="edit-mod" data-id="${mod.id}" data-aba-id="${aba.id}"><i class="fas fa-pen"></i></button>
-                                ${this.isProtectedModule(mod.nome)
+                                ${this.isProtectedModule(mod.nome) || this.isProtectedAba(aba.nome)
                                     ? '' 
                                     : `<button class="btn-icon text-danger" data-action="delete-mod" data-id="${mod.id}"><i class="fas fa-trash"></i></button>`}
                             </div>
@@ -257,11 +257,12 @@ class StructureController extends window.grindx.controllers.BaseController {
     }
 
     async deleteModulo(id) {
-        const mod = this.data?.flatMap(a => a.modulos).find(m => m.id == id);
+        const aba = this.data?.find(a => a.modulos.some(m => m.id == id));
+        const mod = aba?.modulos.find(m => m.id == id);
         if (mod) {
-            if (this.isProtectedModule(mod.nome)) {
+            if (this.isProtectedModule(mod.nome) || (aba && this.isProtectedAba(aba.nome))) {
                 window.grindx.components.LoadingSpinner.toast(
-                    `O módulo "${mod.nome}" é essencial para o sistema e não pode ser excluído.`,
+                    `O módulo "${mod.nome}" é protegido e não pode ser excluído.`,
                     'warning'
                 );
                 return;

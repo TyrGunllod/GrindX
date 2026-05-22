@@ -159,6 +159,12 @@ def deletar_modulo(
     mod = db.query(Modulo).filter(Modulo.id == modulo_id).first()
     if not mod:
         raise HTTPException(404, "Módulo não encontrado")
+    aba = db.query(Aba).filter(Aba.id == mod.aba_id).first()
+    if aba and aba.nome.lower() in ("gestão", "gestao"):
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "Módulos da aba Gestão são protegidos e não podem ser excluídos.",
+        )
     db.delete(mod)
     db.commit()
     return None
