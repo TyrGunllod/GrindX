@@ -198,7 +198,9 @@ class ThemeManager {
     }
 
     apply() {
+        document.documentElement.classList.remove('light-theme', 'dark-theme');
         document.body.classList.remove('light-theme', 'dark-theme');
+        document.documentElement.classList.add(`${this.theme}-theme`);
         document.body.classList.add(`${this.theme}-theme`);
     }
 }

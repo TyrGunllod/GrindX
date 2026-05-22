@@ -169,10 +169,14 @@ class DashboardController extends window.grindx.controllers.BaseController {
          const iframe = targetIframe || this.viewport.querySelector('iframe');
          if (iframe && iframe.contentDocument) {
              const theme = window.grindx.theme.theme;
-             const body = iframe.contentDocument.body;
-             if (body) {
-                 body.classList.remove('light-theme', 'dark-theme');
-                 body.classList.add(`${theme}-theme`);
+             const doc = iframe.contentDocument;
+             if (doc.documentElement) {
+                 doc.documentElement.classList.remove('light-theme', 'dark-theme');
+                 doc.documentElement.classList.add(`${theme}-theme`);
+             }
+             if (doc.body) {
+                 doc.body.classList.remove('light-theme', 'dark-theme');
+                 doc.body.classList.add(`${theme}-theme`);
              }
          }
      }
