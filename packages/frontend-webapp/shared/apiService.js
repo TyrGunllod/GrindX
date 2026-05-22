@@ -3,7 +3,18 @@
  */
 
 (function initApiService() {
-    const getBaseUrl = () => window.grindx?.config?.API_BASE_URL || '';
+    const getBaseUrl = () => {
+        // Tenta usar config injetada globalmente
+        if (window.grindx?.config?.API_BASE_URL) {
+            return window.grindx.config.API_BASE_URL;
+        }
+        
+        // Fallback: detectar automaticamente baseado no host atual
+        // Quando acessado via localhost, usa localhost:8002
+        // Quando acessado via outro IP, usa esse IP:8002
+        const hostname = window.location.hostname;
+        return `http://${hostname}:8002`;
+    };
 
     function buildApiUrl(endpoint, params = {}) {
         const baseUrl = getBaseUrl();
