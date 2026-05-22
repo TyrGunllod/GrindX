@@ -448,7 +448,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
     testSkin(id) {
         // Open dashboard in preview mode
-        const url = `dashboard.html?skin_preview=${id}`;
+        const url = `../../dashboard.html?skin_preview=${id}`;
         window.open(url, '_blank');
     }
 
