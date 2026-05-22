@@ -9,21 +9,21 @@ import shutil
 
 import structlog
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from pydantic import BaseModel
 from shared.exceptions.base import ConflictError, NotFoundError
 from shared.schemas.base import ErrorResponse
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user, get_db, require_role
 from app.repositories.theme_repository import ThemeRepository
-from pydantic import BaseModel
 from app.schemas.theme import ThemeCreate, ThemeResponse, ThemeUpdate
 from app.schemas.theme_history import ThemeHistoryResponse
+from app.services.theme_service import ThemeService
 
 
 class TemplateRequest(BaseModel):
     template_slug: str
     name: str
-from app.services.theme_service import ThemeService
 
 logger = structlog.get_logger(__name__)
 

@@ -233,7 +233,8 @@ def test_list_templates(client: TestClient, admin_auth_headers: dict):
 def test_create_from_template(client: TestClient, admin_auth_headers: dict):
     """Testa criação de tema a partir de template."""
     resp = client.post(
-        "/v1/themes/from-template?template_slug=corporate-blue&name=My+Blue+Theme",
+        "/v1/themes/from-template",
+        json={"template_slug": "corporate-blue", "name": "My Blue Theme"},
         headers=admin_auth_headers,
     )
     assert resp.status_code == 201
