@@ -46,6 +46,71 @@ const ICON_CDN_MAP = {
     material: 'https://fonts.googleapis.com/icon?family=Material+Icons',
 };
 
+// Mapeamento de classe Font Awesome para identificador de ícone
+const FA_TO_ICON_ID = {
+    'fa-th-large': 'modules',
+    'fa-home': 'dashboard',
+    'fa-box': 'estoque',
+    'fa-cog': 'settings-admin',
+    'fa-users-cog': 'users-admin',
+    'fa-power-off': 'logout',
+    'fa-chevron-left': 'chevron-left',
+    'fa-times': 'close',
+    'fa-bars': 'menu',
+    'fa-moon': 'moon',
+    'fa-sync-alt': 'refresh',
+    'fa-plus': 'add',
+    'fa-folder-plus': 'folder-add',
+    'fa-cloud-upload-alt': 'cloud-upload',
+    'fa-eye': 'eye',
+    'fa-save': 'save',
+    'fa-undo': 'undo',
+    'fa-adjust': 'contrast',
+    'fa-edit': 'edit',
+    'fa-list': 'list',
+    'fa-tachometer-alt': 'gauge',
+    'fa-times-circle': 'x-circle',
+    'fa-check-circle': 'check-circle',
+    'fa-check': 'check',
+    'fa-trash': 'delete',
+    'fa-chevron-down': 'chevron',
+    'fa-user': 'user',
+    'fa-folder': 'folder',
+    'fa-cube': 'cube',
+};
+
+const ICON_ID_TO_LIB = {
+    chevron:        { fontawesome: 'fa-chevron-down', lucide: 'chevron-down', material: 'expand_more' },
+    user:           { fontawesome: 'fa-user',         lucide: 'user',         material: 'person' },
+    folder:         { fontawesome: 'fa-folder',       lucide: 'folder',       material: 'folder' },
+    cube:           { fontawesome: 'fa-cube',         lucide: 'box',          material: 'category' },
+    modules:        { fontawesome: 'fa-th-large',     lucide: 'grid',         material: 'grid_view' },
+    dashboard:      { fontawesome: 'fa-home',         lucide: 'home',         material: 'home' },
+    estoque:        { fontawesome: 'fa-box',          lucide: 'package',      material: 'inventory' },
+    'settings-admin': { fontawesome: 'fa-cog',        lucide: 'settings',     material: 'settings' },
+    'users-admin':  { fontawesome: 'fa-users-cog',    lucide: 'users',        material: 'group' },
+    logout:         { fontawesome: 'fa-power-off',    lucide: 'log-out',      material: 'logout' },
+    'chevron-left': { fontawesome: 'fa-chevron-left', lucide: 'chevron-left', material: 'chevron_left' },
+    close:          { fontawesome: 'fa-times',        lucide: 'x',            material: 'close' },
+    menu:           { fontawesome: 'fa-bars',         lucide: 'menu',         material: 'menu' },
+    moon:           { fontawesome: 'fa-moon',         lucide: 'moon',         material: 'dark_mode' },
+    refresh:        { fontawesome: 'fa-sync-alt',     lucide: 'refresh-cw',   material: 'refresh' },
+    add:            { fontawesome: 'fa-plus',         lucide: 'plus',         material: 'add' },
+    'folder-add':   { fontawesome: 'fa-folder-plus',  lucide: 'folder-plus',  material: 'create_new_folder' },
+    'cloud-upload': { fontawesome: 'fa-cloud-upload-alt', lucide: 'cloud-upload', material: 'cloud_upload' },
+    eye:            { fontawesome: 'fa-eye',          lucide: 'eye',          material: 'visibility' },
+    save:           { fontawesome: 'fa-save',         lucide: 'save',         material: 'save' },
+    undo:           { fontawesome: 'fa-undo',         lucide: 'undo',         material: 'undo' },
+    contrast:       { fontawesome: 'fa-adjust',       lucide: 'contrast',     material: 'contrast' },
+    edit:           { fontawesome: 'fa-edit',         lucide: 'edit',         material: 'edit' },
+    list:           { fontawesome: 'fa-list',         lucide: 'list',         material: 'list' },
+    gauge:          { fontawesome: 'fa-tachometer-alt', lucide: 'gauge',      material: 'speed' },
+    'x-circle':     { fontawesome: 'fa-times-circle', lucide: 'x-circle',     material: 'cancel' },
+    'check-circle': { fontawesome: 'fa-check-circle', lucide: 'check-circle', material: 'check_circle' },
+    check:          { fontawesome: 'fa-check',        lucide: 'check',        material: 'check' },
+    delete:         { fontawesome: 'fa-trash',        lucide: 'trash-2',      material: 'delete' },
+};
+
 const FONT_CDN_MAP = {
     Inter: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
     Roboto: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
@@ -187,6 +252,7 @@ class SkinLoader {
         this._applyTokens(skin.tokens);
         this._applyFonts(skin.fonts);
         this._loadIconLibrary(skin.icon_library);
+        this._replacePageIcons(skin.icon_library);
         this._updateBranding(skin.company_name, skin.copyright_text);
         this._updateLogos(skin.logo_url, skin.logo_short_url);
     }
@@ -269,6 +335,58 @@ class SkinLoader {
             link.href = cdnUrl;
             document.head.appendChild(link);
             this._iconLinkEl = link;
+        }
+    }
+
+    _replacePageIcons(library) {
+        if (!library) return;
+
+        const isFA = library === 'fontawesome';
+        const isLucide = library === 'lucide';
+        const isMaterial = library === 'material';
+
+        function iconIdFromEl(el) {
+            const faClass = Array.from(el.classList).find(c => c.startsWith('fa-'));
+            if (faClass && FA_TO_ICON_ID[faClass]) return FA_TO_ICON_ID[faClass];
+            const lucideAttr = el.getAttribute('data-lucide');
+            if (lucideAttr) {
+                for (const [id, def] of Object.entries(ICON_ID_TO_LIB)) {
+                    if (def.lucide === lucideAttr) return id;
+                }
+            }
+            if (el.classList.contains('material-icons')) {
+                const txt = el.textContent.trim();
+                for (const [id, def] of Object.entries(ICON_ID_TO_LIB)) {
+                    if (def.material === txt) return id;
+                }
+            }
+            return null;
+        }
+
+        document.querySelectorAll('i.fas, i[data-lucide], span.material-icons').forEach(el => {
+            const iconId = iconIdFromEl(el);
+            if (!iconId) return;
+            const iconDef = ICON_ID_TO_LIB[iconId];
+            if (!iconDef) return;
+
+            if (isFA) {
+                const i = document.createElement('i');
+                i.className = iconDef.fontawesome;
+                el.replaceWith(i);
+            } else if (isLucide) {
+                const i = document.createElement('i');
+                i.setAttribute('data-lucide', iconDef.lucide);
+                el.replaceWith(i);
+            } else if (isMaterial) {
+                const span = document.createElement('span');
+                span.className = 'material-icons';
+                span.textContent = iconDef.material;
+                el.replaceWith(span);
+            }
+        });
+
+        if (isLucide && window.lucide) {
+            window.lucide.createIcons();
         }
     }
 
