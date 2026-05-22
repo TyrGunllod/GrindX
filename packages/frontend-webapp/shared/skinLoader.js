@@ -245,15 +245,10 @@ class SkinLoader {
     _loadIconLibrary(library) {
         if (!library) return;
 
-        // Remove biblioteca dinâmica carregada anteriormente
         if (this._iconLinkEl) {
             this._iconLinkEl.remove();
             this._iconLinkEl = null;
         }
-
-        // Remove quaisquer links do Font Awesome do DOM
-        const faLinks = document.querySelectorAll('link[href*="font-awesome"]');
-        faLinks.forEach(el => el.remove());
 
         const cdnUrl = ICON_CDN_MAP[library];
         if (!cdnUrl) return;
