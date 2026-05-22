@@ -3,7 +3,7 @@
 # Makefile para Windows (PowerShell/GnuMake)
 # ==========================================
 
-.PHONY: build up down logs test-postgres test-sqlserver test-all dev-postgres dev-sqlserver seed migrate clean
+.PHONY: build up down logs test-postgres test-sqlserver test-all dev-postgres dev-sqlserver dev-frontend seed migrate clean
 
 # ==========================================
 # Desenvolvimento & Execução
@@ -11,11 +11,15 @@
 
 dev-postgres:
 	@echo "Iniciando API Postgres na porta 8002..."
-	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --port 8002
+	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002
 
 dev-sqlserver:
 	@echo "Iniciando API SQL Server na porta 8001..."
-	cd packages/api-sqlserver && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --port 8001
+	cd packages/api-sqlserver && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
+
+dev-frontend:
+	@echo "Iniciando Frontend na porta 5500 (acessivel na rede)..."
+	python -m http.server 5500 --directory packages/frontend-webapp --bind 0.0.0.0
 
 # ==========================================
 # Banco de Dados & Dados Iniciais
