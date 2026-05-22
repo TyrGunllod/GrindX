@@ -305,7 +305,10 @@ class SkinLoader {
         if (logoUrl) {
             const logoEl = document.querySelector('.logo-grindx');
             if (logoEl) {
-                logoEl.innerHTML = `<img src="${logoUrl}" alt="Logo" style="max-height: 32px; width: auto;">`;
+                const name = (this.currentSkin && this.currentSkin.company_name) || 'GrindX';
+                const initial = name.substring(0, 1);
+                const rest = name.substring(1);
+                logoEl.innerHTML = `<img src="${logoUrl}" alt="Logo" style="max-height: 32px; width: auto;" onerror="this.outerHTML='${initial}<span class=\\"logo-full\\">${rest}</span>'">`;
             }
         }
         if (logoShortUrl) {
