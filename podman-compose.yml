@@ -13,7 +13,7 @@ services:
     container_name: erp-api-sqlserver
     user: "1001:1001"
     ports:
-      - "8001:8001"
+      - "0.0.0.0:8001:8001"
     env_file: ./packages/api-sqlserver/.env
     networks:
       - erp-net
@@ -35,7 +35,7 @@ services:
     container_name: erp-api-postgres
     user: "1001:1001"
     ports:
-      - "8002:8002"
+      - "0.0.0.0:8002:8002"
     env_file: ./packages/api-postgres/.env
     networks:
       - erp-net
