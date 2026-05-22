@@ -120,6 +120,19 @@ def seed_database():
         else:
             print("[SKIP] Todos os usuários já existem")
 
+        # Vincular qualquer usuário existente que não tenha empresa
+        sem_empresa = (
+            session.query(Usuario).filter(Usuario.empresa_id.is_(None)).count()
+        )
+        if sem_empresa:
+            session.query(Usuario).filter(Usuario.empresa_id.is_(None)).update(
+                {"empresa_id": empresa_grindx.id}
+            )
+            session.flush()
+            print(f"[OK] Vinculados {sem_empresa} usuário(s) à empresa GrindX")
+        else:
+            print("[SKIP] Todos os usuários já possuem empresa")
+
         # =========================================================
         # 3. Skin padrão GrindX
         # =========================================================
