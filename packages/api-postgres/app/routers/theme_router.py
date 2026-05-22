@@ -15,8 +15,14 @@ from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user, get_db, require_role
 from app.repositories.theme_repository import ThemeRepository
+from pydantic import BaseModel
 from app.schemas.theme import ThemeCreate, ThemeResponse, ThemeUpdate
 from app.schemas.theme_history import ThemeHistoryResponse
+
+
+class TemplateRequest(BaseModel):
+    template_slug: str
+    name: str
 from app.services.theme_service import ThemeService
 
 logger = structlog.get_logger(__name__)
@@ -146,8 +152,7 @@ def list_skin_templates(
     responses={400: {"model": ErrorResponse, "description": "Template não encontrado"}},
 )
 def create_theme_from_template(
-    template_slug: str,
-    name: str,
+    dados: TemplateRequest,
     current_user=Depends(require_role("admin")),
     service: ThemeService = Depends(_get_theme_service),
 ) -> dict:
@@ -159,12 +164,12 @@ def create_theme_from_template(
     templates_dir = os.path.join(
         os.path.dirname(os.path.dirname(__file__)), "data", "skin-templates"
     )
-    template_path = os.path.join(templates_dir, f"{template_slug}.json")
+    template_path = os.path.join(templates_dir, f"{dados.template_slug}.json")
 
     if not os.path.exists(template_path):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Template '{template_slug}' não encontrado",
+            detail=f"Template '{dados.template_slug}' não encontrado",
         )
 
     try:
@@ -187,7 +192,7 @@ def create_theme_from_template(
 
     return service.create_theme(
         company_id=company_id,
-        name=name,
+        name=dados.name,
         colors=colors,
         fonts=fonts,
         icon_library=icon_library,
