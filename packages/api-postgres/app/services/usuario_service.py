@@ -25,8 +25,7 @@ class UsuarioService:
             raise NotFoundError(resource="Usuário", identifier=usuario_id)
         return usuario
 
-    def criar_usuario(self, schema: UsuarioCreate):
-        # Verificar duplicidade
+    def criar_usuario(self, schema: UsuarioCreate, empresa_id: int | None = None):
         if self.repo.buscar_por_username(schema.username):
             raise ConflictError(f"Username '{schema.username}' já está em uso")
         if self.repo.buscar_por_email(schema.email):
@@ -39,6 +38,7 @@ class UsuarioService:
             senha_hash=gerar_hash_senha(schema.password),
             role=schema.role,
             ativo=schema.ativo,
+            empresa_id=empresa_id,
         )
         return self.repo.criar(usuario)
 

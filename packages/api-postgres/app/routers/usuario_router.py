@@ -47,12 +47,12 @@ def listar_usuarios(
 def criar_usuario(
     schema: UsuarioCreate,
     request: Request,
+    current_user=Depends(require_role("admin")),
     db: Session = Depends(get_db),
-    _: None = Depends(require_role("admin")),
 ):
     """Cria um novo usuário. Acesso: admin."""
     service = UsuarioService(db)
-    result = service.criar_usuario(schema)
+    result = service.criar_usuario(schema, empresa_id=current_user.company_id)
     client_ip = request.client.host if request.client else "unknown"
     logger.info(
         "usuario_criado",
