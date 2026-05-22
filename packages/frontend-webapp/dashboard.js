@@ -64,7 +64,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
             document.getElementById('themeToggle')?.addEventListener('click', () => {
                 window.grindx.theme.toggle();
                 this.updateThemeIcon();
-                this.applySkinToIframe();
+                this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));
             });
 
             document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
@@ -185,16 +185,23 @@ class DashboardController extends window.grindx.controllers.BaseController {
         }
 
         // Copy skin CSS variables from parent :root to iframe
+        // Only copy raw --skin-* tokens (NOT semantic aliases like --bg-card)
+        // so the iframe's .dark-theme CSS cascade can properly override them.
         if (root) {
             const parentRoot = document.documentElement;
             const computed = getComputedStyle(parentRoot);
-            const skinVars = ['--skin-primary', '--skin-primary-hover', '--skin-bg-main', '--skin-bg-card',
-                '--skin-bg-input', '--skin-text-main', '--skin-text-muted', '--skin-border-color',
+            const skinVars = [
+                '--skin-primary', '--skin-primary-hover', '--skin-danger', '--skin-success', '--skin-warning',
+                '--skin-bg-main', '--skin-bg-card', '--skin-text-main', '--skin-text-muted',
+                '--skin-border-color', '--skin-focus-ring',
+                '--skin-bg-main-dark', '--skin-bg-card-dark', '--skin-text-main-dark', '--skin-text-muted-dark',
+                '--skin-border-color-dark',
                 '--skin-sidebar-bg', '--skin-sidebar-text', '--skin-sidebar-active',
-                '--skin-header-bg', '--skin-header-text', '--skin-font-heading', '--skin-font-body',
-                '--bg-card', '--text-main', '--text-muted', '--border-color', '--bg-input',
-                '--bg-sidebar', '--text-sidebar', '--bg-sidebar-active', '--bg-header', '--text-header',
-                '--card-bg', '--primary', '--primary-hover'];
+                '--skin-header-bg', '--skin-header-text',
+                '--skin-font-heading', '--skin-font-body',
+                '--skin-radius-sm', '--skin-radius-md', '--skin-radius-lg', '--skin-radius-xl',
+                '--skin-shadow-card', '--skin-shadow-modal',
+            ];
             skinVars.forEach(v => {
                 const val = computed.getPropertyValue(v).trim();
                 if (val) root.style.setProperty(v, val);
