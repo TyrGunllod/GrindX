@@ -35,6 +35,12 @@
     display: none;
 }
 
+.logo-grindx {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .sidebar.collapsed .logo-full {
     display: none;
 }
