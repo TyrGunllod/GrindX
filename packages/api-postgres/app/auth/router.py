@@ -5,12 +5,17 @@ Endpoints para login (emissão de tokens) e refresh de tokens JWT.
 Centralizado na api-postgres — ambas as APIs validam tokens stateless.
 """
 
-from fastapi import APIRouter, Depends
+from datetime import datetime, timezone
+
+import structlog
+from fastapi import APIRouter, Depends, Request
 from shared.schemas.auth import RefreshTokenRequest, TokenRequest, TokenResponse
 from shared.schemas.base import ErrorResponse
 
 from app.auth.dependencies import get_auth_service
 from app.auth.service import AuthService
+
+logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/v1/auth", tags=["Autenticação"])
 
@@ -29,10 +34,29 @@ router = APIRouter(prefix="/v1/auth", tags=["Autenticação"])
 )
 def login(
     dados: TokenRequest,
+    request: Request,
     auth_service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     """Emite tokens JWT para um usuário autenticado."""
-    return auth_service.autenticar(dados.username, dados.password)
+    client_ip = request.client.host if request.client else "unknown"
+    try:
+        result = auth_service.autenticar(dados.username, dados.password)
+        logger.info(
+            "login_sucesso",
+            username=dados.username,
+            ip=client_ip,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+        )
+        return result
+    except Exception as e:
+        logger.warning(
+            "login_falha",
+            username=dados.username,
+            ip=client_ip,
+            erro=str(e),
+            timestamp=datetime.now(timezone.utc).isoformat(),
+        )
+        raise
 
 
 @router.post(
@@ -49,7 +73,24 @@ def login(
 )
 def refresh(
     dados: RefreshTokenRequest,
+    request: Request,
     auth_service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     """Renova os tokens JWT usando um refresh token válido."""
-    return auth_service.refresh_token(dados.refresh_token)
+    client_ip = request.client.host if request.client else "unknown"
+    try:
+        result = auth_service.refresh_token(dados.refresh_token)
+        logger.info(
+            "refresh_sucesso",
+            ip=client_ip,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+        )
+        return result
+    except Exception as e:
+        logger.warning(
+            "refresh_falha",
+            ip=client_ip,
+            erro=str(e),
+            timestamp=datetime.now(timezone.utc).isoformat(),
+        )
+        raise

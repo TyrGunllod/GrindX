@@ -1,9 +1,10 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, Request, status
 from shared.schemas.base import PaginatedResponse
 from sqlalchemy.orm import Session
 
+import structlog
 from app.auth.dependencies import require_role
 from app.database import get_db
 from app.models.usuario import UsuarioModulo
@@ -15,6 +16,8 @@ from app.schemas.usuario import (
     UsuarioUpdate,
 )
 from app.services.usuario_service import UsuarioService
+
+logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/v1/usuarios", tags=["Gestão de Usuários"])
 
@@ -43,12 +46,22 @@ def listar_usuarios(
 @router.post("", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
 def criar_usuario(
     schema: UsuarioCreate,
+    request: Request,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
     """Cria um novo usuário. Acesso: admin."""
     service = UsuarioService(db)
-    return service.criar_usuario(schema)
+    result = service.criar_usuario(schema)
+    client_ip = request.client.host if request.client else "unknown"
+    logger.info(
+        "usuario_criado",
+        usuario_id=result.id,
+        username=result.username,
+        role=schema.role,
+        ip=client_ip,
+    )
+    return result
 
 
 @router.get("/{usuario_id}", response_model=UsuarioResponse)
@@ -77,12 +90,19 @@ def atualizar_usuario(
 @router.delete("/{usuario_id}", status_code=status.HTTP_204_NO_CONTENT)
 def desativar_usuario(
     usuario_id: int,
+    request: Request,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
     """Desativa um usuário (soft delete). Acesso: admin."""
     service = UsuarioService(db)
     service.desativar_usuario(usuario_id)
+    client_ip = request.client.host if request.client else "unknown"
+    logger.info(
+        "usuario_desativado",
+        usuario_id=usuario_id,
+        ip=client_ip,
+    )
     return None
 
 
