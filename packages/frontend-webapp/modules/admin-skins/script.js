@@ -519,12 +519,14 @@ class AdminSkinsController {
         this.setColor('colorTextMain', 'colorTextMainText', '#1e293b');
         this.setColor('colorTextMuted', 'colorTextMutedText', '#64748b');
         this.setColor('colorBorderColor', 'colorBorderColorText', '#e2e8f0');
-        this.setColor('colorFocusRing', 'colorFocusRingText', 'rgba(0, 194, 224, 0.35)');
+        this.setColor('colorFocusRing', 'colorFocusRingText', '#00c2e0');
+        document.getElementById('colorFocusRingText').value = 'rgba(0, 194, 224, 0.35)';
         this.setColor('colorBgMainDark', 'colorBgMainDarkText', '#0f172a');
         this.setColor('colorBgCardDark', 'colorBgCardDarkText', '#1e293b');
         this.setColor('colorTextMainDark', 'colorTextMainDarkText', '#f8fafc');
         this.setColor('colorTextMutedDark', 'colorTextMutedDarkText', '#94a3b8');
-        this.setColor('colorBorderColorDark', 'colorBorderColorDarkText', 'rgba(255, 255, 255, 0.05)');
+        this.setColor('colorBorderColorDark', 'colorBorderColorDarkText', '#ffffff');
+        document.getElementById('colorBorderColorDarkText').value = 'rgba(255, 255, 255, 0.05)';
     }
 
     generateDarkMode() {
