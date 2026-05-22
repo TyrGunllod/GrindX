@@ -215,7 +215,37 @@ const grindx = {
     session,
     i18n: new I18nManager(storage),
     ui: UIFactory,
-    theme: new ThemeManager(storage)
+    theme: new ThemeManager(storage),
+    icons: {
+        activeLib() {
+            try {
+                const w = window.parent !== window ? window.parent : window;
+                return w.skinLoader?.currentSkin?.icon_library || 'fontawesome';
+            } catch { return 'fontawesome'; }
+        },
+        convert(el) {
+            const lib = this.activeLib();
+            if (lib === 'fontawesome') return;
+            const faClass = Array.from(el.classList).find(c => c.startsWith('fa-'));
+            if (!faClass) return;
+            const name = faClass.replace('fa-', '');
+            if (lib === 'lucide') {
+                el.outerHTML = `<i data-lucide="${name}"></i>`;
+            } else if (lib === 'material') {
+                el.outerHTML = `<span class="material-icons">${name.replace(/-/g, '_')}</span>`;
+            }
+        },
+        convertAll(scope) {
+            const lib = this.activeLib();
+            if (lib === 'fontawesome') return;
+            (scope || document).querySelectorAll('i.fas').forEach(el => this.convert(el));
+            if (lib === 'lucide') {
+                const w = window.parent !== window ? window.parent : window;
+                if (w.lucide) w.lucide.createIcons();
+                else if (window.lucide) window.lucide.createIcons();
+            }
+        }
+    }
 };
 
 window.grindx = grindx; // Global accessibility
