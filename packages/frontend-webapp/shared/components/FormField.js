@@ -30,6 +30,12 @@
         hidden.value = value;
         group.appendChild(hidden);
 
+        const preview = document.createElement('div');
+        preview.style.marginTop = '0.5rem';
+        preview.style.fontSize = '1.5rem';
+        preview.innerHTML = `<i class="${value}"></i>`;
+        group.appendChild(preview);
+
         const grid = document.createElement('div');
         grid.className = 'icon-picker-grid';
         grid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 6px; margin-top: 0.5rem; max-height: 260px; overflow-y: auto; padding: 4px;';
@@ -85,7 +91,28 @@
                 b.style.borderColor = match ? 'var(--primary, #00c2e0)' : 'transparent';
                 b.style.background = match ? 'var(--primary, #00c2e0)20' : 'var(--bg-card, #fff)';
             });
+            preview.innerHTML = `<i class="${hidden.value}"></i>`;
+            const el = preview.querySelector('i');
+            if (el) window.grindx.icons.convert(el);
+            const lib = window.grindx.icons.activeLib();
+            if (lib === 'lucide' && window.lucide) window.lucide.createIcons();
         });
+
+        // Initial preview conversion
+        (function initPreview() {
+            const el = preview.querySelector('i');
+            if (el) window.grindx.icons.convert(el);
+            const lib = window.grindx.icons.activeLib();
+            if (lib === 'lucide') {
+                if (window.lucide) window.lucide.createIcons();
+                else {
+                    const s = document.createElement('script');
+                    s.src = 'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js';
+                    s.onload = () => { if (window.lucide) window.lucide.createIcons(); };
+                    document.head.appendChild(s);
+                }
+            }
+        })();
 
         return group;
     }

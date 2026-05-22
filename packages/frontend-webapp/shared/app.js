@@ -238,11 +238,31 @@ const grindx = {
         convertAll(scope) {
             const lib = this.activeLib();
             if (lib === 'fontawesome') return;
-            (scope || document).querySelectorAll('i.fas').forEach(el => this.convert(el));
-            if (lib === 'lucide') {
-                const w = window.parent !== window ? window.parent : window;
-                if (w.lucide) w.lucide.createIcons();
-                else if (window.lucide) window.lucide.createIcons();
+            const root = scope || document;
+
+            if (lib === 'lucide' && !window.lucide) {
+                const s = document.createElement('script');
+                s.src = 'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js';
+                s.onload = () => {
+                    root.querySelectorAll('i.fas').forEach(el => this.convert(el));
+                    window.lucide.createIcons();
+                };
+                document.head.appendChild(s);
+                return;
+            }
+            if (lib === 'material') {
+                const has = document.querySelector('link[href*="Material+Icons"], link[href*="material+icons"]');
+                if (!has) {
+                    const l = document.createElement('link');
+                    l.rel = 'stylesheet';
+                    l.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
+                    document.head.appendChild(l);
+                }
+            }
+
+            root.querySelectorAll('i.fas').forEach(el => this.convert(el));
+            if (lib === 'lucide' && window.lucide) {
+                window.lucide.createIcons();
             }
         }
     }
