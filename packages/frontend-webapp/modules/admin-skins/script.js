@@ -483,6 +483,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.currentIconLibrary = iconLibrary;
         if (window.skinLoader) {
             window.skinLoader._loadIconLibrary(iconLibrary);
+            window.skinLoader._replacePageIcons(iconLibrary);
         }
         this._updatePreviewIconsFromLibrary(iconLibrary);
 
