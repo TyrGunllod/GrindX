@@ -22,7 +22,7 @@ structlog>=24.1.0
 
 # === Rate Limiting Distribuído ===
 redis[asyncio]>=5.0.0
-fastapi-limiter>=0.1.6
+pyrate-limiter>=4.0.0
 
 # === Testes ===
 pytest>=8.0.0

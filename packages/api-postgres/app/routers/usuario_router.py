@@ -1,10 +1,10 @@
 from typing import Optional
 
+import structlog
 from fastapi import APIRouter, Depends, Query, Request, status
 from shared.schemas.base import PaginatedResponse
 from sqlalchemy.orm import Session
 
-import structlog
 from app.auth.dependencies import require_role
 from app.database import get_db
 from app.models.usuario import UsuarioModulo
