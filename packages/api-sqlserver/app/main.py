@@ -62,7 +62,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestIdMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.allowed_origins_list,
     allow_credentials=True,
     allow_methods=["GET"],  # Somente GET — API read-only
     allow_headers=["*"],
