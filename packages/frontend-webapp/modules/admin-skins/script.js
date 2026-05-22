@@ -9,6 +9,7 @@ class AdminSkinsController {
         this.templates = [];
         this.editingSkinId = null;
         this.advancedMode = false;
+        this._darkPreview = false;
         this.apiBase = window.grindx.config.API_BASE_URL;
         this.token = window.grindx.session.getToken();
 
@@ -37,6 +38,9 @@ class AdminSkinsController {
         document.getElementById('btnPreviewSkin')?.addEventListener('click', () => this.previewSkin());
         document.getElementById('btnResetSkin')?.addEventListener('click', () => this.resetPreview());
         document.getElementById('btnAutoDarkMode')?.addEventListener('click', () => this.generateDarkMode());
+
+        // Preview dark/light toggle
+        document.getElementById('previewThemeToggle')?.addEventListener('click', () => this.togglePreviewTheme());
 
         // Advanced mode toggle
         document.getElementById('advancedModeToggle')?.addEventListener('change', (e) => {
@@ -427,6 +431,46 @@ class AdminSkinsController {
 
         if (window.skinLoader) {
             window.skinLoader.applyPreviewColors(colors);
+        }
+        // Reset toggle state whenever preview is applied
+        this._darkPreview = false;
+        const icon = document.getElementById('previewThemeToggle');
+        if (icon) icon.className = 'fas fa-moon';
+    }
+
+    togglePreviewTheme() {
+        this._darkPreview = !this._darkPreview;
+        const icon = document.getElementById('previewThemeToggle');
+        const preview = document.querySelector('.preview-dashboard');
+
+        if (!preview) return;
+
+        if (this._darkPreview) {
+            // Apply dark mode colors to preview
+            const darkVars = {
+                '--skin-bg-main': document.getElementById('colorBgMainDarkText').value,
+                '--skin-bg-card': document.getElementById('colorBgCardDarkText').value,
+                '--skin-text-main': document.getElementById('colorTextMainDarkText').value,
+                '--skin-text-muted': document.getElementById('colorTextMutedDarkText').value,
+                '--skin-border-color': document.getElementById('colorBorderColorDarkText').value,
+            };
+            for (const [key, value] of Object.entries(darkVars)) {
+                preview.style.setProperty(key, value);
+            }
+            if (icon) icon.className = 'fas fa-sun';
+        } else {
+            // Restore light mode colors
+            const lightVars = {
+                '--skin-bg-main': document.getElementById('colorBgMainText').value,
+                '--skin-bg-card': document.getElementById('colorBgCardText').value,
+                '--skin-text-main': document.getElementById('colorTextMainText').value,
+                '--skin-text-muted': document.getElementById('colorTextMutedText').value,
+                '--skin-border-color': document.getElementById('colorBorderColorText').value,
+            };
+            for (const [key, value] of Object.entries(lightVars)) {
+                preview.style.setProperty(key, value);
+            }
+            if (icon) icon.className = 'fas fa-moon';
         }
     }
 
