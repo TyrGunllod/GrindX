@@ -20,6 +20,10 @@ bcrypt>=4.1.2
 # === Logging ===
 structlog>=24.1.0
 
+# === Rate Limiting Distribuído ===
+redis[asyncio]>=5.0.0
+fastapi-limiter>=0.1.6
+
 # === Testes ===
 pytest>=8.0.0
 pytest-asyncio>=0.23.5

@@ -14,10 +14,12 @@ Configura o app FastAPI com:
 import os
 from contextlib import asynccontextmanager
 
+import redis.asyncio as redis
 import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi_limiter import FastAPILimiter
 
 from app.auth.router import router as auth_router
 from app.core.config import settings
@@ -39,10 +41,22 @@ logger = structlog.get_logger(__name__)
 async def lifespan(app: FastAPI):
     """Gerencia startup e shutdown da aplicação.
 
-    Startup: configura logging e loga início do serviço.
-    Shutdown: loga encerramento gracioso.
+    Startup: configura logging, inicializa Redis/FastAPILimiter.
+    Shutdown: encerra conexões.
     """
     setup_logging()
+
+    redis_url = getattr(settings, "REDIS_URL", "redis://localhost")
+    try:
+        r = redis.from_url(redis_url, encoding="utf-8", decode_responses=True)
+        await FastAPILimiter.init(r)
+        logger.info("Rate limiter distribuido inicializado com Redis")
+    except Exception as exc:
+        logger.warning(
+            "Redis nao disponivel, rate limiter em memoria como fallback",
+            error=str(exc),
+        )
+
     logger.info(
         "Serviço iniciado",
         service=settings.APP_NAME,
@@ -50,6 +64,10 @@ async def lifespan(app: FastAPI):
         debug=settings.DEBUG,
     )
     yield
+    try:
+        await FastAPILimiter.close()
+    except Exception:
+        pass
     logger.info("Serviço encerrado", service=settings.APP_NAME)
 
 
