@@ -186,6 +186,7 @@ class StructureController extends window.grindx.controllers.BaseController {
             this.updateAbaSelect(this.data);
             this.toastSuccess('Aba salva com sucesso.');
             this.closeModals();
+            window.parent.postMessage('sidebar-update', '*');
         } catch (err) {
             this.toastError(err);
         }
@@ -207,6 +208,7 @@ class StructureController extends window.grindx.controllers.BaseController {
             this.renderStructureOrEmpty();
             this.updateAbaSelect(this.data);
             this.toastSuccess('Aba excluída com sucesso.');
+            window.parent.postMessage('sidebar-update', '*');
         } catch (err) {
             this.toastError(err);
         }
@@ -248,6 +250,7 @@ class StructureController extends window.grindx.controllers.BaseController {
             this.renderStructure(this.data);
             this.toastSuccess('Módulo salvo com sucesso.');
             this.closeModals();
+            window.parent.postMessage('sidebar-update', '*');
         } catch (err) {
             this.toastError(err);
         }
@@ -273,6 +276,7 @@ class StructureController extends window.grindx.controllers.BaseController {
             }));
             this.renderStructure(this.data);
             this.toastSuccess('Módulo excluído com sucesso.');
+            window.parent.postMessage('sidebar-update', '*');
         } catch (err) {
             this.toastError(err);
         }

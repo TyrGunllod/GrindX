@@ -81,6 +81,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 }
             });
 
+            window.addEventListener('message', (e) => {
+                if (e.data === 'sidebar-update') this.loadDynamicMenu();
+            });
         }
 
     toggleSidebarCollapse() {
@@ -129,7 +132,6 @@ class DashboardController extends window.grindx.controllers.BaseController {
         `).join('');
 
         this.moduleViewport = document.getElementById('moduleViewport');
-    }
     }
 
     toggleGroup(abaId) {
