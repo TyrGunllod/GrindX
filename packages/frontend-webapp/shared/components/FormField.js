@@ -20,31 +20,72 @@
     }
 
     function createIconSelect({ id, label, value = 'fas fa-folder' }) {
-        const iconOptions = window.grindx.constants.ICON_OPTIONS.map(icon => ({
-            value: icon,
-            label: icon.replace('fas fa-', '')
-        }));
-        const group = createSelect({ id, label, options: iconOptions, value });
-        const preview = document.createElement('div');
-        preview.id = `${id}Preview`;
-        preview.style.marginTop = '0.5rem';
-        preview.style.fontSize = '1.5rem';
-        group.appendChild(preview);
+        const group = document.createElement('div');
+        group.className = 'form-group';
+        group.innerHTML = `<label>${label}</label>`;
 
-        const select = group.querySelector('select');
-        const updatePreview = () => {
-            preview.innerHTML = `<i class="${select.value}"></i>`;
-            const i = preview.querySelector('i');
-            if (i) window.grindx.icons.convert(i);
-            const lib = window.grindx.icons.activeLib();
-            if (lib === 'lucide') {
-                const w = window.parent !== window ? window.parent : window;
-                if (w.lucide) w.lucide.createIcons();
-                else if (window.lucide) window.lucide.createIcons();
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.id = id;
+        hidden.value = value;
+        group.appendChild(hidden);
+
+        const grid = document.createElement('div');
+        grid.className = 'icon-picker-grid';
+        grid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 6px; margin-top: 0.5rem; max-height: 260px; overflow-y: auto; padding: 4px;';
+
+        window.grindx.constants.ICON_OPTIONS.forEach(iconClass => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.title = iconClass.replace('fas fa-', '');
+            btn.dataset.value = iconClass;
+            btn.style.cssText = 'display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border: 2px solid transparent; border-radius: 8px; cursor: pointer; background: var(--bg-card, #fff); font-size: 1.2rem; transition: border-color .2s, background .2s;';
+            btn.innerHTML = `<i class="${iconClass}"></i>`;
+
+            if (iconClass === value) {
+                btn.style.borderColor = 'var(--primary, #00c2e0)';
+                btn.style.background = 'var(--primary, #00c2e0)20';
+                btn.classList.add('selected');
             }
-        };
-        select.addEventListener('change', updatePreview);
-        updatePreview();
+
+            btn.addEventListener('mouseenter', () => {
+                if (!btn.classList.contains('selected')) {
+                    btn.style.borderColor = 'var(--border-color, #e2e8f0)';
+                    btn.style.background = 'var(--bg-card-hover, #f1f5f9)';
+                }
+            });
+            btn.addEventListener('mouseleave', () => {
+                if (!btn.classList.contains('selected')) {
+                    btn.style.borderColor = 'transparent';
+                    btn.style.background = 'var(--bg-card, #fff)';
+                }
+            });
+            btn.addEventListener('click', () => {
+                grid.querySelectorAll('.icon-picker-item').forEach(b => {
+                    b.classList.remove('selected');
+                    b.style.borderColor = 'transparent';
+                    b.style.background = 'var(--bg-card, #fff)';
+                });
+                btn.classList.add('selected');
+                btn.style.borderColor = 'var(--primary, #00c2e0)';
+                btn.style.background = 'var(--primary, #00c2e0)20';
+                hidden.value = iconClass;
+                hidden.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+
+            grid.appendChild(btn);
+        });
+
+        group.appendChild(grid);
+
+        hidden.addEventListener('change', () => {
+            grid.querySelectorAll('.icon-picker-item').forEach(b => {
+                const match = b.dataset.value === hidden.value;
+                b.classList.toggle('selected', match);
+                b.style.borderColor = match ? 'var(--primary, #00c2e0)' : 'transparent';
+                b.style.background = match ? 'var(--primary, #00c2e0)20' : 'var(--bg-card, #fff)';
+            });
+        });
 
         return group;
     }
