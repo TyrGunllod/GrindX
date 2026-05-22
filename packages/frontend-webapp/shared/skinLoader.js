@@ -322,10 +322,14 @@ class SkinLoader {
                 img.alt = 'Logo';
                 img.style.maxHeight = '32px';
                 img.style.width = 'auto';
-                img.onerror = function () {
-                    this.outerHTML = initial + '<span class="logo-full">' + rest + '</span>';
-                };
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'logo-full';
+                nameSpan.textContent = name;
                 logoEl.appendChild(img);
+                logoEl.appendChild(nameSpan);
+                img.onerror = function () {
+                    logoEl.innerHTML = initial + '<span class="logo-full">' + rest + '</span>';
+                };
             }
         }
         if (logoShortUrl) {
