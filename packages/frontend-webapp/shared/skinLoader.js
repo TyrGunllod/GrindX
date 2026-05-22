@@ -363,24 +363,58 @@ class SkinLoader {
             return null;
         }
 
+        function faName(el) {
+            const cls = Array.from(el.classList).find(c => c.startsWith('fa-'));
+            return cls ? cls.replace('fa-', '') : null;
+        }
+
+        function lucideName(el) {
+            return el.getAttribute('data-lucide');
+        }
+
+        function materialName(el) {
+            return el.classList.contains('material-icons') ? el.textContent.trim().replace(/_/g, '-') : null;
+        }
+
         document.querySelectorAll('i.fas, i[data-lucide], span.material-icons').forEach(el => {
             const iconId = iconIdFromEl(el);
-            if (!iconId) return;
-            const iconDef = ICON_ID_TO_LIB[iconId];
-            if (!iconDef) return;
+            const explicit = iconId && ICON_ID_TO_LIB[iconId];
+
+            if (explicit) {
+                const def = ICON_ID_TO_LIB[iconId];
+                if (isFA) {
+                    const i = document.createElement('i');
+                    i.className = def.fontawesome;
+                    el.replaceWith(i);
+                } else if (isLucide) {
+                    const i = document.createElement('i');
+                    i.setAttribute('data-lucide', def.lucide);
+                    el.replaceWith(i);
+                } else if (isMaterial) {
+                    const span = document.createElement('span');
+                    span.className = 'material-icons';
+                    span.textContent = def.material;
+                    el.replaceWith(span);
+                }
+                return;
+            }
+
+            // Fallback genérico: converte pelo nome do ícone
+            const name = faName(el) || lucideName(el) || materialName(el);
+            if (!name) return;
 
             if (isFA) {
                 const i = document.createElement('i');
-                i.className = iconDef.fontawesome;
+                i.className = 'fas fa-' + name;
                 el.replaceWith(i);
             } else if (isLucide) {
                 const i = document.createElement('i');
-                i.setAttribute('data-lucide', iconDef.lucide);
+                i.setAttribute('data-lucide', name);
                 el.replaceWith(i);
             } else if (isMaterial) {
                 const span = document.createElement('span');
                 span.className = 'material-icons';
-                span.textContent = iconDef.material;
+                span.textContent = name.replace(/-/g, '_');
                 el.replaceWith(span);
             }
         });
