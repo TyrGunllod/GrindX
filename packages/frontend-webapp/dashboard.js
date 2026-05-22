@@ -82,7 +82,6 @@ class DashboardController extends window.grindx.controllers.BaseController {
             });
 
         }
-        }
 
     toggleSidebarCollapse() {
         this.sidebar.classList.toggle('collapsed');
