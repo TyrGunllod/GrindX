@@ -4,6 +4,7 @@ Configuração da API SQL Server via variáveis de ambiente.
 Usa pydantic-settings para validação e tipagem segura.
 """
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,6 +24,16 @@ class Settings(BaseSettings):
     # --- JWT / Segurança (mesma chave da api-postgres para validação) ---
     SECRET_KEY: str = "your-secret-key-here"  # Recomenda-se definir no .env
 
+    @field_validator("SECRET_KEY")
+    @classmethod
+    def validar_secret_key(cls, v: str) -> str:
+        if len(v) < 32:
+            raise ValueError(
+                "SECRET_KEY deve ter pelo menos 32 caracteres. "
+                'Gere uma com: python -c "import secrets; print(secrets.token_hex(32))"'
+            )
+        return v
+
     # --- CORS ---
     CORS_ORIGINS: list[str] = ["*"]
 
@@ -36,6 +47,21 @@ class Settings(BaseSettings):
     # --- Rate Limiting ---
     RATE_LIMIT_REQUESTS: int = 100
     RATE_LIMIT_WINDOW_SECONDS: int = 60
+
+    @property
+    def allowed_origins_list(self) -> list[str]:
+        """Retorna lista de origens CORS permitidas."""
+        if isinstance(self.CORS_ORIGINS, list):
+            return self.CORS_ORIGINS
+        # Se for uma string JSON, parseia
+        clean_value = (
+            str(self.CORS_ORIGINS)
+            .replace("[", "")
+            .replace("]", "")
+            .replace('"', "")
+            .replace("'", "")
+        )
+        return [origin.strip() for origin in clean_value.split(",")]
 
     @property
     def DATABASE_URL(self) -> str:
