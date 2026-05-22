@@ -11,6 +11,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.editingSkinId = null;
         this.currentLogoUrl = null;
         this.pendingLogoFile = null;
+        this.currentIconLibrary = 'fontawesome';
         this.advancedMode = false;
         this._darkPreview = false;
         this.apiBase = window.grindx.config.API_BASE_URL;
@@ -478,25 +479,103 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
         // Apply icon library on preview
         const iconLibrary = document.querySelector('input[name="iconLibrary"]:checked')?.value || 'fontawesome';
+        this.currentIconLibrary = iconLibrary;
         if (window.skinLoader) {
             window.skinLoader._loadIconLibrary(iconLibrary);
         }
+        this._updatePreviewIconsFromLibrary(iconLibrary);
 
         // Reset toggle state whenever preview is applied
         this._darkPreview = false;
-        const icon = document.getElementById('previewThemeToggle');
-        if (icon) icon.className = 'fas fa-moon';
+    }
+
+    _updatePreviewIconsFromLibrary(library) {
+        if (!library) return;
+        const preview = document.querySelector('.preview-dashboard');
+        if (!preview) return;
+
+        const isFA = library === 'fontawesome';
+        const isLucide = library === 'lucide';
+        const isMaterial = library === 'material';
+
+        // Map icon identifiers to names in each library
+        const iconNames = {
+            'list': { fontawesome: 'fa-list', lucide: 'list', material: 'list' },
+            'gauge': { fontawesome: 'fa-tachometer-alt', lucide: 'gauge', material: 'speed' },
+            'users': { fontawesome: 'fa-users-cog', lucide: 'users', material: 'group' },
+        };
+
+        // Determine which icon name the element currently represents
+        function detectIcon(el) {
+            const cls = Array.from(el.classList).find(c => c.startsWith('fa-'));
+            if (cls) {
+                if (cls === 'fa-list') return 'list';
+                if (cls === 'fa-tachometer-alt') return 'gauge';
+                if (cls === 'fa-users-cog') return 'users';
+            }
+            const lucideName = el.getAttribute('data-lucide');
+            if (lucideName === 'list') return 'list';
+            if (lucideName === 'gauge') return 'gauge';
+            if (lucideName === 'users') return 'users';
+            if (el.classList.contains('material-icons')) {
+                const txt = el.textContent.trim();
+                if (txt === 'list') return 'list';
+                if (txt === 'speed') return 'gauge';
+                if (txt === 'group') return 'users';
+                if (txt === 'light_mode' || txt === 'dark_mode') return txt;
+            }
+            return null;
+        }
+
+        preview.querySelectorAll('.preview-menu-item i, .preview-menu-item span').forEach(el => {
+            const iconId = detectIcon(el);
+            if (!iconId) return;
+            const names = iconNames[iconId];
+            if (!names) return;
+
+            if (isFA) {
+                const i = document.createElement('i');
+                i.className = names.fontawesome;
+                el.replaceWith(i);
+            } else if (isLucide) {
+                const i = document.createElement('i');
+                i.setAttribute('data-lucide', names.lucide);
+                el.replaceWith(i);
+            } else if (isMaterial) {
+                const span = document.createElement('span');
+                span.className = 'material-icons';
+                span.textContent = names.material;
+                el.replaceWith(span);
+            }
+        });
+
+        const toggle = document.getElementById('previewThemeToggle');
+        if (toggle) {
+            if (isFA) {
+                toggle.removeAttribute('data-lucide');
+                toggle.className = this._darkPreview ? 'fas fa-sun' : 'fas fa-moon';
+                toggle.textContent = '';
+            } else if (isLucide) {
+                toggle.className = '';
+                toggle.setAttribute('data-lucide', this._darkPreview ? 'sun' : 'moon');
+            } else if (isMaterial) {
+                toggle.removeAttribute('data-lucide');
+                toggle.className = 'material-icons';
+                toggle.textContent = this._darkPreview ? 'light_mode' : 'dark_mode';
+            }
+        }
+
+        if (isLucide && window.lucide) {
+            window.lucide.createIcons();
+        }
     }
 
     togglePreviewTheme() {
         this._darkPreview = !this._darkPreview;
-        const icon = document.getElementById('previewThemeToggle');
         const preview = document.querySelector('.preview-dashboard');
-
         if (!preview) return;
 
         if (this._darkPreview) {
-            // Apply dark mode colors to preview
             [['--bg-main', 'colorBgMainDarkText'],
              ['--bg-card', 'colorBgCardDarkText'],
              ['--text-main', 'colorTextMainDarkText'],
@@ -505,9 +584,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             ].forEach(([prop, elId]) => {
                 preview.style.setProperty(prop, document.getElementById(elId).value);
             });
-            if (icon) icon.className = 'fas fa-sun';
         } else {
-            // Restore light mode colors
             [['--bg-main', 'colorBgMainText'],
              ['--bg-card', 'colorBgCardText'],
              ['--text-main', 'colorTextMainText'],
@@ -516,8 +593,8 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             ].forEach(([prop, elId]) => {
                 preview.style.setProperty(prop, document.getElementById(elId).value);
             });
-            if (icon) icon.className = 'fas fa-moon';
         }
+        this._updatePreviewIconsFromLibrary(this.currentIconLibrary);
     }
 
     resetPreview() {
