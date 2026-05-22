@@ -23,9 +23,9 @@ dev-frontend:
 
 dev-all:
 	@echo "Subindo todos os servicos GrindX..."
-	start "API Postgres"  cmd /k "cd packages/api-postgres && set PYTHONPATH=..&& .venv\Scripts\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002"
-	start "API SQLServer" cmd /k "cd packages/api-sqlserver && set PYTHONPATH=..&& .venv\Scripts\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001"
-	start "Frontend"      cmd /k "python -m http.server 5500 --directory packages/frontend-webapp --bind 0.0.0.0"
+	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd packages/api-postgres; $$env:PYTHONPATH=(Get-Item ..).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002'"
+#	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd packages/api-sqlserver; $$env:PYTHONPATH=(Get-Item ..).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001'"
+	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'python -m http.server 5500 --directory packages/frontend-webapp --bind 0.0.0.0'"
 	@echo Acesse: http://localhost:5500
 
 # ==========================================
