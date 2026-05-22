@@ -74,6 +74,26 @@ class AdminSkinsController {
             }
         });
 
+        // Auto-generate copyright from company name
+        const companyNameInput = document.getElementById('companyName');
+        const copyrightInput = document.getElementById('copyrightText');
+        if (companyNameInput && copyrightInput) {
+            companyNameInput.addEventListener('input', (e) => {
+                const name = e.target.value.trim();
+                if (name) {
+                    const year = new Date().getFullYear();
+                    copyrightInput.value = `© ${year} ${name}. Todos os direitos reservados.`;
+                } else {
+                    copyrightInput.value = '';
+                }
+            });
+        }
+
+        // Icon library radio change triggers preview
+        document.querySelectorAll('input[name="iconLibrary"]').forEach(radio => {
+            radio.addEventListener('change', () => this.previewSkin());
+        });
+
         // Logo upload
         const logoFile = document.getElementById('logoFile');
         const uploadArea = document.querySelector('.upload-area');
@@ -432,6 +452,13 @@ class AdminSkinsController {
         if (window.skinLoader) {
             window.skinLoader.applyPreviewColors(colors);
         }
+
+        // Apply icon library on preview
+        const iconLibrary = document.querySelector('input[name="iconLibrary"]:checked')?.value || 'fontawesome';
+        if (window.skinLoader) {
+            window.skinLoader._loadIconLibrary(iconLibrary);
+        }
+
         // Reset toggle state whenever preview is applied
         this._darkPreview = false;
         const icon = document.getElementById('previewThemeToggle');

@@ -35,7 +35,7 @@ const SKIN_DEFAULTS = {
         '--skin-shadow-modal': '0 20px 25px -5px rgba(0,0,0,0.2)',
     },
     company_name: 'GrindX',
-    copyright_text: '© 2026 GrindX. Desenvolvido por Alex Grellet.',
+    copyright_text: '© 2026 GrindX. Todos os direitos reservados.',
     logo_url: null,
     logo_short_url: null,
 };
@@ -236,13 +236,17 @@ class SkinLoader {
     }
 
     _loadIconLibrary(library) {
-        if (!library || library === 'fontawesome') return;
+        if (!library) return;
 
-        // Remove link anterior
+        // Remove biblioteca dinâmica carregada anteriormente
         if (this._iconLinkEl) {
             this._iconLinkEl.remove();
             this._iconLinkEl = null;
         }
+
+        // Remove quaisquer links do Font Awesome do DOM
+        const faLinks = document.querySelectorAll('link[href*="font-awesome"]');
+        faLinks.forEach(el => el.remove());
 
         const cdnUrl = ICON_CDN_MAP[library];
         if (!cdnUrl) return;
@@ -278,15 +282,21 @@ class SkinLoader {
             logoEl.innerHTML = companyName.substring(0, 1) + '<span class="logo-full">' + companyName.substring(1) + '</span>';
         }
 
+        // Auto-genera copyright se não fornecido
+        if (!copyrightText) {
+            const year = new Date().getFullYear();
+            copyrightText = `© ${year} ${companyName}. Todos os direitos reservados.`;
+        }
+
         // Atualiza copyright no sidebar
         const copyrightEl = document.querySelector('.copyright-text');
-        if (copyrightEl && copyrightText) {
+        if (copyrightEl) {
             copyrightEl.textContent = copyrightText;
         }
 
         // Atualiza copyright no login
         const loginCopyright = document.querySelector('.login-page .text-center[style*="font-size: 0.7rem"]');
-        if (loginCopyright && copyrightText) {
+        if (loginCopyright) {
             loginCopyright.textContent = copyrightText;
         }
     }
