@@ -88,7 +88,7 @@ def list_themes(
     description="Lista todos os templates de skin disponíveis. Requer role admin.",
 )
 def list_skin_templates(
-    current_user=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ) -> list[dict]:
     """Lista todos os templates de skin disponíveis."""
     import json

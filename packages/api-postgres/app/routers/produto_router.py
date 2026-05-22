@@ -10,12 +10,10 @@ Controle de acesso por role:
 """
 
 from fastapi import APIRouter, Depends, Query
-from shared.schemas.auth import TokenPayload
 from shared.schemas.base import ErrorResponse, MessageResponse, PaginatedResponse
 from shared.security.permissions import Role
 
 from app.auth.dependencies import (
-    get_current_user,
     get_produto_service,
     require_role,
 )
@@ -40,7 +38,6 @@ def listar_produtos(
     page_size: int = Query(default=20, ge=1, le=100, description="Itens por página"),
     apenas_ativos: bool = Query(default=True, description="Filtrar somente ativos"),
     service: ProdutoService = Depends(get_produto_service),
-    current_user: TokenPayload = Depends(get_current_user),
 ) -> PaginatedResponse:
     """Lista produtos com paginação e filtro de ativos."""
     return service.listar_produtos(
@@ -64,7 +61,6 @@ def listar_produtos(
 def buscar_produto(
     produto_id: int,
     service: ProdutoService = Depends(get_produto_service),
-    current_user: TokenPayload = Depends(get_current_user),
 ) -> ProdutoResponse:
     """Retorna um produto pelo ID."""
     return service.buscar_produto(produto_id)
@@ -89,7 +85,6 @@ def buscar_produto(
 def criar_produto(
     dados: ProdutoCreate,
     service: ProdutoService = Depends(get_produto_service),
-    current_user: TokenPayload = Depends(get_current_user),
 ) -> ProdutoResponse:
     """Cria um novo produto."""
     return service.criar_produto(dados)
@@ -115,7 +110,6 @@ def atualizar_produto(
     produto_id: int,
     dados: ProdutoUpdate,
     service: ProdutoService = Depends(get_produto_service),
-    current_user: TokenPayload = Depends(get_current_user),
 ) -> ProdutoResponse:
     """Atualiza um produto existente."""
     return service.atualizar_produto(produto_id, dados)
@@ -139,7 +133,6 @@ def atualizar_produto(
 def desativar_produto(
     produto_id: int,
     service: ProdutoService = Depends(get_produto_service),
-    current_user: TokenPayload = Depends(get_current_user),
 ) -> MessageResponse:
     """Desativa (soft delete) um produto."""
     service.desativar_produto(produto_id)

@@ -25,7 +25,7 @@ def listar_usuarios(
     page_size: int = Query(20, ge=1, le=100),
     role: Optional[str] = Query(None),
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     """Lista todos os usuários. Acesso: admin."""
     service = UsuarioService(db)
@@ -44,7 +44,7 @@ def listar_usuarios(
 def criar_usuario(
     schema: UsuarioCreate,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     """Cria um novo usuário. Acesso: admin."""
     service = UsuarioService(db)
@@ -55,7 +55,7 @@ def criar_usuario(
 def buscar_usuario(
     usuario_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     """Busca um usuário por ID. Acesso: admin."""
     service = UsuarioService(db)
@@ -67,7 +67,7 @@ def atualizar_usuario(
     usuario_id: int,
     schema: UsuarioUpdate,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     """Atualiza dados de um usuário. Acesso: admin."""
     service = UsuarioService(db)
@@ -78,7 +78,7 @@ def atualizar_usuario(
 def desativar_usuario(
     usuario_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     """Desativa um usuário (soft delete). Acesso: admin."""
     service = UsuarioService(db)
@@ -90,7 +90,7 @@ def desativar_usuario(
 def listar_modulos_usuario(
     usuario_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     """Retorna lista de modulo_ids liberados para o usuário. Acesso: admin."""
     modulos = (
@@ -108,7 +108,7 @@ def atualizar_modulos_usuario(
     usuario_id: int,
     schema: UsuarioModulosUpdate,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     """Substitui a lista completa de módulos liberados. Acesso: admin."""
     # Deleta existentes

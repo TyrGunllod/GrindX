@@ -65,7 +65,7 @@ def criar_aba(
     icone: str,
     ordem: int = 0,
     db: Session = Depends(get_db),
-    admin=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     nova_aba = Aba(nome=nome, icone=icone, ordem=ordem)
     db.add(nova_aba)
@@ -81,7 +81,7 @@ def atualizar_aba(
     icone: str,
     ordem: int,
     db: Session = Depends(get_db),
-    admin=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     aba = db.query(Aba).filter(Aba.id == aba_id).first()
     if not aba:
@@ -96,7 +96,7 @@ def atualizar_aba(
 
 @router.delete("/abas/{aba_id}", status_code=status.HTTP_204_NO_CONTENT)
 def deletar_aba(
-    aba_id: int, db: Session = Depends(get_db), admin=Depends(require_role("admin"))
+    aba_id: int, db: Session = Depends(get_db), _: None = Depends(require_role("admin"))
 ):
     aba = db.query(Aba).filter(Aba.id == aba_id).first()
     if not aba:
@@ -119,7 +119,7 @@ def criar_modulo(
     url: str,
     icone: str,
     db: Session = Depends(get_db),
-    admin=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     novo_mod = Modulo(aba_id=aba_id, nome=nome, slug=slug, url=url, icone=icone)
     db.add(novo_mod)
@@ -136,7 +136,7 @@ def atualizar_modulo(
     url: str,
     icone: str,
     db: Session = Depends(get_db),
-    admin=Depends(require_role("admin")),
+    _: None = Depends(require_role("admin")),
 ):
     mod = db.query(Modulo).filter(Modulo.id == modulo_id).first()
     if not mod:
@@ -152,7 +152,9 @@ def atualizar_modulo(
 
 @router.delete("/modulos/{modulo_id}", status_code=status.HTTP_204_NO_CONTENT)
 def deletar_modulo(
-    modulo_id: int, db: Session = Depends(get_db), admin=Depends(require_role("admin"))
+    modulo_id: int,
+    db: Session = Depends(get_db),
+    _: None = Depends(require_role("admin")),
 ):
     mod = db.query(Modulo).filter(Modulo.id == modulo_id).first()
     if not mod:

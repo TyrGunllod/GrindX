@@ -6,7 +6,6 @@ Todas as rotas são protegidas por JWT (emitido pela api-postgres).
 """
 
 from fastapi import APIRouter, Depends, Query
-from shared.schemas.auth import TokenPayload
 from shared.schemas.base import ErrorResponse, PaginatedResponse
 
 from app.auth.dependencies import get_cliente_service, get_current_user
@@ -22,6 +21,7 @@ router = APIRouter(prefix="/v1/cadastro", tags=["Cadastro"])
     summary="Listar clientes",
     description="Retorna lista paginada de clientes com filtros opcionais. Dados do SQL Server (somente leitura).",
     responses={401: {"model": ErrorResponse, "description": "Não autenticado"}},
+    dependencies=[Depends(get_current_user)],
 )
 def listar_clientes(
     page: int = Query(default=1, ge=1, description="Número da página"),
@@ -33,7 +33,6 @@ def listar_clientes(
     cidade: str | None = Query(default=None, description="Filtro por cidade"),
     uf: str | None = Query(default=None, max_length=2, description="Filtro por UF"),
     service: ClienteService = Depends(get_cliente_service),
-    current_user: TokenPayload = Depends(get_current_user),
 ) -> PaginatedResponse:
     """Lista clientes com paginação e filtros."""
     return service.listar_clientes(
@@ -55,11 +54,11 @@ def listar_clientes(
         401: {"model": ErrorResponse, "description": "Não autenticado"},
         404: {"model": ErrorResponse, "description": "Cliente não encontrado"},
     },
+    dependencies=[Depends(get_current_user)],
 )
 def buscar_cliente(
     cliente_id: int,
     service: ClienteService = Depends(get_cliente_service),
-    current_user: TokenPayload = Depends(get_current_user),
 ) -> ClienteResponse:
     """Retorna um cliente pelo ID."""
     return service.buscar_cliente(cliente_id)
@@ -74,11 +73,11 @@ def buscar_cliente(
         401: {"model": ErrorResponse, "description": "Não autenticado"},
         404: {"model": ErrorResponse, "description": "Cliente não encontrado"},
     },
+    dependencies=[Depends(get_current_user)],
 )
 def buscar_por_cnpj(
     cnpj: str,
     service: ClienteService = Depends(get_cliente_service),
-    current_user: TokenPayload = Depends(get_current_user),
 ) -> ClienteResponse:
     """Retorna um cliente pelo CNPJ."""
     return service.buscar_por_cnpj(cnpj)
