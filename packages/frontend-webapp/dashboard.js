@@ -64,7 +64,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
             document.getElementById('themeToggle')?.addEventListener('click', () => {
                 window.grindx.theme.toggle();
                 this.updateThemeIcon();
-                this.syncIframeTheme();
+                this.applySkinToIframe();
             });
 
             document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
@@ -164,28 +164,43 @@ class DashboardController extends window.grindx.controllers.BaseController {
          iframe.src = url;
          iframe.onload = () => {
              this.showLoader(false);
-             this.syncIframeTheme(iframe);
+             this.applySkinToIframe(iframe);
          };
 
          this.viewport.innerHTML = '';
          this.viewport.appendChild(iframe);
      }
 
-    syncIframeTheme(targetIframe) {
-         const iframe = targetIframe || this.viewport.querySelector('iframe');
-         if (iframe && iframe.contentDocument) {
-             const theme = window.grindx.theme.theme;
-             const doc = iframe.contentDocument;
-             if (doc.documentElement) {
-                 doc.documentElement.classList.remove('light-theme', 'dark-theme');
-                 doc.documentElement.classList.add(`${theme}-theme`);
-             }
-             if (doc.body) {
-                 doc.body.classList.remove('light-theme', 'dark-theme');
-                 doc.body.classList.add(`${theme}-theme`);
-             }
-         }
-     }
+    applySkinToIframe(iframe) {
+        if (!iframe || !iframe.contentDocument) return;
+        const doc = iframe.contentDocument;
+        if (!doc) return;
+
+        // Sync dark/light theme class
+        const theme = window.grindx.theme.theme;
+        const root = doc.documentElement;
+        if (root) {
+            root.classList.remove('light-theme', 'dark-theme');
+            root.classList.add(`${theme}-theme`);
+        }
+
+        // Copy skin CSS variables from parent :root to iframe
+        if (root) {
+            const parentRoot = document.documentElement;
+            const computed = getComputedStyle(parentRoot);
+            const skinVars = ['--skin-primary', '--skin-primary-hover', '--skin-bg-main', '--skin-bg-card',
+                '--skin-bg-input', '--skin-text-main', '--skin-text-muted', '--skin-border-color',
+                '--skin-sidebar-bg', '--skin-sidebar-text', '--skin-sidebar-active',
+                '--skin-header-bg', '--skin-header-text', '--skin-font-heading', '--skin-font-body',
+                '--bg-card', '--text-main', '--text-muted', '--border-color', '--bg-input',
+                '--bg-sidebar', '--text-sidebar', '--bg-sidebar-active', '--bg-header', '--text-header',
+                '--card-bg', '--primary', '--primary-hover'];
+            skinVars.forEach(v => {
+                const val = computed.getPropertyValue(v).trim();
+                if (val) root.style.setProperty(v, val);
+            });
+        }
+    }
 
     toggleSidebar(isOpen) {
         this.sidebar.classList.toggle('open', isOpen);
@@ -294,6 +309,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                         window.skinLoader._replacePageIcons(theme.icon_library);
                         window.skinLoader._updateBranding(theme.company_name, theme.copyright_text);
                         window.skinLoader._updateLogos(theme.logo_url, theme.logo_short_url);
+                        this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));
                     })
                     .catch(err => {
                         console.warn('Failed to load preview skin:', err);
@@ -302,6 +318,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                         if (companyId) {
                             window.skinLoader.load(parseInt(companyId)).then(() => {
                                 window.grindx.storage.set('last_skin_company_id', String(companyId));
+                                this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));
                             });
                         }
                         
@@ -317,6 +334,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         if (companyId && window.skinLoader) {
             window.skinLoader.load(parseInt(companyId)).then(() => {
                 window.grindx.storage.set('last_skin_company_id', String(companyId));
+                this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));
             });
         }
     }
