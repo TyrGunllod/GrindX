@@ -8,6 +8,7 @@ Nota: Em produção com múltiplos workers, considere usar Redis
 para armazenamento distribuído dos contadores.
 """
 
+import asyncio
 import time
 from collections import defaultdict
 
@@ -42,6 +43,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.exclude_paths = exclude_paths or ["/health"]
         # Armazena timestamps de requisições por IP
         self._requests: dict[str, list[float]] = defaultdict(list)
+        self._lock = asyncio.Lock()
 
     def _get_client_ip(self, request: Request) -> str:
         """Extrai o IP real do cliente, considerando proxies."""
@@ -67,35 +69,37 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         client_ip = self._get_client_ip(request)
         now = time.time()
 
-        # Limpa requisições expiradas
-        self._clean_old_requests(client_ip, now)
+        async with self._lock:
+            # Limpa requisições expiradas
+            self._clean_old_requests(client_ip, now)
 
-        # Verifica limite
-        if len(self._requests[client_ip]) >= self.max_requests:
-            logger.warning(
-                "Rate limit excedido",
-                client_ip=client_ip,
-                requests_count=len(self._requests[client_ip]),
-            )
-            retry_after = int(
-                self.window_seconds - (now - self._requests[client_ip][0])
-            )
-            return JSONResponse(
-                status_code=429,
-                content={
-                    "error": "RATE_LIMIT_EXCEDIDO",
-                    "message": "Muitas requisições. Tente novamente em breve.",
-                    "status_code": 429,
-                },
-                headers={
-                    "Retry-After": str(max(retry_after, 1)),
-                    "X-RateLimit-Limit": str(self.max_requests),
-                    "X-RateLimit-Remaining": "0",
-                },
-            )
+            # Verifica limite
+            if len(self._requests[client_ip]) >= self.max_requests:
+                logger.warning(
+                    "Rate limit excedido",
+                    client_ip=client_ip,
+                    requests_count=len(self._requests[client_ip]),
+                )
+                retry_after = int(
+                    self.window_seconds - (now - self._requests[client_ip][0])
+                )
+                return JSONResponse(
+                    status_code=429,
+                    content={
+                        "error": "RATE_LIMIT_EXCEDIDO",
+                        "message": "Muitas requisições. Tente novamente em breve.",
+                        "status_code": 429,
+                    },
+                    headers={
+                        "Retry-After": str(max(retry_after, 1)),
+                        "X-RateLimit-Limit": str(self.max_requests),
+                        "X-RateLimit-Remaining": "0",
+                    },
+                )
 
-        # Registra requisição
-        self._requests[client_ip].append(now)
+            # Registra requisição
+            self._requests[client_ip].append(now)
+
         remaining = self.max_requests - len(self._requests[client_ip])
 
         response = await call_next(request)

@@ -4,6 +4,7 @@ Middleware de rate limiting customizado para a api-sqlserver.
 Mesma implementação da api-postgres.
 """
 
+import asyncio
 import time
 from collections import defaultdict
 
@@ -30,6 +31,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.window_seconds = window_seconds
         self.exclude_paths = exclude_paths or ["/health"]
         self._requests: dict[str, list[float]] = defaultdict(list)
+        self._lock = asyncio.Lock()
 
     def _get_client_ip(self, request: Request) -> str:
         forwarded = request.headers.get("X-Forwarded-For")
@@ -51,28 +53,31 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         client_ip = self._get_client_ip(request)
         now = time.time()
-        self._clean_old_requests(client_ip, now)
 
-        if len(self._requests[client_ip]) >= self.max_requests:
-            logger.warning("Rate limit excedido", client_ip=client_ip)
-            retry_after = int(
-                self.window_seconds - (now - self._requests[client_ip][0])
-            )
-            return JSONResponse(
-                status_code=429,
-                content={
-                    "error": "RATE_LIMIT_EXCEDIDO",
-                    "message": "Muitas requisições. Tente novamente em breve.",
-                    "status_code": 429,
-                },
-                headers={
-                    "Retry-After": str(max(retry_after, 1)),
-                    "X-RateLimit-Limit": str(self.max_requests),
-                    "X-RateLimit-Remaining": "0",
-                },
-            )
+        async with self._lock:
+            self._clean_old_requests(client_ip, now)
 
-        self._requests[client_ip].append(now)
+            if len(self._requests[client_ip]) >= self.max_requests:
+                logger.warning("Rate limit excedido", client_ip=client_ip)
+                retry_after = int(
+                    self.window_seconds - (now - self._requests[client_ip][0])
+                )
+                return JSONResponse(
+                    status_code=429,
+                    content={
+                        "error": "RATE_LIMIT_EXCEDIDO",
+                        "message": "Muitas requisições. Tente novamente em breve.",
+                        "status_code": 429,
+                    },
+                    headers={
+                        "Retry-After": str(max(retry_after, 1)),
+                        "X-RateLimit-Limit": str(self.max_requests),
+                        "X-RateLimit-Remaining": "0",
+                    },
+                )
+
+            self._requests[client_ip].append(now)
+
         remaining = self.max_requests - len(self._requests[client_ip])
 
         response = await call_next(request)
