@@ -104,7 +104,7 @@
 
 .skin-modal::-webkit-scrollbar-track {
     background: transparent;
-    margin: 2px 0;
+    margin: 10px 0;
 }
 
 .skin-modal::-webkit-scrollbar-thumb {
