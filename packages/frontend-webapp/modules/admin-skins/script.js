@@ -399,6 +399,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             this.closeModal();
             await this.loadSkins();
             this.toastSuccess('Skin salva com sucesso.');
+            setTimeout(() => location.reload(), 1500);
         } catch (e) {
             console.error('Erro ao salvar skin:', e);
             this.toastError(e);
