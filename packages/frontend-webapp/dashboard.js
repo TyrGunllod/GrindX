@@ -128,10 +128,8 @@ class DashboardController extends window.grindx.controllers.BaseController {
             </div>
         `).join('');
 
-        const lib = window.skinLoader?.currentSkin?.icon_library;
-        if (lib && lib !== 'fontawesome' && window.skinLoader) {
-            window.skinLoader._replacePageIcons(lib);
-        }
+        this.moduleViewport = document.getElementById('moduleViewport');
+    }
     }
 
     toggleGroup(abaId) {
@@ -312,8 +310,6 @@ class DashboardController extends window.grindx.controllers.BaseController {
                         window.skinLoader.applyPreviewColors(theme.colors);
                         window.skinLoader._applyTokens(theme.tokens);
                         window.skinLoader._applyFonts(theme.fonts);
-                        window.skinLoader._loadIconLibrary(theme.icon_library);
-                        window.skinLoader._replacePageIcons(theme.icon_library);
                         window.skinLoader._updateBranding(theme.company_name, theme.copyright_text);
                         window.skinLoader._updateLogos(theme.logo_url, theme.logo_short_url);
                         this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));

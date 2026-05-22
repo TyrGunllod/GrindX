@@ -11,7 +11,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.editingSkinId = null;
         this.currentLogoUrl = null;
         this.pendingLogoFile = null;
-        this.currentIconLibrary = 'fontawesome';
         this.advancedMode = false;
         this._darkPreview = false;
         this.apiBase = window.grindx.config.API_BASE_URL;
@@ -89,11 +88,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 }
             });
         }
-
-        // Icon library radio change triggers preview
-        document.querySelectorAll('input[name="iconLibrary"]').forEach(radio => {
-            radio.addEventListener('change', () => this.previewSkin());
-        });
 
         // Logo upload
         const logoFile = document.getElementById('logoFile');
@@ -297,9 +291,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         document.getElementById('fontHeading').value = fonts.heading || 'Barlow Condensed';
         document.getElementById('fontBody').value = fonts.body || 'DM Sans';
 
-        const iconRadio = document.querySelector(`input[name="iconLibrary"][value="${skin.icon_library || 'fontawesome'}"]`);
-        if (iconRadio) iconRadio.checked = true;
-
         const tokens = skin.tokens || {};
         document.getElementById('radiusMd').value = tokens['--skin-radius-md'] || '0.5rem';
         document.getElementById('radiusLg').value = tokens['--skin-radius-lg'] || '0.75rem';
@@ -359,7 +350,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 heading: document.getElementById('fontHeading').value,
                 body: document.getElementById('fontBody').value,
             },
-            icon_library: document.querySelector('input[name="iconLibrary"]:checked')?.value || 'fontawesome',
+            icon_library: 'fontawesome',
             tokens: {
                 '--skin-radius-sm': document.getElementById('radiusSm').value,
                 '--skin-radius-md': document.getElementById('radiusMd').value,
@@ -490,104 +481,21 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             window.skinLoader.applyPreviewColors(colors);
         }
 
-        // Apply icon library on preview
-        const iconLibrary = document.querySelector('input[name="iconLibrary"]:checked')?.value || 'fontawesome';
-        this.currentIconLibrary = iconLibrary;
-        if (window.skinLoader) {
-            window.skinLoader._loadIconLibrary(iconLibrary);
-            window.skinLoader._replacePageIcons(iconLibrary);
-        }
-        this._updatePreviewIconsFromLibrary(iconLibrary);
-
         // Reset toggle state whenever preview is applied
         this._darkPreview = false;
     }
 
     _updatePreviewIconsFromLibrary(library) {
-        if (!library) return;
-        const preview = document.querySelector('.preview-dashboard');
-        if (!preview) return;
-
-        const isFA = library === 'fontawesome';
-        const isLucide = library === 'lucide';
-        const isMaterial = library === 'material';
-
-        // Map icon identifiers to names in each library
-        const iconNames = {
-            'list': { fontawesome: 'fas fa-list', lucide: 'list', material: 'list' },
-            'gauge': { fontawesome: 'fas fa-tachometer-alt', lucide: 'gauge', material: 'speed' },
-            'users': { fontawesome: 'fas fa-users-cog', lucide: 'users', material: 'group' },
-        };
-
-        // Determine which icon name the element currently represents
-        function detectIcon(el) {
-            const cls = Array.from(el.classList).find(c => c.startsWith('fa-'));
-            if (cls) {
-                if (cls === 'fa-list') return 'list';
-                if (cls === 'fa-tachometer-alt') return 'gauge';
-                if (cls === 'fa-users-cog') return 'users';
-            }
-            const lucideName = el.getAttribute('data-lucide');
-            if (lucideName === 'list') return 'list';
-            if (lucideName === 'gauge') return 'gauge';
-            if (lucideName === 'users') return 'users';
-            if (el.classList.contains('material-icons')) {
-                const txt = el.textContent.trim();
-                if (txt === 'list') return 'list';
-                if (txt === 'speed') return 'gauge';
-                if (txt === 'group') return 'users';
-                if (txt === 'light_mode' || txt === 'dark_mode') return txt;
-            }
-            return null;
-        }
-
-        preview.querySelectorAll('.preview-menu-item i, .preview-menu-item span').forEach(el => {
-            const iconId = detectIcon(el);
-            if (!iconId) return;
-            const names = iconNames[iconId];
-            if (!names) return;
-
-            if (isFA) {
-                const i = document.createElement('i');
-                i.className = names.fontawesome;
-                el.replaceWith(i);
-            } else if (isLucide) {
-                const i = document.createElement('i');
-                i.setAttribute('data-lucide', names.lucide);
-                el.replaceWith(i);
-            } else if (isMaterial) {
-                const span = document.createElement('span');
-                span.className = 'material-icons';
-                span.textContent = names.material;
-                el.replaceWith(span);
-            }
-        });
-
-        const toggle = document.getElementById('previewThemeToggle');
-        if (toggle) {
-            if (isFA) {
-                toggle.removeAttribute('data-lucide');
-                toggle.className = this._darkPreview ? 'fas fa-sun' : 'fas fa-moon';
-                toggle.textContent = '';
-            } else if (isLucide) {
-                toggle.className = '';
-                toggle.setAttribute('data-lucide', this._darkPreview ? 'sun' : 'moon');
-            } else if (isMaterial) {
-                toggle.removeAttribute('data-lucide');
-                toggle.className = 'material-icons';
-                toggle.textContent = this._darkPreview ? 'light_mode' : 'dark_mode';
-            }
-        }
-
-        if (isLucide && window.lucide) {
-            window.lucide.createIcons();
-        }
     }
 
     togglePreviewTheme() {
         this._darkPreview = !this._darkPreview;
         const preview = document.querySelector('.preview-dashboard');
         if (!preview) return;
+
+        // Update toggle icon
+        const toggle = document.getElementById('previewThemeToggle');
+        if (toggle) toggle.className = this._darkPreview ? 'fas fa-sun' : 'fas fa-moon';
 
         if (this._darkPreview) {
             [['--bg-main', 'colorBgMainDarkText'],
@@ -608,7 +516,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 preview.style.setProperty(prop, document.getElementById(elId).value);
             });
         }
-        this._updatePreviewIconsFromLibrary(this.currentIconLibrary);
     }
 
     resetPreview() {

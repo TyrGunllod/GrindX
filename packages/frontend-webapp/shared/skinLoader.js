@@ -25,7 +25,6 @@ const SKIN_DEFAULTS = {
         '--skin-border-color-dark': 'rgba(255, 255, 255, 0.05)',
     },
     fonts: { heading: 'Barlow Condensed', body: 'DM Sans' },
-    icon_library: 'fontawesome',
     tokens: {
         '--skin-radius-sm': '0.25rem',
         '--skin-radius-md': '0.5rem',
@@ -40,77 +39,6 @@ const SKIN_DEFAULTS = {
     logo_short_url: null,
 };
 
-const ICON_CDN_MAP = {
-    fontawesome: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-    lucide: 'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js',
-    material: 'https://fonts.googleapis.com/icon?family=Material+Icons',
-};
-
-// Mapeamento de classe Font Awesome para identificador de ícone
-const FA_TO_ICON_ID = {
-    'fa-th-large': 'modules',
-    'fa-home': 'dashboard',
-    'fa-box': 'estoque',
-    'fa-cog': 'settings-admin',
-    'fa-users-cog': 'users-admin',
-    'fa-power-off': 'logout',
-    'fa-chevron-left': 'chevron-left',
-    'fa-times': 'close',
-    'fa-bars': 'menu',
-    'fa-moon': 'moon',
-    'fa-sync-alt': 'refresh',
-    'fa-plus': 'add',
-    'fa-folder-plus': 'folder-add',
-    'fa-cloud-upload-alt': 'cloud-upload',
-    'fa-eye': 'eye',
-    'fa-save': 'save',
-    'fa-undo': 'undo',
-    'fa-adjust': 'contrast',
-    'fa-edit': 'edit',
-    'fa-list': 'list',
-    'fa-tachometer-alt': 'gauge',
-    'fa-times-circle': 'x-circle',
-    'fa-check-circle': 'check-circle',
-    'fa-check': 'check',
-    'fa-trash': 'delete',
-    'fa-chevron-down': 'chevron',
-    'fa-user': 'user',
-    'fa-folder': 'folder',
-    'fa-cube': 'cube',
-};
-
-const ICON_ID_TO_LIB = {
-    chevron:        { fontawesome: 'fas fa-chevron-down', lucide: 'chevron-down', material: 'expand_more' },
-    user:           { fontawesome: 'fas fa-user',         lucide: 'user',         material: 'person' },
-    folder:         { fontawesome: 'fas fa-folder',       lucide: 'folder',       material: 'folder' },
-    cube:           { fontawesome: 'fas fa-cube',         lucide: 'box',          material: 'category' },
-    modules:        { fontawesome: 'fas fa-th-large',     lucide: 'grid',         material: 'grid_view' },
-    dashboard:      { fontawesome: 'fas fa-home',         lucide: 'home',         material: 'home' },
-    estoque:        { fontawesome: 'fas fa-box',          lucide: 'package',      material: 'inventory' },
-    'settings-admin': { fontawesome: 'fas fa-cog',        lucide: 'settings',     material: 'settings' },
-    'users-admin':  { fontawesome: 'fas fa-users-cog',    lucide: 'users',        material: 'group' },
-    logout:         { fontawesome: 'fas fa-power-off',    lucide: 'log-out',      material: 'logout' },
-    'chevron-left': { fontawesome: 'fas fa-chevron-left', lucide: 'chevron-left', material: 'chevron_left' },
-    close:          { fontawesome: 'fas fa-times',        lucide: 'x',            material: 'close' },
-    menu:           { fontawesome: 'fas fa-bars',         lucide: 'menu',         material: 'menu' },
-    moon:           { fontawesome: 'fas fa-moon',         lucide: 'moon',         material: 'dark_mode' },
-    refresh:        { fontawesome: 'fas fa-sync-alt',     lucide: 'refresh-cw',   material: 'refresh' },
-    add:            { fontawesome: 'fas fa-plus',         lucide: 'plus',         material: 'add' },
-    'folder-add':   { fontawesome: 'fas fa-folder-plus',  lucide: 'folder-plus',  material: 'create_new_folder' },
-    'cloud-upload': { fontawesome: 'fas fa-cloud-upload-alt', lucide: 'cloud-upload', material: 'cloud_upload' },
-    eye:            { fontawesome: 'fas fa-eye',          lucide: 'eye',          material: 'visibility' },
-    save:           { fontawesome: 'fas fa-save',         lucide: 'save',         material: 'save' },
-    undo:           { fontawesome: 'fas fa-undo',         lucide: 'undo',         material: 'undo' },
-    contrast:       { fontawesome: 'fas fa-adjust',       lucide: 'contrast',     material: 'contrast' },
-    edit:           { fontawesome: 'fas fa-edit',         lucide: 'edit',         material: 'edit' },
-    list:           { fontawesome: 'fas fa-list',         lucide: 'list',         material: 'list' },
-    gauge:          { fontawesome: 'fas fa-tachometer-alt', lucide: 'gauge',      material: 'speed' },
-    'x-circle':     { fontawesome: 'fas fa-times-circle', lucide: 'x-circle',     material: 'cancel' },
-    'check-circle': { fontawesome: 'fas fa-check-circle', lucide: 'check-circle', material: 'check_circle' },
-    check:          { fontawesome: 'fas fa-check',        lucide: 'check',        material: 'check' },
-    delete:         { fontawesome: 'fas fa-trash',        lucide: 'trash-2',      material: 'delete' },
-};
-
 const FONT_CDN_MAP = {
     Inter: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
     Roboto: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
@@ -120,7 +48,6 @@ const FONT_CDN_MAP = {
 class SkinLoader {
     constructor() {
         this.currentSkin = null;
-        this._iconLinkEl = null;
         this._fontLinkEl = null;
         this._previewMode = false;
         this._originalSkin = null;
@@ -251,8 +178,6 @@ class SkinLoader {
         this._applyColors(skin.colors);
         this._applyTokens(skin.tokens);
         this._applyFonts(skin.fonts);
-        this._loadIconLibrary(skin.icon_library);
-        this._replacePageIcons(skin.icon_library);
         this._updateBranding(skin.company_name, skin.copyright_text);
         this._updateLogos(skin.logo_url, skin.logo_short_url);
     }
@@ -305,122 +230,6 @@ class SkinLoader {
         }
         if (fonts.body) {
             root.style.setProperty('--skin-font-body', `'${fonts.body}', system-ui, -apple-system, sans-serif`);
-        }
-    }
-
-    _loadIconLibrary(library) {
-        if (!library) return;
-
-        if (this._iconLinkEl) {
-            this._iconLinkEl.remove();
-            this._iconLinkEl = null;
-        }
-
-        const cdnUrl = ICON_CDN_MAP[library];
-        if (!cdnUrl) return;
-
-        if (library === 'lucide') {
-            const script = document.createElement('script');
-            script.src = cdnUrl;
-            script.onload = () => {
-                if (window.lucide) {
-                    window.lucide.createIcons();
-                }
-            };
-            document.head.appendChild(script);
-            this._iconLinkEl = script;
-        } else {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = cdnUrl;
-            document.head.appendChild(link);
-            this._iconLinkEl = link;
-        }
-    }
-
-    _replacePageIcons(library) {
-        if (!library) return;
-
-        const isFA = library === 'fontawesome';
-        const isLucide = library === 'lucide';
-        const isMaterial = library === 'material';
-
-        function iconIdFromEl(el) {
-            const faClass = Array.from(el.classList).find(c => c.startsWith('fa-'));
-            if (faClass && FA_TO_ICON_ID[faClass]) return FA_TO_ICON_ID[faClass];
-            const lucideAttr = el.getAttribute('data-lucide');
-            if (lucideAttr) {
-                for (const [id, def] of Object.entries(ICON_ID_TO_LIB)) {
-                    if (def.lucide === lucideAttr) return id;
-                }
-            }
-            if (el.classList.contains('material-icons')) {
-                const txt = el.textContent.trim();
-                for (const [id, def] of Object.entries(ICON_ID_TO_LIB)) {
-                    if (def.material === txt) return id;
-                }
-            }
-            return null;
-        }
-
-        function faName(el) {
-            const cls = Array.from(el.classList).find(c => c.startsWith('fa-'));
-            return cls ? cls.replace('fa-', '') : null;
-        }
-
-        function lucideName(el) {
-            return el.getAttribute('data-lucide');
-        }
-
-        function materialName(el) {
-            return el.classList.contains('material-icons') ? el.textContent.trim().replace(/_/g, '-') : null;
-        }
-
-        document.querySelectorAll('i.fas, i[data-lucide], span.material-icons').forEach(el => {
-            const iconId = iconIdFromEl(el);
-            const explicit = iconId && ICON_ID_TO_LIB[iconId];
-
-            if (explicit) {
-                const def = ICON_ID_TO_LIB[iconId];
-                if (isFA) {
-                    const i = document.createElement('i');
-                    i.className = def.fontawesome;
-                    el.replaceWith(i);
-                } else if (isLucide) {
-                    const i = document.createElement('i');
-                    i.setAttribute('data-lucide', def.lucide);
-                    el.replaceWith(i);
-                } else if (isMaterial) {
-                    const span = document.createElement('span');
-                    span.className = 'material-icons';
-                    span.textContent = def.material;
-                    el.replaceWith(span);
-                }
-                return;
-            }
-
-            // Fallback genérico: converte pelo nome do ícone
-            const name = faName(el) || lucideName(el) || materialName(el);
-            if (!name) return;
-
-            if (isFA) {
-                const i = document.createElement('i');
-                i.className = 'fas fa-' + name;
-                el.replaceWith(i);
-            } else if (isLucide) {
-                const i = document.createElement('i');
-                i.setAttribute('data-lucide', name);
-                el.replaceWith(i);
-            } else if (isMaterial) {
-                const span = document.createElement('span');
-                span.className = 'material-icons';
-                span.textContent = name.replace(/-/g, '_');
-                el.replaceWith(span);
-            }
-        });
-
-        if (isLucide && window.lucide) {
-            window.lucide.createIcons();
         }
     }
 

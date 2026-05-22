@@ -3,23 +3,44 @@
  */
 
 (function initSharedConstants() {
-    const ICON_OPTIONS = [
-        'fas fa-folder', 'fas fa-folder-open', 'fas fa-th-large', 'fas fa-th-list',
-        'fas fa-cog', 'fas fa-wrench', 'fas fa-tools',
-        'fas fa-users', 'fas fa-user', 'fas fa-user-tie',
-        'fas fa-box', 'fas fa-boxes', 'fas fa-cube', 'fas fa-cubes',
-        'fas fa-truck', 'fas fa-shipping-fast', 'fas fa-warehouse',
-        'fas fa-chart-bar', 'fas fa-chart-line', 'fas fa-chart-pie',
-        'fas fa-file', 'fas fa-file-invoice', 'fas fa-file-alt',
-        'fas fa-shopping-cart', 'fas fa-credit-card', 'fas fa-cash-register',
-        'fas fa-building', 'fas fa-store', 'fas fa-industry',
-        'fas fa-calendar', 'fas fa-clock', 'fas fa-bell',
-        'fas fa-home', 'fas fa-globe', 'fas fa-map-marker-alt',
-        'fas fa-print', 'fas fa-download', 'fas fa-upload',
-        'fas fa-envelope', 'fas fa-comment', 'fas fa-phone',
-        'fas fa-lock', 'fas fa-shield-alt', 'fas fa-key',
-        'fas fa-database', 'fas fa-server', 'fas fa-cloud'
-    ];
+    const ICON_CATEGORIES = {
+        coding: [
+            'fas fa-code', 'fas fa-terminal', 'fas fa-bug', 'fas fa-cog',
+            'fas fa-wrench', 'fas fa-tools', 'fas fa-laptop-code',
+            'fas fa-code-branch', 'fas fa-tag', 'fas fa-tags',
+            'fas fa-key', 'fas fa-lock', 'fas fa-shield-alt',
+            'fas fa-database', 'fas fa-cloud', 'fas fa-server',
+        ],
+        devices: [
+            'fas fa-mobile-alt', 'fas fa-tablet-alt', 'fas fa-laptop',
+            'fas fa-desktop', 'fas fa-hdd', 'fas fa-microchip',
+            'fas fa-sd-card', 'fas fa-sim-card', 'fas fa-plug',
+            'fas fa-battery-full', 'fas fa-wifi',
+        ],
+        design: [
+            'fas fa-paint-brush', 'fas fa-palette', 'fas fa-pencil-alt',
+            'fas fa-pen', 'fas fa-pen-fancy', 'fas fa-highlighter',
+            'fas fa-marker', 'fas fa-vector-square', 'fas fa-eye-dropper',
+            'fas fa-ruler-combined', 'fas fa-layer-group', 'fas fa-eraser',
+            'fas fa-th-large', 'fas fa-th-list', 'fas fa-archive',
+        ],
+        files: [
+            'fas fa-folder', 'fas fa-folder-open', 'fas fa-folder-plus',
+            'fas fa-file', 'fas fa-file-alt', 'fas fa-file-invoice',
+            'fas fa-file-code', 'fas fa-file-image', 'fas fa-file-pdf',
+            'fas fa-copy', 'fas fa-paste', 'fas fa-save',
+            'fas fa-download', 'fas fa-upload', 'fas fa-print',
+        ],
+        users: [
+            'fas fa-user', 'fas fa-users', 'fas fa-user-tie',
+            'fas fa-user-cog', 'fas fa-user-circle', 'fas fa-user-friends',
+            'fas fa-user-plus', 'fas fa-user-check', 'fas fa-user-shield',
+            'fas fa-user-graduate', 'fas fa-phone', 'fas fa-envelope',
+            'fas fa-comment', 'fas fa-comment-dots', 'fas fa-bell',
+        ],
+    };
+
+    const ICON_OPTIONS = Object.values(ICON_CATEGORIES).flat();
 
     const USER_ROLES = [
         { value: 'leitura', label: 'Leitura' },
@@ -42,6 +63,7 @@
     window.grindx = window.grindx || {};
     window.grindx.constants = {
         ICON_OPTIONS,
+        ICON_CATEGORIES,
         USER_ROLES,
         PROTECTED_ABA_NAMES,
         PROTECTED_MODULE_NAMES

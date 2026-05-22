@@ -216,56 +216,6 @@ const grindx = {
     i18n: new I18nManager(storage),
     ui: UIFactory,
     theme: new ThemeManager(storage),
-    icons: {
-        activeLib() {
-            try {
-                const w = window.parent !== window ? window.parent : window;
-                return w.skinLoader?.currentSkin?.icon_library || 'fontawesome';
-            } catch { return 'fontawesome'; }
-        },
-        convert(el) {
-            const lib = this.activeLib();
-            if (lib === 'fontawesome') return;
-            const faClass = Array.from(el.classList).find(c => c.startsWith('fa-'));
-            if (!faClass) return;
-            const name = faClass.replace('fa-', '');
-            if (lib === 'lucide') {
-                el.outerHTML = `<i data-lucide="${name}"></i>`;
-            } else if (lib === 'material') {
-                el.outerHTML = `<span class="material-icons">${name.replace(/-/g, '_')}</span>`;
-            }
-        },
-        convertAll(scope) {
-            const lib = this.activeLib();
-            if (lib === 'fontawesome') return;
-            const root = scope || document;
-
-            if (lib === 'lucide' && !window.lucide) {
-                const s = document.createElement('script');
-                s.src = 'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js';
-                s.onload = () => {
-                    root.querySelectorAll('i.fas').forEach(el => this.convert(el));
-                    window.lucide.createIcons();
-                };
-                document.head.appendChild(s);
-                return;
-            }
-            if (lib === 'material') {
-                const has = document.querySelector('link[href*="Material+Icons"], link[href*="material+icons"]');
-                if (!has) {
-                    const l = document.createElement('link');
-                    l.rel = 'stylesheet';
-                    l.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
-                    document.head.appendChild(l);
-                }
-            }
-
-            root.querySelectorAll('i.fas').forEach(el => this.convert(el));
-            if (lib === 'lucide' && window.lucide) {
-                window.lucide.createIcons();
-            }
-        }
-    }
 };
 
 window.grindx = grindx; // Global accessibility
