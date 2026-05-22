@@ -4,7 +4,11 @@
 
 (function initApiService() {
     const getBaseUrl = () => {
-        // Tenta usar config injetada globalmente
+        // Tenta usar config injetada globalmente (GRINDX_CONFIG)
+        if (window.GRINDX_CONFIG?.API_BASE_URL) {
+            return window.GRINDX_CONFIG.API_BASE_URL;
+        }
+        // Também suporta window.grindx.config (config dinâmica)
         if (window.grindx?.config?.API_BASE_URL) {
             return window.grindx.config.API_BASE_URL;
         }
