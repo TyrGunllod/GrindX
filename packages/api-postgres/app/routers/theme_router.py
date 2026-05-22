@@ -25,6 +25,7 @@ class TemplateRequest(BaseModel):
     template_slug: str
     name: str
 
+
 logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/v1/themes", tags=["Temas"])
@@ -392,7 +393,9 @@ def upload_logo(
     unique_filename = f"{uuid.uuid4()}.{file_extension}"
 
     # Ensure uploads directory exists (mesmo diretorio usado em main.py para StaticFiles)
-    uploads_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
+    uploads_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads"
+    )
     logos_dir = os.path.join(uploads_dir, "logos")
     os.makedirs(logos_dir, exist_ok=True)
 
