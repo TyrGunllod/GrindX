@@ -24,6 +24,8 @@ env/
 .env
 .env.local
 .env.production
+.env.prod
+*.prod.env
 
 # =========================
 # IDE / Editor
