@@ -76,9 +76,10 @@ def list_themes(
     current_user=Depends(require_role("admin")),
     service: ThemeService = Depends(_get_theme_service),
 ) -> list[dict]:
-    """Lista todos os temas da empresa."""
-    company_id = _require_company_id(current_user)
-    return service.list_themes(company_id)
+    """Lista todos os temas da empresa. Retorna vazio se não houver empresa vinculada."""
+    if not current_user.company_id:
+        return []
+    return service.list_themes(current_user.company_id)
 
 
 @router.get(
@@ -211,9 +212,10 @@ def get_theme(
     service: ThemeService = Depends(_get_theme_service),
 ) -> dict:
     """Retorna detalhes de um tema."""
-    company_id = _require_company_id(current_user)
+    if not current_user.company_id:
+        raise HTTPException(status_code=404, detail="Tema não encontrado")
     theme = service.get_theme_by_id(theme_id)
-    if theme is None or theme["company_id"] != company_id:
+    if theme is None or theme["company_id"] != current_user.company_id:
         raise HTTPException(status_code=404, detail="Tema não encontrado")
     return theme
 
@@ -312,14 +314,15 @@ def get_theme_history(
     service: ThemeService = Depends(_get_theme_service),
 ) -> list[dict]:
     """Retorna o histórico de alterações de um tema."""
-    company_id = _require_company_id(current_user)
+    if not current_user.company_id:
+        raise HTTPException(status_code=404, detail="Tema não encontrado")
     # Verify theme belongs to company
     theme = service.get_theme_by_id(theme_id)
-    if theme is None or theme["company_id"] != company_id:
+    if theme is None or theme["company_id"] != current_user.company_id:
         raise HTTPException(status_code=404, detail="Tema não encontrado")
 
     # Get history from service
-    return service.get_theme_history(theme_id, company_id)
+    return service.get_theme_history(theme_id, current_user.company_id)
 
 
 @router.post(

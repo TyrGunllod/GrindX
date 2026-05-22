@@ -23,9 +23,7 @@ class AdminSkinsController {
     }
 
     setupEvents() {
-        // Header buttons
-        document.getElementById('btnNewSkin')?.addEventListener('click', () => this.openNewSkinModal());
-        document.getElementById('btnTemplatePicker')?.addEventListener('click', () => this.openTemplatePicker());
+        // Modals
         document.getElementById('btnCloseModal')?.addEventListener('click', () => this.closeModal());
         document.getElementById('btnCloseTemplateModal')?.addEventListener('click', () => this.closeTemplatePicker());
         document.getElementById('btnCancelTemplate')?.addEventListener('click', () => this.closeTemplatePicker());
@@ -145,10 +143,10 @@ class AdminSkinsController {
             });
             if (!resp.ok) throw new Error('Failed to load skins');
             this.skins = await resp.json();
-            this.renderSkins();
         } catch (e) {
             console.error('Erro ao carregar skins:', e);
         }
+        this.renderSkins();
     }
 
     async loadTemplates() {
@@ -207,6 +205,12 @@ class AdminSkinsController {
                 <div style="text-align: center; color: var(--skin-text-muted);">
                     <i class="fas fa-plus" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
                     <div>Criar Nova Skin</div>
+                </div>
+            </div>
+            <div class="skin-card" style="display: flex; align-items: center; justify-content: center; cursor: pointer; border-style: dashed;" onclick="window.adminSkins.openTemplatePicker()">
+                <div style="text-align: center; color: var(--skin-text-muted);">
+                    <i class="fas fa-th-large" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    <div>Usar Template</div>
                 </div>
             </div>
         `;
