@@ -419,9 +419,13 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             });
             if (!resp.ok) throw new Error('Erro ao ativar skin');
             await this.loadSkins();
-            const companyId = window.grindx.session.getUserProfile()?.empresa_id || window.dashboard?.user?.company_id;
-            if (companyId && window.skinLoader) {
-                window.skinLoader.reload(parseInt(companyId));
+            if (window.parent !== window) {
+                window.parent.postMessage('skin-saved', '*');
+            } else {
+                const companyId = window.grindx.session.getUserProfile()?.empresa_id;
+                if (companyId && window.skinLoader) {
+                    window.skinLoader.reload(parseInt(companyId));
+                }
             }
             this.toastSuccess('Skin ativada com sucesso.');
         } catch (e) {
