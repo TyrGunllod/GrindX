@@ -81,15 +81,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 }
             });
 
-            // Reload skin when a skin is saved in the admin module
-            window.addEventListener('message', (e) => {
-                if (e.data === 'skin-saved') {
-                    const companyId = this.user?.company_id;
-                    if (companyId && window.skinLoader) {
-                        window.skinLoader.load(parseInt(companyId), false);
-                    }
-                }
-            });
+        }
         }
 
     toggleSidebarCollapse() {
