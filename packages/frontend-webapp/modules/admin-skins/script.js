@@ -9,6 +9,8 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.skins = [];
         this.templates = [];
         this.editingSkinId = null;
+        this.currentLogoUrl = null;
+        this.pendingLogoFile = null;
         this.advancedMode = false;
         this._darkPreview = false;
         this.apiBase = window.grindx.config.API_BASE_URL;
@@ -255,13 +257,22 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         if (!skin) return;
 
         this.editingSkinId = id;
+        this.currentLogoUrl = skin.logo_url || null;
+        this.pendingLogoFile = null;
         document.getElementById('modalTitle').textContent = `Editar: ${skin.name}`;
 
         document.getElementById('skinName').value = skin.name || '';
         document.getElementById('companyName').value = skin.company_name || '';
         document.getElementById('copyrightText').value = skin.copyright_text || '';
-        document.getElementById('logoUrl').value = skin.logo_url || '';
-        document.getElementById('logoShortUrl').value = skin.logo_short_url || '';
+
+        const logoPreview = document.getElementById('logoPreview');
+        if (logoPreview) {
+            if (skin.logo_url) {
+                logoPreview.innerHTML = `<img src="${skin.logo_url}" alt="Logo preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cloud-upload-alt\\'></i><span>Logo indisponivel. Envie um novo arquivo.</span>'">`;
+            } else {
+                logoPreview.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Arraste um arquivo ou clique para selecionar</span>';
+            }
+        }
 
         const colors = skin.colors || {};
         this.setColor('colorPrimary', 'colorPrimaryText', colors['--skin-primary'] || '#00c2e0');
@@ -324,8 +335,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             name,
             company_name: document.getElementById('companyName').value || null,
             copyright_text: document.getElementById('copyrightText').value || null,
-            logo_url: document.getElementById('logoUrl').value || null,
-            logo_short_url: document.getElementById('logoShortUrl').value || null,
+            logo_url: this.currentLogoUrl,
             colors: {
                 '--skin-primary': document.getElementById('colorPrimaryText').value,
                 '--skin-danger': document.getElementById('colorDangerText').value,
@@ -377,6 +387,12 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             if (!resp.ok) {
                 const err = await resp.json();
                 throw new Error(err.detail || 'Erro ao salvar skin');
+            }
+
+            const savedSkin = await resp.json();
+
+            if (this.pendingLogoFile) {
+                await this.uploadLogo(this.pendingLogoFile, savedSkin.id);
             }
 
             this.closeModal();
@@ -617,18 +633,23 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             reader.readAsDataURL(file);
         }
 
+        this.pendingLogoFile = file;
+
         // Upload to API if editing
         if (this.editingSkinId) {
-            this.uploadLogo(file);
+            this.uploadLogo(file, this.editingSkinId);
         }
     }
 
-    async uploadLogo(file) {
+    async uploadLogo(file, skinId) {
+        const id = skinId || this.editingSkinId;
+        if (!id) return;
+
         try {
             const formData = new FormData();
             formData.append('file', file);
 
-            const resp = await fetch(`${this.apiBase}/themes/${this.editingSkinId}/logo`, {
+            const resp = await fetch(`${this.apiBase}/themes/${id}/logo`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${this.token}` },
                 body: formData,
@@ -637,10 +658,16 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             if (!resp.ok) throw new Error('Erro ao fazer upload do logo');
 
             const result = await resp.json();
-            document.getElementById('logoUrl').value = result.logo_url || '';
+            this.currentLogoUrl = result.logo_url || '';
+            this.pendingLogoFile = null;
+
+            const preview = document.getElementById('logoPreview');
+            if (preview && this.currentLogoUrl) {
+                preview.innerHTML = `<img src="${this.currentLogoUrl}" alt="Logo preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cloud-upload-alt\\'></i><span>Logo indisponivel. Envie um novo arquivo.</span>'">`;
+            }
         } catch (e) {
             console.error('Erro ao fazer upload do logo:', e);
-            alert(e.message);
+            this.toastError(e);
         }
     }
 
@@ -705,11 +732,11 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
     }
 
     resetForm() {
+        this.currentLogoUrl = null;
+        this.pendingLogoFile = null;
         document.getElementById('skinName').value = '';
         document.getElementById('companyName').value = '';
         document.getElementById('copyrightText').value = '';
-        document.getElementById('logoUrl').value = '';
-        document.getElementById('logoShortUrl').value = '';
         this.resetPreview();
         document.getElementById('fontHeading').value = 'Barlow Condensed';
         document.getElementById('fontBody').value = 'DM Sans';
