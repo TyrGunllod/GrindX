@@ -3,7 +3,7 @@
 # Makefile para Windows (PowerShell/GnuMake)
 # ==========================================
 
-.PHONY: build up down logs test-postgres test-sqlserver test-all dev-postgres dev-sqlserver dev-frontend seed migrate clean
+.PHONY: build up down logs test-postgres test-sqlserver test-all dev-postgres dev-sqlserver dev-frontend dev-all seed migrate clean
 
 # ==========================================
 # Desenvolvimento & Execução
@@ -20,6 +20,13 @@ dev-sqlserver:
 dev-frontend:
 	@echo "Iniciando Frontend na porta 5500 (acessivel na rede)..."
 	python -m http.server 5500 --directory packages/frontend-webapp --bind 0.0.0.0
+
+dev-all:
+	@echo "Subindo todos os servicos GrindX..."
+	start "API Postgres"  cmd /k "cd packages/api-postgres && set PYTHONPATH=..&& .venv\Scripts\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002"
+	start "API SQLServer" cmd /k "cd packages/api-sqlserver && set PYTHONPATH=..&& .venv\Scripts\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001"
+	start "Frontend"      cmd /k "python -m http.server 5500 --directory packages/frontend-webapp --bind 0.0.0.0"
+	@echo Acesse: http://localhost:5500
 
 # ==========================================
 # Banco de Dados & Dados Iniciais
