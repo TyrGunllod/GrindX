@@ -268,10 +268,9 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         const logoPreview = document.getElementById('logoPreview');
         if (logoPreview) {
             if (skin.logo_url) {
-                const fullUrl = window.skinLoader?._resolveUrl(skin.logo_url) || skin.logo_url;
-                logoPreview.innerHTML = `<img src="${fullUrl}" alt="Logo preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cloud-upload-alt\\'></i><span>Logo indisponivel. Envie um novo arquivo.</span>'">`;
+                this._setPreviewImage(logoPreview, skin.logo_url);
             } else {
-                logoPreview.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Arraste um arquivo ou clique para selecionar</span>';
+                this._resetPreviewDefault(logoPreview);
             }
         }
 
@@ -664,13 +663,28 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
             const preview = document.getElementById('logoPreview');
             if (preview && this.currentLogoUrl) {
-                const fullUrl = window.skinLoader?._resolveUrl(this.currentLogoUrl) || this.currentLogoUrl;
-                preview.innerHTML = `<img src="${fullUrl}" alt="Logo preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cloud-upload-alt\\'></i><span>Logo indisponivel. Envie um novo arquivo.</span>'">`;
+                this._setPreviewImage(preview, this.currentLogoUrl);
             }
         } catch (e) {
             console.error('Erro ao fazer upload do logo:', e);
             this.toastError(e);
         }
+    }
+
+    _setPreviewImage(previewEl, logoUrl) {
+        previewEl.innerHTML = '';
+        const img = document.createElement('img');
+        const fullUrl = window.skinLoader?._resolveUrl(logoUrl) || logoUrl;
+        img.src = fullUrl;
+        img.alt = 'Logo preview';
+        img.onerror = () => {
+            this._resetPreviewDefault(previewEl);
+        };
+        previewEl.appendChild(img);
+    }
+
+    _resetPreviewDefault(previewEl) {
+        previewEl.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Arraste um arquivo ou clique para selecionar</span>';
     }
 
     openTemplatePicker() {
@@ -753,10 +767,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         // Reset logo preview
         const logoPreview = document.getElementById('logoPreview');
         if (logoPreview) {
-            logoPreview.innerHTML = `
-                <i class="fas fa-cloud-upload-alt"></i>
-                <span>Arraste um arquivo ou clique para selecionar</span>
-            `;
+            this._resetPreviewDefault(logoPreview);
         }
     }
 

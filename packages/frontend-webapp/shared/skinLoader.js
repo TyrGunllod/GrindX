@@ -316,7 +316,16 @@ class SkinLoader {
                 const initial = name.substring(0, 1);
                 const rest = name.substring(1);
                 const fullUrl = this._resolveUrl(logoUrl);
-                logoEl.innerHTML = `<img src="${fullUrl}" alt="Logo" style="max-height: 32px; width: auto;" onerror="this.outerHTML='${initial}<span class=\\"logo-full\\">${rest}</span>'">`;
+                logoEl.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = fullUrl;
+                img.alt = 'Logo';
+                img.style.maxHeight = '32px';
+                img.style.width = 'auto';
+                img.onerror = function () {
+                    this.outerHTML = initial + '<span class="logo-full">' + rest + '</span>';
+                };
+                logoEl.appendChild(img);
             }
         }
         if (logoShortUrl) {
