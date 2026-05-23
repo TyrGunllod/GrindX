@@ -198,16 +198,17 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         }).join('');
 
         grid.innerHTML = cards + `
-            <div class="skin-card" style="display: flex; align-items: center; justify-content: center; cursor: pointer; border-style: dashed;" onclick="window.adminSkins.openNewSkinModal()">
-                <div style="text-align: center; color: var(--skin-text-muted);">
-                    <i class="fas fa-plus" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
-                    <div>Criar Nova Skin</div>
-                </div>
-            </div>
-            <div class="skin-card" style="display: flex; align-items: center; justify-content: center; cursor: pointer; border-style: dashed;" onclick="window.adminSkins.openTemplatePicker()">
-                <div style="text-align: center; color: var(--skin-text-muted);">
-                    <i class="fas fa-th-large" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
-                    <div>Usar Template</div>
+            <div class="skin-card add-skin-card" style="border-style: dashed; cursor: default;">
+                <div style="display: flex; flex-direction: column; gap: 0.75rem; padding: 0.5rem 0;">
+                    <div class="add-skin-option" onclick="window.adminSkins.openNewSkinModal()" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; cursor: pointer; border-radius: var(--skin-radius-md, 0.5rem); transition: background 0.2s; color: var(--skin-text-muted);">
+                        <i class="fas fa-plus" style="font-size: 1.25rem; width: 1.5rem; text-align: center;"></i>
+                        <div style="font-weight: 500;">Criar Nova Skin</div>
+                    </div>
+                    <div class="add-skin-divider" style="height: 1px; background: var(--border-color, #e2e8f0); margin: 0 0.25rem;"></div>
+                    <div class="add-skin-option" onclick="window.adminSkins.openTemplatePicker()" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; cursor: pointer; border-radius: var(--skin-radius-md, 0.5rem); transition: background 0.2s; color: var(--skin-text-muted);">
+                        <i class="fas fa-th-large" style="font-size: 1.25rem; width: 1.5rem; text-align: center;"></i>
+                        <div style="font-weight: 500;">Usar Template</div>
+                    </div>
                 </div>
             </div>
         `;
@@ -477,8 +478,14 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             '--skin-border-color-dark': document.getElementById('colorBorderColorDarkText').value,
         };
 
+        const fonts = {
+            heading: document.getElementById('fontHeading').value,
+            body: document.getElementById('fontBody').value,
+        };
+
         if (window.skinLoader) {
             window.skinLoader.applyPreviewColors(colors);
+            window.skinLoader._applyFonts(fonts);
         }
 
         // Reset toggle state whenever preview is applied
@@ -750,7 +757,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.resetPreview();
         document.getElementById('fontHeading').value = 'Barlow Condensed';
         document.getElementById('fontBody').value = 'DM Sans';
-        document.querySelector('input[name="iconLibrary"][value="fontawesome"]').checked = true;
         document.getElementById('radiusSm').value = '0.25rem';
         document.getElementById('radiusMd').value = '0.5rem';
         document.getElementById('radiusLg').value = '0.75rem';

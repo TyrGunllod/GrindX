@@ -84,6 +84,11 @@ class DashboardController extends window.grindx.controllers.BaseController {
             window.addEventListener('message', (e) => {
                 if (e.data === 'sidebar-update') this.loadDynamicMenu();
             });
+
+            // Re-sincroniza iframes quando skin é atualizada em background
+            window.addEventListener('skinupdated', () => {
+                this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));
+            });
         }
 
     toggleSidebarCollapse() {

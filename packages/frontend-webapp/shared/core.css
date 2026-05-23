@@ -152,7 +152,7 @@ html {
 }
 
 body {
-    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-family: var(--skin-font-body);
     background-color: var(--bg-main);
     color: var(--text-main);
     line-height: 1.5;
@@ -161,7 +161,7 @@ body {
 
 /* Font Display Utility */
 .font-display {
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-family: var(--skin-font-heading);
   font-weight: 700;
   letter-spacing: 0.05em;
 }

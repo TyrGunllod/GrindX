@@ -55,7 +55,7 @@ const FONT_CDN_MAP = {
 class SkinLoader {
     constructor() {
         this.currentSkin = null;
-        this._fontLinkEl = null;
+        this._fontLinkEls = [];
         this._previewMode = false;
         this._originalSkin = null;
     }
@@ -212,11 +212,11 @@ class SkinLoader {
     _applyFonts(fonts) {
         if (!fonts) return;
 
-        // Remove font link anterior
-        if (this._fontLinkEl) {
-            this._fontLinkEl.remove();
-            this._fontLinkEl = null;
+        // Remove todos os links de font anteriores
+        for (const el of this._fontLinkEls) {
+            el.remove();
         }
+        this._fontLinkEls = [];
 
         // Carrega Google Fonts se necessário
         const fontNames = [fonts.heading, fonts.body].filter(Boolean);
@@ -226,7 +226,7 @@ class SkinLoader {
                 link.rel = 'stylesheet';
                 link.href = FONT_CDN_MAP[name];
                 document.head.appendChild(link);
-                this._fontLinkEl = link;
+                this._fontLinkEls.push(link);
             }
         }
 
@@ -348,6 +348,8 @@ class SkinLoader {
                 this.currentSkin = merged;
                 this._applySkin(merged);
                 this._saveToCache(companyId, merged);
+                // Notifica o dashboard para re-sincronizar iframes
+                window.dispatchEvent(new CustomEvent('skinupdated', { detail: { companyId } }));
             }
         } catch (e) {
             // Silencioso - manter cache atual

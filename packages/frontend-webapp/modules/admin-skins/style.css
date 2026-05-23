@@ -561,6 +561,11 @@
     flex: 1;
 }
 
+.add-skin-option:hover {
+    background: rgba(0, 194, 224, 0.08);
+    color: var(--skin-primary, #00c2e0) !important;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .preview-main {
