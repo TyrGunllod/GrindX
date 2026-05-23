@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.1 (2026-05-23)
+
+### Bug Fixes
+
+- **skin**: Apply font changes on save and preview
+  ([`3bc2649`](https://github.com/TyrGunllod/GrindX/commit/3bc26492c83cad1c8695a5fc247ed6ef6456a59d))
+
+
 ## v1.4.0 (2026-05-23)
 
 ### Features
