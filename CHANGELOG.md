@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v1.4.0 (2026-05-23)
+
+### Features
+
+- **skins**: Adicionar mais opções de fontes no editor de skins e corrigir carregamento de fontes
+  ausentes no FONT_CDN_MAP
+  ([`d1d22bc`](https://github.com/TyrGunllod/GrindX/commit/d1d22bc4a7237a9ac6cf2dbb78cc7765e8cc4d71))
+
+
 ## v1.3.0 (2026-05-22)
 
 ### Bug Fixes
