@@ -250,13 +250,11 @@ Remove um módulo. Requer `admin`.
 
 ## Temas / Skins
 
-Endpoints para gerenciar o sistema de skins visuais por empresa. Requer perfil `admin`.
+Endpoints para gerenciar o sistema de skins visuais por empresa. O `company_id` é obtido automaticamente do token JWT do usuário logado. Requer perfil `admin`.
 
 ### `GET /v1/themes/`
 
-Lista todos os temas.
-
-**Query params opcionais:** `company_id` (int), `skip` (int), `limit` (int)
+Lista todos os temas da empresa do usuário logado.
 
 **Response 200:**
 ```json
@@ -266,24 +264,34 @@ Lista todos os temas.
     "company_id": 1,
     "name": "Corporate Blue",
     "is_active": true,
-    "colors": {"--skin-primary": "#0055aa", ...},
-    "logo_url": "/static/uploads/logos/acme.png",
-    "company_name_display": "Acme Corp"
+    "colors": {"--skin-primary": "#0055aa", "--skin-danger": "#ef4444", ...},
+    "fonts": {"heading": "Barlow Condensed", "body": "DM Sans"},
+    "tokens": {"--skin-radius-md": "0.5rem", "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.1)", ...},
+    "icon_library": "fontawesome",
+    "logo_url": "/uploads/logos/uuid.jpg",
+    "company_name": "Acme Corp",
+    "copyright_text": "© 2026 Acme Corp. Todos os direitos reservados.",
+    "criado_em": "2026-05-20T10:00:00",
+    "atualizado_em": "2026-05-20T14:30:00"
   }
 ]
 ```
 
 ### `POST /v1/themes/`
 
-Cria um novo tema para uma empresa.
+Cria um novo tema para a empresa do usuário logado.
 
 **Body:**
 ```json
 {
-  "company_id": 1,
   "name": "Acme Blue",
   "colors": {"--skin-primary": "#0055aa"},
-  "company_name_display": "Acme Corp"
+  "fonts": {"heading": "Inter", "body": "Roboto"},
+  "tokens": {"--skin-radius-md": "0.75rem"},
+  "icon_library": "fontawesome",
+  "logo_url": null,
+  "company_name": "Acme Corp",
+  "copyright_text": "© 2026 Acme Corp. Todos os direitos reservados."
 }
 ```
 
@@ -291,30 +299,25 @@ Cria um novo tema para uma empresa.
 
 ### `GET /v1/themes/{id}`
 
-Retorna um tema pelo ID.
+Retorna um tema pelo ID. Requer que o tema pertença à empresa do usuário.
 
 ### `PUT /v1/themes/{id}`
 
-Atualiza um tema existente.
+Atualiza um tema existente. Todos os campos são opcionais.
 
 ### `DELETE /v1/themes/{id}`
 
-Remove um tema. Requer `admin`.
+Remove um tema. Requer `admin`. Não é possível deletar um tema ativo.
 
 ### `POST /v1/themes/{id}/activate`
 
-Ativa um tema para a empresa (desativa automaticamente o tema anterior).
+Ativa um tema (desativa automaticamente os outros da mesma empresa).
 
-**Response 200:**
-```json
-{"message": "Theme activated", "theme_id": 1}
-```
+**Response 200:** Objeto do tema ativado.
 
 ### `GET /v1/themes/active`
 
-Retorna o tema ativo de uma empresa. Usado pelo frontend no boot.
-
-**Query params:** `company_id` (int, obrigatório)
+Retorna o tema ativo da empresa do usuário logado. Usado pelo `skinLoader` no boot do frontend.
 
 **Response 200:** Objeto do tema ativo ou 404 se nenhum encontrado.
 
@@ -325,18 +328,32 @@ Lista os templates de skin pré-configurados disponíveis.
 **Response 200:**
 ```json
 [
-  {"name": "corporate-blue", "label": "Corporate Blue", "colors": {...}},
-  {"name": "dark-minimal", "label": "Dark Minimal", "colors": {...}}
+  {"slug": "corporate-blue", "name": "Corporate Blue", "preview": {"--skin-primary": "#0055aa", ...}},
+  {"slug": "dark-minimal", "name": "Dark Minimal", "preview": {...}}
 ]
 ```
 
 ### `POST /v1/themes/{id}/logo`
 
-Upload de logo para o tema (multipart/form-data).
+Upload de logo para o tema (multipart/form-data). Tipos aceitos: jpeg, png, svg, gif. Máximo 5MB.
 
 ### `GET /v1/themes/{id}/history`
 
 Retorna o histórico de alterações de um tema.
+
+### `POST /v1/themes/from-template`
+
+Cria um tema a partir de um template existente.
+
+**Body:**
+```json
+{
+  "template_slug": "corporate-blue",
+  "name": "Corporate Blue"
+}
+```
+
+**Response 201:** Objeto do tema criado.
 
 ---
 

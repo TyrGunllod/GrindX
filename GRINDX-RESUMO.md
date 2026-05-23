@@ -14,7 +14,7 @@
 | Backend `api-sqlserver` (FastAPI + SQL Server) | ✅ |
 | Frontend Portal Modular | ✅ |
 | Design System (Glassmorphism + UIFactory) | ✅ |
-| Módulos: `home`, `users`, `structure` | ✅ |
+| Módulos: `home`, `users`, `structure`, `admin-skins` | ✅ |
 | Autenticação JWT + RBAC | ✅ |
 | Suite de testes (160+) | ✅ |
 | Documentação técnica completa | ✅ |

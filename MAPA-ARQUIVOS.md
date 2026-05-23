@@ -256,6 +256,7 @@ GrindX/
 │   ├── __init__.py                     ✅
 │   └── conftest.py                     ✅
 │
+├── AGENTS.md                           ✅ Memória do assistente
 ├── .gitignore                          ✅
 ├── GRINDX-RESUMO.md                    ✅ Resumo executivo
 ├── LICENSE                             ✅

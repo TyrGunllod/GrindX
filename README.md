@@ -36,7 +36,7 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 ### Frontend
 
 - **Portal Modular (porta 5500):** Shell que gerencia navegação e carrega módulos via iframe isolado.
-- **Módulos:** `home`, `users`, `structure` — cada um é standalone e testável independentemente.
+- **Módulos:** `home`, `users`, `structure`, `admin-skins` — cada um é standalone e testável independentemente.
 - **Design System:** Glassmorphism + tokens CSS + `UIFactory` para consistência absoluta.
 
 ---
@@ -180,7 +180,7 @@ GrindX/
 │   ├── frontend-webapp/    # Portal Frontend
 │   │   ├── index.html      # Shell/Host
 │   │   ├── dashboard.html
-│   │   ├── modules/        # home, users, structure
+│   │   ├── modules/        # home, users, structure, admin-skins
 │   │   └── shared/         # Design System
 │   └── shared/             # Pacote Python compartilhado
 │       ├── security/       # JWT e bcrypt

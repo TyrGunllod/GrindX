@@ -5,7 +5,7 @@
 - Descrição: português (BR)
 - Exemplo:
   ```
-  feat(auth): add login validation
+  feat(auth): adicionar validacao de login
 
   Adiciona validação de campos obrigatórios no formulário de login.
   ```
