@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="GX Logo">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1635"/>
+      <stop offset="100%" stop-color="#081126"/>
+    </linearGradient>
+
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#12d6ff"/>
+      <stop offset="100%" stop-color="#00b7e6"/>
+    </linearGradient>
+
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <!-- Outer Hexagon -->
+    <polygon
+      points="256,36 434,138 434,374 256,476 78,374 78,138"
+      fill="url(#bg)"
+      stroke="#07101f"
+      stroke-width="14"
+      stroke-linejoin="round"
+    />
+
+    <!-- Inner Accent Border -->
+    <polygon
+      points="256,58 414,149 414,363 256,454 98,363 98,149"
+      fill="none"
+      stroke="url(#accent)"
+      stroke-width="10"
+      stroke-linejoin="round"
+    />
+
+    <!-- GX Text -->
+    <text
+      x="50%"
+      y="55%"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-family="Inter, Arial, Helvetica, sans-serif"
+      font-size="118"
+      font-weight="700"
+      letter-spacing="4"
+      fill="url(#accent)">
+      GX
+    </text>
+  </g>
+</svg>

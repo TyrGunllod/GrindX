@@ -1,0 +1,42 @@
+{
+  "name": "Royal Purple",
+  "colors": {
+    "--skin-primary": "#B833FF",
+    "--skin-primary-hover": "#9A1BA6",
+    "--skin-accent": "#E91E8C",
+    "--skin-secondary": "#7C3AED",
+    "--skin-tertiary": "#A78BFA",
+    "--skin-danger": "#DC2626",
+    "--skin-success": "#10B981",
+    "--skin-warning": "#F59E0B",
+    "--skin-bg-main": "#FAF5FF",
+    "--skin-bg-card": "#FFFFFF",
+    "--skin-text-main": "#1E1B4B",
+    "--skin-text-muted": "#6B7280",
+    "--skin-border-color": "#E9D5FF",
+    "--skin-focus-ring": "rgba(184, 51, 255, 0.35)",
+    "--skin-bg-main-dark": "#2D1B4E",
+    "--skin-bg-card-dark": "#3F2667",
+    "--skin-text-main-dark": "#F3E8FF",
+    "--skin-text-muted-dark": "#D8B4FE",
+    "--skin-border-color-dark": "#6D28D9",
+    "--skin-focus-ring-dark": "rgba(184, 51, 255, 0.35)"
+  },
+  "fonts": {
+    "heading": "Barlow Condensed",
+    "body": "DM Sans"
+  },
+  "icon_library": "fontawesome",
+  "tokens": {
+    "--skin-radius-sm": "0.25rem",
+    "--skin-radius-md": "0.5rem",
+    "--skin-radius-lg": "0.75rem",
+    "--skin-radius-xl": "1.5rem",
+    "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.15)",
+    "--skin-shadow-modal": "0 20px 25px -5px rgba(0,0,0,0.2)"
+  },
+  "company_name": "GrindX",
+  "copyright_text": "© 2026 GrindX. Todos os direitos reservados.",
+  "logo_url": null,
+  "logo_short_url": null
+}

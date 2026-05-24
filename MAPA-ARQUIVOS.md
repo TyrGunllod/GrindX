@@ -273,7 +273,7 @@ GrindX/
 
 | Item | Prioridade | Ação |
 |------|-----------|------|
-| `packages/api-sqlserver/.env` — `DB_PASSWORD` | Alta | Preencher senha real do LEITURAPROD |
+| `packages/api-sqlserver/.env` — `DB_PASSWORD` | Alta | Preencher senha real |
 | `packages/api-postgres/.env` — `SECRET_KEY` | Alta | Trocar para chave forte em produção |
 | `GRINDX-RESUMO.md` na raiz | Baixa | Avaliar arquivar ou mover para `docs/` |
 
