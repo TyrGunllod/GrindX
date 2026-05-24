@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="GrindX favicon">
-  <title>GrindX Favicon</title>
-  <rect width="64" height="64" rx="12" fill="#0f172a"/>
-  <polygon points="32,8 56,32 32,56 8,32" fill="none" stroke="#00c2e0" stroke-width="3"/>
-  <text x="32" y="40" text-anchor="middle" font-family="'Barlow Condensed', Arial, sans-serif" font-size="20" font-weight="700" fill="#00c2e0">GX</text>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <style>
+      image {
+        image-rendering: crisp-edges;
+        image-rendering: pixelated;
+      }
+    </style>
+  </defs>
+  <image width="64" height="64" href="data:image/png;base64,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"/>
 </svg>
