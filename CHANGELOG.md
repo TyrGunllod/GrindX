@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.5.0 (2026-05-24)
+
+### Documentation
+
+- Atualizar documentacao para estado atual do projeto
+  ([`b5d9738`](https://github.com/TyrGunllod/GrindX/commit/b5d973886cf5bce7cedbaa3afb87698542e8d2c8))
+
+### Features
+
+- **seed**: Criar database PostgreSQL automaticamente se nao existir
+  ([`8f03696`](https://github.com/TyrGunllod/GrindX/commit/8f0369632085dbfcd910561056423d81dfb5b48e))
+
+
 ## v1.4.1 (2026-05-23)
 
 ### Bug Fixes
