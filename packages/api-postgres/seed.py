@@ -5,10 +5,9 @@ Uso:
     python seed.py
 
 Cria (somente o que estiver faltando):
+    - Database PostgreSQL (se não existir)
     - Empresa base GrindX
     - 1 usuário admin
-    - 1 usuário operador
-    - 1 usuário leitura
     - Skin padrão GrindX (ativa)
     - Abas Principal e Gestão
     - Módulos Dashboard, Usuários, Estrutura, Skins
@@ -20,13 +19,15 @@ from pathlib import Path
 # Adiciona diretório raiz ao path
 sys.path.insert(0, str(Path(__file__).parent))
 
+from urllib.parse import urlparse
+
 from app.core.config import settings
 from app.database import Base
 from app.models.empresa import Empresa
 from app.models.portal import Aba, Modulo
 from app.models.usuario import Usuario
 from shared.security.jwt import gerar_hash_senha
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 # Guard: Verificar se DEBUG está ativo
@@ -35,8 +36,37 @@ if not settings.DEBUG:
     raise SystemExit(1)
 
 
+def _criar_database_se_nao_existir():
+    """Cria o database PostgreSQL caso ainda não exista."""
+    url = urlparse(settings.DATABASE_URL)
+    db_name = url.path.lstrip("/")
+
+    # Conecta ao database padrão 'postgres' para criar o database alvo
+    base_url = f"{url.scheme}://{url.hostname}:{url.port or 5432}/postgres"
+    if url.username:
+        base_url = f"{url.scheme}://{url.username}:{url.password}@{url.hostname}:{url.port or 5432}/postgres"
+
+    try:
+        engine = create_engine(base_url, isolation_level="AUTOCOMMIT")
+        with engine.connect() as conn:
+            result = conn.execute(
+                text("SELECT 1 FROM pg_database WHERE datname = :db"),
+                {"db": db_name},
+            )
+            if not result.fetchone():
+                conn.execute(text(f'CREATE DATABASE "{db_name}"'))
+                print(f"[OK] Database '{db_name}' criado")
+            else:
+                print(f"[SKIP] Database '{db_name}' já existe")
+        engine.dispose()
+    except Exception as e:
+        print(f"[OK] Não foi possível verificar/criar database (pode já existir): {e}")
+
+
 def seed_database():
     """Popula o banco com dados iniciais (idempotente)."""
+    _criar_database_se_nao_existir()
+
     engine = create_engine(settings.DATABASE_URL)
 
     # Criar todas as tabelas
@@ -76,20 +106,6 @@ def seed_database():
                 "nome_completo": "Administrador",
                 "senha": "admin123",
                 "role": "admin",
-            },
-            {
-                "username": "operador",
-                "email": "operador@erp.com.br",
-                "nome_completo": "Operador",
-                "senha": "operador123",
-                "role": "operador",
-            },
-            {
-                "username": "leitura",
-                "email": "leitura@erp.com.br",
-                "nome_completo": "Leitura",
-                "senha": "leitura123",
-                "role": "leitura",
             },
         ]
 
@@ -274,8 +290,6 @@ def seed_database():
         print("\n[FINISH] Seed concluído com sucesso!")
         print("\nCredenciais para teste:")
         print("  admin    / admin123")
-        print("  operador / operador123")
-        print("  leitura  / leitura123")
 
     except Exception as e:
         print(f"[ERROR] Erro ao fazer seed: {e}")
