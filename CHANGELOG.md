@@ -2,6 +2,33 @@
 
 <!-- version list -->
 
+## v1.8.0 (2026-05-25)
+
+### Bug Fixes
+
+- **skins**: Cross-origin iframe seguro e fonte herdada nos botoes
+  ([`7f0a88d`](https://github.com/TyrGunllod/GrindX/commit/7f0a88da5024a1e083b6d30726d712248deff3fe))
+
+- **structure**: Permitir URL externa no campo url do modulo
+  ([`951f84a`](https://github.com/TyrGunllod/GrindX/commit/951f84ad6e7f5ea1c8a4e3b10b3f8e604240508e))
+
+### Features
+
+- **skins**: Adicionar importacao de fontes personalizadas
+  ([`ff259ac`](https://github.com/TyrGunllod/GrindX/commit/ff259ac6cc4642c69b5343c4912d0f83864dc479))
+
+- **skins**: Importar fontes de arquivo ZIP com nome automatico
+  ([`2e06ff9`](https://github.com/TyrGunllod/GrindX/commit/2e06ff922adcc3ef57afb48bb72a8a985602988c))
+
+- **skins**: Upload fontes para o servidor e corrigir aplicacao em iframes
+  ([`95cdbae`](https://github.com/TyrGunllod/GrindX/commit/95cdbae40e1adf5d527b5bc45e75a8c3d32df9d4))
+
+### Refactoring
+
+- **skins**: Fontes lado a lado e remover lista de fontes importadas
+  ([`23a0bee`](https://github.com/TyrGunllod/GrindX/commit/23a0bee0a5618456d5c8b72e93628c4dc5530625))
+
+
 ## v1.7.0 (2026-05-24)
 
 
