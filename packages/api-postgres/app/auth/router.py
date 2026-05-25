@@ -9,7 +9,12 @@ from datetime import datetime, timezone
 
 import structlog
 from fastapi import APIRouter, Depends, Request
-from shared.schemas.auth import RefreshTokenRequest, TokenRequest, TokenResponse, TokenPayload
+from shared.schemas.auth import (
+    RefreshTokenRequest,
+    TokenPayload,
+    TokenRequest,
+    TokenResponse,
+)
 from shared.schemas.base import ErrorResponse
 from sqlalchemy.orm import Session
 
