@@ -357,6 +357,33 @@ iframe {
     min-width: 0;
 }
 
+#userAvatar {
+    width: 40px;
+    height: 40px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+}
+
+#userAvatar:hover {
+    opacity: 0.85;
+}
+
+#userAvatar i {
+    font-size: 1.2rem;
+}
+
+.sidebar.collapsed #userAvatar {
+    width: 36px;
+    height: 36px;
+}
+
 .user-meta {
     display: flex;
     flex-direction: column;

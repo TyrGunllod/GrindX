@@ -11,6 +11,7 @@ import structlog
 from shared.exceptions.base import (
     ConflictError,
     CredenciaisInvalidasError,
+    NotFoundError,
 )
 from shared.schemas.auth import TokenResponse
 from shared.security.jwt import (
@@ -127,6 +128,23 @@ class AuthService:
             username=username,
         )
         return usuario_criado
+
+    def change_password(self, user_id: int, current_password: str, new_password: str) -> None:
+        usuario = self.usuario_repo.buscar_por_id(user_id)
+        if not usuario:
+            raise NotFoundError(resource="Usuário", identifier=user_id)
+
+        if not verificar_senha(current_password, usuario.senha_hash):
+            raise CredenciaisInvalidasError()
+
+        usuario.senha_hash = gerar_hash_senha(new_password)
+        self.usuario_repo.atualizar(usuario, {"senha_hash": usuario.senha_hash})
+
+        logger.info(
+            "senha_alterada",
+            usuario_id=usuario.id,
+            username=usuario.username,
+        )
 
     def _gerar_tokens(self, usuario: Usuario) -> TokenResponse:
         """Gera par de tokens JWT (access + refresh) para um usuário.

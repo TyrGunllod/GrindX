@@ -34,6 +34,11 @@ class StorageManager {
         this.cache.set(key, value);
     }
 
+    remove(key) {
+        localStorage.removeItem(key);
+        this.cache.delete(key);
+    }
+
     clear() {
         localStorage.clear();
         this.cache.clear();
@@ -93,7 +98,9 @@ class SessionManager {
     }
 
     clear() {
-        this.storage.clear();
+        this.storage.remove('access_token');
+        this.storage.remove('refresh_token');
+        this.storage.remove('grindx_user_profile');
     }
 }
 

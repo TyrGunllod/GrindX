@@ -112,10 +112,38 @@
          </section>
      </main>
 
+    <!-- Password Change Modal -->
+    <div class="modal-overlay" id="passwordModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-card" style="max-width: 420px;">
+            <header class="modal-header">
+                <h3>Alterar Senha</h3>
+            </header>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Senha Atual</label>
+                    <input type="password" id="currentPassword" class="form-control" required minlength="1">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Nova Senha</label>
+                    <input type="password" id="newPassword" class="form-control" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar Nova Senha</label>
+                    <input type="password" id="confirmPassword" class="form-control" required minlength="6">
+                </div>
+            </form>
+            <footer class="modal-footer flex justify-end gap-2">
+                <button id="cancelPasswordBtn" class="btn btn-secondary" type="button">Cancelar</button>
+                <button id="savePasswordBtn" class="btn btn-primary" type="button">Salvar</button>
+            </footer>
+        </div>
+    </div>
+
     <!-- Core Scripts -->
     <script src="shared/app.js"></script>
     <script src="shared/apiService.js"></script>
     <script src="shared/baseController.js"></script>
+    <script src="shared/components/ReusableModal.js"></script>
     <script src="shared/skinLoader.js"></script>
     <script src="dashboard.js"></script>
 

@@ -40,3 +40,8 @@ class UsuarioModulosUpdate(BaseModel):
 class UsuarioModulosResponse(BaseModel):
     usuario_id: int
     modulos: list[int]
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(..., min_length=1)
+    new_password: str = Field(..., min_length=6)

@@ -12,8 +12,10 @@ from fastapi import APIRouter, Depends, Request
 from shared.schemas.auth import RefreshTokenRequest, TokenRequest, TokenResponse
 from shared.schemas.base import ErrorResponse
 
-from app.auth.dependencies import get_auth_service
+from app.auth.dependencies import get_auth_service, get_current_user
 from app.auth.service import AuthService
+from app.schemas.usuario import ChangePasswordRequest
+from shared.schemas.auth import TokenPayload
 
 logger = structlog.get_logger(__name__)
 
@@ -94,3 +96,21 @@ def refresh(
             timestamp=datetime.now(timezone.utc).isoformat(),
         )
         raise
+
+
+@router.post(
+    "/change-password",
+    summary="Alterar própria senha",
+    description="Permite que o usuário autenticado altere sua própria senha.",
+)
+def change_password(
+    dados: ChangePasswordRequest,
+    current_user: TokenPayload = Depends(get_current_user),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    auth_service.change_password(
+        int(current_user.sub),
+        dados.current_password,
+        dados.new_password,
+    )
+    return {"message": "Senha alterada com sucesso."}

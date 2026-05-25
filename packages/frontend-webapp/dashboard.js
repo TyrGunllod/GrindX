@@ -81,14 +81,12 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 }
             });
 
+            document.getElementById('userAvatar')?.addEventListener('click', () => this.openPasswordModal());
+
             window.addEventListener('message', (e) => {
                 if (e.data === 'sidebar-update') this.loadDynamicMenu();
             });
 
-            // Re-sincroniza iframes quando skin é atualizada em background
-            window.addEventListener('skinupdated', () => {
-                this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));
-            });
         }
 
     toggleSidebarCollapse() {
@@ -303,6 +301,77 @@ class DashboardController extends window.grindx.controllers.BaseController {
     updateThemeIcon() {
         const icon = document.querySelector('#themeToggle i');
         if (icon) icon.className = window.grindx.theme.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    openPasswordModal() {
+        const modalEl = document.getElementById('passwordModal');
+        if (!modalEl) return;
+        this._passwordModal = new (window.grindx.components.ReusableModal)(modalEl, {
+            onClose: () => {
+                document.getElementById('passwordForm')?.reset();
+                document.querySelectorAll('#passwordForm .field-error').forEach(e => e.remove());
+                document.querySelectorAll('#passwordForm .is-invalid').forEach(e => e.classList.remove('is-invalid'));
+            }
+        });
+        this._passwordModal.open();
+        document.getElementById('savePasswordBtn')?.addEventListener('click', () => this.savePassword(), { once: true });
+        document.getElementById('cancelPasswordBtn')?.addEventListener('click', () => this._passwordModal?.close(), { once: true });
+    }
+
+    async savePassword() {
+        const currentPassword = document.getElementById('currentPassword')?.value;
+        const newPassword = document.getElementById('newPassword')?.value;
+        const confirmPassword = document.getElementById('confirmPassword')?.value;
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            this.showPasswordError('Preencha todos os campos.');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            this.showPasswordError('Nova senha e confirmação não conferem.');
+            return;
+        }
+        if (newPassword.length < 6) {
+            this.showPasswordError('Nova senha deve ter no mínimo 6 caracteres.');
+            return;
+        }
+
+        try {
+            await window.grindx.api.post('/auth/change-password', {
+                current_password: currentPassword,
+                new_password: newPassword,
+            });
+            this._passwordModal?.close();
+            this.showToast('Senha alterada com sucesso.', 'success');
+        } catch (err) {
+            this.showPasswordError(err.message || 'Erro ao alterar senha.');
+        }
+    }
+
+    showPasswordError(msg) {
+        const footer = document.querySelector('#passwordModal .modal-footer');
+        if (!footer) return;
+        const existing = footer.querySelector('.field-error');
+        if (existing) existing.remove();
+        const err = document.createElement('p');
+        err.className = 'field-error';
+        err.textContent = msg;
+        footer.parentElement.insertBefore(err, footer);
+    }
+
+    showToast(message, type = 'success') {
+        const region = document.getElementById('toastRegion') || (() => {
+            const r = document.createElement('div');
+            r.id = 'toastRegion';
+            r.className = 'toast-region';
+            document.body.appendChild(r);
+            return r;
+        })();
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        region.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
     }
 
     showLoader(show) {
