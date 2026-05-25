@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.12.1 (2026-05-25)
+
+### Bug Fixes
+
+- **auth**: Order forgot-password ops and fix SMTP default host
+  ([`3c47d44`](https://github.com/TyrGunllod/GrindX/commit/3c47d44b8b8a99ff5944d1fb07995ae805f45dfc))
+
+### Chores
+
+- **env**: Add SMTP default config to .env.example
+  ([`090e0bc`](https://github.com/TyrGunllod/GrindX/commit/090e0bc19447d8a0cf80334de4d06983ab84c9dd))
+
+
 ## v1.12.0 (2026-05-25)
 
 ### Features
