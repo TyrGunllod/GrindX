@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.10.1 (2026-05-25)
+
+### Bug Fixes
+
+- **portal**: Add from_attributes to ModuloSchema
+  ([`46d859c`](https://github.com/TyrGunllod/GrindX/commit/46d859c65cc4ab6095104694b53eb9881443de90))
+
+
 ## v1.10.0 (2026-05-25)
 
 ### Bug Fixes
