@@ -200,8 +200,13 @@ def seed_database():
             session.flush()
             print(f"[OK] Skin padrão 'Padrão GrindX' criada (id={tema_padrao.id})")
         else:
-            if tema_padrao.logo_url != "/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png":
-                tema_padrao.logo_url = "/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png"
+            if (
+                tema_padrao.logo_url
+                != "/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png"
+            ):
+                tema_padrao.logo_url = (
+                    "/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png"
+                )
                 print("[UPDATE] logo_url atualizado na skin 'Padrão GrindX'")
             print("[SKIP] Skin padrão 'Padrão GrindX' já existe")
 
