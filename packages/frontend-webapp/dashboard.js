@@ -177,11 +177,18 @@ class DashboardController extends window.grindx.controllers.BaseController {
      }
 
     applySkinToIframe(iframe) {
-        if (!iframe || !iframe.contentDocument) return;
-        const doc = iframe.contentDocument;
-        if (!doc) return;
-        const root = doc.documentElement;
-        if (!root) return;
+        if (!iframe) return;
+
+        // Skip cross-origin iframes (external sites) — cannot access contentDocument
+        let doc, root;
+        try {
+            doc = iframe.contentDocument;
+            if (!doc) return;
+            root = doc.documentElement;
+            if (!root) return;
+        } catch (_) {
+            return;
+        }
 
         // Sync dark/light theme class
         const theme = window.grindx.theme.theme;
