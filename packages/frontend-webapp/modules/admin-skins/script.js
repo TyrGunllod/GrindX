@@ -408,13 +408,26 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 const formatMap = { ttf: 'truetype', otf: 'opentype', woff: 'woff', woff2: 'woff2' };
                 const format = formatMap[ff.ext] || ff.ext;
 
-                const reader = new FileReader();
-                const dataUrl = await new Promise(resolve => {
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(blob);
+                // Upload font file to server
+                statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Enviando ${fontName}...`;
+                const formData = new FormData();
+                const fontFile = new File([blob], ff.name, { type: 'application/octet-stream' });
+                formData.append('file', fontFile);
+
+                const resp = await fetch(`${this.apiBase}/themes/fonts/upload`, {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${this.token}` },
+                    body: formData,
                 });
 
-                this.customFonts.push({ name: fontName, data: dataUrl, format });
+                if (!resp.ok) {
+                    const err = await resp.json();
+                    throw new Error(err.detail || 'Erro ao enviar fonte');
+                }
+
+                const result = await resp.json();
+
+                this.customFonts.push({ name: fontName, url: result.url, format });
                 imported++;
             }
 
@@ -429,7 +442,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             }
         } catch (err) {
             console.error('Erro ao processar ZIP:', err);
-            statusEl.innerHTML = '<span style="color: var(--skin-danger);">Erro ao processar o arquivo ZIP.</span>';
+            statusEl.innerHTML = `<span style="color: var(--skin-danger);">${err.message || 'Erro ao processar o arquivo ZIP.'}</span>`;
         }
 
         if (preview) {

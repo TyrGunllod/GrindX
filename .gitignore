@@ -64,6 +64,7 @@ logs/
 # Uploads (test artifacts)
 # =========================
 packages/api-postgres/app/uploads/
+packages/api-postgres/uploads/fonts/
 
 # =========================
 # Containers

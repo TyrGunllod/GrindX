@@ -180,37 +180,77 @@ class DashboardController extends window.grindx.controllers.BaseController {
         if (!iframe || !iframe.contentDocument) return;
         const doc = iframe.contentDocument;
         if (!doc) return;
+        const root = doc.documentElement;
+        if (!root) return;
 
         // Sync dark/light theme class
         const theme = window.grindx.theme.theme;
-        const root = doc.documentElement;
-        if (root) {
-            root.classList.remove('light-theme', 'dark-theme');
-            root.classList.add(`${theme}-theme`);
-        }
+        root.classList.remove('light-theme', 'dark-theme');
+        root.classList.add(`${theme}-theme`);
 
         // Copy skin CSS variables from parent :root to iframe
-        // Only copy raw --skin-* tokens (NOT semantic aliases like --bg-card)
-        // so the iframe's .dark-theme CSS cascade can properly override them.
-        if (root) {
-            const parentRoot = document.documentElement;
-            const computed = getComputedStyle(parentRoot);
-            const skinVars = [
-                '--skin-primary', '--skin-primary-hover', '--skin-danger', '--skin-success', '--skin-warning',
-                '--skin-bg-main', '--skin-bg-card', '--skin-text-main', '--skin-text-muted',
-                '--skin-border-color', '--skin-focus-ring',
-                '--skin-bg-main-dark', '--skin-bg-card-dark', '--skin-text-main-dark', '--skin-text-muted-dark',
-                '--skin-border-color-dark',
-                '--skin-sidebar-bg', '--skin-sidebar-text', '--skin-sidebar-active',
-                '--skin-header-bg', '--skin-header-text',
-                '--skin-font-heading', '--skin-font-body',
-                '--skin-radius-sm', '--skin-radius-md', '--skin-radius-lg', '--skin-radius-xl',
-                '--skin-shadow-card', '--skin-shadow-modal',
-            ];
-            skinVars.forEach(v => {
-                const val = computed.getPropertyValue(v).trim();
-                if (val) root.style.setProperty(v, val);
-            });
+        const parentRoot = document.documentElement;
+        const computed = getComputedStyle(parentRoot);
+        const skinVars = [
+            '--skin-primary', '--skin-primary-hover', '--skin-danger', '--skin-success', '--skin-warning',
+            '--skin-bg-main', '--skin-bg-card', '--skin-text-main', '--skin-text-muted',
+            '--skin-border-color', '--skin-focus-ring',
+            '--skin-bg-main-dark', '--skin-bg-card-dark', '--skin-text-main-dark', '--skin-text-muted-dark',
+            '--skin-border-color-dark',
+            '--skin-sidebar-bg', '--skin-sidebar-text', '--skin-sidebar-active',
+            '--skin-header-bg', '--skin-header-text',
+            '--skin-font-heading', '--skin-font-body',
+            '--skin-radius-sm', '--skin-radius-md', '--skin-radius-lg', '--skin-radius-xl',
+            '--skin-shadow-card', '--skin-shadow-modal',
+        ];
+        skinVars.forEach(v => {
+            const val = computed.getPropertyValue(v).trim();
+            if (val) root.style.setProperty(v, val);
+        });
+
+        // Inject fonts into iframe so modules render with the correct font faces
+        const fonts = window.skinLoader?.currentSkin?.fonts;
+        if (!fonts) return;
+
+        const fontCdnMap = {
+            Inter: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+            Roboto: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
+            'Open Sans': 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap',
+            'Barlow Condensed': 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap',
+            'DM Sans': 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap',
+            Lato: 'https://fonts.googleapis.com/css2?family=Lato:wght@400;500;600;700&display=swap',
+            Montserrat: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap',
+            Poppins: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap',
+            Nunito: 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap',
+            'Source Sans Pro': 'https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;500;600;700&display=swap',
+        };
+
+        // Inject Google Fonts <link> for heading and body
+        [fonts.heading, fonts.body].forEach(name => {
+            if (name && fontCdnMap[name]) {
+                const existing = doc.querySelector(`link[href="${fontCdnMap[name]}"]`);
+                if (!existing) {
+                    const link = doc.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = fontCdnMap[name];
+                    doc.head.appendChild(link);
+                }
+            }
+        });
+
+        // Inject @font-face for custom fonts
+        if (fonts.custom && fonts.custom.length > 0) {
+            const existingStyle = doc.getElementById('skin-custom-fonts-iframe');
+            if (existingStyle) existingStyle.remove();
+
+            const style = doc.createElement('style');
+            style.id = 'skin-custom-fonts-iframe';
+            style.textContent = fonts.custom.map(f => {
+                const fmt = f.format || 'woff2';
+                const src = f.url || f.data || '';
+                return `@font-face{font-family:'${f.name}';src:url('${src}')format('${fmt}');font-display:swap}`;
+            }).join('\n');
+            doc.head.appendChild(style);
         }
     }
 

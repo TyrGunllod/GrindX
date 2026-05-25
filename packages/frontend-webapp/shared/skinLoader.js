@@ -224,7 +224,8 @@ class SkinLoader {
             style.id = 'skin-custom-fonts';
             const rules = fonts.custom.map(f => {
                 const format = f.format || 'woff2';
-                return `@font-face { font-family: '${f.name}'; src: url('${f.data}') format('${format}'); font-display: swap; }`;
+                const src = f.url || f.data || '';
+                return `@font-face { font-family: '${f.name}'; src: url('${src}') format('${format}'); font-display: swap; }`;
             }).join('\n');
             style.textContent = rules;
             document.head.appendChild(style);

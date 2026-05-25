@@ -42,6 +42,12 @@ class ThemeUpdate(BaseModel):
     copyright_text: Optional[str] = Field(default=None, max_length=200)
 
 
+class ThemeFontResponse(BaseModel):
+    """Schema de resposta para upload de fonte."""
+
+    url: str = Field(..., description="URL do arquivo de fonte")
+
+
 class ThemeResponse(BaseModel):
     """Schema de resposta para tema."""
 

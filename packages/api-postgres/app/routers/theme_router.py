@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user, get_db, require_role
 from app.repositories.theme_repository import ThemeRepository
-from app.schemas.theme import ThemeCreate, ThemeResponse, ThemeUpdate
+from app.schemas.theme import ThemeCreate, ThemeFontResponse, ThemeResponse, ThemeUpdate
 from app.schemas.theme_history import ThemeHistoryResponse
 from app.services.theme_service import ThemeService
 
@@ -329,6 +329,65 @@ def get_theme_history(
 
     # Get history from service
     return service.get_theme_history(theme_id, current_user.company_id)
+
+
+@router.post(
+    "/fonts/upload",
+    response_model=ThemeFontResponse,
+    summary="Upload de fonte",
+    description="Faz upload de um arquivo de fonte. Retorna a URL pública.",
+    responses={
+        400: {"model": ErrorResponse, "description": "Arquivo inválido"},
+        413: {"model": ErrorResponse, "description": "Arquivo muito grande"},
+    },
+)
+def upload_font(
+    file: UploadFile = File(...),
+    current_user=Depends(require_role("admin")),
+) -> dict:
+    """Faz upload de um arquivo de fonte e retorna a URL pública."""
+
+    # Validate file extension
+    allowed_exts = {".ttf", ".otf", ".woff", ".woff2"}
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in allowed_exts:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Tipo de arquivo não permitido. Extensões permitidas: {', '.join(allowed_exts)}",
+        )
+
+    # Validate file size (max 5MB)
+    max_size = 5 * 1024 * 1024  # 5MB
+    file.file.seek(0, 2)
+    file_size = file.file.tell()
+    file.file.seek(0)
+
+    if file_size > max_size:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Arquivo muito grande. Tamanho máximo: {max_size // (1024 * 1024)}MB",
+        )
+
+    import uuid
+
+    unique_filename = f"{uuid.uuid4()}{ext}"
+
+    # Ensure fonts directory exists
+    uploads_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads"
+    )
+    fonts_dir = os.path.join(uploads_dir, "fonts")
+    os.makedirs(fonts_dir, exist_ok=True)
+
+    # Save file
+    file_path = os.path.join(fonts_dir, unique_filename)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    font_url = f"/uploads/fonts/{unique_filename}"
+
+    logger.info("Font uploaded", filename=unique_filename, size=file_size)
+    return {"url": font_url}
 
 
 @router.post(
