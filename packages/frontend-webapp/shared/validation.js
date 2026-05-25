@@ -57,8 +57,12 @@
                 return;
             }
 
-            if (value && rule.urlPath && !/^[\w\-./?#=&%]+$/.test(value)) {
-                errors.push({ field, message: 'Use uma URL ou caminho válido.' });
+            if (value && rule.urlPath) {
+                const isFullUrl = /^https?:\/\/.+/.test(value);
+                const isPath = /^[\w\-./?#=&%]+$/.test(value);
+                if (!isFullUrl && !isPath) {
+                    errors.push({ field, message: 'Use uma URL ou caminho válido.' });
+                }
             }
         });
 
