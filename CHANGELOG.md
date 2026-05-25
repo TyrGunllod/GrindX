@@ -2,6 +2,48 @@
 
 <!-- version list -->
 
+## v1.10.0 (2026-05-25)
+
+### Bug Fixes
+
+- **portal**: Build tree with Pydantic objects to avoid ORM mutation
+  ([`61989a4`](https://github.com/TyrGunllod/GrindX/commit/61989a4d4ca87e959e200b8b53c30b078dd100ec))
+
+- **portal**: Change children cascade to prevent orphan deletion on reparent
+  ([`729d334`](https://github.com/TyrGunllod/GrindX/commit/729d334e75c32f0cced70d7fdd92d5132720a620))
+
+### Code Style
+
+- Format portal_router.py with ruff
+  ([`b106eb9`](https://github.com/TyrGunllod/GrindX/commit/b106eb9f85252394fc4915ab8f0acd599e2506ae))
+
+### Features
+
+- **api**: Adicionar suporte a parent_id nas rotas de abas
+  ([`930bd5f`](https://github.com/TyrGunllod/GrindX/commit/930bd5f902ee55b7837bf0f98c032ebd8866fac7))
+
+- **dashboard**: Recursive sidebar rendering with sub-aba groups
+  ([`96da4bf`](https://github.com/TyrGunllod/GrindX/commit/96da4bf347321e0e5a25ff7d7e968af14c72b55c))
+
+- **portal**: Add alembic migration for parent_id column
+  ([`4086a86`](https://github.com/TyrGunllod/GrindX/commit/4086a866247368c76af641cda8a357818cbfd5db))
+
+- **portal**: Add parent_id to aba CRUD endpoints with cycle detection
+  ([`e333474`](https://github.com/TyrGunllod/GrindX/commit/e333474b4e07d2a9f84fc1507ad35211062abb71))
+
+- **portal**: Add parent_id to Aba model for nested hierarchy
+  ([`efbfcea`](https://github.com/TyrGunllod/GrindX/commit/efbfceacf955e332486ccd513a6b61f66e1a1c78))
+
+- **portal**: Tornar AbaResponse recursivo com parent_id e children
+  ([`4a6efd4`](https://github.com/TyrGunllod/GrindX/commit/4a6efd4618718092a8a35bc3174d5edaf2d47fd3))
+
+- **structure**: Nested card styles for sub-abas
+  ([`ea8f89e`](https://github.com/TyrGunllod/GrindX/commit/ea8f89e25a6db4e632e01e2fed9328fc8d12f881))
+
+- **structure**: Recursive render, parent_id form, hierarchical select for sub-abas
+  ([`797b5d9`](https://github.com/TyrGunllod/GrindX/commit/797b5d93cb20ee5ef1cff32711c1e188e5315bdf))
+
+
 ## v1.9.0 (2026-05-25)
 
 ### Bug Fixes
