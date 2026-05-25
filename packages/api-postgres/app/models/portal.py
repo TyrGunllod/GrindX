@@ -17,7 +17,7 @@ class Aba(Base):
     parent_id = Column(Integer, ForeignKey("portal_abas.id"), nullable=True)
 
     parent = relationship("Aba", remote_side=[id], back_populates="children")
-    children = relationship("Aba", back_populates="parent", cascade="all, delete-orphan")
+    children = relationship("Aba", back_populates="parent", cascade="all")
     modulos = relationship("Modulo", back_populates="aba", cascade="all, delete-orphan")
 
 
