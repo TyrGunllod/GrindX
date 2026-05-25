@@ -45,7 +45,8 @@ def obter_menu_dinamico(
 
     if current_user.role != "admin":
         accessible_ids = {
-            row[0] for row in db.query(UsuarioModulo.modulo_id)
+            row[0]
+            for row in db.query(UsuarioModulo.modulo_id)
             .filter(UsuarioModulo.usuario_id == int(current_user.sub))
             .all()
         }
@@ -61,15 +62,17 @@ def obter_menu_dinamico(
                         continue
                 else:
                     mods = list(aba.modulos or [])
-                result.append(AbaResponse(
-                    id=aba.id,
-                    nome=aba.nome,
-                    icone=aba.icone,
-                    ordem=aba.ordem,
-                    parent_id=aba.parent_id,
-                    modulos=[ModuloSchema.model_validate(m) for m in mods],
-                    children=children,
-                ))
+                result.append(
+                    AbaResponse(
+                        id=aba.id,
+                        nome=aba.nome,
+                        icone=aba.icone,
+                        ordem=aba.ordem,
+                        parent_id=aba.parent_id,
+                        modulos=[ModuloSchema.model_validate(m) for m in mods],
+                        children=children,
+                    )
+                )
         return result
 
     return build_tree(abas)
