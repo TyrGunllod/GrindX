@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from shared.schemas.auth import TokenPayload
 from sqlalchemy.orm import Session
 
@@ -33,8 +33,7 @@ class AbaResponse(BaseModel):
     modulos: List[ModuloSchema] = []
     children: List["AbaResponse"] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 @router.get("/menu", response_model=List[AbaResponse])
@@ -50,23 +49,30 @@ def obter_menu_dinamico(
             .filter(UsuarioModulo.usuario_id == int(current_user.sub))
             .all()
         }
-        for aba in abas:
-            aba.modulos = [m for m in (aba.modulos or []) if m.id in accessible_ids]
 
     def build_tree(abas_list, parent_id=None):
         result = []
         for aba in abas_list:
             if aba.parent_id == parent_id:
-                item = aba
-                item.children = build_tree(abas_list, aba.id)
+                children = build_tree(abas_list, aba.id)
                 if current_user.role != "admin":
-                    if not item.modulos and not item.children:
+                    mods = [m for m in (aba.modulos or []) if m.id in accessible_ids]
+                    if not mods and not children:
                         continue
-                result.append(item)
+                else:
+                    mods = list(aba.modulos or [])
+                result.append(AbaResponse(
+                    id=aba.id,
+                    nome=aba.nome,
+                    icone=aba.icone,
+                    ordem=aba.ordem,
+                    parent_id=aba.parent_id,
+                    modulos=[ModuloSchema.model_validate(m) for m in mods],
+                    children=children,
+                ))
         return result
 
-    tree = build_tree(abas)
-    return tree
+    return build_tree(abas)
 
 
 # --- Gerenciamento de Abas ---
