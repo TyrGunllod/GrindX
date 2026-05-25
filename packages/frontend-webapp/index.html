@@ -48,7 +48,7 @@
                     <input type="password" id="password" name="password" 
                            autocomplete="current-password" required
                            placeholder="••••••••">
-                    <a href="#" class="link-sm forgot-link" id="linkForgot">Esqueceu a senha?</a>
+                    <a href="#" class="link-sm forgot-link" id="linkForgot" onclick="window.auth.openForgotModal(event)">Esqueceu a senha?</a>
                 </div>
 
                 <div class="flex items-center gap-2 mb-4">
@@ -65,6 +65,32 @@
 
             <div style="text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
                 © 2026 GrindX. Desenvolvido por Alex Grellet.
+            </div>
+        </div>
+
+        <!-- Forgot Password Modal -->
+        <div class="modal-overlay hidden" id="forgotModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Recuperar Senha</h2>
+                    <button type="button" class="modal-close" onclick="window.auth.closeForgotModal()" aria-label="Fechar">&times;</button>
+                </div>
+                <form id="forgotForm" class="grid" novalidate>
+                    <p class="text-muted" style="margin-bottom: 1rem;">
+                        Digite seu usuário para receber uma nova senha no e-mail cadastrado.
+                    </p>
+                    <div class="form-group">
+                        <label for="forgotUsername">Usuário</label>
+                        <input type="text" id="forgotUsername" name="username" required placeholder="Ex: admin">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full" id="btnForgot">
+                        <span>Enviar Nova Senha</span>
+                    </button>
+                    <div id="forgotMessage" class="alert" role="alert" aria-live="polite"></div>
+                    <a href="#" class="link-sm" onclick="window.auth.closeForgotModal(); return false;" style="text-align: center; display: block; margin-top: 0.5rem;">
+                        Voltar para o login
+                    </a>
+                </form>
             </div>
         </div>
     </main>

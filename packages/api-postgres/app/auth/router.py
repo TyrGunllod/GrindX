@@ -21,7 +21,12 @@ from sqlalchemy.orm import Session
 from app.auth.dependencies import get_auth_service, get_current_user
 from app.auth.service import AuthService
 from app.database import get_db
-from app.schemas.usuario import ChangePasswordRequest, UsuarioResponse
+from app.schemas.usuario import (
+    ChangePasswordRequest,
+    ForgotPasswordRequest,
+    UsuarioResponse,
+)
+from app.services.email_service import EmailService
 
 logger = structlog.get_logger(__name__)
 
@@ -118,6 +123,36 @@ def me(
 
     service = UsuarioService(db)
     return service.buscar_por_id(int(current_user.sub))
+
+
+@router.post(
+    "/forgot-password",
+    summary="Recuperar senha",
+    description="Gera uma nova senha temporária e envia por e-mail para o usuário.",
+)
+def forgot_password(
+    dados: ForgotPasswordRequest,
+    auth_service: AuthService = Depends(get_auth_service),
+    db: Session = Depends(get_db),
+):
+    temp_password = auth_service.forgot_password(dados.username)
+
+    usuario = auth_service.usuario_repo.buscar_por_username(dados.username)
+    email_service = EmailService()
+    email_service.send(
+        to_email=usuario.email,
+        subject="Recuperação de Senha — GrindX",
+        body=(
+            f"Olá {usuario.nome_completo},\n\n"
+            f"Sua nova senha de acesso ao GrindX é:\n\n"
+            f"   {temp_password}\n\n"
+            f"Recomendamos que você altere esta senha após o login.\n\n"
+            f"Atenciosamente,\n"
+            f"Administração GrindX"
+        ),
+    )
+
+    return {"message": "Nova senha enviada para o e-mail cadastrado."}
 
 
 @router.post(

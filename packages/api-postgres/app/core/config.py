@@ -39,6 +39,15 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     LOG_LEVEL: str = "INFO"
 
+    # --- SMTP / Email ---
+    SMTP_HOST: str = "0.0.0.0"
+    SMTP_PORT: int = 2525
+    SMTP_USER: str = ""
+    SMTP_PASS: str = ""
+    SMTP_USE_TLS: bool = False
+    EMAIL_FROM: str = "admin@grindx.local"
+    EMAIL_FROM_NAME: str = "GrindX Administrador"
+
     # --- Rate Limiting ---
     RATE_LIMIT_REQUESTS: int = 100
     RATE_LIMIT_WINDOW_SECONDS: int = 60

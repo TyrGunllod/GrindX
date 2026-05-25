@@ -86,9 +86,57 @@ class AuthController {
      }
 }
 
+// Forgot Password
+class ForgotPasswordController {
+    constructor() {
+        this.modal = document.getElementById('forgotModal');
+        this.form = document.getElementById('forgotForm');
+        this.message = document.getElementById('forgotMessage');
+        this.btn = document.getElementById('btnForgot');
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    }
+
+    open() {
+        this.modal.classList.remove('hidden');
+        this.message.className = 'alert';
+        this.message.textContent = '';
+        this.form.reset();
+    }
+
+    close() {
+        this.modal.classList.add('hidden');
+    }
+
+    async handleSubmit(e) {
+        e.preventDefault();
+        this.btn.disabled = true;
+        this.btn.querySelector('span').textContent = 'Enviando...';
+
+        const username = document.getElementById('forgotUsername').value;
+
+        try {
+            await window.grindx.api.post('/auth/forgot-password', { username }, { auth: false });
+            this.message.className = 'alert alert-success';
+            this.message.textContent = 'Nova senha enviada para o e-mail cadastrado.';
+        } catch (err) {
+            const msg = window.grindx.components.LoadingSpinner.toUserMessage(err);
+            this.message.className = 'alert alert-error';
+            this.message.textContent = msg;
+        } finally {
+            this.btn.disabled = false;
+            this.btn.querySelector('span').textContent = 'Enviar Nova Senha';
+        }
+    }
+}
+
 // Bootstrap
 document.addEventListener('DOMContentLoaded', () => {
-    new AuthController();
+    const controller = new AuthController();
+    window.auth = controller;
+
+    const forgotCtrl = new ForgotPasswordController();
+    controller.openForgotModal = (e) => { e.preventDefault(); forgotCtrl.open(); };
+    controller.closeForgotModal = () => forgotCtrl.close();
 
     // Aplicar skin da última empresa usada
     const lastCompanyId = window.grindx?.storage?.get('last_skin_company_id');
