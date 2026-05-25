@@ -192,6 +192,7 @@ def seed_database():
                     "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.1)",
                     "--skin-shadow-modal": "0 20px 25px -5px rgba(0,0,0,0.2)",
                 },
+                logo_url="/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png",
                 company_name="GrindX",
                 copyright_text="© 2026 GrindX. Todos os direitos reservados.",
             )
@@ -199,6 +200,9 @@ def seed_database():
             session.flush()
             print(f"[OK] Skin padrão 'Padrão GrindX' criada (id={tema_padrao.id})")
         else:
+            if tema_padrao.logo_url != "/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png":
+                tema_padrao.logo_url = "/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png"
+                print("[UPDATE] logo_url atualizado na skin 'Padrão GrindX'")
             print("[SKIP] Skin padrão 'Padrão GrindX' já existe")
 
         # =========================================================
