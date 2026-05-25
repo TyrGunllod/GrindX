@@ -241,9 +241,7 @@ class StructureController extends window.grindx.controllers.BaseController {
 
         const method = this.currentModuloId ? 'PUT' : 'POST';
         const endpoint = this.currentModuloId ? `/portal/modulos/${this.currentModuloId}` : '/portal/modulos';
-        const params = this.currentModuloId
-            ? { nome, slug, url: moduleUrl, icone }
-            : { aba_id: abaId, nome, slug, url: moduleUrl, icone };
+        const params = { nome, slug, url: moduleUrl, icone, aba_id: abaId };
         try {
             const savedModule = await window.grindx.api.request(endpoint, { method, params });
             this.upsertModulo(savedModule, abaId);

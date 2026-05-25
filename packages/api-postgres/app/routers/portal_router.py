@@ -135,6 +135,7 @@ def atualizar_modulo(
     slug: str,
     url: str,
     icone: str,
+    aba_id: int,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
@@ -145,6 +146,7 @@ def atualizar_modulo(
     mod.slug = slug
     mod.url = url
     mod.icone = icone
+    mod.aba_id = aba_id
     db.commit()
     db.refresh(mod)
     return mod
