@@ -2,6 +2,27 @@
 
 <!-- version list -->
 
+## v1.9.0 (2026-05-25)
+
+### Bug Fixes
+
+- **auth**: Carregar perfil do usuario logado sem depender de role admin
+  ([`2574dc9`](https://github.com/TyrGunllod/GrindX/commit/2574dc987017b022efdd05401d94b2666fbc97bb))
+
+### Code Style
+
+- Format auth router and service with ruff
+  ([`fa66eea`](https://github.com/TyrGunllod/GrindX/commit/fa66eea72e1971a7eba5918d8c2ab1fd6d4e81ce))
+
+- **auth**: Organizar imports no router de autenticacao
+  ([`de07b5a`](https://github.com/TyrGunllod/GrindX/commit/de07b5a3546d300f517d8b401db46bd444a5c967))
+
+### Features
+
+- **auth**: Add change password endpoint and avatar redesign
+  ([`3b800e3`](https://github.com/TyrGunllod/GrindX/commit/3b800e3a1f59ba9ee6bbd32d883a8cabf5790e3f))
+
+
 ## v1.8.1 (2026-05-25)
 
 ### Bug Fixes
