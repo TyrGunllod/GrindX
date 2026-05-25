@@ -1,4 +1,4 @@
-<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-05-20 -->
+<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-05-25 -->
 
 # GrindX — Sistema de Gestão Integrado (Monorepo)
 
@@ -8,18 +8,7 @@ O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado e
 
 ## Status do Projeto
 
-**100% completo** — CI/CD, testes, documentação, todos os módulos e assets visuais implementados.
-
-| Área | Status |
-|------|--------|
-| Backend (FastAPI + PostgreSQL) | ✅ Completo |
-| Backend (FastAPI + SQL Server) | ✅ Completo |
-| Frontend Portal Modular | ✅ Completo |
-| Design System | ✅ Completo |
-| Testes (160+) | ✅ Completo |
-| Documentação | ✅ Completo |
-| CI/CD (GitHub Actions) | ✅ Completo |
-| Assets visuais (favicon, fontes) | ✅ Completo |
+Projeto em desenvolvimento ativo. Funcionalidades principais implementadas e funcionais (autenticação JWT + RBAC, CRUD de usuários e produtos, portal modular com shell, skin system). CI/CD, testes automatizados (160+) e documentação acompanham o desenvolvimento.
 
 ---
 
@@ -134,7 +123,10 @@ Portal de entrada: [`docs/README.md`](docs/README.md)
 - **Glassmorphism** com tokens CSS centralizados em `shared/core.css`
 - **`UIFactory`** (`shared/app.js`) para criação programática de componentes
 - **Componentes:** `FormField`, `DataTable`, `ReusableModal`, `LoadingSpinner`
-- **Dark/Light Mode** nativo
+- **Skin system:** tema visual customizável por empresa, aplicado via `skinLoader.js`
+- **Dark/Light mode** com persistência de tema
+- **Fluxo de forgot-password** com envio de email e troca de senha
+- **Utilitários:** `apiService.js` (chamadas centralizadas com auto-auth), `validation.js` (validação de formulários e URLs)
 - **WCAG** — acessibilidade como primeira camada
 
 ---
@@ -164,7 +156,7 @@ GrindX/
 │   │   │   ├── repositories/
 │   │   │   ├── routers/    # auth, health, portal, produto, usuario
 │   │   │   ├── schemas/
-│   │   │   └── services/
+│   │   │   └── services/   # email_service, produto_service, usuario_service
 │   │   ├── alembic/        # Migrações do banco
 │   │   ├── tests/          # 110 testes
 │   │   └── ...

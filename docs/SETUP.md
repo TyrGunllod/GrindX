@@ -1,4 +1,4 @@
-<!-- title: Guia de Instalação — GrindX | updated: 2026-05-20 -->
+<!-- title: Guia de Instalação — GrindX | updated: 2026-05-25 -->
 
 # Guia de Instalação — GrindX
 
@@ -48,6 +48,15 @@ DATABASE_URL=postgresql+psycopg://postgres:SUA_SENHA@localhost:5432/grindxdb
 SECRET_KEY=chave-secreta-forte-com-pelo-menos-32-caracteres
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_DAYS=7
+
+# SMTP/Email (opcional — necessário para "Esqueceu a senha?")
+SMTP_HOST=127.0.0.1
+SMTP_PORT=1025
+SMTP_USER=
+SMTP_PASS=
+SMTP_USE_TLS=false
+EMAIL_FROM=admin@grindx.local
+EMAIL_FROM_NAME=GrindX Administrador
 ```
 
 ```powershell
@@ -56,6 +65,9 @@ python manage_db.py upgrade head
 
 # Popular dados iniciais (usuários admin/operador)
 python seed.py
+
+# Aplicar migração mais recente (sub-abas)
+alembic upgrade head
 ```
 
 ---
@@ -136,6 +148,8 @@ Os testes usam SQLite in-memory — não precisam de PostgreSQL real rodando.
 
 ## 7. Migrações de Banco (Alembic)
 
+A migração mais recente é `005_add_aba_parent_id`, que adiciona suporte a sub-abas (aninhamento hierárquico de abas).
+
 ```powershell
 cd packages/api-postgres
 
@@ -179,6 +193,8 @@ make logs    # ver logs em tempo real
 ```
 
 4. Cadastrar a URL do módulo no painel de **Gestão de Estrutura** dentro do portal
+
+> As **Abas** agora suportam `parent_id` para aninhamento hierárquico (sub-abas). Ao cadastrar uma aba, é possível definir uma aba pai para criar sub-menus.
 
 Ver [`ARCHITECTURE_PORTAL.md`](../packages/frontend-webapp/ARCHITECTURE_PORTAL.md) para o guia completo.
 

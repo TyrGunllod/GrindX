@@ -1,4 +1,4 @@
-<!-- title: API Reference — GrindX | updated: 2026-05-20 -->
+<!-- title: API Reference — GrindX | updated: 2026-05-25 -->
 
 # API Reference — GrindX
 
@@ -9,11 +9,13 @@ Documentação interativa: `http://localhost:8002/v1/docs` (Swagger UI)
 
 ## Autenticação
 
-Todos os endpoints (exceto `/health` e `/v1/auth/token`) exigem o header:
+A maioria dos endpoints exige token JWT no header:
 
 ```
 Authorization: Bearer <access_token>
 ```
+
+**Endpoints públicos** (não exigem autenticação): `/health`, `/v1/auth/token`, `/v1/auth/forgot-password`.
 
 ### `POST /v1/auth/token`
 
@@ -51,6 +53,53 @@ Renova o access token usando o refresh token.
 { "access_token": "eyJ...", "token_type": "bearer" }
 ```
 
+### `GET /v1/auth/me`
+
+Retorna o perfil do usuário autenticado. Qualquer role pode acessar.
+
+**Response 200:**
+
+```json
+{
+  "id": 1,
+  "username": "admin",
+  "email": "admin@grindx.com",
+  "nome_completo": "Administrador",
+  "role": "admin",
+  "ativo": true,
+  "empresa_id": null
+}
+```
+
+### `POST /v1/auth/change-password`
+
+Altera a senha do usuário autenticado. Requer auth.
+
+**Body:**
+
+```json
+{
+  "current_password": "senha123",
+  "new_password": "novaSenha456"
+}
+```
+
+**Response 200:** `{ "message": "Senha alterada com sucesso" }`
+
+### `POST /v1/auth/forgot-password`
+
+Gera uma senha temporária e envia por e-mail. Não requer auth.
+
+**Body:**
+
+```json
+{ "username": "admin" }
+```
+
+**Response 200:** `{ "message": "Senha temporária enviada para o e-mail cadastrado" }`
+
+**Response 503:** Retornado se o envio de e-mail falhar.
+
 ---
 
 ## Health Check
@@ -83,7 +132,8 @@ Lista todos os usuários. Requer perfil `admin`.
     "email": "admin@grindx.com",
     "nome_completo": "Administrador",
     "role": "admin",
-    "ativo": true
+    "ativo": true,
+    "empresa_id": null
   }
 ]
 ```
@@ -174,6 +224,20 @@ Remove produto. Requer `admin`.
 
 ---
 
+## Códigos de Erro Padrão
+
+| Código | Significado |
+|--------|-------------|
+| 400 | Dados inválidos no body |
+| 401 | Token ausente ou expirado |
+| 403 | Permissão insuficiente para o perfil |
+| 404 | Recurso não encontrado |
+| 422 | Falha de validação Pydantic |
+| 429 | Rate limit excedido (100 req/min por padrão) |
+| 500 | Erro interno — consultar logs estruturados |
+
+---
+
 ## Portal (Estrutura de Menu)
 
 Esses endpoints gerenciam a árvore de navegação dinâmica do portal frontend.
@@ -191,13 +255,17 @@ Retorna a estrutura completa de abas e módulos para o menu lateral.
     "nome": "Administração",
     "icone": "settings",
     "ordem": 1,
+    "parent_id": null,
+    "children": [],
     "modulos": [
       {
         "id": 1,
         "nome": "Usuários",
         "url": "/modules/users/index.html",
         "icone": "users",
-        "ordem": 1
+        "ordem": 1,
+        "role_minima": "admin",
+        "slug": "usuarios"
       }
     ]
   }
@@ -211,12 +279,30 @@ Cria uma nova aba no menu. Requer `admin`.
 **Body:**
 
 ```json
-{ "nome": "Logística", "icone": "truck", "ordem": 2 }
+{
+  "nome": "Logística",
+  "icone": "truck",
+  "ordem": 2,
+  "parent_id": null
+}
 ```
+
+**Response 201:** Objeto da aba criada.
 
 ### `PUT /v1/portal/abas/{id}`
 
 Atualiza uma aba. Requer `admin`.
+
+**Body:**
+
+```json
+{
+  "nome": "Logística",
+  "icone": "truck",
+  "ordem": 2,
+  "parent_id": null
+}
+```
 
 ### `DELETE /v1/portal/abas/{id}`
 
@@ -234,13 +320,30 @@ Cria um módulo dentro de uma aba. Requer `admin`.
   "nome": "Estoque",
   "url": "/modules/estoque/index.html",
   "icone": "package",
-  "ordem": 1
+  "ordem": 1,
+  "role_minima": "operador",
+  "slug": "estoque"
 }
 ```
+
+**Response 201:** Objeto do módulo criado.
 
 ### `PUT /v1/portal/modulos/{id}`
 
 Atualiza um módulo. Requer `admin`.
+
+**Body:**
+
+```json
+{
+  "nome": "Estoque",
+  "url": "/modules/estoque/index.html",
+  "icone": "package",
+  "ordem": 1,
+  "role_minima": "operador",
+  "slug": "estoque"
+}
+```
 
 ### `DELETE /v1/portal/modulos/{id}`
 
@@ -337,6 +440,10 @@ Lista os templates de skin pré-configurados disponíveis.
 
 Upload de logo para o tema (multipart/form-data). Tipos aceitos: jpeg, png, svg, gif. Máximo 5MB.
 
+### `POST /v1/themes/fonts/upload`
+
+Upload de arquivos de fonte (multipart/form-data, ZIP contendo arquivos .ttf/.woff/.woff2). Extrai o nome da família tipográfica via opentype.js e salva como arquivo no servidor.
+
 ### `GET /v1/themes/{id}/history`
 
 Retorna o histórico de alterações de um tema.
@@ -354,35 +461,3 @@ Cria um tema a partir de um template existente.
 ```
 
 **Response 201:** Objeto do tema criado.
-
----
-
-## API SQL Server (porta 8001)
-
-Base URL local: `http://localhost:8001/v1`
-
-Aceita apenas `GET`. Tokens JWT emitidos pela `api-postgres` são válidos aqui desde que `SECRET_KEY` seja idêntica nas duas APIs.
-
-### `GET /health`
-
-```json
-{ "status": "ok", "service": "GrindX API SQL Server" }
-```
-
-### `GET /v1/clientes/`
-
-Lista registros de clientes do SQL Server. Requer token válido.
-
----
-
-## Códigos de Erro Padrão
-
-| Código | Significado |
-|--------|-------------|
-| 400 | Dados inválidos no body |
-| 401 | Token ausente ou expirado |
-| 403 | Permissão insuficiente para o perfil |
-| 404 | Recurso não encontrado |
-| 422 | Falha de validação Pydantic |
-| 429 | Rate limit excedido (100 req/min por padrão) |
-| 500 | Erro interno — consultar logs estruturados |

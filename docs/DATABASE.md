@@ -1,4 +1,4 @@
-<!-- title: Banco de Dados — GrindX | updated: 2026-05-20 -->
+<!-- title: Banco de Dados — GrindX | updated: 2026-05-25 -->
 
 # Banco de Dados — GrindX
 
@@ -27,8 +27,9 @@ Gerencia autenticação e controle de acesso.
 | `email` | String (único) | E-mail |
 | `nome_completo` | String | Nome exibido |
 | `senha_hash` | String | Hash bcrypt |
-| `role` | Enum | `admin` ou `operador` |
+| `role` | Enum | `admin`, `operador` ou `leitura` |
 | `ativo` | Boolean | Se pode fazer login |
+| `empresa_id` | Integer FK (nullable) | Referência à Empresa |
 | `created_at` | DateTime | Data de criação |
 
 ### Produto
@@ -55,10 +56,13 @@ Gerencia a árvore de navegação dinâmica do frontend.
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `id` | Integer PK | Identificador |
+| `parent_id` | Integer FK self-ref (nullable) | Aba pai para hierarquia aninhada |
 | `nome` | String | Nome exibido no menu |
 | `icone` | String | Nome do ícone |
 | `ordem` | Integer | Posição no menu |
 | `ativo` | Boolean | Se aparece no menu |
+
+Relationship: `parent` → Aba, `children` → List[Aba]
 
 **Modulo:**
 
@@ -67,9 +71,11 @@ Gerencia a árvore de navegação dinâmica do frontend.
 | `id` | Integer PK | Identificador |
 | `aba_id` | Integer FK | Referência à Aba |
 | `nome` | String | Nome exibido |
+| `slug` | String | Identificador amigável para URL |
 | `url` | String | Caminho relativo do HTML |
 | `icone` | String | Nome do ícone |
 | `ordem` | Integer | Posição dentro da aba |
+| `role_minima` | String | Role mínima para acesso (admin, operador, leitura) |
 | `ativo` | Boolean | Se aparece no menu |
 
 ### Empresa
@@ -81,6 +87,7 @@ Representa uma empresa/organização no sistema.
 | `id` | Integer PK | Identificador |
 | `nome` | String | Nome da empresa |
 | `cnpj` | String (único) | CNPJ formatado |
+| `dominio` | String (único, nullable) | Domínio/subdomínio para multi-tenant |
 | `ativo` | Boolean | Se está ativa |
 | `created_at` | DateTime | Data de criação |
 
@@ -166,6 +173,14 @@ alembic downgrade base
 
 As migrações ficam em `packages/api-postgres/alembic/versions/`.
 
+| Arquivo | Descrição |
+|---------|-----------|
+| `001_initial.py` | Criação inicial dos modelos |
+| `002_add_company_theme.py` | Adiciona CompanyTheme e ThemeHistory |
+| `003_add_empresa_model.py` | Adiciona modelo Empresa |
+| `004_add_usuario_empresa.py` | Adiciona empresa_id em Usuario |
+| `005_add_aba_parent_id.py` | Adiciona parent_id em portal_abas |
+
 ---
 
 ## Dados Iniciais (seed)
@@ -177,9 +192,12 @@ python seed.py
 
 Cria:
 
-- Empresa `GrindX` (padrão do sistema)
-- Usuário `admin` / `admin123` com role `admin`
-- Usuário `operador` / `operador123` com role `operador`
+- Skin "Padrão GrindX" com `logo_url` definido para um logo padrão
+- Empresa `GrindX` com dominio `grindx.local`
+- Usuário `admin` / `admin123` com role `admin` — vinculado à GrindX
+- Usuário `operador` / `operador123` com role `operador` — vinculado à GrindX
+- Usuário `leitura` / `leitura123` com role `leitura` — vinculado à GrindX
+- Usuários sem empresa são vinculados automaticamente à GrindX
 - Estrutura inicial de abas e módulos no portal
 
 ---

@@ -1,4 +1,4 @@
-<!-- title: Segurança — GrindX | updated: 2026-05-20 -->
+<!-- title: Segurança — GrindX | updated: 2026-05-25 -->
 
 # Segurança — GrindX
 
@@ -15,6 +15,10 @@ O GrindX usa JSON Web Tokens (JWT) com par de tokens de curta e longa duração.
 3. Retorna `access_token` (expira em 30 min) e `refresh_token` (expira em 7 dias)
 4. Cliente inclui `Authorization: Bearer <access_token>` em todas as requisições
 5. Quando o access token expira, cliente usa `POST /v1/auth/refresh` com o refresh token
+6. Se esquecer a senha, usa `POST /v1/auth/forgot-password` com o username
+7. Sistema gera senha temporária, envia por email e só altera o hash após confirmação de envio
+8. Usuário pode alterar a própria senha via `POST /v1/auth/change-password`
+9. Qualquer perfil pode obter o próprio perfil via `GET /v1/auth/me` (diferente de `GET /usuarios/`, que é admin-only)
 
 ### Validação Cruzada
 
@@ -51,6 +55,8 @@ O acesso é controlado por perfis definidos no campo `role` do model `Usuario`.
 | `admin` | Acesso total — CRUD em todos os recursos |
 | `operador` | Leitura e criação — sem delete e sem gestão de usuários |
 
+> `POST /v1/auth/forgot-password` é público (sem autenticação). `POST /v1/auth/change-password` exige autenticação atual.
+
 ### Matriz de Permissões
 
 | Recurso | admin | operador |
@@ -65,6 +71,8 @@ O acesso é controlado por perfis definidos no campo `role` do model `Usuario`.
 | `DELETE /produtos/{id}` | ✅ | ❌ |
 | `GET /portal/menu` | ✅ | ✅ |
 | `POST/PUT/DELETE /portal/*` | ✅ | ❌ |
+| `GET /v1/auth/me` | ✅ | ✅ |
+| `POST /v1/auth/change-password` | ✅ | ✅ |
 
 A implementação fica em `packages/shared/security/` e `packages/api-postgres/app/auth/dependencies.py`.
 

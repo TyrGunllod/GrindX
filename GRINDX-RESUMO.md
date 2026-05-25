@@ -1,4 +1,4 @@
-<!-- title: GrindX — Resumo Executivo | updated: 2026-05-20 -->
+<!-- title: GrindX — Resumo Executivo | updated: 2026-05-25 -->
 
 # GrindX — Resumo Executivo
 
@@ -6,26 +6,22 @@
 
 ## Status Atual
 
-**100% completo.**
-
-| Área | Status |
-|------|--------|
-| Backend `api-postgres` (FastAPI + PostgreSQL) | ✅ |
-| Backend `api-sqlserver` (FastAPI + SQL Server) | ✅ |
-| Frontend Portal Modular | ✅ |
-| Design System (Glassmorphism + UIFactory) | ✅ |
-| Módulos: `home`, `users`, `structure`, `admin-skins` | ✅ |
-| Autenticação JWT + RBAC | ✅ |
-| Suite de testes (160+) | ✅ |
-| Documentação técnica completa | ✅ |
-| CI/CD — GitHub Actions | ✅ |
-| Assets visuais (favicon, fontes) | ✅ |
+Projeto em desenvolvimento ativo — funcionalidades principais implementadas e rodando.
 
 ---
 
 ## Arquitetura em Uma Linha
 
 Monorepo Python + Vanilla JS. Dois backends FastAPI independentes compartilhando JWT. Frontend Shell que carrega micro-módulos via iframe isolado. Menu de navegação dinâmico gerenciado pelo banco.
+
+---
+
+## Funcionalidades
+
+- **Sub-abas (nested menu):** navegação hierárquica dinâmica gerenciada pelo banco
+- **Forgot-password:** fluxo completo de recuperação de senha com envio de email
+- **Skin system:** temas visuais customizáveis por empresa com persistência
+- **Troca de senha:** alteração de senha pelo próprio usuário logado
 
 ---
 
@@ -59,13 +55,6 @@ python -m http.server 5500 --directory packages/frontend-webapp
 make test-all    # todos os pacotes
 pytest           # testes da raiz
 ```
-
----
-
-## O Que Ainda Falta
-
-1. Trocar `SECRET_KEY` para valor gerado aleatoriamente antes do deploy em produção
-2. Decidir próximo módulo do ERP (produtos, estoque, vendas)
 
 ---
 

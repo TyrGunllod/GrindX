@@ -1,4 +1,4 @@
-<!-- title: Skills — GrindX | updated: 2026-05-20 -->
+<!-- title: Skills — GrindX | updated: 2026-05-25 -->
 
 # GrindX — Skills do Assistente
 

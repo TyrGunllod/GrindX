@@ -1,4 +1,4 @@
-<!-- title: Deploy — GrindX | updated: 2026-05-20 -->
+<!-- title: Deploy — GrindX | updated: 2026-05-25 -->
 
 # Deploy — GrindX
 
@@ -64,6 +64,15 @@ SECRET_KEY=<chave-forte-aleatória-32-chars-mínimo>
 DEBUG=false
 LOG_LEVEL=INFO
 CORS_ORIGINS=["https://seu-dominio.com"]
+
+# SMTP (para recuperação de senha)
+SMTP_HOST=smtp.seuprovedor.com
+SMTP_PORT=587
+SMTP_USER=seu@email.com
+SMTP_PASS=senha_real
+SMTP_USE_TLS=true
+EMAIL_FROM=noreply@seudominio.com
+EMAIL_FROM_NAME=GrindX
 ```
 
 **`api-sqlserver`:**

@@ -8,7 +8,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 
 ## Status do Projeto
 
-**100% completo.** Backend, frontend, testes, CI/CD, assets visuais e sistema de skins implementados.
+**Em desenvolvimento ativo.** Backend, frontend, testes, CI/CD, assets visuais e sistema de skins implementados.
 
 ---
 
@@ -36,6 +36,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 | [README.md](../README.md) | Visão geral, arquitetura e como rodar |
 | [MAPA-ARQUIVOS.md](../MAPA-ARQUIVOS.md) | Inventário completo de arquivos |
 | [GRINDX-RESUMO.md](../GRINDX-RESUMO.md) | Resumo executivo e acesso rápido |
+| [CHANGELOG.md](../CHANGELOG.md) | Histórico de versões e releases |
 
 ### Pacotes
 
