@@ -149,17 +149,22 @@ class AuthService:
             username=usuario.username,
         )
 
-    def forgot_password(self, username: str) -> str:
+    def forgot_password(self, username: str) -> tuple[str, str, str]:
         usuario = self.usuario_repo.buscar_por_username(username)
         if not usuario:
             raise NotFoundError(resource="Usuário", identifier=username)
 
         temp_password = token_hex(6)
+        logger.info("senha_recuperada", usuario_id=usuario.id, username=username)
+        return usuario.email, usuario.nome_completo, temp_password
+
+    def apply_temp_password(self, username: str, temp_password: str) -> None:
+        usuario = self.usuario_repo.buscar_por_username(username)
+        if not usuario:
+            raise NotFoundError(resource="Usuário", identifier=username)
+
         usuario.senha_hash = gerar_hash_senha(temp_password)
         self.usuario_repo.atualizar(usuario, {"senha_hash": usuario.senha_hash})
-
-        logger.info("senha_recuperada", usuario_id=usuario.id, username=username)
-        return temp_password
 
     def _gerar_tokens(self, usuario: Usuario) -> TokenResponse:
         """Gera par de tokens JWT (access + refresh) para um usuário.

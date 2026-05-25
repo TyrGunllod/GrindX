@@ -8,7 +8,7 @@ Centralizado na api-postgres — ambas as APIs validam tokens stateless.
 from datetime import datetime, timezone
 
 import structlog
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from shared.schemas.auth import (
     RefreshTokenRequest,
     TokenPayload,
@@ -135,23 +135,30 @@ def forgot_password(
     auth_service: AuthService = Depends(get_auth_service),
     db: Session = Depends(get_db),
 ):
-    temp_password = auth_service.forgot_password(dados.username)
+    user_email, user_name, temp_password = auth_service.forgot_password(dados.username)
 
-    usuario = auth_service.usuario_repo.buscar_por_username(dados.username)
     email_service = EmailService()
-    email_service.send(
-        to_email=usuario.email,
-        subject="Recuperação de Senha — GrindX",
-        body=(
-            f"Olá {usuario.nome_completo},\n\n"
-            f"Sua nova senha de acesso ao GrindX é:\n\n"
-            f"   {temp_password}\n\n"
-            f"Recomendamos que você altere esta senha após o login.\n\n"
-            f"Atenciosamente,\n"
-            f"Administração GrindX"
-        ),
-    )
+    try:
+        email_service.send(
+            to_email=user_email,
+            subject="Recuperação de Senha — GrindX",
+            body=(
+                f"Olá {user_name},\n\n"
+                f"Sua nova senha de acesso ao GrindX é:\n\n"
+                f"   {temp_password}\n\n"
+                f"Recomendamos que você altere esta senha após o login.\n\n"
+                f"Atenciosamente,\n"
+                f"Administração GrindX"
+            ),
+        )
+    except Exception:
+        logger.error("falha_envio_email", username=dados.username, email=user_email)
+        raise HTTPException(
+            status_code=503,
+            detail="Não foi possível enviar o e-mail. Tente novamente mais tarde.",
+        )
 
+    auth_service.apply_temp_password(dados.username, temp_password)
     return {"message": "Nova senha enviada para o e-mail cadastrado."}
 
 

@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # --- SMTP / Email ---
-    SMTP_HOST: str = "0.0.0.0"
+    SMTP_HOST: str = "127.0.0.1"
     SMTP_PORT: int = 2525
     SMTP_USER: str = ""
     SMTP_PASS: str = ""
