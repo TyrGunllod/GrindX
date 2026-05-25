@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.11.0 (2026-05-25)
+
+### Code Style
+
+- **seed**: Format with ruff
+  ([`fa5eda9`](https://github.com/TyrGunllod/GrindX/commit/fa5eda9498aca322b2e17329c6953a698d2d23d7))
+
+### Features
+
+- **seed**: Add logo_url to GrindX default theme
+  ([`789cb7a`](https://github.com/TyrGunllod/GrindX/commit/789cb7ac5f6a4283c3e3928753addcd7f5e95446))
+
+
 ## v1.10.1 (2026-05-25)
 
 ### Bug Fixes
