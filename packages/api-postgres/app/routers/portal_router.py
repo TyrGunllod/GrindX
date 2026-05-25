@@ -109,6 +109,12 @@ def atualizar_aba(
         raise HTTPException(404, "Aba não encontrada")
     if parent_id is not None and parent_id == aba_id:
         raise HTTPException(422, "Uma aba não pode ser sub-aba de si mesma")
+    if parent_id is not None:
+        cur = db.query(Aba).filter(Aba.id == parent_id).first()
+        while cur and cur.parent_id:
+            if cur.parent_id == aba_id:
+                raise HTTPException(422, "Ciclo detectado na hierarquia de abas")
+            cur = db.query(Aba).filter(Aba.id == cur.parent_id).first()
     aba.nome = nome
     aba.icone = icone
     aba.ordem = ordem
