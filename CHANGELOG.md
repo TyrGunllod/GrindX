@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.8.1 (2026-05-25)
+
+### Bug Fixes
+
+- **structure**: Aba_id nao era enviado ao editar modulo
+  ([`51bb341`](https://github.com/TyrGunllod/GrindX/commit/51bb341198d61aa3cc1cc7330f6b2c38e8d90d32))
+
+
 ## v1.8.0 (2026-05-25)
 
 ### Bug Fixes
