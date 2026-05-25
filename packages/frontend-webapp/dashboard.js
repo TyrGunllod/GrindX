@@ -109,17 +109,32 @@ class DashboardController extends window.grindx.controllers.BaseController {
     }
 
     renderSidebar(abas) {
-        this.mainNav.innerHTML = abas.map(aba => `
-            <div class="nav-group collapsed" id="group-${aba.id}">
-                <div class="nav-title" onclick="window.dashboard.toggleGroup('${aba.id}')">
+        this.mainNav.innerHTML = abas.map(aba => this._renderNavGroup(aba)).join('');
+        this.moduleViewport = document.getElementById('moduleViewport');
+    }
+
+    _renderNavGroup(aba) {
+        const hasChildren = aba.children && aba.children.length > 0;
+        const modulesHtml = (aba.modulos || []).map(mod => {
+            if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
+            return `
+                <a href="#" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}" role="button">
+                    <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
+                </a>
+            `;
+        }).join('');
+
+        const childrenHtml = hasChildren ? aba.children.map(child => `
+            <div class="nav-subgroup" id="subgroup-${child.id}">
+                <div class="nav-subtitle" onclick="window.dashboard.toggleSubgroup('${child.id}')">
                     <div class="nav-title-label">
-                        <i class="${aba.icone || 'fas fa-folder'} icon-lg"></i>
-                        <span>${aba.nome}</span>
+                        <i class="${child.icone || 'fas fa-folder'} icon-sm"></i>
+                        <span>${child.nome}</span>
                     </div>
                     <i class="fas fa-chevron-down chevron"></i>
                 </div>
                 <div class="nav-links-container">
-                    ${aba.modulos.map(mod => {
+                    ${(child.modulos || []).map(mod => {
                         if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
                         return `
                             <a href="#" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}" role="button">
@@ -129,9 +144,23 @@ class DashboardController extends window.grindx.controllers.BaseController {
                     }).join('')}
                 </div>
             </div>
-        `).join('');
+        `).join('') : '';
 
-        this.moduleViewport = document.getElementById('moduleViewport');
+        return `
+            <div class="nav-group collapsed" id="group-${aba.id}">
+                <div class="nav-title" onclick="window.dashboard.toggleGroup('${aba.id}')">
+                    <div class="nav-title-label">
+                        <i class="${aba.icone || 'fas fa-folder'} icon-lg"></i>
+                        <span>${aba.nome}</span>
+                    </div>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div class="nav-links-container">
+                    ${childrenHtml}
+                    ${modulesHtml}
+                </div>
+            </div>
+        `;
     }
 
     toggleGroup(abaId) {
@@ -139,6 +168,10 @@ class DashboardController extends window.grindx.controllers.BaseController {
         if (group) group.classList.toggle('collapsed');
     }
 
+    toggleSubgroup(abaId) {
+        const group = document.getElementById(`subgroup-${abaId}`);
+        if (group) group.classList.toggle('collapsed');
+    }
 
     handleNavigation(e) {
         const link = e.target.closest('.nav-link');
