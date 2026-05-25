@@ -106,10 +106,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             logoFile.addEventListener('change', (e) => this.handleLogoUpload(e));
         }
 
-        // Close modals on overlay click
-        document.getElementById('skinModal')?.addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) this.closeModal();
-        });
         document.getElementById('templateModal')?.addEventListener('click', (e) => {
             if (e.target === e.currentTarget) this.closeTemplatePicker();
         });
@@ -207,7 +203,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         }).join('');
 
         grid.innerHTML = cards + `
-            <div class="skin-card add-skin-card" style="border-style: dashed; cursor: default;">
+            <div class="skin-card add-skin-card" style="border-style: solid; cursor: default;">
                 <div style="display: flex; flex-direction: column; gap: 0.75rem; padding: 0.5rem 0;">
                     <div class="add-skin-option" onclick="window.adminSkins.openNewSkinModal()" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; cursor: pointer; border-radius: var(--skin-radius-md, 0.5rem); transition: background 0.2s; color: var(--skin-text-muted);">
                         <i class="fas fa-plus" style="font-size: 1.25rem; width: 1.5rem; text-align: center;"></i>

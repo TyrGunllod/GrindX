@@ -101,5 +101,11 @@
 .aba-card[style*="margin-left"] {
     background: var(--bg-main);
     border-radius: 0.75rem;
-    padding: var(--space-3);
+    padding: var(--space-4);
+}
+
+.structure-modal {
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
 }
