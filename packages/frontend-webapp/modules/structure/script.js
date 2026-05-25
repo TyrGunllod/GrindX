@@ -56,6 +56,11 @@ class StructureController extends window.grindx.controllers.BaseController {
             id: 'abaIcone',
             label: 'Ícone da Aba'
         }));
+        this.abaForm.appendChild(window.grindx.components.FormField.createSelect({
+            id: 'abaParentId',
+            label: 'Sub-aba de (opcional)',
+            options: []
+        }));
 
         this.moduloForm.innerHTML = '';
         this.moduloForm.appendChild(window.grindx.components.FormField.createSelect({
@@ -102,6 +107,7 @@ class StructureController extends window.grindx.controllers.BaseController {
                 );
             }
             this.updateAbaSelect(this.data || []);
+            this.updateAbaParentSelect(this.data || []);
         } catch (err) {
             console.error('Falha ao carregar estrutura:', err);
             window.grindx.components.LoadingSpinner.setContainerState(
@@ -115,17 +121,23 @@ class StructureController extends window.grindx.controllers.BaseController {
     }
 
     renderStructure(abas) {
-        this.container.innerHTML = abas.map(aba => `
-            <div class="aba-card">
+        this.container.innerHTML = abas.map(aba => this._renderAbaCard(aba, 0)).join('');
+    }
+
+    _renderAbaCard(aba, depth) {
+        const indent = depth * 16;
+        const hasChildren = aba.children && aba.children.length > 0;
+        return `
+            <div class="aba-card" style="margin-left: ${indent}px${depth > 0 ? '; border-left: 3px solid var(--primary)' : ''}">
                 <header class="aba-header">
                     <h3><i class="${aba.icone}"></i> ${aba.nome}</h3>
                     <div class="actions-group">
-                        <button class="btn-icon" data-action="edit-aba" data-id="${aba.id}" title="Editar Aba"><i class="fas fa-edit"></i></button>
-                        ${this.isProtectedAba(aba.nome) 
-                            ? '' 
-                            : `<button class="btn-icon text-danger" data-action="delete-aba" data-id="${aba.id}" title="Excluir Aba"><i class="fas fa-trash"></i></button>`}
+                        <button class="btn-icon" data-action="edit-aba" data-id="${aba.id}" title="Editar"><i class="fas fa-edit"></i></button>
+                        ${this.isProtectedAba(aba.nome) ? '' :
+                            `<button class="btn-icon text-danger" data-action="delete-aba" data-id="${aba.id}" title="Excluir"><i class="fas fa-trash"></i></button>`}
                     </div>
                 </header>
+                ${hasChildren ? `<div class="sub-abas-section">${aba.children.map(child => this._renderAbaCard(child, depth + 1)).join('')}</div>` : ''}
                 <div class="modulos-list">
                     ${aba.modulos.map(mod => `
                         <div class="modulo-item">
@@ -135,15 +147,14 @@ class StructureController extends window.grindx.controllers.BaseController {
                             </div>
                             <div class="actions-group">
                                 <button class="btn-icon" data-action="edit-mod" data-id="${mod.id}" data-aba-id="${aba.id}"><i class="fas fa-pen"></i></button>
-                                ${this.isProtectedModule(mod.nome) || this.isProtectedAba(aba.nome)
-                                    ? '' 
-                                    : `<button class="btn-icon text-danger" data-action="delete-mod" data-id="${mod.id}"><i class="fas fa-trash"></i></button>`}
+                                ${this.isProtectedModule(mod.nome) || this.isProtectedAba(aba.nome) ? '' :
+                                    `<button class="btn-icon text-danger" data-action="delete-mod" data-id="${mod.id}"><i class="fas fa-trash"></i></button>`}
                             </div>
                         </div>
                     `).join('')}
                 </div>
             </div>
-        `).join('');
+        `;
     }
 
     handleActionClick(e) {
@@ -160,13 +171,25 @@ class StructureController extends window.grindx.controllers.BaseController {
     // --- Lógica de Abas ---
 
     editAba(id) {
-        const aba = this.data.find(a => a.id == id);
+        const findAba = (list) => {
+            for (const a of list) {
+                if (a.id == id) return a;
+                if (a.children) {
+                    const found = findAba(a.children);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        const aba = findAba(this.data);
+        if (!aba) return;
         this.currentAbaId = id;
         document.getElementById('abaNome').value = aba.nome;
         const iconeSelect = document.getElementById('abaIcone');
         iconeSelect.value = aba.icone || 'fas fa-folder';
         iconeSelect.dispatchEvent(new Event('change'));
         document.getElementById('abaOrdem').value = aba.ordem;
+        document.getElementById('abaParentId').value = aba.parent_id || '';
         this.openAbaModal('Editar Aba');
     }
 
@@ -176,14 +199,15 @@ class StructureController extends window.grindx.controllers.BaseController {
         const nome = document.getElementById('abaNome').value;
         const icone = document.getElementById('abaIcone').value;
         const ordem = document.getElementById('abaOrdem').value;
-        
+        const parent_id = document.getElementById('abaParentId').value || null;
+
         const method = this.currentAbaId ? 'PUT' : 'POST';
         const endpoint = this.currentAbaId ? `/portal/abas/${this.currentAbaId}` : '/portal/abas';
+        const params = { nome, icone, ordem };
+        if (parent_id) params.parent_id = parent_id;
         try {
-            const savedAba = await window.grindx.api.request(endpoint, { method, params: { nome, icone, ordem } });
-            this.upsertAba(savedAba);
-            this.renderStructure(this.data);
-            this.updateAbaSelect(this.data);
+            await window.grindx.api.request(endpoint, { method, params });
+            await this.loadStructure();
             this.toastSuccess('Aba salva com sucesso.');
             this.closeModals();
             window.parent.postMessage('sidebar-update', '*');
@@ -193,7 +217,17 @@ class StructureController extends window.grindx.controllers.BaseController {
     }
 
     async deleteAba(id) {
-        const aba = this.data.find(a => a.id == id);
+        const findAba = (list) => {
+            for (const a of list) {
+                if (a.id == id) return a;
+                if (a.children) {
+                    const found = findAba(a.children);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        const aba = findAba(this.data);
         if (aba && this.isProtectedAba(aba.nome)) {
             window.grindx.components.LoadingSpinner.toast(
                 `A aba "${aba.nome}" é essencial para o sistema e não pode ser excluída.`,
@@ -204,9 +238,7 @@ class StructureController extends window.grindx.controllers.BaseController {
         if (!confirm('Excluir esta aba e todos os seus módulos?')) return;
         try {
             await window.grindx.api.delete(`/portal/abas/${id}`);
-            this.data = this.data.filter(aba => String(aba.id) !== String(id));
-            this.renderStructureOrEmpty();
-            this.updateAbaSelect(this.data);
+            await this.loadStructure();
             this.toastSuccess('Aba excluída com sucesso.');
             window.parent.postMessage('sidebar-update', '*');
         } catch (err) {
@@ -217,8 +249,20 @@ class StructureController extends window.grindx.controllers.BaseController {
     // --- Lógica de Módulos ---
 
     editModulo(id, abaId) {
-        const aba = this.data.find(a => a.id == abaId);
+        const findAba = (list) => {
+            for (const a of list) {
+                if (a.id == abaId) return a;
+                if (a.children) {
+                    const found = findAba(a.children);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        const aba = findAba(this.data);
+        if (!aba) return;
         const mod = aba.modulos.find(m => m.id == id);
+        if (!mod) return;
         this.currentModuloId = id;
         document.getElementById('modAbaId').value = abaId;
         document.getElementById('modNome').value = mod.nome;
@@ -243,9 +287,8 @@ class StructureController extends window.grindx.controllers.BaseController {
         const endpoint = this.currentModuloId ? `/portal/modulos/${this.currentModuloId}` : '/portal/modulos';
         const params = { nome, slug, url: moduleUrl, icone, aba_id: abaId };
         try {
-            const savedModule = await window.grindx.api.request(endpoint, { method, params });
-            this.upsertModulo(savedModule, abaId);
-            this.renderStructure(this.data);
+            await window.grindx.api.request(endpoint, { method, params });
+            await this.loadStructure();
             this.toastSuccess('Módulo salvo com sucesso.');
             this.closeModals();
             window.parent.postMessage('sidebar-update', '*');
@@ -255,8 +298,18 @@ class StructureController extends window.grindx.controllers.BaseController {
     }
 
     async deleteModulo(id) {
-        const aba = this.data?.find(a => a.modulos.some(m => m.id == id));
-        const mod = aba?.modulos.find(m => m.id == id);
+        const findAbaWithMod = (list) => {
+            for (const a of list) {
+                if (a.modulos && a.modulos.some(m => m.id == id)) return a;
+                if (a.children) {
+                    const found = findAbaWithMod(a.children);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        const aba = findAbaWithMod(this.data);
+        const mod = aba?.modulos?.find(m => m.id == id);
         if (mod) {
             if (this.isProtectedModule(mod.nome) || (aba && this.isProtectedAba(aba.nome))) {
                 window.grindx.components.LoadingSpinner.toast(
@@ -269,11 +322,7 @@ class StructureController extends window.grindx.controllers.BaseController {
         if (!confirm('Excluir este módulo?')) return;
         try {
             await window.grindx.api.delete(`/portal/modulos/${id}`);
-            this.data = this.data.map(aba => ({
-                ...aba,
-                modulos: aba.modulos.filter(module => String(module.id) !== String(id))
-            }));
-            this.renderStructure(this.data);
+            await this.loadStructure();
             this.toastSuccess('Módulo excluído com sucesso.');
             window.parent.postMessage('sidebar-update', '*');
         } catch (err) {
@@ -283,7 +332,27 @@ class StructureController extends window.grindx.controllers.BaseController {
 
     updateAbaSelect(abas) {
         const select = document.getElementById('modAbaId');
-        if (select) select.innerHTML = abas.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
+        if (!select) return;
+        const buildOptions = (list, depth = 0) => {
+            return list.map(a => {
+                const prefix = '-- '.repeat(depth);
+                let html = `<option value="${a.id}">${prefix}${a.nome}</option>`;
+                if (a.children && a.children.length) {
+                    html += buildOptions(a.children, depth + 1);
+                }
+                return html;
+            }).join('');
+        };
+        select.innerHTML = buildOptions(abas || []);
+    }
+
+    updateAbaParentSelect(abas) {
+        const select = document.getElementById('abaParentId');
+        if (!select) return;
+        select.innerHTML = '<option value="">Nenhuma (aba raiz)</option>' +
+            (abas || []).filter(a => !a.parent_id).map(a =>
+                `<option value="${a.id}">${a.nome}</option>`
+            ).join('');
     }
 
     isProtectedAba(nome) {
@@ -292,37 +361,6 @@ class StructureController extends window.grindx.controllers.BaseController {
 
     isProtectedModule(nome) {
         return window.grindx.constants.PROTECTED_MODULE_NAMES.includes(nome.toLowerCase());
-    }
-
-    upsertAba(aba) {
-        if (!aba?.id) return;
-
-        const normalizedAba = { ...aba, modulos: aba.modulos || [] };
-        const index = this.data.findIndex(item => String(item.id) === String(aba.id));
-
-        if (index >= 0) {
-            normalizedAba.modulos = this.data[index].modulos || [];
-            this.data[index] = normalizedAba;
-        } else {
-            this.data = [...this.data, normalizedAba];
-        }
-
-        this.data.sort((first, second) => first.ordem - second.ordem);
-    }
-
-    upsertModulo(module, fallbackAbaId) {
-        if (!module?.id) return;
-
-        const targetAbaId = module.aba_id || fallbackAbaId;
-        this.data = this.data.map(aba => ({
-            ...aba,
-            modulos: aba.modulos.filter(item => String(item.id) !== String(module.id))
-        }));
-
-        const targetAba = this.data.find(aba => String(aba.id) === String(targetAbaId));
-        if (targetAba) {
-            targetAba.modulos = [...targetAba.modulos, module];
-        }
     }
 
     renderStructureOrEmpty() {
@@ -382,6 +420,8 @@ class StructureController extends window.grindx.controllers.BaseController {
         this.moduloForm.reset();
         this.currentAbaId = null;
         this.currentModuloId = null;
+        const parentSelect = document.getElementById('abaParentId');
+        if (parentSelect) parentSelect.value = '';
     }
 }
 
