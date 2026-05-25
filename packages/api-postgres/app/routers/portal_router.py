@@ -83,10 +83,11 @@ def criar_aba(
     nome: str,
     icone: str,
     ordem: int = 0,
+    parent_id: int | None = None,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
-    nova_aba = Aba(nome=nome, icone=icone, ordem=ordem)
+    nova_aba = Aba(nome=nome, icone=icone, ordem=ordem, parent_id=parent_id)
     db.add(nova_aba)
     db.commit()
     db.refresh(nova_aba)
@@ -99,15 +100,19 @@ def atualizar_aba(
     nome: str,
     icone: str,
     ordem: int,
+    parent_id: int | None = None,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
     aba = db.query(Aba).filter(Aba.id == aba_id).first()
     if not aba:
         raise HTTPException(404, "Aba não encontrada")
+    if parent_id is not None and parent_id == aba_id:
+        raise HTTPException(422, "Uma aba não pode ser sub-aba de si mesma")
     aba.nome = nome
     aba.icone = icone
     aba.ordem = ordem
+    aba.parent_id = parent_id
     db.commit()
     db.refresh(aba)
     return aba
