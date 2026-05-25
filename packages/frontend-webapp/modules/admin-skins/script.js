@@ -13,6 +13,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.pendingLogoFile = null;
         this.advancedMode = false;
         this._darkPreview = false;
+        this.customFonts = [];
         this.apiBase = window.grindx.config.API_BASE_URL;
 
         this.init();
@@ -74,8 +75,17 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             }
         });
 
+        // Font import
+        const fontUploadArea = document.getElementById('fontUploadArea');
+        const fontFileInput = document.getElementById('customFontFile');
+        if (fontUploadArea && fontFileInput) {
+            fontUploadArea.addEventListener('click', () => fontFileInput.click());
+            fontFileInput.addEventListener('change', (e) => this.handleFontUpload(e));
+        }
+        document.getElementById('btnImportFont')?.addEventListener('click', () => this.importFont());
+
         // Auto-generate copyright from company name
-        const companyNameInput = document.getElementById('companyName');
+            const companyNameInput = document.getElementById('companyName');
         const copyrightInput = document.getElementById('copyrightText');
         if (companyNameInput && copyrightInput) {
             companyNameInput.addEventListener('input', (e) => {
@@ -291,6 +301,9 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         const fonts = skin.fonts || {};
         document.getElementById('fontHeading').value = fonts.heading || 'Barlow Condensed';
         document.getElementById('fontBody').value = fonts.body || 'DM Sans';
+        this.customFonts = (fonts.custom || []).map(f => ({ name: f.name, data: f.data, format: f.format }));
+        this._renderImportedFonts();
+        this._populateFontDropdowns();
 
         const tokens = skin.tokens || {};
         document.getElementById('radiusMd').value = tokens['--skin-radius-md'] || '0.5rem';
@@ -315,6 +328,109 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 colorPicker.disabled = true;
             }
         }
+    }
+
+    _populateFontDropdowns() {
+        const customNames = this.customFonts.map(f => f.name);
+        ['fontHeading', 'fontBody'].forEach(id => {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            const builtIn = sel.querySelectorAll('option:not(.custom-font-option)');
+            const currentValue = sel.value;
+            sel.innerHTML = '';
+            builtIn.forEach(opt => sel.appendChild(opt.cloneNode(true)));
+            customNames.forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                opt.className = 'custom-font-option';
+                sel.appendChild(opt);
+            });
+            sel.value = currentValue;
+        });
+    }
+
+    handleFontUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const preview = document.getElementById('fontUploadPreview');
+        if (preview) {
+            preview.innerHTML = `<i class="fas fa-file"></i><span>${file.name}</span>`;
+        }
+    }
+
+    importFont() {
+        const nameInput = document.getElementById('customFontName');
+        const fileInput = document.getElementById('customFontFile');
+        const name = nameInput.value.trim();
+        const file = fileInput.files[0];
+
+        if (!name) {
+            alert('Informe o nome da fonte.');
+            return;
+        }
+        if (!file) {
+            alert('Selecione um arquivo de fonte.');
+            return;
+        }
+
+        if (this.customFonts.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+            alert('Já existe uma fonte importada com este nome.');
+            return;
+        }
+
+        const formatMap = {
+            'woff2': 'woff2',
+            'woff': 'woff',
+            'ttf': 'truetype',
+            'otf': 'opentype',
+        };
+        const ext = file.name.split('.').pop().toLowerCase();
+        const format = formatMap[ext] || ext;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const dataUrl = event.target.result;
+            this.customFonts.push({ name, data: dataUrl, format });
+            this._renderImportedFonts();
+            this._populateFontDropdowns();
+            nameInput.value = '';
+            fileInput.value = '';
+            document.getElementById('fontUploadPreview').innerHTML =
+                '<i class="fas fa-font"></i><span>Clique para selecionar um arquivo de fonte</span>';
+            this.previewSkin();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    removeCustomFont(name) {
+        this.customFonts = this.customFonts.filter(f => f.name !== name);
+        this._renderImportedFonts();
+        this._populateFontDropdowns();
+        this.previewSkin();
+    }
+
+    _renderImportedFonts() {
+        const container = document.getElementById('importedFontsList');
+        if (!container) return;
+        if (this.customFonts.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        container.innerHTML = this.customFonts.map(f => `
+            <div class="imported-font-item">
+                <span class="font-item-name"><i class="fas fa-font"></i>${f.name}</span>
+                <button class="btn-remove-font" data-font="${f.name}" title="Remover fonte">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `).join('');
+        container.querySelectorAll('.btn-remove-font').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.removeCustomFont(btn.dataset.font);
+            });
+        });
     }
 
     async saveSkin() {
@@ -350,6 +466,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             fonts: {
                 heading: document.getElementById('fontHeading').value,
                 body: document.getElementById('fontBody').value,
+                custom: this.customFonts,
             },
             icon_library: 'fontawesome',
             tokens: {
@@ -481,6 +598,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         const fonts = {
             heading: document.getElementById('fontHeading').value,
             body: document.getElementById('fontBody').value,
+            custom: this.customFonts,
         };
 
         if (window.skinLoader) {
@@ -751,6 +869,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
     resetForm() {
         this.currentLogoUrl = null;
         this.pendingLogoFile = null;
+        this.customFonts = [];
         document.getElementById('skinName').value = '';
         document.getElementById('companyName').value = '';
         document.getElementById('copyrightText').value = '';
@@ -768,6 +887,16 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         const logoPreview = document.getElementById('logoPreview');
         if (logoPreview) {
             this._resetPreviewDefault(logoPreview);
+        }
+
+        // Reset imported fonts
+        this._renderImportedFonts();
+        this._populateFontDropdowns();
+        document.getElementById('customFontName').value = '';
+        document.getElementById('customFontFile').value = '';
+        const fontPreview = document.getElementById('fontUploadPreview');
+        if (fontPreview) {
+            fontPreview.innerHTML = '<i class="fas fa-font"></i><span>Clique para selecionar um arquivo de fonte</span>';
         }
     }
 

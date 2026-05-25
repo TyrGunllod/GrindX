@@ -274,7 +274,36 @@
                                  <option value="Source Sans Pro">Source Sans Pro</option>
                              </select>
                          </div>
-                     </fieldset>
+                      </fieldset>
+
+                      <!-- Importar Fontes -->
+                      <fieldset class="form-section">
+                          <legend>Importar Fontes</legend>
+                          <div class="form-row">
+                              <label for="customFontName">Nome da Fonte</label>
+                              <input type="text" id="customFontName" placeholder="Ex: Minha Fonte">
+                          </div>
+                          <div class="form-row">
+                              <label for="customFontFile">Arquivo da Fonte</label>
+                              <div class="upload-area font-upload-area" id="fontUploadArea">
+                                  <input type="file" id="customFontFile" accept=".woff2,.woff,.ttf,.otf">
+                                  <div class="upload-preview" id="fontUploadPreview">
+                                      <i class="fas fa-font"></i>
+                                      <span>Clique para selecionar um arquivo de fonte</span>
+                                  </div>
+                              </div>
+                          </div>
+                          <button class="btn" id="btnImportFont" type="button">
+                              <i class="fas fa-plus"></i> Importar Fonte
+                          </button>
+                          <div class="imported-fonts-list" id="importedFontsList"></div>
+                          <div class="font-suggestion">
+                              <i class="fas fa-external-link-alt"></i>
+                              <a href="https://www.fontsquirrel.com/fonts/list/tag" target="_blank" rel="noopener noreferrer">
+                                  Baixe fontes gratuitas no Font Squirrel
+                              </a>
+                          </div>
+                      </fieldset>
 
                 </form>
 

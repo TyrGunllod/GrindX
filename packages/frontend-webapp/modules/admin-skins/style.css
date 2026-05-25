@@ -566,6 +566,92 @@
     color: var(--skin-primary, #00c2e0) !important;
 }
 
+/* Font Import Section */
+.font-upload-area {
+    margin-top: 0;
+}
+
+.imported-fonts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    min-height: 0;
+}
+
+.imported-font-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-main, #f8fafc);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--skin-radius-sm, 0.25rem);
+    font-size: 0.85rem;
+}
+
+.imported-font-item .font-item-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    color: var(--text-main, #1e293b);
+}
+
+.imported-font-item .font-item-name i {
+    color: var(--skin-primary, #00c2e0);
+    font-size: 0.9rem;
+}
+
+.imported-font-item .btn-remove-font {
+    background: none;
+    border: none;
+    color: var(--skin-danger, #ef4444);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0.25rem;
+    border-radius: var(--skin-radius-sm, 0.25rem);
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.imported-font-item .btn-remove-font:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+#btnImportFont {
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.font-suggestion {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted, #64748b);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px dashed var(--border-color, #e2e8f0);
+    border-radius: var(--skin-radius-sm, 0.25rem);
+    background: rgba(0, 194, 224, 0.03);
+}
+
+.font-suggestion i {
+    font-size: 0.75rem;
+}
+
+.font-suggestion a {
+    color: var(--skin-primary, #00c2e0);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.font-suggestion a:hover {
+    text-decoration: underline;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .preview-main {

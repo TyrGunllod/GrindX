@@ -218,6 +218,19 @@ class SkinLoader {
         }
         this._fontLinkEls = [];
 
+        // Aplica @font-face para fontes customizadas
+        if (fonts.custom && Array.isArray(fonts.custom)) {
+            const style = document.createElement('style');
+            style.id = 'skin-custom-fonts';
+            const rules = fonts.custom.map(f => {
+                const format = f.format || 'woff2';
+                return `@font-face { font-family: '${f.name}'; src: url('${f.data}') format('${format}'); font-display: swap; }`;
+            }).join('\n');
+            style.textContent = rules;
+            document.head.appendChild(style);
+            this._fontLinkEls.push(style);
+        }
+
         // Carrega Google Fonts se necessário
         const fontNames = [fonts.heading, fonts.body].filter(Boolean);
         for (const name of fontNames) {
