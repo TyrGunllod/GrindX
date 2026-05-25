@@ -129,7 +129,9 @@ class AuthService:
         )
         return usuario_criado
 
-    def change_password(self, user_id: int, current_password: str, new_password: str) -> None:
+    def change_password(
+        self, user_id: int, current_password: str, new_password: str
+    ) -> None:
         usuario = self.usuario_repo.buscar_por_id(user_id)
         if not usuario:
             raise NotFoundError(resource="Usuário", identifier=user_id)

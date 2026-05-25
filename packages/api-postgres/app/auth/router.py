@@ -115,6 +115,7 @@ def me(
     db: Session = Depends(get_db),
 ):
     from app.services.usuario_service import UsuarioService
+
     service = UsuarioService(db)
     return service.buscar_por_id(int(current_user.sub))
 
