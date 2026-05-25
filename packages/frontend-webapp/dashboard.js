@@ -40,10 +40,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
     async loadCurrentUserProfile() {
         try {
-            const result = await window.grindx.api.get('/usuarios');
-            const users = Array.isArray(result?.items) ? result.items : [];
-            const profile = users.find(user => String(user.id) === String(this.user?.sub))
-                || users.find(user => user.username === this.user?.username);
+            const profile = await window.grindx.api.get('/auth/me');
 
             if (!profile) return;
 

@@ -9,13 +9,14 @@ from datetime import datetime, timezone
 
 import structlog
 from fastapi import APIRouter, Depends, Request
-from shared.schemas.auth import RefreshTokenRequest, TokenRequest, TokenResponse
+from shared.schemas.auth import RefreshTokenRequest, TokenRequest, TokenResponse, TokenPayload
 from shared.schemas.base import ErrorResponse
+from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_auth_service, get_current_user
 from app.auth.service import AuthService
-from app.schemas.usuario import ChangePasswordRequest
-from shared.schemas.auth import TokenPayload
+from app.database import get_db
+from app.schemas.usuario import ChangePasswordRequest, UsuarioResponse
 
 logger = structlog.get_logger(__name__)
 
@@ -96,6 +97,21 @@ def refresh(
             timestamp=datetime.now(timezone.utc).isoformat(),
         )
         raise
+
+
+@router.get(
+    "/me",
+    response_model=UsuarioResponse,
+    summary="Perfil do usuário logado",
+    description="Retorna os dados completos do usuário autenticado.",
+)
+def me(
+    current_user: TokenPayload = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    from app.services.usuario_service import UsuarioService
+    service = UsuarioService(db)
+    return service.buscar_por_id(int(current_user.sub))
 
 
 @router.post(
