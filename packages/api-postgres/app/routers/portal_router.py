@@ -23,6 +23,8 @@ class ModuloSchema(BaseModel):
     slug: str
     role_minima: str
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class AbaResponse(BaseModel):
     id: int
