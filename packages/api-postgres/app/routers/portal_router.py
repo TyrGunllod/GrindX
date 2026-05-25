@@ -29,7 +29,12 @@ class AbaResponse(BaseModel):
     nome: str
     icone: str
     ordem: int
-    modulos: List[ModuloSchema]
+    parent_id: int | None = None
+    modulos: List[ModuloSchema] = []
+    children: List["AbaResponse"] = []
+
+    class Config:
+        from_attributes = True
 
 
 @router.get("/menu", response_model=List[AbaResponse])
@@ -37,23 +42,31 @@ def obter_menu_dinamico(
     db: Session = Depends(get_db),
     current_user: TokenPayload = Depends(get_current_user),
 ):
-    if current_user.role == "admin":
-        abas = db.query(Aba).filter(Aba.ativo).order_by(Aba.ordem).all()
-    else:
-        # Só retorna módulos que o usuário tem permissão
-        modulos_ids = (
-            db.query(UsuarioModulo.modulo_id)
+    abas = db.query(Aba).filter(Aba.ativo).order_by(Aba.ordem).all()
+
+    if current_user.role != "admin":
+        accessible_ids = {
+            row[0] for row in db.query(UsuarioModulo.modulo_id)
             .filter(UsuarioModulo.usuario_id == int(current_user.sub))
-            .subquery()
-        )
-        abas = (
-            db.query(Aba)
-            .join(Modulo)
-            .filter(Aba.ativo, Modulo.id.in_(modulos_ids))
-            .order_by(Aba.ordem)
             .all()
-        )
-    return abas
+        }
+        for aba in abas:
+            aba.modulos = [m for m in (aba.modulos or []) if m.id in accessible_ids]
+
+    def build_tree(abas_list, parent_id=None):
+        result = []
+        for aba in abas_list:
+            if aba.parent_id == parent_id:
+                item = aba
+                item.children = build_tree(abas_list, aba.id)
+                if current_user.role != "admin":
+                    if not item.modulos and not item.children:
+                        continue
+                result.append(item)
+        return result
+
+    tree = build_tree(abas)
+    return tree
 
 
 # --- Gerenciamento de Abas ---
