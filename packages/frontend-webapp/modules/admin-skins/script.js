@@ -75,14 +75,13 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             }
         });
 
-        // Font import
+        // Font import via ZIP
         const fontUploadArea = document.getElementById('fontUploadArea');
         const fontFileInput = document.getElementById('customFontFile');
         if (fontUploadArea && fontFileInput) {
             fontUploadArea.addEventListener('click', () => fontFileInput.click());
-            fontFileInput.addEventListener('change', (e) => this.handleFontUpload(e));
+            fontFileInput.addEventListener('change', (e) => this.processFontZip(e));
         }
-        document.getElementById('btnImportFont')?.addEventListener('click', () => this.importFont());
 
         // Auto-generate copyright from company name
             const companyNameInput = document.getElementById('companyName');
@@ -350,57 +349,93 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         });
     }
 
-    handleFontUpload(e) {
+    async processFontZip(e) {
         const file = e.target.files[0];
         if (!file) return;
+        if (!file.name.toLowerCase().endsWith('.zip')) {
+            alert('Selecione um arquivo ZIP.');
+            return;
+        }
+
+        const statusEl = document.getElementById('fontImportStatus');
         const preview = document.getElementById('fontUploadPreview');
-        if (preview) {
-            preview.innerHTML = `<i class="fas fa-file"></i><span>${file.name}</span>`;
-        }
-    }
 
-    importFont() {
-        const nameInput = document.getElementById('customFontName');
-        const fileInput = document.getElementById('customFontFile');
-        const name = nameInput.value.trim();
-        const file = fileInput.files[0];
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando ZIP...';
 
-        if (!name) {
-            alert('Informe o nome da fonte.');
-            return;
-        }
-        if (!file) {
-            alert('Selecione um arquivo de fonte.');
-            return;
-        }
+        try {
+            const arrayBuf = await file.arrayBuffer();
+            const zip = await JSZip.loadAsync(arrayBuf);
 
-        if (this.customFonts.some(f => f.name.toLowerCase() === name.toLowerCase())) {
-            alert('Já existe uma fonte importada com este nome.');
-            return;
-        }
+            const fontFiles = [];
+            zip.forEach((relPath, entry) => {
+                if (!entry.dir) {
+                    const ext = relPath.split('.').pop().toLowerCase();
+                    if (['ttf', 'otf', 'woff', 'woff2'].includes(ext)) {
+                        fontFiles.push({ entry, name: relPath.split('/').pop(), ext });
+                    }
+                }
+            });
 
-        const formatMap = {
-            'woff2': 'woff2',
-            'woff': 'woff',
-            'ttf': 'truetype',
-            'otf': 'opentype',
-        };
-        const ext = file.name.split('.').pop().toLowerCase();
-        const format = formatMap[ext] || ext;
+            if (fontFiles.length === 0) {
+                statusEl.innerHTML = '<span style="color: var(--skin-danger);">Nenhum arquivo de fonte encontrado no ZIP.</span>';
+                return;
+            }
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const dataUrl = event.target.result;
-            this.customFonts.push({ name, data: dataUrl, format });
+            let imported = 0;
+            let skipped = 0;
+
+            for (const ff of fontFiles) {
+                const blob = await ff.entry.async('blob');
+                const buf = await blob.arrayBuffer();
+                let fontName = null;
+
+                try {
+                    const parsed = opentype.parse(buf);
+                    fontName = parsed?.names?.fontFamily?.en || parsed?.names?.fontFamily || null;
+                } catch (_) {
+                    // fallback: use filename without extension
+                }
+
+                if (!fontName) {
+                    fontName = ff.name.replace(/\.[^.]+$/, '');
+                }
+
+                if (this.customFonts.some(f => f.name.toLowerCase() === fontName.toLowerCase())) {
+                    skipped++;
+                    continue;
+                }
+
+                const formatMap = { ttf: 'truetype', otf: 'opentype', woff: 'woff', woff2: 'woff2' };
+                const format = formatMap[ff.ext] || ff.ext;
+
+                const reader = new FileReader();
+                const dataUrl = await new Promise(resolve => {
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(blob);
+                });
+
+                this.customFonts.push({ name: fontName, data: dataUrl, format });
+                imported++;
+            }
+
             this._renderImportedFonts();
             this._populateFontDropdowns();
-            nameInput.value = '';
-            fileInput.value = '';
-            document.getElementById('fontUploadPreview').innerHTML =
-                '<i class="fas fa-font"></i><span>Clique para selecionar um arquivo de fonte</span>';
-            this.previewSkin();
-        };
-        reader.readAsDataURL(file);
+
+            if (imported > 0) {
+                statusEl.innerHTML = `<span style="color: var(--skin-success);">${imported} fonte(s) importada(s)${skipped > 0 ? `, ${skipped} ignorada(s) (já existem)` : ''}.</span>`;
+                this.previewSkin();
+            } else if (skipped > 0) {
+                statusEl.innerHTML = `<span style="color: var(--skin-warning);">Todas as ${skipped} fonte(s) já foram importadas.</span>`;
+            }
+        } catch (err) {
+            console.error('Erro ao processar ZIP:', err);
+            statusEl.innerHTML = '<span style="color: var(--skin-danger);">Erro ao processar o arquivo ZIP.</span>';
+        }
+
+        if (preview) {
+            preview.innerHTML = `<i class="fas fa-file-archive"></i><span>${file.name}</span>`;
+        }
+        e.target.value = '';
     }
 
     removeCustomFont(name) {
@@ -892,12 +927,13 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         // Reset imported fonts
         this._renderImportedFonts();
         this._populateFontDropdowns();
-        document.getElementById('customFontName').value = '';
         document.getElementById('customFontFile').value = '';
         const fontPreview = document.getElementById('fontUploadPreview');
         if (fontPreview) {
-            fontPreview.innerHTML = '<i class="fas fa-font"></i><span>Clique para selecionar um arquivo de fonte</span>';
+            fontPreview.innerHTML = '<i class="fas fa-file-archive"></i><span>Clique para selecionar um arquivo ZIP</span>';
         }
+        const statusEl = document.getElementById('fontImportStatus');
+        if (statusEl) statusEl.innerHTML = '';
     }
 
     openModal() {

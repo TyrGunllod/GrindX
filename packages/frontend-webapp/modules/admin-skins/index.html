@@ -278,24 +278,18 @@
 
                       <!-- Importar Fontes -->
                       <fieldset class="form-section">
-                          <legend>Importar Fontes</legend>
+                          <legend>Importar Fontes (ZIP)</legend>
                           <div class="form-row">
-                              <label for="customFontName">Nome da Fonte</label>
-                              <input type="text" id="customFontName" placeholder="Ex: Minha Fonte">
-                          </div>
-                          <div class="form-row">
-                              <label for="customFontFile">Arquivo da Fonte</label>
+                              <label for="customFontFile">Arquivo ZIP com fontes</label>
                               <div class="upload-area font-upload-area" id="fontUploadArea">
-                                  <input type="file" id="customFontFile" accept=".woff2,.woff,.ttf,.otf">
+                                  <input type="file" id="customFontFile" accept=".zip">
                                   <div class="upload-preview" id="fontUploadPreview">
-                                      <i class="fas fa-font"></i>
-                                      <span>Clique para selecionar um arquivo de fonte</span>
+                                      <i class="fas fa-file-archive"></i>
+                                      <span>Clique para selecionar um arquivo ZIP</span>
                                   </div>
                               </div>
                           </div>
-                          <button class="btn" id="btnImportFont" type="button">
-                              <i class="fas fa-plus"></i> Importar Fonte
-                          </button>
+                          <div class="font-import-status" id="fontImportStatus"></div>
                           <div class="imported-fonts-list" id="importedFontsList"></div>
                           <div class="font-suggestion">
                               <i class="fas fa-external-link-alt"></i>
@@ -420,6 +414,8 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
     <script src="../../shared/app.js"></script>
     <script src="../../shared/baseController.js"></script>
     <script src="../../shared/components/LoadingSpinner.js"></script>
