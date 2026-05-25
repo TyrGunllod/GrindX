@@ -301,7 +301,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         document.getElementById('fontHeading').value = fonts.heading || 'Barlow Condensed';
         document.getElementById('fontBody').value = fonts.body || 'DM Sans';
         this.customFonts = (fonts.custom || []).map(f => ({ name: f.name, data: f.data, format: f.format }));
-        this._renderImportedFonts();
         this._populateFontDropdowns();
 
         const tokens = skin.tokens || {};
@@ -431,10 +430,9 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 imported++;
             }
 
-            this._renderImportedFonts();
-            this._populateFontDropdowns();
+        this._populateFontDropdowns();
 
-            if (imported > 0) {
+        if (imported > 0) {
                 statusEl.innerHTML = `<span style="color: var(--skin-success);">${imported} fonte(s) importada(s)${skipped > 0 ? `, ${skipped} ignorada(s) (já existem)` : ''}.</span>`;
                 this.previewSkin();
             } else if (skipped > 0) {
@@ -449,36 +447,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             preview.innerHTML = `<i class="fas fa-file-archive"></i><span>${file.name}</span>`;
         }
         e.target.value = '';
-    }
-
-    removeCustomFont(name) {
-        this.customFonts = this.customFonts.filter(f => f.name !== name);
-        this._renderImportedFonts();
-        this._populateFontDropdowns();
-        this.previewSkin();
-    }
-
-    _renderImportedFonts() {
-        const container = document.getElementById('importedFontsList');
-        if (!container) return;
-        if (this.customFonts.length === 0) {
-            container.innerHTML = '';
-            return;
-        }
-        container.innerHTML = this.customFonts.map(f => `
-            <div class="imported-font-item">
-                <span class="font-item-name"><i class="fas fa-font"></i>${f.name}</span>
-                <button class="btn-remove-font" data-font="${f.name}" title="Remover fonte">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `).join('');
-        container.querySelectorAll('.btn-remove-font').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.removeCustomFont(btn.dataset.font);
-            });
-        });
     }
 
     async saveSkin() {
@@ -938,7 +906,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         }
 
         // Reset imported fonts
-        this._renderImportedFonts();
+        this.customFonts = [];
         this._populateFontDropdowns();
         document.getElementById('customFontFile').value = '';
         const fontPreview = document.getElementById('fontUploadPreview');
