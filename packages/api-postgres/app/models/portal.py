@@ -14,7 +14,10 @@ class Aba(Base):
     icone = Column(String(50), nullable=True)  # Classe FontAwesome
     ordem = Column(Integer, default=0)
     ativo = Column(Boolean, default=True)
+    parent_id = Column(Integer, ForeignKey("portal_abas.id"), nullable=True)
 
+    parent = relationship("Aba", remote_side=[id], back_populates="children")
+    children = relationship("Aba", back_populates="parent", cascade="all, delete-orphan")
     modulos = relationship("Modulo", back_populates="aba", cascade="all, delete-orphan")
 
 
