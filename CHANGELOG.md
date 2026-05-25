@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.12.0 (2026-05-25)
+
+### Features
+
+- **auth**: Forgot-password flow with email recovery
+  ([`685d001`](https://github.com/TyrGunllod/GrindX/commit/685d001b75b6e1e24d88ef5c23dc0fc39ee08de9))
+
+
 ## v1.11.0 (2026-05-25)
 
 ### Code Style
