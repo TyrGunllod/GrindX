@@ -1,4 +1,4 @@
-<!-- title: Skills — GrindX | updated: 2026-05-25 -->
+<!-- title: Skills — GrindX | updated: 2026-05-26 -->
 
 # GrindX — Skills do Assistente
 
@@ -13,6 +13,7 @@ Referência de skills úteis para desenvolvimento no projeto GrindX.
 | Skill | Uso |
 |-------|-----|
 | `frontend-design` | Criar novos módulos, componentes e interfaces |
+| `create-module` | **CRUD completo** (backend + frontend + banco) com templates prontos |
 
 ### Documentação e Relatórios
 
@@ -92,7 +93,7 @@ document.body.appendChild(botao);
 
 | Funcionalidade | Skill Principal | Skills Suporte |
 |----------------|-----------------|----------------|
-| Criar módulo novo | `frontend-design` | — |
+| Criar módulo novo | `create-module` | `frontend-design` |
 | Design System | `frontend-design` | — |
 | Componentes UI | `frontend-design` | — |
 | Dashboard Visual | `frontend-design` | — |
@@ -109,8 +110,9 @@ document.body.appendChild(botao);
 
 ### Crítico
 
-1. `frontend-design` — Essencial para criar módulos
-2. `file-reading` — Essencial para imports
+1. `create-module` — Essencial para criar módulos completos
+2. `frontend-design` — UI components e design system
+3. `file-reading` — Essencial para imports
 
 ### Importante
 

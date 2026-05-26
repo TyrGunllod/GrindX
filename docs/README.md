@@ -37,6 +37,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 | [MAPA-ARQUIVOS.md](../MAPA-ARQUIVOS.md) | Inventário completo de arquivos |
 | [GRINDX-RESUMO.md](../GRINDX-RESUMO.md) | Resumo executivo e acesso rápido |
 | [CHANGELOG.md](../CHANGELOG.md) | Histórico de versões e releases |
+| [.opencode/skills/create-module/SKILL.md](../.opencode/skills/create-module/SKILL.md) | Skill para criar novos módulos (backend + frontend) |
 
 ### Pacotes
 
@@ -45,6 +46,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 | [api-postgres/README.md](../packages/api-postgres/README.md) | API principal (FastAPI + PostgreSQL) |
 | [api-sqlserver/README.md](../packages/api-sqlserver/README.md) | API leitura (FastAPI + SQL Server) |
 | [ARCHITECTURE_PORTAL.md](../packages/frontend-webapp/ARCHITECTURE_PORTAL.md) | Como criar novos módulos frontend |
+| [SKILLS.md](SKILLS.md) | Skills do assistente e templates de criação |
 
 ---
 
