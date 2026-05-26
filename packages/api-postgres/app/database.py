@@ -8,7 +8,7 @@ nas rotas do FastAPI.
 from collections.abc import Generator
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import settings
 
@@ -35,12 +35,6 @@ SessionLocal = sessionmaker(
     autoflush=False,
     expire_on_commit=False,
 )
-
-
-class Base(DeclarativeBase):
-    """Classe base para todos os modelos SQLAlchemy do PostgreSQL."""
-
-    pass
 
 
 def get_db() -> Generator[Session, None, None]:
