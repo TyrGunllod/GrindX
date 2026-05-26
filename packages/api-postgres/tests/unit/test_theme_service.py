@@ -1,12 +1,13 @@
 """Testes unitários para ThemeService."""
 
 import pytest
+from shared.exceptions.base import ConflictError
+from sqlalchemy.orm import Session
+
 from app.models.empresa import Empresa
 from app.models.theme import CompanyTheme
 from app.repositories.theme_repository import ThemeRepository
 from app.services.theme_service import ThemeService
-from shared.exceptions.base import ConflictError
-from sqlalchemy.orm import Session
 
 
 @pytest.fixture

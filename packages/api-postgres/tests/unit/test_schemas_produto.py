@@ -3,8 +3,9 @@
 from decimal import Decimal
 
 import pytest
-from app.schemas.produto import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 from pydantic import ValidationError
+
+from app.schemas.produto import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 
 
 class TestProdutoCreate:

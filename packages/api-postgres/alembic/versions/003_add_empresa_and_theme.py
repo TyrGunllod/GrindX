@@ -7,6 +7,7 @@ Create Date: 2026-05-20 12:00:00.000000
 """
 
 import sqlalchemy as sa
+
 from alembic import op
 
 revision = "003_add_empresa_and_theme"

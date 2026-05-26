@@ -3,7 +3,6 @@
 from datetime import timedelta
 
 import pytest
-from app.core.config import settings
 from shared.exceptions.base import TokenExpiradoError, TokenInvalidoError
 from shared.security.jwt import (
     criar_jwt,
@@ -11,6 +10,8 @@ from shared.security.jwt import (
     verificar_jwt,
     verificar_senha,
 )
+
+from app.core.config import settings
 
 _TEST_SECRET = "test-secret-key-for-unit-tests-only"
 
