@@ -1,0 +1,17 @@
+* text=auto
+
+*.py  text diff=python
+*.js  text
+*.css text
+*.html text
+*.json text
+*.toml text
+*.md  text
+*.yml text eol=lf
+Makefile text eol=lf
+*.svg text
+
+*.png binary
+*.ico binary
+*.jpg binary
+*.jpeg binary
