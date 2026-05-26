@@ -63,7 +63,9 @@ class UsuarioModulo(IamBase):
         Integer, ForeignKey("iam.usuarios.id", ondelete="CASCADE"), primary_key=True
     )
     modulo_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("portal.portal_modulos.id", ondelete="CASCADE"), primary_key=True
+        Integer,
+        ForeignKey("portal.portal_modulos.id", ondelete="CASCADE"),
+        primary_key=True,
     )
     concedido_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

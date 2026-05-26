@@ -17,9 +17,7 @@ class ThemeHistory(OrgBase):
         index=True,
     )
     company_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
-    action: Mapped[str] = mapped_column(
-        String(50), nullable=False
-    )
+    action: Mapped[str] = mapped_column(String(50), nullable=False)
     performed_by: Mapped[int | None] = mapped_column(
         Integer, nullable=True, comment="ID do usuário que executou a ação"
     )

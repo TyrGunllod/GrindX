@@ -43,7 +43,9 @@ def db_session() -> Session:
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()
 
-    with engine.execution_options(schema_translate_map=_SCHEMA_TRANSLATE).connect() as conn:
+    with engine.execution_options(
+        schema_translate_map=_SCHEMA_TRANSLATE
+    ).connect() as conn:
         _all_metadata.create_all(conn)
 
     TestingSession = sessionmaker(
@@ -56,7 +58,9 @@ def db_session() -> Session:
         yield session
     finally:
         session.close()
-        with engine.execution_options(schema_translate_map=_SCHEMA_TRANSLATE).connect() as conn:
+        with engine.execution_options(
+            schema_translate_map=_SCHEMA_TRANSLATE
+        ).connect() as conn:
             _all_metadata.drop_all(conn)
 
 
