@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v1.13.0 (2026-05-26)
+
+### Code Style
+
+- **shared**: Adicionar padding padrao no subtitulo do page-header
+  ([`fc8c974`](https://github.com/TyrGunllod/GrindX/commit/fc8c9742110e9dd3c3292338e91904235c703bbc))
+
+### Documentation
+
+- Update all documentation to reflect current project state
+  ([`2dbf506`](https://github.com/TyrGunllod/GrindX/commit/2dbf506c321f714b4ac4b03d8abff952d1c2c12d))
+
+### Features
+
+- **admin**: Remover botao X e adicionar cancelar no modal de skins; adicionar scroll nos modais de
+  estrutura
+  ([`25a7090`](https://github.com/TyrGunllod/GrindX/commit/25a709030dffa222db22ab925b4feb00e06ffe0f))
+
+
 ## v1.12.1 (2026-05-25)
 
 ### Bug Fixes
