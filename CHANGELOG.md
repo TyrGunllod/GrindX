@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v1.14.0 (2026-05-26)
+
+### Code Style
+
+- Add ruff.toml for api-postgres and fix all I001 import sorting
+  ([`e603dd7`](https://github.com/TyrGunllod/GrindX/commit/e603dd78f17d1ccb72a5b258a7e4810ce8bb9b7c))
+
+- Fix import sorting across api-postgres with ruff I001
+  ([`4984de8`](https://github.com/TyrGunllod/GrindX/commit/4984de8b79f3adc506b47b65ac10cc990e44c3e9))
+
+- Ruff format 3 files in api-postgres
+  ([`9c3f801`](https://github.com/TyrGunllod/GrindX/commit/9c3f801a83ad7b3482305e2f2980aa69d85905b4))
+
+### Features
+
+- **frontend**: Add release version to login screen
+  ([`a7d874c`](https://github.com/TyrGunllod/GrindX/commit/a7d874cff316cc4edc6d133698a5ba6e5578877a))
+
+
 ## v1.13.0 (2026-05-26)
 
 ### Code Style
