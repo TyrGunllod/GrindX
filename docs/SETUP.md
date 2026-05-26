@@ -148,7 +148,15 @@ Os testes usam SQLite in-memory — não precisam de PostgreSQL real rodando.
 
 ## 7. Migrações de Banco (Alembic)
 
-A migração mais recente é `005_add_aba_parent_id`, que adiciona suporte a sub-abas (aninhamento hierárquico de abas).
+Os modelos foram reorganizados em **4 schemas de domínio** (`iam`, `portal`, `catalogo`, `org`) dentro de `app/modules/`. As migrações existentes (001–005) criaram as tabelas no schema `public`. A estrutura de modelos está em `app/modules/{schema}/models/`, com shims de compatibilidade em `app/models/`.
+
+Para recriar o banco do zero com os schemas:
+
+```powershell
+dropdb grindx
+createdb grindx
+python seed.py
+```
 
 ```powershell
 cd packages/api-postgres
