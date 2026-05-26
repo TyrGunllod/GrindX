@@ -152,7 +152,8 @@ GrindX/
 │   │   │   ├── auth/       # JWT — router, service, dependencies
 │   │   │   ├── core/       # config, exceptions, logging
 │   │   │   ├── middleware/ # rate limit, request id, security headers
-│   │   │   ├── models/     # usuario, produto, portal
+│   │   │   ├── modules/    # Modelos por schema (iam, portal, catalogo, org)
+│   │   │   ├── models/     # Re-export shims (compatibilidade)
 │   │   │   ├── repositories/
 │   │   │   ├── routers/    # auth, health, portal, produto, usuario
 │   │   │   ├── schemas/

@@ -19,17 +19,18 @@ _packages_dir = str(Path(__file__).resolve().parent.parent.parent)
 if _packages_dir not in sys.path:
     sys.path.insert(0, _packages_dir)
 
-from app.database import Base, get_db  # noqa: E402
+from app.database import get_db  # noqa: E402
 from app.main import app  # noqa: E402
+from app.modules.iam.base import IamBase  # noqa: E402
+
+_SCHEMA_TRANSLATE = {"iam": None, "portal": None, "catalogo": None, "org": None}
+
+# All bases share the same MetaData object
+_all_metadata = IamBase.metadata
 
 
 @pytest.fixture(scope="function")
 def db_session() -> Session:
-    """Cria uma sessão com banco SQLite em memória para cada teste.
-
-    Yields:
-        Session do SQLAlchemy conectada ao SQLite in-memory.
-    """
     engine = create_engine(
         "sqlite:///:memory:",
         connect_args={"check_same_thread": False},
@@ -42,29 +43,25 @@ def db_session() -> Session:
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()
 
-    Base.metadata.create_all(bind=engine)
-    TestingSession = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+    with engine.execution_options(schema_translate_map=_SCHEMA_TRANSLATE).connect() as conn:
+        _all_metadata.create_all(conn)
+
+    TestingSession = sessionmaker(
+        bind=engine.execution_options(schema_translate_map=_SCHEMA_TRANSLATE),
+        autocommit=False,
+        autoflush=False,
+    )
     session = TestingSession()
     try:
         yield session
     finally:
         session.close()
-        Base.metadata.drop_all(bind=engine)
+        with engine.execution_options(schema_translate_map=_SCHEMA_TRANSLATE).connect() as conn:
+            _all_metadata.drop_all(conn)
 
 
 @pytest.fixture
 def client(db_session: Session) -> TestClient:
-    """TestClient do FastAPI com banco de teste injetado.
-
-    Substitui a dependency get_db para usar o banco em memória.
-
-    Args:
-        db_session: Sessão do banco de teste.
-
-    Returns:
-        TestClient configurado para testes.
-    """
-
     def _override_get_db():
         yield db_session
 
@@ -75,14 +72,6 @@ def client(db_session: Session) -> TestClient:
 
 @pytest.fixture
 def auth_service(db_session: Session):
-    """Cria uma instância do AuthService para testes.
-
-    Args:
-        db_session: Sessão do banco de teste.
-
-    Returns:
-        AuthService configurado para testes.
-    """
     from app.auth.service import AuthService
 
     return AuthService(db_session)
@@ -90,13 +79,6 @@ def auth_service(db_session: Session):
 
 @pytest.fixture
 def auth_headers(client: TestClient, db_session: Session) -> dict[str, str]:
-    """Cria um usuário de teste e retorna headers com token JWT válido.
-
-    Útil para testar rotas protegidas sem repetir o setup de auth.
-
-    Returns:
-        Dict com header Authorization: Bearer <token>.
-    """
     from app.models.usuario import Usuario
     from shared.security.jwt import gerar_hash_senha
 

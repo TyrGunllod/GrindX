@@ -22,10 +22,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 from urllib.parse import urlparse
 
 from app.core.config import settings
-from app.database import Base
 from app.models.empresa import Empresa
 from app.models.portal import Aba, Modulo
 from app.models.usuario import Usuario
+from app.modules.iam.base import IamBase
 from shared.security.jwt import gerar_hash_senha
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
@@ -69,8 +69,17 @@ def seed_database():
 
     engine = create_engine(settings.DATABASE_URL)
 
+    # All bases share the same MetaData object
+    combined = IamBase.metadata
+
+    # Criar schemas antes das tabelas (PostgreSQL)
+    for schema in ["iam", "portal", "catalogo", "org"]:
+        with engine.connect() as conn:
+            conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {schema}"))
+            conn.commit()
+
     # Criar todas as tabelas
-    Base.metadata.create_all(engine)
+    combined.create_all(engine)
 
     Session = sessionmaker(bind=engine)
     session = Session()

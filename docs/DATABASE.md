@@ -14,118 +14,167 @@
 
 ---
 
+## Arquitetura Multi-Schema
+
+Os modelos são organizados em **4 schemas de domínio** no PostgreSQL, cada um com seu próprio `DeclarativeBase`:
+
+| Schema | Base | Domínio |
+|--------|------|---------|
+| `iam` | `IamBase` | Autenticação, usuários, perfis |
+| `portal` | `PortalBase` | Navegação dinâmica (abas, módulos) |
+| `catalogo` | `CatalogoBase` | Produtos, catálogo |
+| `org` | `OrgBase` | Empresa, temas, organização |
+
+Todas as bases compartilham um único `registry()` e `MetaData()`, com schema definido via `__table_args__` herdado. Isso permite chaves estrangeiras entre schemas (ex: `usuario_modulos` em `iam` referenciando `portal_modulos` em `portal`).
+
+**Localização dos modelos:**
+
+```
+app/modules/
+├── iam/
+│   ├── base.py           # IamBase, registry, metadata
+│   └── models/
+│       └── usuario.py    # Usuario, UsuarioModulo
+├── portal/
+│   ├── base.py           # PortalBase
+│   └── models/
+│       └── portal.py     # Aba, Modulo
+├── catalogo/
+│   ├── base.py           # CatalogoBase
+│   └── models/
+│       └── produto.py    # Produto
+└── org/
+    ├── base.py           # OrgBase
+    └── models/
+        ├── empresa.py    # Empresa
+        ├── theme.py      # CompanyTheme
+        └── theme_history.py  # ThemeHistory
+```
+
+Os arquivos em `app/models/*.py` foram mantidos como **re-export shims** para compatibilidade com código existente (repositories, routers, seed).
+
+---
+
 ## Modelos (`api-postgres`)
 
-### Usuario
+### Schema `iam` — Usuario
 
 Gerencia autenticação e controle de acesso.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `id` | Integer PK | Identificador |
-| `username` | String (único) | Login do usuário |
-| `email` | String (único) | E-mail |
-| `nome_completo` | String | Nome exibido |
-| `senha_hash` | String | Hash bcrypt |
-| `role` | Enum | `admin`, `operador` ou `leitura` |
+| `username` | String(50) único | Login do usuário |
+| `email` | String(255) único | E-mail |
+| `nome_completo` | String(150) | Nome exibido |
+| `senha_hash` | String(255) | Hash bcrypt |
+| `role` | String(20) | `admin`, `operador` ou `leitura` |
 | `ativo` | Boolean | Se pode fazer login |
-| `empresa_id` | Integer FK (nullable) | Referência à Empresa |
-| `created_at` | DateTime | Data de criação |
+| `empresa_id` | Integer FK → `org.empresas` (nullable) | Empresa do usuário |
+| `criado_em` | DateTime(tz) | Data de criação |
+| `atualizado_em` | DateTime(tz) | Última atualização |
 
-### Produto
+### Schema `iam` — UsuarioModulo (tabela associativa)
+
+Gerencia permissão de módulos por usuário (M2M entre Usuario ↔ Modulo).
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `usuario_id` | Integer PK, FK → `iam.usuarios` | Usuário |
+| `modulo_id` | Integer PK, FK → `portal.portal_modulos` | Módulo permitido |
+| `concedido_em` | DateTime(tz) | Data da concessão |
+| `concedido_por_id` | Integer FK → `iam.usuarios` (nullable) | Quem concedeu |
+
+### Schema `catalogo` — Produto
 
 Gerencia o catálogo transacional.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `id` | Integer PK | Identificador |
-| `nome` | String | Nome do produto |
-| `descricao` | Text | Descrição longa |
+| `nome` | String(100) | Nome do produto |
+| `descricao` | String(500) (nullable) | Descrição |
 | `preco` | Numeric(10,2) | Preço unitário |
-| `estoque` | Integer | Quantidade disponível |
 | `ativo` | Boolean | Se está disponível |
-| `created_at` | DateTime | Data de criação |
-| `updated_at` | DateTime | Última atualização |
+| `criado_em` | DateTime(tz) | Data de criação |
+| `atualizado_em` | DateTime(tz) | Última atualização |
 
-### Portal (Aba + Modulo)
+### Schema `portal` — Aba
 
 Gerencia a árvore de navegação dinâmica do frontend.
-
-**Aba:**
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `id` | Integer PK | Identificador |
 | `parent_id` | Integer FK self-ref (nullable) | Aba pai para hierarquia aninhada |
-| `nome` | String | Nome exibido no menu |
-| `icone` | String | Nome do ícone |
+| `nome` | String(50) | Nome exibido no menu |
+| `icone` | String(50) (nullable) | Nome do ícone |
 | `ordem` | Integer | Posição no menu |
 | `ativo` | Boolean | Se aparece no menu |
 
 Relationship: `parent` → Aba, `children` → List[Aba]
 
-**Modulo:**
+### Schema `portal` — Modulo
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `id` | Integer PK | Identificador |
-| `aba_id` | Integer FK | Referência à Aba |
-| `nome` | String | Nome exibido |
-| `slug` | String | Identificador amigável para URL |
-| `url` | String | Caminho relativo do HTML |
-| `icone` | String | Nome do ícone |
-| `ordem` | Integer | Posição dentro da aba |
-| `role_minima` | String | Role mínima para acesso (admin, operador, leitura) |
+| `aba_id` | Integer FK → `portal.portal_abas` | Aba pai |
+| `nome` | String(100) | Nome exibido |
+| `slug` | String(100) único | Identificador amigável para URL |
+| `url` | String(255) | Caminho relativo do HTML |
+| `icone` | String(50) (nullable) | Nome do ícone |
+| `role_minima` | String(20) | Role mínima para acesso (admin, operador, leitura) |
 | `ativo` | Boolean | Se aparece no menu |
 
-### Empresa
+### Schema `org` — Empresa
 
 Representa uma empresa/organização no sistema.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `id` | Integer PK | Identificador |
-| `nome` | String | Nome da empresa |
-| `cnpj` | String (único) | CNPJ formatado |
-| `dominio` | String (único, nullable) | Domínio/subdomínio para multi-tenant |
+| `nome` | String(100) | Nome da empresa |
+| `dominio` | String(255) único (nullable) | Domínio/subdomínio para multi-tenant |
 | `ativo` | Boolean | Se está ativa |
-| `created_at` | DateTime | Data de criação |
+| `criado_em` | DateTime(tz) | Data de criação |
+| `atualizado_em` | DateTime(tz) | Última atualização |
 
-### CompanyTheme
+### Schema `org` — CompanyTheme
 
 Tema visual (skin) personalizado por empresa.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `id` | Integer PK | Identificador |
-| `company_id` | Integer FK | Referência à Empresa |
+| `company_id` | Integer FK → `org.empresas` | Empresa dona do tema |
 | `name` | String(100) | Nome da skin |
 | `is_active` | Boolean | Skin ativa (apenas 1 por empresa) |
-| `colors` | JSON | Overrides de cores CSS (`--skin-*`) |
-| `fonts` | JSON | Overrides de fontes (`heading`, `body`) |
-| `tokens` | JSON | Tokens CSS extras (`--skin-radius-*`, `--skin-shadow-*`) |
+| `colors` | JSON (nullable) | Overrides de cores CSS (`--skin-*`) |
+| `fonts` | JSON (nullable) | Overrides de fontes (`heading`, `body`) |
+| `tokens` | JSON (nullable) | Tokens CSS extras (`--skin-radius-*`, `--skin-shadow-*`) |
 | `icon_library` | String(50) | Biblioteca de ícones (ex: `fontawesome`) |
-| `logo_url` | String(500) | URL do logo customizado |
-| `logo_short_url` | String(500) | URL do logo para favicon |
-| `company_name` | String(100) | Nome exibido no sistema |
-| `copyright_text` | String(200) | Texto do rodapé |
-| `criado_em` | DateTime | Data de criação |
-| `atualizado_em` | DateTime | Última atualização |
+| `logo_url` | String(500) (nullable) | URL do logo customizado |
+| `logo_short_url` | String(500) (nullable) | URL do logo para favicon |
+| `company_name` | String(100) (nullable) | Nome exibido no sistema |
+| `copyright_text` | String(200) (nullable) | Texto do rodapé |
+| `criado_em` | DateTime(tz) | Data de criação |
+| `atualizado_em` | DateTime(tz) | Última atualização |
 
-### ThemeHistory
+### Schema `org` — ThemeHistory
 
 Histórico de alterações de tema para auditoria.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `id` | Integer PK | Identificador |
-| `theme_id` | Integer FK | Referência ao CompanyTheme |
-| `company_id` | Integer FK | Referência à Empresa |
+| `theme_id` | Integer FK → `org.company_themes` | Tema alterado |
+| `company_id` | Integer FK → `org.empresas` | Empresa |
 | `action` | String | Tipo de ação (`created`, `updated`, `activated`, `deleted`) |
-| `performed_by` | Integer FK (opcional) | Usuário que realizou a ação |
+| `performed_by` | Integer FK → `iam.usuarios` (nullable) | Usuário que realizou a ação |
 | `theme_snapshot` | JSON | Estado completo do tema após a ação |
-| `changes` | JSON | Diff das alterações (apenas em `updated`) |
-| `criado_em` | DateTime | Data da alteração |
+| `changes` | JSON (nullable) | Diff das alterações (apenas em `updated`) |
+| `criado_em` | DateTime(tz) | Data da alteração |
 
 ---
 
@@ -175,11 +224,11 @@ As migrações ficam em `packages/api-postgres/alembic/versions/`.
 
 | Arquivo | Descrição |
 |---------|-----------|
-| `001_initial.py` | Criação inicial dos modelos |
-| `002_add_company_theme.py` | Adiciona CompanyTheme e ThemeHistory |
-| `003_add_empresa_model.py` | Adiciona modelo Empresa |
-| `004_add_usuario_empresa.py` | Adiciona empresa_id em Usuario |
-| `005_add_aba_parent_id.py` | Adiciona parent_id em portal_abas |
+| `001_initial.py` | Criação inicial dos modelos (schema `public`) |
+| `002_add_company_theme.py` | Adiciona CompanyTheme e ThemeHistory (`public`) |
+| `003_add_empresa_model.py` | Adiciona modelo Empresa (`public`) |
+| `004_add_usuario_empresa.py` | Adiciona empresa_id em Usuario (`public`) |
+| `005_add_aba_parent_id.py` | Adiciona parent_id em portal_abas (`public`) |
 
 ---
 

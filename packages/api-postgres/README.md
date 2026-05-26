@@ -37,7 +37,12 @@ api-postgres/
 │   ├── auth/         # Autenticação e dependências JWT
 │   ├── core/         # Configurações e logging
 │   ├── middleware/   # Middlewares customizados
-│   ├── models/       # Modelos SQLAlchemy (2.0 Style)
+│   ├── modules/      # Modelos organizados por schema de domínio
+│   │   ├── iam/      #   Schema iam — Usuario, UsuarioModulo
+│   │   ├── portal/   #   Schema portal — Aba, Modulo
+│   │   ├── catalogo/ #   Schema catalogo — Produto
+│   │   └── org/      #   Schema org — Empresa, CompanyTheme, ThemeHistory
+│   ├── models/       # Re-export shims (compatibilidade)
 │   ├── repositories/ # Camada de acesso a dados (Repository Pattern)
 │   ├── routers/      # Endpoints da API
 │   ├── schemas/      # Modelos Pydantic (DTOs)
