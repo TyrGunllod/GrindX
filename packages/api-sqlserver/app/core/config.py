@@ -7,6 +7,9 @@ Usa pydantic-settings para validação e tipagem segura.
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Constante de modulo para compatibilidade com semantic-release version_variable
+APP_VERSION = "0.1.0"
+
 
 class Settings(BaseSettings):
     """Configurações da API SQL Server carregadas do .env."""
@@ -39,7 +42,7 @@ class Settings(BaseSettings):
 
     # --- Aplicação ---
     APP_NAME: str = "ERP API SQL Server"
-    APP_VERSION: str = "0.1.0"
+    APP_VERSION: str = APP_VERSION
     DEBUG: bool = False
     ENABLE_CACHE: bool = False
     LOG_LEVEL: str = "INFO"
