@@ -72,6 +72,12 @@ def seed_database():
     # All bases share the same MetaData object
     combined = IamBase.metadata
 
+    # Criar schemas antes das tabelas (PostgreSQL)
+    for schema in ["iam", "portal", "catalogo", "org"]:
+        with engine.connect() as conn:
+            conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {schema}"))
+            conn.commit()
+
     # Criar todas as tabelas
     combined.create_all(engine)
 
