@@ -218,7 +218,7 @@
 }
 
 .top-bar {
-    height: 0px;
+    height: 35px;
     padding: 0 var(--space-4);
     background: var(--bg-card);
     border-bottom: 1px solid var(--border-color);

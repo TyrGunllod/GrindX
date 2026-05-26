@@ -64,7 +64,7 @@ input:focus {
 
 /* Utilities (Mobile First) */
 .text-center { text-align: center; }
-.text-muted { color: var(--text-muted); font-size: 0.875rem; }
+.text-muted { color: var(--text-muted); font-size: 0.875rem;}
 .mb-8 { margin-bottom: 2rem; }
 .w-full { width: 100%; }
 .flex { display: flex; }

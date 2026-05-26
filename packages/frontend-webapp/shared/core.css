@@ -372,6 +372,10 @@ body {
     flex-wrap: nowrap; /* Force side-by-side */
 }
 
+.page-header p {
+    padding: 0.75rem 0;
+}
+
 .justify-end { justify-content: flex-end; }
 .justify-between { justify-content: space-between; }
 .flex-1 { flex: 1; }
