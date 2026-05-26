@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.15.0 (2026-05-26)
+
+### Chores
+
+- **infra**: Add .gitattributes para normalizar line endings
+  ([`a7fe42f`](https://github.com/TyrGunllod/GrindX/commit/a7fe42f184dc43ccd6fd214b06b3fed243106bb9))
+
+### Features
+
+- **docs**: Add create-module skill with backend and frontend templates
+  ([`a821a27`](https://github.com/TyrGunllod/GrindX/commit/a821a27a02ddf583e07d97791af87d7bc0b7a23a))
+
+
 ## v1.14.0 (2026-05-26)
 
 ### Code Style
