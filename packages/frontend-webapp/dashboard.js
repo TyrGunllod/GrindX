@@ -118,9 +118,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
         const modulesHtml = (aba.modulos || []).map(mod => {
             if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
             return `
-                <a href="#" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}" role="button">
+                <button type="button" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}">
                     <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
-                </a>
+                </button>
             `;
         }).join('');
 
@@ -137,9 +137,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
                     ${(child.modulos || []).map(mod => {
                         if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
                         return `
-                            <a href="#" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}" role="button">
+                            <button type="button" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}">
                                 <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
-                            </a>
+                            </button>
                         `;
                     }).join('')}
                 </div>
