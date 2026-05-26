@@ -138,6 +138,15 @@ document.addEventListener('DOMContentLoaded', () => {
     controller.openForgotModal = (e) => { e.preventDefault(); forgotCtrl.open(); };
     controller.closeForgotModal = () => forgotCtrl.close();
 
+    // Exibir versão do release (lê do version.json gerado automaticamente)
+    const versionEl = document.getElementById('versionDisplay');
+    if (versionEl) {
+        fetch('version.json')
+            .then(r => r.json())
+            .then(data => { versionEl.textContent = data.version; })
+            .catch(() => { versionEl.textContent = ''; });
+    }
+
     // Aplicar skin da última empresa usada
     const lastCompanyId = window.grindx?.storage?.get('last_skin_company_id');
     if (lastCompanyId && window.skinLoader) {

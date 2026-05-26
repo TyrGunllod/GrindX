@@ -6,7 +6,7 @@ version_variable = [
 ]
 branch = "main"
 changelog_file = "CHANGELOG.md"
-build_command = ""
+build_command = "python scripts/update_frontend_version.py"
 upload_to_vcs_release = true
 commit_parser = "angular"
 major_on_zero = true
