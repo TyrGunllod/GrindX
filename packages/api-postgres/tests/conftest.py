@@ -79,8 +79,9 @@ def auth_service(db_session: Session):
 
 @pytest.fixture
 def auth_headers(client: TestClient, db_session: Session) -> dict[str, str]:
-    from app.models.usuario import Usuario
     from shared.security.jwt import gerar_hash_senha
+
+    from app.models.usuario import Usuario
 
     usuario = Usuario(
         username="testuser",

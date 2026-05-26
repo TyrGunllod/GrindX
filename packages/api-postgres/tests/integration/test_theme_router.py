@@ -1,12 +1,13 @@
 """Testes de integração para o router de temas."""
 
 import pytest
-from app.models.empresa import Empresa
-from app.models.theme import CompanyTheme
-from app.models.usuario import Usuario
 from fastapi.testclient import TestClient
 from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
+
+from app.models.empresa import Empresa
+from app.models.theme import CompanyTheme
+from app.models.usuario import Usuario
 
 
 @pytest.fixture

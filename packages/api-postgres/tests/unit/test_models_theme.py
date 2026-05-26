@@ -1,8 +1,9 @@
 """Testes unitários para os modelos Empresa e CompanyTheme."""
 
+from sqlalchemy.orm import Session
+
 from app.models.empresa import Empresa
 from app.models.theme import CompanyTheme
-from sqlalchemy.orm import Session
 
 
 def test_create_empresa(db_session: Session):

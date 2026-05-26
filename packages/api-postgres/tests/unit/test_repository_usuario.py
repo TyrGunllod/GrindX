@@ -6,10 +6,11 @@ Usa banco SQLite em memória via fixture db_session.
 """
 
 import pytest
-from app.models.usuario import Usuario
-from app.repositories.usuario_repository import UsuarioRepository
 from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
+
+from app.models.usuario import Usuario
+from app.repositories.usuario_repository import UsuarioRepository
 
 
 @pytest.fixture

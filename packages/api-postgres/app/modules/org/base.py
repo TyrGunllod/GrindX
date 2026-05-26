@@ -1,6 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase
 
-from app.modules.iam.base import reg, metadata
+from app.modules.iam.base import metadata, reg
 
 
 class OrgBase(DeclarativeBase):

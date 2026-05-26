@@ -1,9 +1,10 @@
 """Testes unitários para o modelo ThemeHistory."""
 
+from sqlalchemy.orm import Session
+
 from app.models.empresa import Empresa
 from app.models.theme import CompanyTheme
 from app.models.theme_history import ThemeHistory
-from sqlalchemy.orm import Session
 
 
 def test_create_theme_history(db_session: Session):

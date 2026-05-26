@@ -21,14 +21,15 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from urllib.parse import urlparse
 
+from shared.security.jwt import gerar_hash_senha
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+
 from app.core.config import settings
 from app.models.empresa import Empresa
 from app.models.portal import Aba, Modulo
 from app.models.usuario import Usuario
 from app.modules.iam.base import IamBase
-from shared.security.jwt import gerar_hash_senha
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
 
 # Guard: Verificar se DEBUG está ativo
 if not settings.DEBUG:

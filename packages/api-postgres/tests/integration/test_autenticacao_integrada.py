@@ -6,13 +6,14 @@ Usa banco SQLite em memória.
 """
 
 import pytest
+from fastapi.testclient import TestClient
+from shared.exceptions.base import ConflictError, CredenciaisInvalidasError
+from shared.security.jwt import gerar_hash_senha, verificar_jwt
+
 from app.auth.service import AuthService
 from app.core.config import settings
 from app.models.usuario import Usuario
 from app.repositories.usuario_repository import UsuarioRepository
-from fastapi.testclient import TestClient
-from shared.exceptions.base import ConflictError, CredenciaisInvalidasError
-from shared.security.jwt import gerar_hash_senha, verificar_jwt
 
 
 class TestAutenticacaoIntegrada:

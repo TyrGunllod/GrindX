@@ -65,6 +65,7 @@ logs/
 # =========================
 packages/api-postgres/app/uploads/
 packages/api-postgres/uploads/fonts/
+packages/api-postgres/uploads/logos/
 
 # =========================
 # Containers

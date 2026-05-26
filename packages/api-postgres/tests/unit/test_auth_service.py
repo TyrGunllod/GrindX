@@ -9,8 +9,6 @@ from datetime import timedelta
 from unittest.mock import MagicMock
 
 import pytest
-from app.auth.service import AuthService
-from app.models.usuario import Usuario
 from shared.exceptions.base import (
     ConflictError,
     CredenciaisInvalidasError,
@@ -18,6 +16,9 @@ from shared.exceptions.base import (
 )
 from shared.schemas.auth import TokenResponse
 from shared.security.jwt import criar_jwt, gerar_hash_senha
+
+from app.auth.service import AuthService
+from app.models.usuario import Usuario
 
 
 @pytest.fixture
@@ -246,8 +247,9 @@ class TestAuthServiceTokenGeração:
         self, auth_service_mock: AuthService, usuario_mock: Usuario
     ):
         """Testa que tokens contêm payload correto."""
-        from app.core.config import settings
         from shared.security.jwt import verificar_jwt
+
+        from app.core.config import settings
 
         tokens = auth_service_mock._gerar_tokens(usuario_mock)
 
@@ -260,8 +262,9 @@ class TestAuthServiceTokenGeração:
         self, auth_service_mock: AuthService, usuario_mock: Usuario
     ):
         """Testa que access_token tem expiration curta."""
-        from app.core.config import settings
         from shared.security.jwt import verificar_jwt
+
+        from app.core.config import settings
 
         tokens = auth_service_mock._gerar_tokens(usuario_mock)
         payload = verificar_jwt(tokens.access_token, settings.SECRET_KEY)
