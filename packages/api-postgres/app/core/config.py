@@ -5,6 +5,8 @@ Usa pydantic-settings para validação e tipagem segura.
 Todas as variáveis são obrigatórias a menos que tenham valor padrão.
 """
 
+from pathlib import Path
+
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -50,6 +52,16 @@ class Settings(BaseSettings):
     SMTP_USE_TLS: bool = False
     EMAIL_FROM: str = "admin@grindx.local"
     EMAIL_FROM_NAME: str = "GrindX Administrador"
+
+    # --- Import de Módulos ---
+    IMPORT_DIR: str = ""
+
+    @property
+    def import_dir_path(self) -> str:
+        """Resolved import directory path."""
+        if self.IMPORT_DIR:
+            return self.IMPORT_DIR
+        return str(Path(__file__).resolve().parent.parent.parent.parent.parent / "import")
 
     # --- Rate Limiting ---
     RATE_LIMIT_REQUESTS: int = 100
