@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Módulos — GrindX</title>
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="page-header">
+            <h1 id="pageTitle">Importar Módulos</h1>
+            <button class="btn btn-primary" id="btnRefresh">⟳ Atualizar</button>
+        </div>
+        <div id="dataTableContainer"></div>
+    </div>
+
+    <div class="modal-overlay hidden" id="importModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Importar Módulo</h2>
+                <button type="button" class="modal-close" id="btnModalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btnCancel">Cancelar</button>
+                <button class="btn btn-primary" id="btnConfirm">Importar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../shared/app.js"></script>
+    <script src="../../shared/apiService.js"></script>
+    <script src="../../shared/components/LoadingSpinner.js"></script>
+    <script src="../../shared/components/DataTable.js"></script>
+    <script src="../../shared/components/ReusableModal.js"></script>
+    <script src="../../shared/baseController.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
