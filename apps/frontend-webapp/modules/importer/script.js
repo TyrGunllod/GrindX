@@ -68,7 +68,8 @@ class ImporterController extends window.grindx.controllers.BaseController {
 
     async carregar() {
         try {
-            window.grindx.components.LoadingSpinner.setContainerState('dataTableContainer', 'loading');
+            var container = document.getElementById('dataTableContainer');
+            window.grindx.components.LoadingSpinner.setContainerState(container, window.grindx.components.LoadingSpinner.create());
             var data = await window.grindx.api.get('/v1/import/scan');
             this.modules = data.modules || [];
             if (this.modules.length === 0) {
@@ -82,44 +83,51 @@ class ImporterController extends window.grindx.controllers.BaseController {
     }
 
     abrirCard(slug) {
-        document.querySelectorAll('.module-card-expanded').forEach(card => {
-            card.remove();
+        document.querySelectorAll('.module-card-expanded-row').forEach(row => {
+            row.remove();
         });
 
         const row = document.querySelector(`[data-slug="${slug}"]`);
-        const card = this.criarCardExpandido(slug);
-        row.after(card);
+        const cardRow = this.criarCardExpandido(slug);
+        row.after(cardRow);
 
-        row.querySelector('.expand-icon').className = 'fas fa-chevron-down';
+        const icon = row.querySelector('.expand-icon');
+        if (icon) {
+            icon.className = 'fas fa-chevron-down expand-icon';
+        }
     }
 
     criarCardExpandido(slug) {
         const module = this.modules.find(m => m.slug === slug);
-        const div = document.createElement('div');
-        div.className = 'module-card-expanded';
-        div.innerHTML = `
-            <div class="card-grid">
-                <div class="card-field">
-                    <div class="card-label">MÓDULO</div>
-                    <div class="card-value">${module.module_name}</div>
+        const tr = document.createElement('tr');
+        tr.className = 'module-card-expanded-row';
+        tr.innerHTML = `
+            <td colspan="6">
+                <div class="module-card-expanded">
+                    <div class="card-grid">
+                        <div class="card-field">
+                            <div class="card-label">MÓDULO</div>
+                            <div class="card-value">${module.module_name}</div>
+                        </div>
+                        <div class="card-field">
+                            <div class="card-label">VERSÃO</div>
+                            <div class="card-value">${module.version}</div>
+                        </div>
+                        <div class="card-field">
+                            <div class="card-label">SCHEMA</div>
+                            <div class="card-value">${module.schema_name}</div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-sm ${module.ja_importado ? 'btn-warning' : 'btn-primary'}">
+                            ${module.ja_importado ? 'Reimportar' : 'Importar'}
+                        </button>
+                        <button class="btn btn-sm btn-secondary">Detalhes</button>
+                    </div>
                 </div>
-                <div class="card-field">
-                    <div class="card-label">VERSÃO</div>
-                    <div class="card-value">${module.version}</div>
-                </div>
-                <div class="card-field">
-                    <div class="card-label">SCHEMA</div>
-                    <div class="card-value">${module.schema_name}</div>
-                </div>
-            </div>
-            <div class="card-actions">
-                <button class="btn btn-sm ${module.ja_importado ? 'btn-warning' : 'btn-primary'}">
-                    ${module.ja_importado ? 'Reimportar' : 'Importar'}
-                </button>
-                <button class="btn btn-sm btn-secondary">Detalhes</button>
-            </div>
+            </td>
         `;
-        return div;
+        return tr;
     }
 
     abrirModal(slug, isReimport) {

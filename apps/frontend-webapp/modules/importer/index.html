@@ -21,7 +21,23 @@
                 </button>
             </div>
         </header>
-        <div id="dataTableContainer"></div>
+        <div class="table-responsive" style="margin-top: 1.5rem;">
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 30px;"></th>
+                        <th scope="col">Módulo</th>
+                        <th scope="col" style="width: 80px;">Versão</th>
+                        <th scope="col" style="width: 100px;">Schema</th>
+                        <th scope="col" style="width: 120px;">Status</th>
+                        <th scope="col" style="width: 140px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="dataTableContainer">
+                    <!-- Gerado dinamicamente -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="modal-overlay hidden" id="importModal">
