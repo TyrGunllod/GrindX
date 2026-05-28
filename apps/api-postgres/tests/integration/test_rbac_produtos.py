@@ -112,12 +112,12 @@ def produto_teste(db_session):
 
 
 class TestGetProdutosRbac:
-    """Testes do endpoint GET /v1/estoque/produtos com RBAC."""
+    """Testes do endpoint GET /v1/produto/produtos com RBAC."""
 
     def test_admin_consegue_listar_produtos(self, client: TestClient, token_admin: str):
         """Testa que admin consegue listar produtos."""
         response = client.get(
-            "/v1/estoque/produtos",
+            "/v1/produto/produtos",
             headers={"Authorization": f"Bearer {token_admin}"},
         )
 
@@ -129,7 +129,7 @@ class TestGetProdutosRbac:
     ):
         """Testa que operador consegue listar produtos."""
         response = client.get(
-            "/v1/estoque/produtos",
+            "/v1/produto/produtos",
             headers={"Authorization": f"Bearer {token_operador}"},
         )
 
@@ -140,7 +140,7 @@ class TestGetProdutosRbac:
     ):
         """Testa que leitura consegue listar produtos."""
         response = client.get(
-            "/v1/estoque/produtos",
+            "/v1/produto/produtos",
             headers={"Authorization": f"Bearer {token_leitura}"},
         )
 
@@ -148,20 +148,20 @@ class TestGetProdutosRbac:
 
     def test_sem_autenticacao_nao_consegue_listar(self, client: TestClient):
         """Testa que sem autenticação não consegue listar."""
-        response = client.get("/v1/estoque/produtos")
+        response = client.get("/v1/produto/produtos")
 
         assert response.status_code == 401
 
 
 class TestGetProdutoIdRbac:
-    """Testes do endpoint GET /v1/estoque/produtos/{id} com RBAC."""
+    """Testes do endpoint GET /v1/produto/produtos/{id} com RBAC."""
 
     def test_admin_consegue_buscar_produto(
         self, client: TestClient, token_admin: str, produto_teste: Produto
     ):
         """Testa que admin consegue buscar produto específico."""
         response = client.get(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             headers={"Authorization": f"Bearer {token_admin}"},
         )
 
@@ -173,7 +173,7 @@ class TestGetProdutoIdRbac:
     ):
         """Testa que operador consegue buscar produto específico."""
         response = client.get(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             headers={"Authorization": f"Bearer {token_operador}"},
         )
 
@@ -184,7 +184,7 @@ class TestGetProdutoIdRbac:
     ):
         """Testa que leitura consegue buscar produto específico."""
         response = client.get(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             headers={"Authorization": f"Bearer {token_leitura}"},
         )
 
@@ -192,12 +192,12 @@ class TestGetProdutoIdRbac:
 
 
 class TestPostProdutosRbac:
-    """Testes do endpoint POST /v1/estoque/produtos com RBAC."""
+    """Testes do endpoint POST /v1/produto/produtos com RBAC."""
 
     def test_admin_consegue_criar_produto(self, client: TestClient, token_admin: str):
         """Testa que admin consegue criar produto."""
         response = client.post(
-            "/v1/estoque/produtos",
+            "/v1/produto/produtos",
             headers={"Authorization": f"Bearer {token_admin}"},
             json={
                 "nome": "Caneta Vermelha",
@@ -214,7 +214,7 @@ class TestPostProdutosRbac:
     ):
         """Testa que operador consegue criar produto."""
         response = client.post(
-            "/v1/estoque/produtos",
+            "/v1/produto/produtos",
             headers={"Authorization": f"Bearer {token_operador}"},
             json={
                 "nome": "Caneta Verde",
@@ -230,7 +230,7 @@ class TestPostProdutosRbac:
     ):
         """Testa que leitura NÃO consegue criar produto (403)."""
         response = client.post(
-            "/v1/estoque/produtos",
+            "/v1/produto/produtos",
             headers={"Authorization": f"Bearer {token_leitura}"},
             json={
                 "nome": "Caneta Preta",
@@ -245,7 +245,7 @@ class TestPostProdutosRbac:
     def test_sem_autenticacao_nao_consegue_criar(self, client: TestClient):
         """Testa que sem autenticação não consegue criar."""
         response = client.post(
-            "/v1/estoque/produtos",
+            "/v1/produto/produtos",
             json={
                 "nome": "Caneta Amarela",
                 "preco": 3.50,
@@ -257,14 +257,14 @@ class TestPostProdutosRbac:
 
 
 class TestPutProdutosRbac:
-    """Testes do endpoint PUT /v1/estoque/produtos/{id} com RBAC."""
+    """Testes do endpoint PUT /v1/produto/produtos/{id} com RBAC."""
 
     def test_admin_consegue_atualizar_produto(
         self, client: TestClient, token_admin: str, produto_teste: Produto
     ):
         """Testa que admin consegue atualizar produto."""
         response = client.put(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             headers={"Authorization": f"Bearer {token_admin}"},
             json={"nome": "Caneta Azul Premium", "preco": 4.50},
         )
@@ -277,7 +277,7 @@ class TestPutProdutosRbac:
     ):
         """Testa que operador consegue atualizar produto."""
         response = client.put(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             headers={"Authorization": f"Bearer {token_operador}"},
             json={"preco": 5.00},
         )
@@ -289,7 +289,7 @@ class TestPutProdutosRbac:
     ):
         """Testa que leitura NÃO consegue atualizar produto (403)."""
         response = client.put(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             headers={"Authorization": f"Bearer {token_leitura}"},
             json={"nome": "Caneta Nova"},
         )
@@ -301,7 +301,7 @@ class TestPutProdutosRbac:
     ):
         """Testa que sem autenticação não consegue atualizar."""
         response = client.put(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             json={"nome": "Caneta Nova"},
         )
 
@@ -309,14 +309,14 @@ class TestPutProdutosRbac:
 
 
 class TestDeleteProdutosRbac:
-    """Testes do endpoint DELETE /v1/estoque/produtos/{id} com RBAC."""
+    """Testes do endpoint DELETE /v1/produto/produtos/{id} com RBAC."""
 
     def test_admin_consegue_desativar_produto(
         self, client: TestClient, token_admin: str, produto_teste: Produto
     ):
         """Testa que admin consegue desativar produto."""
         response = client.delete(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             headers={"Authorization": f"Bearer {token_admin}"},
         )
 
@@ -328,7 +328,7 @@ class TestDeleteProdutosRbac:
     ):
         """Testa que operador NÃO consegue desativar produto (403)."""
         response = client.delete(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             headers={"Authorization": f"Bearer {token_operador}"},
         )
 
@@ -340,7 +340,7 @@ class TestDeleteProdutosRbac:
     ):
         """Testa que leitura NÃO consegue desativar produto (403)."""
         response = client.delete(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
             headers={"Authorization": f"Bearer {token_leitura}"},
         )
 
@@ -351,7 +351,7 @@ class TestDeleteProdutosRbac:
     ):
         """Testa que sem autenticação não consegue desativar."""
         response = client.delete(
-            f"/v1/estoque/produtos/{produto_teste.id}",
+            f"/v1/produto/produtos/{produto_teste.id}",
         )
 
         assert response.status_code == 401
@@ -375,8 +375,8 @@ class TestRbacMatrizCompleta:
         # PUT:    admin (200), operador (200), leitura (403)
         # DELETE: admin (200), operador (403), leitura (403)
 
-        url_lista = "/v1/estoque/produtos"
-        url_item = f"/v1/estoque/produtos/{produto_teste.id}"
+        url_lista = "/v1/produto/produtos"
+        url_item = f"/v1/produto/produtos/{produto_teste.id}"
 
         # GET — todos conseguem
         for token in [token_admin, token_operador, token_leitura]:

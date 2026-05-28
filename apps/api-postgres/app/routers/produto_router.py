@@ -1,7 +1,7 @@
 """
 Router de Produto — CRUD completo com RBAC.
 
-Todas as rotas são protegidas por JWT e prefixadas com /v1/estoque.
+Todas as rotas são protegidas por JWT e prefixadas com /v1/produto.
 Controle de acesso por role:
 - GET: leitura, operador, admin
 - POST: operador, admin
@@ -20,7 +20,7 @@ from app.auth.dependencies import (
 from app.schemas.produto import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 from app.services.produto_service import ProdutoService
 
-router = APIRouter(prefix="/v1/estoque", tags=["Estoque"])
+router = APIRouter(prefix="/v1/produto", tags=["Produto"])
 
 
 @router.get(
