@@ -83,6 +83,35 @@ class ImporterController extends window.grindx.controllers.BaseController {
         row.querySelector('.expand-icon').className = 'fas fa-chevron-down';
     }
 
+    criarCardExpandido(slug) {
+        const module = this.modules.find(m => m.slug === slug);
+        const div = document.createElement('div');
+        div.className = 'module-card-expanded';
+        div.innerHTML = `
+            <div class="card-grid">
+                <div class="card-field">
+                    <div class="card-label">MÓDULO</div>
+                    <div class="card-value">${module.module_name}</div>
+                </div>
+                <div class="card-field">
+                    <div class="card-label">VERSÃO</div>
+                    <div class="card-value">${module.version}</div>
+                </div>
+                <div class="card-field">
+                    <div class="card-label">SCHEMA</div>
+                    <div class="card-value">${module.schema_name}</div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn btn-sm ${module.ja_importado ? 'btn-warning' : 'btn-primary'}">
+                    ${module.ja_importado ? 'Reimportar' : 'Importar'}
+                </button>
+                <button class="btn btn-sm btn-secondary">Detalhes</button>
+            </div>
+        `;
+        return div;
+    }
+
     abrirModal(slug, isReimport) {
         this.currentSlug = slug;
         this.isReimport = isReimport;
