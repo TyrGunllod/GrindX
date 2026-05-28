@@ -34,7 +34,11 @@
                 return `
                     <tr class="${rowClass}" ${dataAttrs}>
                         ${expandIcon ? `<td style="width: 30px; text-align: center;">${expandIcon}</td>` : ''}
-                        ${this.columns.map(column => `<td class="${column.className || ''}">${column.render(item)}</td>`).join('')}
+                        ${this.columns.map(column => {
+                            const value = column.key ? item[column.key] : '';
+                            const content = column.render ? column.render(value, item) : value;
+                            return `<td class="${column.className || ''}">${content}</td>`;
+                        }).join('')}
                     </tr>
                 `;
             }).join('');
