@@ -47,11 +47,19 @@ class ImporterController extends window.grindx.controllers.BaseController {
 
         document.getElementById('dataTableContainer').addEventListener('click', (e) => {
             var btn = e.target.closest('[data-action]');
-            if (!btn) return;
-            var slug = btn.dataset.slug;
-            var action = btn.dataset.action;
-            if (action === 'import' || action === 'reimport') {
-                this.abrirModal(slug, action === 'reimport');
+            if (btn) {
+                var slug = btn.dataset.slug;
+                var action = btn.dataset.action;
+                if (action === 'import' || action === 'reimport') {
+                    this.abrirModal(slug, action === 'reimport');
+                }
+                return;
+            }
+
+            var row = e.target.closest('.module-row');
+            if (row) {
+                var slug = row.dataset.slug;
+                this.abrirCard(slug);
             }
         });
     }
