@@ -60,11 +60,11 @@ class ImporterController extends window.grindx.controllers.BaseController {
         try {
             window.grindx.components.LoadingSpinner.setContainerState('dataTableContainer', 'loading');
             var data = await window.grindx.api.get('/v1/import/scan');
-            var modules = data.modules || [];
-            if (modules.length === 0) {
+            this.modules = data.modules || [];
+            if (this.modules.length === 0) {
                 this.dataTable.renderEmpty('Nenhum módulo encontrado. Coloque um .zip na pasta import/ do servidor.');
             } else {
-                this.dataTable.render(modules);
+                this.dataTable.render(this.modules);
             }
         } catch (err) {
             this.toastError(err);
