@@ -17,7 +17,6 @@ from alembic import context
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.core.config import settings
-from app.modules.catalogo.models.produto import Produto  # noqa: F401
 from app.modules.iam.base import IamBase
 
 # Importar todos os models para o autogenerate detectar

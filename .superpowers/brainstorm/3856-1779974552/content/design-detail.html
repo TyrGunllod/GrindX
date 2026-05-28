@@ -1,0 +1,92 @@
+<h2>Design Detalhado - Card Inline</h2>
+<p class="subtitle">Estrutura e comportamento do card expandido</p>
+
+<div class="mockup">
+  <div class="mockup-header">Exemplo: Módulo expandido</div>
+  <div class="mockup-body">
+    <!-- Linha da tabela (colapsada) -->
+    <div style="border: 1px solid var(--border-color); border-radius: 4px; padding: 12px; margin-bottom: 2px; background: var(--bg-card); cursor: pointer;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <i class="fas fa-chevron-down" style="color: var(--primary); font-size: 12px;"></i>
+          <strong>gestao-vendas</strong>
+          <span style="color: var(--text-muted); font-size: 0.9em;">v2.1.0</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="badge badge-success">Importado</span>
+          <span style="color: var(--text-muted);">schema: public</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Card expandido -->
+    <div style="border: 1px solid var(--primary); border-left: 3px solid var(--primary); border-radius: 0 4px 4px 0; padding: 16px; margin-bottom: 8px; background: rgba(0,194,224,0.03);">
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;">
+        <div>
+          <div style="color: var(--text-muted); font-size: 0.8em; margin-bottom: 4px;">MÓDULO</div>
+          <div style="font-weight: 600;">gestao-vendas</div>
+        </div>
+        <div>
+          <div style="color: var(--text-muted); font-size: 0.8em; margin-bottom: 4px;">VERSÃO</div>
+          <div style="font-weight: 600;">2.1.0</div>
+        </div>
+        <div>
+          <div style="color: var(--text-muted); font-size: 0.8em; margin-bottom: 4px;">SCHEMA</div>
+          <div style="font-weight: 600;">public</div>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 8px;">
+        <button class="mock-button" style="background: var(--warning); display: flex; align-items: center; gap: 6px;">
+          <i class="fas fa-redo"></i> Reimportar
+        </button>
+        <button class="mock-button" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted);">
+          <i class="fas fa-info-circle"></i> Detalhes
+        </button>
+      </div>
+    </div>
+    
+    <!-- Outra linha (colapsada) -->
+    <div style="border: 1px solid var(--border-color); border-radius: 4px; padding: 12px; background: var(--bg-card); cursor: pointer;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <i class="fas fa-chevron-right" style="color: var(--text-muted); font-size: 12px;"></i>
+          <strong>estoque</strong>
+          <span style="color: var(--text-muted); font-size: 0.9em;">v1.0.0</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="badge badge-info">Novo</span>
+          <span style="color: var(--text-muted);">schema: private</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>Comportamento</h3>
+  <ul style="margin-left: 20px; line-height: 1.8;">
+    <li><strong>Clique na linha:</strong> Expande/recolhe o card</li>
+    <li><strong>Ícone de seta:</strong> Indica estado (▼ expandido, ► recolhido)</li>
+    <li><strong>Múltiplos expandidos:</strong> Apenas um por vez (accordion)</li>
+    <li><strong>Animação:</strong> Transição suave de 200ms</li>
+  </ul>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <h3>Conteúdo do Card</h3>
+  <ul style="margin-left: 20px; line-height: 1.8;">
+    <li><strong>Informações básicas:</strong> Nome, versão, schema (em grid 3 colunas)</li>
+    <li><strong>Botão de ação:</strong> Importar (azul) ou Reimportar (amarelo)</li>
+    <li><strong>Botão secundário:</strong> Detalhes (para futuras expansões)</li>
+  </ul>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <h3>Acessibilidade</h3>
+  <ul style="margin-left: 20px; line-height: 1.8;">
+    <li><strong>Teclado:</strong> Tab para navegar, Enter/Space para expandir</li>
+    <li><strong>Screen reader:</strong> aria-expanded, aria-controls</li>
+    <li><strong>Touch:</strong> Área de clique mínima 44px</li>
+  </ul>
+</div>

@@ -6,7 +6,7 @@ Configura o app FastAPI com:
 - CORS
 - Middlewares (request_id, security_headers, rate_limit)
 - Exception handlers
-- Routers (auth, produto, health)
+- Routers (auth, health)
 - Documentação Swagger/ReDoc em /v1/
 - Arquivos estáticos (uploads)
 """
@@ -29,7 +29,6 @@ from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.routers.health_router import router as health_router
 from app.routers.import_router import router as import_router
 from app.routers.portal_router import router as portal_router
-from app.routers.produto_router import router as produto_router
 from app.routers.theme_router import router as theme_router
 from app.routers.usuario_router import router as usuario_router
 
@@ -120,7 +119,6 @@ app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 app.include_router(health_router)
 app.include_router(auth_router)
-app.include_router(produto_router)
 app.include_router(usuario_router)
 app.include_router(portal_router)
 app.include_router(theme_router)

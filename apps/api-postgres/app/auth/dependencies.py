@@ -16,8 +16,6 @@ from sqlalchemy.orm import Session
 from app.auth.service import AuthService
 from app.core.config import settings
 from app.database import get_db
-from app.repositories.produto_repository import ProdutoRepository
-from app.services.produto_service import ProdutoService
 
 # Scheme que extrai o token do header Authorization: Bearer <token>
 _bearer_scheme = HTTPBearer(auto_error=False)
@@ -56,12 +54,6 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
         Instância do AuthService.
     """
     return AuthService(db)
-
-
-def get_produto_service(db: Session = Depends(get_db)) -> ProdutoService:
-    """Factory para o ProdutoService com injeção do repositório."""
-    repository = ProdutoRepository(db)
-    return ProdutoService(repository)
 
 
 # --- Versões vinculadas das permissões ---
