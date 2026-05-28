@@ -2,6 +2,33 @@
 """Generate favicon PNG/ICO files from SVG source."""
 import os
 import struct
+import subprocess
+import sys
+
+
+def install_package(package_name):
+    """Instala um pacote via pip."""
+    print(f"Instalando {package_name}...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
+    print(f"{package_name} instalado com sucesso!")
+
+
+def check_and_install_dependencies():
+    """Verifica e instala dependências necessárias."""
+    dependencies = {
+        "Pillow": "Pillow",
+        "cairosvg": "cairosvg",
+    }
+
+    for import_name, package_name in dependencies.items():
+        try:
+            __import__(import_name)
+        except ImportError:
+            install_package(package_name)
+
+
+# Verificar e instalar dependências antes de importar
+check_and_install_dependencies()
 
 try:
     import cairosvg
