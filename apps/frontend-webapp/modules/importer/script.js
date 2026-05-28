@@ -71,6 +71,18 @@ class ImporterController extends window.grindx.controllers.BaseController {
         }
     }
 
+    abrirCard(slug) {
+        document.querySelectorAll('.module-card-expanded').forEach(card => {
+            card.remove();
+        });
+
+        const row = document.querySelector(`[data-slug="${slug}"]`);
+        const card = this.criarCardExpandido(slug);
+        row.after(card);
+
+        row.querySelector('.expand-icon').className = 'fas fa-chevron-down';
+    }
+
     abrirModal(slug, isReimport) {
         this.currentSlug = slug;
         this.isReimport = isReimport;
