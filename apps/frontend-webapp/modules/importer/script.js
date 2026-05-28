@@ -5,6 +5,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
         this.importModal = null;
         this.currentSlug = null;
         this.isReimport = false;
+        this.modules = [];
         this.init();
     }
 
