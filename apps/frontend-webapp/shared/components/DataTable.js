@@ -35,7 +35,7 @@
                     <tr class="${rowClass}" ${dataAttrs}>
                         ${expandIcon ? `<td style="width: 30px; text-align: center;">${expandIcon}</td>` : ''}
                         ${this.columns.map(column => {
-                            const value = column.key ? item[column.key] : '';
+                            const value = column.key ? item[column.key] : item;
                             const content = column.render ? column.render(value, item) : value;
                             return `<td class="${column.className || ''}">${content}</td>`;
                         }).join('')}
