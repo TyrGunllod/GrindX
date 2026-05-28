@@ -39,14 +39,14 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: packages/api-postgres/requirements.txt
+          cache-dependency-path: apps/api-postgres/requirements.txt
 
       - name: Instalar dependências
-        working-directory: packages/api-postgres
+        working-directory: apps/api-postgres
         run: pip install -r requirements.txt
 
       - name: Rodar testes
-        working-directory: packages/api-postgres
+        working-directory: apps/api-postgres
         env:
           PYTHONPATH: ${{ github.workspace }}/packages
         run: pytest tests/ -v --tb=short --strict-markers
@@ -78,14 +78,14 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: packages/api-sqlserver/requirements.txt
+          cache-dependency-path: apps/api-sqlserver/requirements.txt
 
       - name: Instalar dependências Python
-        working-directory: packages/api-sqlserver
+        working-directory: apps/api-sqlserver
         run: pip install -r requirements.txt
 
       - name: Rodar testes
-        working-directory: packages/api-sqlserver
+        working-directory: apps/api-sqlserver
         env:
           PYTHONPATH: ${{ github.workspace }}/packages
         run: pytest tests/ -v --tb=short --strict-markers
@@ -123,12 +123,12 @@ jobs:
 
       - name: Instalar dependências de todos os pacotes
         run: |
-          pip install -r packages/api-postgres/requirements.txt
-          pip install -r packages/api-sqlserver/requirements.txt
+          pip install -r apps/api-postgres/requirements.txt
+          pip install -r apps/api-sqlserver/requirements.txt
 
       - name: Rodar testes da raiz
         env:
-          PYTHONPATH: ${{ github.workspace }}/packages:${{ github.workspace }}/packages/api-postgres:${{ github.workspace }}/packages/api-sqlserver
+          PYTHONPATH: ${{ github.workspace }}/packages:${{ github.workspace }}/apps/api-postgres:${{ github.workspace }}/apps/api-sqlserver
         run: pytest tests/ -v --tb=short --strict-markers
 
   # ==========================================
@@ -151,10 +151,10 @@ jobs:
         run: pip install ruff>=0.3.0
 
       - name: Check
-        run: ruff check packages/ --select E,F,I --ignore E501
+        run: ruff check packages/ apps/ --select E,F,I --ignore E501
 
       - name: Format check
-        run: ruff format packages/ --check
+        run: ruff format packages/ apps/ --check
 
   # ==========================================
   # Semantic Release

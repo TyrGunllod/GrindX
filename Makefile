@@ -11,21 +11,21 @@
 
 dev-postgres:
 	@echo "Iniciando API Postgres na porta 8002..."
-	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002
+	cd apps/api-postgres && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002
 
 dev-sqlserver:
 	@echo "Iniciando API SQL Server na porta 8001..."
-	cd packages/api-sqlserver && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
+	cd apps/api-sqlserver && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
 
 dev-frontend:
 	@echo "Iniciando Frontend na porta 5500 (acessivel na rede)..."
-	python -m http.server 5500 --directory packages/frontend-webapp --bind 0.0.0.0
+	python -m http.server 5500 --directory apps/frontend-webapp --bind 0.0.0.0
 
 dev-all:
 	@echo "Subindo todos os servicos GrindX..."
-	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd packages/api-postgres; $$env:PYTHONPATH=(Get-Item ..).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002'"
-#	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd packages/api-sqlserver; $$env:PYTHONPATH=(Get-Item ..).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001'"
-	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'python -m http.server 5500 --directory packages/frontend-webapp --bind 0.0.0.0'"
+	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/api-postgres; $$env:PYTHONPATH=(Get-Item ..\..\packages).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002'"
+#	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/api-sqlserver; $$env:PYTHONPATH=(Get-Item ..\..\packages).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001'"
+	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'python -m http.server 5500 --directory apps/frontend-webapp --bind 0.0.0.0'"
 	@echo Acesse: http://localhost:5500
 
 # ==========================================
@@ -34,11 +34,11 @@ dev-all:
 
 migrate:
 	@echo "Rodando migrações no PostgreSQL..."
-	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python manage_db.py upgrade head
+	cd apps/api-postgres && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python manage_db.py upgrade head
 
 seed:
 	@echo "Populando banco de dados inicial..."
-	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python seed.py
+	cd apps/api-postgres && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python seed.py
 
 # ==========================================
 # Testes Automatizados
@@ -46,11 +46,11 @@ seed:
 
 test-postgres:
 	@echo "Executando testes da API Postgres..."
-	cd packages/api-postgres && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+	cd apps/api-postgres && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
 
 test-sqlserver:
 	@echo "Executando testes da API SQL Server..."
-	cd packages/api-sqlserver && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+	cd apps/api-sqlserver && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
 
 test-shared:
 	@echo "Executando testes do pacote shared..."
@@ -58,7 +58,7 @@ test-shared:
 
 test-root:
 	@echo "Executando testes da raiz do monorepo..."
-	set PYTHONPATH=packages\\api-postgres;packages\\api-sqlserver;packages&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+	set PYTHONPATH=apps\\api-postgres;apps\\api-sqlserver;packages&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
 
 test-all: test-postgres test-sqlserver test-shared test-root
 

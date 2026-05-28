@@ -7,14 +7,14 @@ networks:
 services:
   api-sqlserver:
     build:
-      context: ./packages/api-sqlserver
+      context: ./apps/api-sqlserver
       containerfile: Containerfile
     image: erp/api-sqlserver:dev
     container_name: erp-api-sqlserver
     user: "1001:1001"
     ports:
       - "0.0.0.0:8001:8001"
-    env_file: ./packages/api-sqlserver/.env
+    env_file: ./apps/api-sqlserver/.env
     networks:
       - erp-net
     healthcheck:
@@ -29,14 +29,14 @@ services:
 
   api-postgres:
     build:
-      context: ./packages/api-postgres
+      context: ./apps/api-postgres
       containerfile: Containerfile
     image: erp/api-postgres:dev
     container_name: erp-api-postgres
     user: "1001:1001"
     ports:
       - "0.0.0.0:8002:8002"
-    env_file: ./packages/api-postgres/.env
+    env_file: ./apps/api-postgres/.env
     networks:
       - erp-net
     healthcheck:
