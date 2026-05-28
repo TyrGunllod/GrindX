@@ -66,6 +66,12 @@ logs/
 packages/api-postgres/app/uploads/
 packages/api-postgres/uploads/fonts/
 packages/api-postgres/uploads/logos/
+apps/api-postgres/uploads/logos/
+
+# =========================
+# Import (module zips)
+# =========================
+import/
 
 # =========================
 # Containers
