@@ -26,6 +26,10 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
     }
 
     setupEvents() {
+        // Header buttons
+        document.getElementById('btnRefresh')?.addEventListener('click', () => this.loadSkins());
+        document.getElementById('btnNewSkin')?.addEventListener('click', () => this.openNewSkinModal());
+
         // Modals
         document.getElementById('btnCloseModal')?.addEventListener('click', () => this.closeModal());
         document.getElementById('btnCloseTemplateModal')?.addEventListener('click', () => this.closeTemplatePicker());

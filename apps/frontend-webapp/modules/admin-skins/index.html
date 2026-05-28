@@ -10,8 +10,19 @@
 </head>
 <body>
     <div class="module-page">
-        <header class="skins-header">
-            <h1 class="font-display">Gestão de Skins</h1>
+        <header class="page-header flex justify-between items-center mb-8">
+            <div>
+                <h1>Gestão de Skins</h1>
+                <p class="text-muted">Visual e tema customizável por empresa.</p>
+            </div>
+            <div class="actions-group">
+                <button class="btn" id="btnRefresh" title="Recarregar">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="btn btn-primary" id="btnNewSkin" aria-haspopup="dialog">
+                    <i class="fas fa-plus"></i> <span class="hide-mobile">Nova Skin</span>
+                </button>
+            </div>
         </header>
 
         <div class="skins-grid" id="skinsGrid">
