@@ -34,6 +34,8 @@ class ImporterController extends window.grindx.controllers.BaseController {
                     }
                 }
             ],
+            rowClassName: () => 'module-row',
+            rowDataset: (item) => ({ slug: item.slug })
         });
         this.bindEvents();
         await this.carregar();
