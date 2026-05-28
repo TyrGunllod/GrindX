@@ -3,17 +3,46 @@
 .page-container { padding: var(--space-6); }
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); }
 
+/* Responsive Table */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--bg-card);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem;
+}
+
 .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; }
-.badge-success { background: var(--color-success-bg, #d4edda); color: var(--color-success-text, #155724); }
-.badge-info { background: var(--color-info-bg, #d1ecf1); color: var(--color-info-text, #0c5460); }
+.badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.badge-info { background: rgba(100, 116, 139, 0.1); color: var(--text-muted); }
 
 .modal-body { padding: var(--space-4) 0; }
-.modal-footer { display: flex; justify-content: flex-end; gap: var(--space-2); padding-top: var(--space-4); border-top: 1px solid var(--color-border, #ddd); }
+.modal-footer { display: flex; justify-content: flex-end; gap: var(--space-2); padding-top: var(--space-4); border-top: 1px solid var(--border-color); }
 
 .import-log { margin-top: var(--space-4); max-height: 300px; overflow-y: auto; }
 .log-step { padding: var(--space-1) var(--space-2); border-radius: 4px; margin-bottom: 4px; font-size: 0.9em; }
-.log-step.success { background: var(--color-success-bg, #d4edda); color: var(--color-success-text, #155724); }
-.log-step.error { background: var(--color-error-bg, #f8d7da); color: var(--color-error-text, #721c24); }
+.log-step.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.log-step.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
 /* Card Inline */
 .module-card-expanded {
