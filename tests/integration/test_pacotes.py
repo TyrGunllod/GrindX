@@ -10,9 +10,13 @@ from pathlib import Path
 
 import pytest
 
-_packages_dir = str(Path(__file__).resolve().parent.parent.parent / "packages")
+_root = Path(__file__).resolve().parent.parent.parent
+_packages_dir = str(_root / "packages")
+_apps_dir = str(_root / "apps")
 if _packages_dir not in sys.path:
     sys.path.insert(0, _packages_dir)
+if _apps_dir not in sys.path:
+    sys.path.insert(0, _apps_dir)
 
 
 class TestEstruturaTestes:
@@ -20,7 +24,7 @@ class TestEstruturaTestes:
 
     def test_api_postgres_tests_exist(self):
         """Testa que os testes da api-postgres existem."""
-        tests_dir = Path(_packages_dir) / "api-postgres" / "tests"
+        tests_dir = Path(_apps_dir) / "api-postgres" / "tests"
         assert tests_dir.exists()
         assert (tests_dir / "unit").exists()
         assert (tests_dir / "integration").exists()
@@ -28,7 +32,7 @@ class TestEstruturaTestes:
 
     def test_api_sqlserver_tests_exist(self):
         """Testa que os testes da api-sqlserver existem."""
-        tests_dir = Path(_packages_dir) / "api-sqlserver" / "tests"
+        tests_dir = Path(_apps_dir) / "api-sqlserver" / "tests"
         assert tests_dir.exists()
         assert (tests_dir / "unit").exists()
         assert (tests_dir / "integration").exists()

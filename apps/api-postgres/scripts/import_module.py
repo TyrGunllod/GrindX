@@ -62,7 +62,7 @@ def validate_manifest(import_dir: Path) -> dict:
 
 
 def backup_existing(manifest: dict) -> Path | None:
-    api_dir = _get_monorepo_root() / "packages" / "api-postgres"
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     backup_root = _get_import_dir() / BACKUP_DIRNAME
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     backup_dir = backup_root / f"{manifest['module_name']}_{timestamp}"
@@ -85,7 +85,7 @@ def copy_backend(import_dir: Path, module_name: str, force: bool) -> None:
     import tempfile
 
     src = import_dir / "app" / "modules" / module_name
-    api_dir = _get_monorepo_root() / "packages" / "api-postgres"
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     dest = api_dir / "app" / "modules" / module_name
 
     if not src.exists():
@@ -114,7 +114,7 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
     import tempfile
 
     src = import_dir / "frontend"
-    frontend_dir = _get_monorepo_root() / "packages" / "frontend-webapp"
+    frontend_dir = _get_monorepo_root() / "apps" / "frontend-webapp"
     dest = frontend_dir / "modules" / module_name
 
     if not src.exists():
@@ -141,7 +141,7 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
 
 def copy_migration(import_dir: Path) -> None:
     src_dir = import_dir / "migration"
-    api_dir = _get_monorepo_root() / "packages" / "api-postgres"
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     dest_dir = api_dir / "alembic" / "versions"
 
     if not src_dir.exists():
@@ -160,7 +160,7 @@ def copy_migration(import_dir: Path) -> None:
 
 def register_router(manifest: dict, force: bool) -> None:
     module_name = manifest["module_name"]
-    api_dir = _get_monorepo_root() / "packages" / "api-postgres"
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     main_py = api_dir / "app" / "main.py"
 
     content = main_py.read_text(encoding="utf-8")
@@ -205,7 +205,7 @@ def register_router(manifest: dict, force: bool) -> None:
 def register_alembic_import(manifest: dict, force: bool) -> None:
     module_name = manifest["module_name"]
     entity_name = manifest["entity_name"]
-    api_dir = _get_monorepo_root() / "packages" / "api-postgres"
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     env_py = api_dir / "alembic" / "env.py"
 
     content = env_py.read_text(encoding="utf-8")
@@ -226,7 +226,7 @@ def register_alembic_import(manifest: dict, force: bool) -> None:
 
 
 def run_migrations() -> None:
-    api_dir = _get_monorepo_root() / "packages" / "api-postgres"
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     result = subprocess.run(
         [sys.executable, "-m", "alembic", "upgrade", "head"],
         cwd=api_dir,
@@ -247,7 +247,7 @@ def register_menu(manifest: dict) -> None:
     icone = manifest.get("menu_icone", "folder")
     slug = module_name
 
-    api_dir = _get_monorepo_root() / "packages" / "api-postgres"
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     if str(api_dir) not in _sys.path:
         _sys.path.insert(0, str(api_dir))
 
@@ -277,7 +277,7 @@ def rollback(backup_dir: Path | None) -> None:
         logger.warning("Nada para restaurar")
         return
 
-    api_dir = _get_monorepo_root() / "packages" / "api-postgres"
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     restored = 0
     for f in backup_dir.iterdir():
         if f.name == "main.py":
