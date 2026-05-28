@@ -279,6 +279,14 @@ def seed_database():
                 "icone": "fas fa-palette",
                 "role_minima": "admin",
             },
+            {
+                "aba": "Gestão",
+                "nome": "Importar Módulos",
+                "slug": "importer",
+                "url": "modules/importer/index.html",
+                "icone": "fas fa-upload",
+                "role_minima": "admin",
+            },
         ]
 
         modulos_criados = 0
