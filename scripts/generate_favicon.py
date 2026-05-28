@@ -10,7 +10,7 @@ except ImportError:
     HAS_CAIRO = False
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ASSETS_DIR = os.path.join(BASE_DIR, "packages", "frontend-webapp", "assets")
+ASSETS_DIR = os.path.join(BASE_DIR, "apps", "frontend-webapp", "assets")
 
 SVG_CONTENT = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="{size}" height="{size}">
   <rect width="64" height="64" rx="12" fill="#0f172a"/>
