@@ -28,7 +28,7 @@ cd GrindX
 ## 2. Configurar `api-postgres`
 
 ```powershell
-cd packages/api-postgres
+cd apps/api-postgres
 
 # Criar e ativar virtualenv
 python -m venv .venv
@@ -75,7 +75,7 @@ alembic upgrade head
 ## 3. Configurar `api-sqlserver` (opcional)
 
 ```powershell
-cd packages/api-sqlserver
+cd apps/api-sqlserver
 
 python -m venv .venv
 .\.venv\Scripts\activate
@@ -111,7 +111,7 @@ make dev-postgres
 make dev-sqlserver
 
 # Terminal 3 — frontend (porta 5500)
-python -m http.server 5500 --directory packages/frontend-webapp
+python -m http.server 5500 --directory apps/frontend-webapp
 ```
 
 Acessar: `http://localhost:5500`
@@ -159,7 +159,7 @@ python seed.py
 ```
 
 ```powershell
-cd packages/api-postgres
+cd apps/api-postgres
 
 # Criar nova migração após alterar models/
 alembic revision --autogenerate -m "descricao da mudanca"
@@ -190,7 +190,7 @@ make logs    # ver logs em tempo real
 
 ## 9. Criar um Novo Módulo Frontend
 
-1. Criar pasta em `packages/frontend-webapp/modules/nome-do-modulo/`
+1. Criar pasta em `apps/frontend-webapp/modules/nome-do-modulo/`
 2. Criar `index.html`, `script.js`, `style.css`
 3. Usar o design system:
 
@@ -204,7 +204,7 @@ make logs    # ver logs em tempo real
 
 > As **Abas** agora suportam `parent_id` para aninhamento hierárquico (sub-abas). Ao cadastrar uma aba, é possível definir uma aba pai para criar sub-menus.
 
-Ver [`ARCHITECTURE_PORTAL.md`](../packages/frontend-webapp/ARCHITECTURE_PORTAL.md) para o guia completo.
+Ver [`ARCHITECTURE_PORTAL.md`](../apps/frontend-webapp/ARCHITECTURE_PORTAL.md) para o guia completo.
 
 ---
 

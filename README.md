@@ -1,4 +1,4 @@
-<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-05-25 -->
+<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-05-28 -->
 
 # GrindX — Sistema de Gestão Integrado (Monorepo)
 
@@ -45,7 +45,7 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 git clone <url> && cd GrindX
 
 # 2. Criar virtualenv e instalar dependências — api-postgres
-cd packages/api-postgres
+cd apps/api-postgres
 python -m venv .venv && .\.venv\Scripts\activate
 pip install -r requirements.txt
 
@@ -59,7 +59,7 @@ make dev-postgres    # porta 8002
 make dev-sqlserver   # porta 8001
 
 # 5. Rodar frontend
-python -m http.server 5500 --directory packages/frontend-webapp
+python -m http.server 5500 --directory apps/frontend-webapp
 ```
 
 Acesse em `http://localhost:5500`.
@@ -146,7 +146,7 @@ GrindX/
 │   ├── DATABASE.md
 │   ├── SECURITY.md
 │   └── SKILLS.md
-├── packages/
+├── apps/
 │   ├── api-postgres/       # API principal (FastAPI + PostgreSQL)
 │   │   ├── app/
 │   │   │   ├── auth/       # JWT — router, service, dependencies
@@ -170,11 +170,12 @@ GrindX/
 │   │   │   └── services/
 │   │   ├── tests/
 │   │   └── ...
-│   ├── frontend-webapp/    # Portal Frontend
-│   │   ├── index.html      # Shell/Host
-│   │   ├── dashboard.html
-│   │   ├── modules/        # home, users, structure, admin-skins
-│   │   └── shared/         # Design System
+│   └── frontend-webapp/    # Portal Frontend
+│       ├── index.html      # Shell/Host
+│       ├── dashboard.html
+│       ├── modules/        # home, users, structure, admin-skins
+│       └── shared/         # Design System
+├── packages/
 │   └── shared/             # Pacote Python compartilhado
 │       ├── security/       # JWT e bcrypt
 │       ├── schemas/        # Schemas base

@@ -1,4 +1,4 @@
-<!-- title: Banco de Dados — GrindX | updated: 2026-05-25 -->
+<!-- title: Banco de Dados — GrindX | updated: 2026-05-28 -->
 
 # Banco de Dados — GrindX
 
@@ -199,7 +199,7 @@ Se `DB_DRIVER` contiver "ODBC", usa pyodbc. Caso contrário, usa pymssql com por
 ## Migrações (Alembic)
 
 ```powershell
-cd packages/api-postgres
+cd apps/api-postgres
 
 # Criar nova migração após alterar um model
 alembic revision --autogenerate -m "adiciona campo X em Produto"
@@ -220,7 +220,7 @@ alembic downgrade -1
 alembic downgrade base
 ```
 
-As migrações ficam em `packages/api-postgres/alembic/versions/`.
+As migrações ficam em `apps/api-postgres/alembic/versions/`.
 
 | Arquivo | Descrição |
 |---------|-----------|
@@ -235,7 +235,7 @@ As migrações ficam em `packages/api-postgres/alembic/versions/`.
 ## Dados Iniciais (seed)
 
 ```powershell
-cd packages/api-postgres
+cd apps/api-postgres
 python seed.py
 ```
 

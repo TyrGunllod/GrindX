@@ -1,0 +1,311 @@
+<!-- title: Mapa de Arquivos GrindX | updated: 2026-05-28 -->
+
+# GrindX — Mapa de Arquivos
+
+Inventário completo do projeto. Atualizado em 2026-05-28.
+
+**Status geral: funcionalidades principais implementadas e rodando.**
+
+---
+
+## Estrutura do Projeto
+
+```
+GrindX/
+│
+├── .github/
+│   └── workflows/
+│       ├── tests.yml           ✅ CI — testes automatizados
+│       └── lint.yml            ✅ CI — Ruff (check + format)
+│
+├── docs/
+│   ├── README.md               ✅ Portal de entrada — índice de documentos
+│   ├── API.md                  ✅ Referência de endpoints
+│   ├── DATABASE.md             ✅ Schema e migrações
+│   ├── DEPLOYMENT.md           ✅ Deploy com containers
+│   ├── SECURITY.md             ✅ JWT e RBAC
+│   ├── SETUP.md                ✅ Guia de instalação
+│   └── SKILLS.md               ✅ Skills do assistente
+│
+├── apps/
+│   │
+│   ├── api-postgres/
+│   │   ├── app/
+│   │   │   ├── auth/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── dependencies.py     ✅
+│   │   │   │   ├── router.py           ✅ forgot-password, change-password
+│   │   │   │   └── service.py          ✅
+│   │   │   ├── core/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── config.py           ✅
+│   │   │   │   ├── exceptions.py       ✅
+│   │   │   │   └── logging.py          ✅
+│   │   │   ├── middleware/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── rate_limit.py       ✅
+│   │   │   │   ├── request_id.py       ✅
+│   │   │   │   └── security_headers.py ✅
+│   │   │   ├── models/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── empresa.py          ✅ Skin system
+│   │   │   │   ├── portal.py           ✅
+│   │   │   │   ├── produto.py          ✅
+│   │   │   │   ├── theme.py            ✅ Skin system
+│   │   │   │   ├── theme_history.py    ✅ Skin system v2
+│   │   │   │   └── usuario.py          ✅
+│   │   │   ├── repositories/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── produto_repository.py   ✅
+│   │   │   │   └── usuario_repository.py   ✅
+│   │   │   ├── routers/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── health_router.py    ✅
+│   │   │   │   ├── import_router.py    ✅ Importação de módulos
+│   │   │   │   ├── portal_router.py    ✅
+│   │   │   │   ├── produto_router.py   ✅
+│   │   │   │   ├── theme_router.py     ✅ Skin system
+│   │   │   │   └── usuario_router.py   ✅
+│   │   │   ├── schemas/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── produto.py          ✅
+│   │   │   │   ├── theme.py            ✅ Skin system
+│   │   │   │   ├── theme_history.py    ✅ Skin system v2
+│   │   │   │   └── usuario.py          ✅
+│   │   │   ├── services/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── email_service.py    ✅
+│   │   │   │   ├── produto_service.py  ✅
+│   │   │   │   ├── theme_service.py    ✅ Skin system
+│   │   │   │   └── usuario_service.py  ✅
+│   │   │   ├── __init__.py             ✅
+│   │   │   ├── database.py             ✅
+│   │   │   └── main.py                 ✅
+│   │   ├── alembic/
+│   │   │   ├── versions/
+│   │   │   │   ├── __init__.py                     ✅
+│   │   │   │   ├── 001_initial_schema.py           ✅
+│   │   │   │   ├── 002_add_usuario_modulos.py      ✅
+│   │   │   │   ├── 003_add_empresa_and_theme.py    ✅ Skin system
+│   │   │   │   ├── 004_add_theme_history.py        ✅ Skin system v2
+│   │   │   │   └── 005_add_aba_parent_id.py        ✅
+│   │   │   ├── README.md               ✅
+│   │   │   ├── env.py                  ✅
+│   │   │   └── script.py.mako          ✅
+│   │   ├── tests/
+│   │   │   ├── unit/
+│   │   │   │   ├── __init__.py                 ✅
+│   │   │   │   ├── test_auth.py                ✅
+│   │   │   │   ├── test_auth_service.py        ✅
+│   │   │   │   ├── test_import_router.py       ✅ Importação de módulos
+│   │   │   │   ├── test_repository_usuario.py  ✅
+│   │   │   │   ├── test_schemas_produto.py     ✅
+│   │   │   │   └── test_service_produto.py     ✅
+│   │   │   ├── integration/
+│   │   │   │   ├── __init__.py                     ✅
+│   │   │   │   ├── test_autenticacao_integrada.py  ✅
+│   │   │   │   ├── test_rbac_produtos.py           ✅
+│   │   │   │   ├── test_repository_produto.py      ✅
+│   │   │   │   └── test_router_produto.py          ✅
+│   │   │   ├── __init__.py             ✅
+│   │   │   └── conftest.py             ✅
+│   │   ├── .env                        ✅ (não versionar)
+│   │   ├── .env.example                ✅
+│   │   ├── alembic.ini                 ✅
+│   │   ├── Containerfile               ✅
+│   │   ├── manage_db.py                ✅
+│   │   ├── MIGRATIONS_GUIDE.py         ✅
+│   │   ├── README.md                   ✅
+│   │   ├── requirements.txt            ✅
+│   │   ├── seed.py                     ✅
+│   │   ├── scripts/
+│   │   │   └── import_module.py        ✅ Script de importação de módulos
+│   │   ├── static/
+│   │   │   └── uploads/
+│   │   │       └── logos/
+│   │   │           ├── .gitkeep        ✅ Skin system
+│   │   │           └── a551e19f-857e-4f58-b7ac-74de9fa8d108.png  ✅
+│   │   └── data/
+│   │       └── skin-templates/
+│   │           ├── corporate-blue.json  ✅ Skin system v2
+│   │           ├── dark-minimal.json    ✅ Skin system v2
+│   │           ├── forest-green.json    ✅ Skin system v2
+│   │           ├── sunset-orange.json   ✅ Skin system v2
+│   │           └── warm-earth.json      ✅ Skin system v2
+│   │
+│   ├── api-sqlserver/
+│   │   ├── app/
+│   │   │   ├── auth/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   └── dependencies.py     ✅
+│   │   │   ├── core/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── config.py           ✅
+│   │   │   │   ├── exceptions.py       ✅
+│   │   │   │   └── logging.py          ✅
+│   │   │   ├── middleware/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── rate_limit.py       ✅
+│   │   │   │   ├── request_id.py       ✅
+│   │   │   │   └── security_headers.py ✅
+│   │   │   ├── models/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   └── cliente.py          ✅
+│   │   │   ├── repositories/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   └── cliente_repository.py   ✅
+│   │   │   ├── routers/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   ├── cliente_router.py   ✅
+│   │   │   │   └── health_router.py    ✅
+│   │   │   ├── schemas/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   └── cliente.py          ✅
+│   │   │   ├── services/
+│   │   │   │   ├── __init__.py         ✅
+│   │   │   │   └── cliente_service.py  ✅
+│   │   │   ├── __init__.py             ✅
+│   │   │   ├── database.py             ✅
+│   │   │   └── main.py                 ✅
+│   │   ├── tests/
+│   │   │   ├── unit/
+│   │   │   │   ├── __init__.py             ✅
+│   │   │   │   └── test_service_cliente.py ✅
+│   │   │   ├── integration/
+│   │   │   │   ├── __init__.py                 ✅
+│   │   │   │   ├── test_repository_cliente.py  ✅
+│   │   │   │   └── test_router_cliente.py      ✅
+│   │   │   ├── __init__.py             ✅
+│   │   │   └── conftest.py             ✅
+│   │   ├── .env                        ✅ (não versionar)
+│   │   ├── .env.example                ✅
+│   │   ├── Containerfile               ✅
+│   │   ├── README.md                   ✅
+│   │   ├── requirements.txt            ✅
+│   │   └── test_connection.py          ✅
+│   │
+│   └── frontend-webapp/
+│   │   ├── assets/
+│   │   │   ├── apple-touch-icon.png  ✅ Visual assets
+│   │   │   ├── favicon.ico           ✅ Visual assets
+│   │   │   ├── favicon.svg           ✅ Visual assets
+│   │   │   ├── favicon-32.png        ✅ Visual assets
+│   │   │   ├── mask-icon.svg         ✅ Visual assets
+│   │   │   └── site.webmanifest      ✅ Visual assets (PWA)
+│   │   ├── modules/
+│   │   │   ├── admin-skins/
+│   │   │   │   ├── index.html          ✅ Skin system v2
+│   │   │   │   ├── script.js           ✅ Skin system v2
+│   │   │   │   └── style.css           ✅ Skin system v2
+│   │   │   ├── home/
+│   │   │   │   └── index.html          ✅
+│   │   │   ├── importer/
+│   │   │   │   ├── index.html          ✅ Importação de módulos
+│   │   │   │   ├── script.js           ✅ Importação de módulos
+│   │   │   │   └── style.css           ✅ Importação de módulos
+│   │   │   ├── users/
+│   │   │   │   ├── index.html          ✅
+│   │   │   │   ├── script.js           ✅
+│   │   │   │   └── style.css           ✅
+│   │   │   └── structure/
+│   │   │       ├── index.html          ✅
+│   │   │       ├── script.js           ✅
+│   │   │       └── style.css           ✅
+│   │   ├── shared/
+│   │   │   ├── components/
+│   │   │   ├── fonts/
+│   │   │   │   ├── barlow-condensed-400.woff2 ✅ Self-hosted fonts
+│   │   │   │   ├── barlow-condensed-700.woff2 ✅ Self-hosted fonts
+│   │   │   │   ├── dm-sans-400.woff2          ✅ Self-hosted fonts
+│   │   │   │   ├── dm-sans-500.woff2          ✅ Self-hosted fonts
+│   │   │   │   └── dm-sans-700.woff2          ✅ Self-hosted fonts
+│   │   │   ├── components/
+│   │   │   │   ├── DataTable.js        ✅
+│   │   │   │   ├── FormField.js        ✅
+│   │   │   │   ├── LoadingSpinner.js   ✅
+│   │   │   │   └── ReusableModal.js    ✅
+│   │   │   ├── apiService.js           ✅
+│   │   │   ├── app.js                  ✅
+│   │   │   ├── baseController.js       ✅
+│   │   │   ├── constants.js            ✅
+│   │   │   ├── core.css                ✅
+│   │   │   ├── skinLoader.js           ✅ Skin system
+│   │   │   └── validation.js           ✅
+│   │   ├── ARCHITECTURE_PORTAL.md      ✅
+│   │   ├── dashboard.css               ✅
+│   │   ├── dashboard.html              ✅
+│   │   ├── dashboard.js                ✅
+│   │   ├── index.html                  ✅ forgot-password modal
+│   │   ├── script.js                   ✅ forgot-password controller
+│   │   └── style.css                   ✅ modal styles (forgot-password)
+│   │
+├── packages/
+│   │
+│   └── shared/
+│       ├── exceptions/
+│       │   ├── __init__.py             ✅
+│       │   └── base.py                 ✅
+│       ├── schemas/
+│       │   ├── __init__.py             ✅
+│       │   ├── auth.py                 ✅
+│       │   └── base.py                 ✅
+│       ├── security/
+│       │   ├── __init__.py             ✅
+│       │   ├── jwt.py                  ✅
+│       │   └── permissions.py          ✅
+│       ├── tests/
+│       │   └── test_permissions.py     ✅ 26 testes RBAC
+│       ├── RBAC_GUIDE.py               ✅
+│       └── __init__.py                 ✅
+│
+├── tests/
+│   ├── unit/
+│   │   ├── __init__.py                 ✅
+│   │   └── test_shared_modules.py      ✅
+│   ├── integration/
+│   │   ├── __init__.py                 ✅
+│   │   └── test_pacotes.py             ✅
+│   ├── __init__.py                     ✅
+│   └── conftest.py                     ✅
+│
+├── AGENTS.md                           ✅ Memória do assistente
+├── .gitignore                          ✅
+├── GRINDX-RESUMO.md                    ✅ Resumo executivo
+├── LICENSE                             ✅
+├── Makefile                            ✅
+├── MAPA-ARQUIVOS.md                    ✅ Este arquivo
+├── README.md                           ✅
+├── podman-compose.yml                  ✅
+└── pytest.ini                          ✅
+```
+
+---
+
+## Regras de Versionamento
+
+Nunca versionar:
+- `.env` (apenas `.env.example`)
+- `.venv/` e `__pycache__/`
+- `.pytest_cache/` e `.ruff_cache/`
+- `Thumbs.db`, `.DS_Store`
+- Qualquer arquivo com credenciais reais
+
+---
+
+## Dependências Python
+
+| Pacote | Versão mínima | Uso |
+|--------|--------------|-----|
+| FastAPI | 0.110.0 | Framework web |
+| SQLAlchemy | 2.0.27 | ORM |
+| psycopg | 3.1.18 | Driver PostgreSQL |
+| pymssql | 2.2.11 | Driver SQL Server |
+| pyodbc | 5.1.0 | Driver SQL Server (alternativo) |
+| alembic | 1.13.1 | Migrações |
+| pydantic-settings | 2.2.1 | Config via env |
+| python-jose | 3.3.0 | JWT |
+| bcrypt | 4.1.2 | Hash de senha |
+| structlog | 24.1.0 | Logging estruturado |
+| ruff | 0.3.0 | Linting e formatação |
+
+Frontend: Vanilla JS, sem dependências externas, sem build tools.

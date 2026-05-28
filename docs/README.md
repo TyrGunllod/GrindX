@@ -43,9 +43,9 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 
 | Documento | Descrição |
 |-----------|-----------|
-| [api-postgres/README.md](../packages/api-postgres/README.md) | API principal (FastAPI + PostgreSQL) |
-| [api-sqlserver/README.md](../packages/api-sqlserver/README.md) | API leitura (FastAPI + SQL Server) |
-| [ARCHITECTURE_PORTAL.md](../packages/frontend-webapp/ARCHITECTURE_PORTAL.md) | Como criar novos módulos frontend |
+| [api-postgres/README.md](../apps/api-postgres/README.md) | API principal (FastAPI + PostgreSQL) |
+| [api-sqlserver/README.md](../apps/api-sqlserver/README.md) | API leitura (FastAPI + SQL Server) |
+| [ARCHITECTURE_PORTAL.md](../apps/frontend-webapp/ARCHITECTURE_PORTAL.md) | Como criar novos módulos frontend |
 | [SKILLS.md](SKILLS.md) | Skills do assistente e templates de criação |
 
 ---

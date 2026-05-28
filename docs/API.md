@@ -1,4 +1,4 @@
-<!-- title: API Reference — GrindX | updated: 2026-05-25 -->
+<!-- title: API Reference — GrindX | updated: 2026-05-28 -->
 
 # API Reference — GrindX
 
