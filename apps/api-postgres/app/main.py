@@ -27,9 +27,9 @@ from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_id import RequestIdMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.routers.health_router import router as health_router
+from app.routers.import_router import router as import_router
 from app.routers.portal_router import router as portal_router
 from app.routers.produto_router import router as produto_router
-from app.routers.import_router import router as import_router
 from app.routers.theme_router import router as theme_router
 from app.routers.usuario_router import router as usuario_router
 
