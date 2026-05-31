@@ -2,6 +2,147 @@
 
 <!-- version list -->
 
+## v1.16.0 (2026-05-31)
+
+### Bug Fixes
+
+- Auto-fix ruff lint errors (import sorting, unused imports)
+  ([`dd33c5a`](https://github.com/TyrGunllod/GrindX/commit/dd33c5a20379a1976cf7a46c4040d81d9ad1d28c))
+
+- **data-table**: Passar item completo quando coluna nao tem key
+  ([`0107ee4`](https://github.com/TyrGunllod/GrindX/commit/0107ee439cd40ef2c4d08b02841450fcf56c4cae))
+
+- **data-table**: Suportar colunas com key e render
+  ([`50e911e`](https://github.com/TyrGunllod/GrindX/commit/50e911e97f80db2af05cb1d9194f44983c148e95))
+
+- **frontend**: Remover referencia a apple-touch-icon inexistente
+  ([`2426b91`](https://github.com/TyrGunllod/GrindX/commit/2426b9112c2f05d05112decb7ef0c4bd1162345b))
+
+- **frontend**: Replace sidebar nav <a> with <button> to hide status bar on hover
+  ([`be8a811`](https://github.com/TyrGunllod/GrindX/commit/be8a811dd8f56b9652b4f3f270ffdbd5acc50a71))
+
+- **importer**: Adicionar style.css da raiz para estilos do modal
+  ([`ac30e58`](https://github.com/TyrGunllod/GrindX/commit/ac30e58175eac9e9f6a60c71638dfc15b33268ac))
+
+- **importer**: Corrigir URL duplicada /v1/v1 nos endpoints da API
+  ([`1d63d86`](https://github.com/TyrGunllod/GrindX/commit/1d63d862ac4c2d69752ef22310903010b75f067d))
+
+- **infra**: Extract APP_VERSION to module-level for semantic-release
+  ([`6e15998`](https://github.com/TyrGunllod/GrindX/commit/6e15998ed0f55b72f734afca8ed5344af98a76cb))
+
+- **scripts**: Corrigir caminhos no update_frontend_version.py
+  ([`bf6177d`](https://github.com/TyrGunllod/GrindX/commit/bf6177d950db7790c0a69f1e4d5a28c81c3816e3))
+
+- **skins**: Remove old header styles, use standard page-header spacing
+  ([`234eaa8`](https://github.com/TyrGunllod/GrindX/commit/234eaa8771c7f24f453bcebe01696710604c5f03))
+
+### Chores
+
+- Adicionar import/ ao .gitignore
+  ([`657576a`](https://github.com/TyrGunllod/GrindX/commit/657576a73d63da016cbcfe459b9c3d9eeaa03eac))
+
+- Merge refactor/migrate-to-apps para main
+  ([`19401e9`](https://github.com/TyrGunllod/GrindX/commit/19401e94ee7e78cec3f96b80b7f71ed98ac9483d))
+
+- **skills**: Atualizar create-standalone-module com regra de page-header
+  ([`4e76617`](https://github.com/TyrGunllod/GrindX/commit/4e766178cb19dd63e648b846b97910a664ca6562))
+
+### Code Style
+
+- **api**: Aplicar ruff format nos arquivos pendentes
+  ([`9ef9cfc`](https://github.com/TyrGunllod/GrindX/commit/9ef9cfcff4ed3fc6f7187f5fbb665d091ec0169b))
+
+- **importer**: Alinhar paddings e margins com modulo users
+  ([`4d1a823`](https://github.com/TyrGunllod/GrindX/commit/4d1a82393afabbdaafdb2df2923b26797891b661))
+
+### Documentation
+
+- Update documentation paths for apps/ migration
+  ([`b533449`](https://github.com/TyrGunllod/GrindX/commit/b5334491b976c072675a1c82e367b098f9540ce2))
+
+- **import**: Add implementation plan for module import feature
+  ([`f86aca5`](https://github.com/TyrGunllod/GrindX/commit/f86aca560c7d7d104af0afc36ae87f2d98fb7c94))
+
+- **import**: Adicionar spec de importacao de modulos via UI
+  ([`c5a5cb0`](https://github.com/TyrGunllod/GrindX/commit/c5a5cb0fae7fece1ba45d95cddcf72bef5606f5c))
+
+### Features
+
+- **assets**: Gerar apple-touch-icon via generate_favicon.py
+  ([`003e2a7`](https://github.com/TyrGunllod/GrindX/commit/003e2a710bfb14210e66c053420467d6f588eddf))
+
+- **import**: Add frontend importer module with scan UI
+  ([`845fa0c`](https://github.com/TyrGunllod/GrindX/commit/845fa0c64f98f9791739083ee49ed5715029f634))
+
+- **import**: Adicionar configuracao IMPORT_DIR
+  ([`9d0a222`](https://github.com/TyrGunllod/GrindX/commit/9d0a2222d6d6d1afc8d35f40226b180b8f8714c2))
+
+- **import**: Adicionar import_router e testes
+  ([`d97986d`](https://github.com/TyrGunllod/GrindX/commit/d97986db90e411ee07045b6d04974bff4b44c31d))
+
+- **import**: Adicionar script import_module.py
+  ([`3fd9069`](https://github.com/TyrGunllod/GrindX/commit/3fd9069abe40398f0b014f6ceff28e2ff91e847e))
+
+- **importer**: Add page header with description and font-awesome icons
+  ([`e2f0644`](https://github.com/TyrGunllod/GrindX/commit/e2f0644c6da1a55898df59177a0dadf7dbde1ebf))
+
+- **importer**: Adicionar estilos CSS para cards inline
+  ([`96e4eb3`](https://github.com/TyrGunllod/GrindX/commit/96e4eb3a609db3d96d3b75ddd69ed7d611aa1acb))
+
+- **importer**: Adicionar função abrirCard para expansão de cards
+  ([`0d15110`](https://github.com/TyrGunllod/GrindX/commit/0d1511064626f7ae80f841805cd4ee1c609c539a))
+
+- **importer**: Adicionar função criarCardExpandido para renderizar card
+  ([`9e8d5e2`](https://github.com/TyrGunllod/GrindX/commit/9e8d5e2f5c7462b753f61e834d1f41bd73a0085a))
+
+- **importer**: Adicionar propriedade modules ao controller
+  ([`aa658f5`](https://github.com/TyrGunllod/GrindX/commit/aa658f54f59502732b539c69f01a0d8cdc7ef79a))
+
+- **importer**: Adicionar suporte a classes CSS e data attributes no DataTable
+  ([`0832f67`](https://github.com/TyrGunllod/GrindX/commit/0832f67cd2dd5a8b8e0364e566d4a1ebca74f0e5))
+
+- **importer**: Adicionar verificacao manual de arquivos
+  ([`b876092`](https://github.com/TyrGunllod/GrindX/commit/b8760927a87e2e76cced77c77a72d3d7f308ac66))
+
+- **importer**: Ajustar estrutura HTML e lógica de cards para tabela válida
+  ([`833fadb`](https://github.com/TyrGunllod/GrindX/commit/833fadb0f066cd30deee540fb57342da36013bbd))
+
+- **importer**: Modificar bindEvents para suportar expansão de cards
+  ([`31867c0`](https://github.com/TyrGunllod/GrindX/commit/31867c0232f9b3f2d127cf88aca109fd73f9be9d))
+
+- **importer**: Salvar dados dos módulos na instância do controller
+  ([`09fc89a`](https://github.com/TyrGunllod/GrindX/commit/09fc89a5f23afc2eb66f7e0dafd241a8ea32b19c))
+
+- **scripts**: Auto-instalar dependencias no generate_favicon.py
+  ([`7c53ba7`](https://github.com/TyrGunllod/GrindX/commit/7c53ba7656fb1d61bd77cd41d41b3f10f06f547f))
+
+- **seed**: Add importer module to Gestão tab
+  ([`cca3f10`](https://github.com/TyrGunllod/GrindX/commit/cca3f10bf7fa2df2a837fedf1f979b0b05d34c54))
+
+- **skill**: Adicionar module.json e comando package ao create-standalone-module
+  ([`6984d43`](https://github.com/TyrGunllod/GrindX/commit/6984d43e7ebf23db42d0684c8a7d7648bbf1b14d))
+
+- **skins**: Add page header with description and action buttons
+  ([`99d4503`](https://github.com/TyrGunllod/GrindX/commit/99d4503d6481da3928e3d4aa08704d324eb1e193))
+
+### Refactoring
+
+- Move api-postgres, api-sqlserver, frontend-webapp to apps/
+  ([`c4d989f`](https://github.com/TyrGunllod/GrindX/commit/c4d989fea97125360579c4db58673a8871b8d887))
+
+- Update config files for apps/ migration (podman, makefile, pyproject, CI, jenkins, pytest)
+  ([`fd5825b`](https://github.com/TyrGunllod/GrindX/commit/fd5825bfb9abc9501e8a74bbdd664b349ab0bf55))
+
+- Update test paths and import_module.py for apps/ migration
+  ([`5db099d`](https://github.com/TyrGunllod/GrindX/commit/5db099dcec3ff4444d6facefb0348315fdb6b30f))
+
+- **api**: Remover módulo produto completo (router, service, schema, model, tests)
+  ([`15cc908`](https://github.com/TyrGunllod/GrindX/commit/15cc9081aad2944c5518f55be8a0e3207bcbb24f))
+
+- **api**: Renomear prefixo /v1/estoque para /v1/produto
+  ([`6e9c636`](https://github.com/TyrGunllod/GrindX/commit/6e9c6365b6454a07618ffdf64492a90355cc4fb7))
+
+
 ## v1.15.0 (2026-05-26)
 
 ### Chores
