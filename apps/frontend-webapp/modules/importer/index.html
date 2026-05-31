@@ -11,16 +11,17 @@
 </head>
 <body class = "module-page">
     <div class="container animate-in">
-        <header class="page-header items-center mb-8">
+        <header class="page-header flex justify-between items-center mb-8">
             <div>
                 <h1>Importar Módulos</h1>
                 <p class="text-muted">Instale e atualize módulos via arquivos .zip.</p>
             </div>
             <div class="actions-group">
-                <button class="btn" id="btnRefresh" title="Recarregar">
-                    <i class="fas fa-sync-alt"></i>
+                <button class="btn btn-primary" id="btnScan" title="Checar arquivos para importar">
+                    <i class="fas fa-search"></i> Checar Arquivos
                 </button>
             </div>
+				
         </header>
 
         <div class="table-responsive" style="margin-top: 1.5rem;">
@@ -36,7 +37,11 @@
                     </tr>
                 </thead>
                 <tbody id="dataTableContainer">
-                    <!-- Gerado dinamicamente -->
+                    <tr>
+                        <td colspan="6" class="text-center text-muted" style="padding: 2rem;">
+                            Clique em "Checar Arquivos" para escanear a pasta de importação.
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -62,6 +67,6 @@
     <script src="../../shared/components/DataTable.js"></script>
     <script src="../../shared/components/ReusableModal.js"></script>
     <script src="../../shared/baseController.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js"></script> 
 </body>
 </html>

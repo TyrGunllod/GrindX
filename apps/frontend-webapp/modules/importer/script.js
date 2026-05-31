@@ -38,11 +38,10 @@ class ImporterController extends window.grindx.controllers.BaseController {
             rowDataset: (item) => ({ slug: item.slug })
         });
         this.bindEvents();
-        await this.carregar();
     }
 
     bindEvents() {
-        document.getElementById('btnRefresh').addEventListener('click', () => this.carregar());
+        document.getElementById('btnScan').addEventListener('click', () => this.carregar());
         document.getElementById('btnConfirm').addEventListener('click', () => this.confirmarImport());
         document.getElementById('btnCancel').addEventListener('click', () => this.importModal.close());
         document.getElementById('btnModalClose').addEventListener('click', () => this.importModal.close());

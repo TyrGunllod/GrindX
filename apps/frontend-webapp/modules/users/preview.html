@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrindX - Usuarios (Preview)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="users-preview.css">
+</head>
+<body class="module-page">
+    <div class="container animate-in">
+        <header class="page-header mb-8">
+            <div>
+                <h1>Gerenciamento de Usuarios</h1>
+                <p class="text-muted">Controle de acesso e permissoes modulares.</p>
+            </div>
+            <div class="actions-group" style="margin-top: var(--space-4);">
+                <button class="btn" title="Recarregar">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="btn btn-primary" aria-haspopup="dialog">
+                    <i class="fas fa-plus"></i> <span class="hide-mobile">Novo Usuario</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="table-responsive" style="margin-top: 1.5rem;">
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th scope="col">Usuario</th>
+                        <th scope="col" class="hide-mobile">E-mail</th>
+                        <th scope="col">Perfil</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Acoes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Usuario 1: Admin ativo -->
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <img src="https://ui-avatars.com/api/?name=Alex+Silva&background=4f46e5&color=fff&bold=true" class="avatar-mini" alt="">
+                                <strong>Alex Silva</strong>
+                            </div>
+                        </td>
+                        <td class="hide-mobile">alex.silva@grindx.com</td>
+                        <td><span class="badge role-admin">ADMIN</span></td>
+                        <td><span class="badge badge-success">Ativo</span></td>
+                        <td class="text-right">
+                            <div class="actions-group justify-end">
+                                <button class="btn-icon" title="Editar Usuario"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon" title="Permissoes"><i class="fas fa-shield-alt"></i></button>
+                                <button class="btn-icon text-success" title="Desativar usuario"><i class="fas fa-toggle-on"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Usuario 2: Operador ativo -->
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <img src="https://ui-avatars.com/api/?name=Maria+Santos&background=10b981&color=fff&bold=true" class="avatar-mini" alt="">
+                                <strong>Maria Santos</strong>
+                            </div>
+                        </td>
+                        <td class="hide-mobile">maria.santos@grindx.com</td>
+                        <td><span class="badge role-operador">OPERADOR</span></td>
+                        <td><span class="badge badge-success">Ativo</span></td>
+                        <td class="text-right">
+                            <div class="actions-group justify-end">
+                                <button class="btn-icon" title="Editar Usuario"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon" title="Permissoes"><i class="fas fa-shield-alt"></i></button>
+                                <button class="btn-icon text-success" title="Desativar usuario"><i class="fas fa-toggle-on"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Usuario 3: Leitura ativo -->
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <img src="https://ui-avatars.com/api/?name=Carlos+Souza&background=64748b&color=fff&bold=true" class="avatar-mini" alt="">
+                                <strong>Carlos Souza</strong>
+                            </div>
+                        </td>
+                        <td class="hide-mobile">carlos.souza@grindx.com</td>
+                        <td><span class="badge role-leitura">LEITURA</span></td>
+                        <td><span class="badge badge-success">Ativo</span></td>
+                        <td class="text-right">
+                            <div class="actions-group justify-end">
+                                <button class="btn-icon" title="Editar Usuario"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon" title="Permissoes"><i class="fas fa-shield-alt"></i></button>
+                                <button class="btn-icon text-success" title="Desativar usuario"><i class="fas fa-toggle-on"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Usuario 4: Admin inativo -->
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <img src="https://ui-avatars.com/api/?name=Ana+Oliveira&background=4f46e5&color=fff&bold=true" class="avatar-mini" alt="">
+                                <strong>Ana Oliveira</strong>
+                            </div>
+                        </td>
+                        <td class="hide-mobile">ana.oliveira@grindx.com</td>
+                        <td><span class="badge role-admin">ADMIN</span></td>
+                        <td><span class="badge badge-muted">Inativo</span></td>
+                        <td class="text-right">
+                            <div class="actions-group justify-end">
+                                <button class="btn-icon" title="Editar Usuario"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon" title="Permissoes"><i class="fas fa-shield-alt"></i></button>
+                                <button class="btn-icon text-muted" title="Ativar usuario"><i class="fas fa-toggle-off"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Usuario 5: Operador inativo -->
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <img src="https://ui-avatars.com/api/?name=Pedro+Costa&background=10b981&color=fff&bold=true" class="avatar-mini" alt="">
+                                <strong>Pedro Costa</strong>
+                            </div>
+                        </td>
+                        <td class="hide-mobile">pedro.costa@grindx.com</td>
+                        <td><span class="badge role-operador">OPERADOR</span></td>
+                        <td><span class="badge badge-muted">Inativo</span></td>
+                        <td class="text-right">
+                            <div class="actions-group justify-end">
+                                <button class="btn-icon" title="Editar Usuario"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon" title="Permissoes"><i class="fas fa-shield-alt"></i></button>
+                                <button class="btn-icon text-muted" title="Ativar usuario"><i class="fas fa-toggle-off"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
