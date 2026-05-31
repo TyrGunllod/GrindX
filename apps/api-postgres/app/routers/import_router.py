@@ -115,10 +115,20 @@ def import_module(
     if not zip_path.exists():
         matches = list(import_dir.glob(f"*{module_name}*.zip"))
         if not matches:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, f"Arquivo .zip não encontrado para o módulo: {module_name}")
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND,
+                f"Arquivo .zip não encontrado para o módulo: {module_name}",
+            )
         if len(matches) > 1:
-            logger.warning("Múltiplos zips correspondentes a '%s': %s. Usando %s", module_name, [m.name for m in matches], matches[0].name)
-        logger.info("Fuzzy match para '%s' selecionou: %s", module_name, matches[0].name)
+            logger.warning(
+                "Múltiplos zips correspondentes a '%s': %s. Usando %s",
+                module_name,
+                [m.name for m in matches],
+                matches[0].name,
+            )
+        logger.info(
+            "Fuzzy match para '%s' selecionou: %s", module_name, matches[0].name
+        )
         zip_path = matches[0]
 
     tmp_dir = None
@@ -131,9 +141,16 @@ def import_module(
 
         manifest_path = tmp_dir / "module.json"
         if not manifest_path.exists():
-            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"module.json não encontrado dentro do .zip: {zip_path.name}")
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_CONTENT,
+                f"module.json não encontrado dentro do .zip: {zip_path.name}",
+            )
 
-        script_path = Path(__file__).resolve().parent.parent.parent / "scripts" / "import_module.py"
+        script_path = (
+            Path(__file__).resolve().parent.parent.parent
+            / "scripts"
+            / "import_module.py"
+        )
         cmd = [
             sys.executable,
             str(script_path),
@@ -149,7 +166,11 @@ def import_module(
         try:
             result_data = json.loads(result.stdout.strip())
         except (json.JSONDecodeError, ValueError):
-            result_data = {"success": False, "steps": [], "error": result.stderr or result.stdout}
+            result_data = {
+                "success": False,
+                "steps": [],
+                "error": result.stderr or result.stdout,
+            }
 
         if result.stderr:
             for line in result.stderr.strip().split("\n"):
@@ -158,7 +179,9 @@ def import_module(
 
         return ImportResult(
             success=result_data.get("success", False),
-            message="Módulo importado com sucesso" if result_data.get("success") else "Falha na importação",
+            message="Módulo importado com sucesso"
+            if result_data.get("success")
+            else "Falha na importação",
             steps=result_data.get("steps", []),
             error=result_data.get("error"),
         )
@@ -167,7 +190,9 @@ def import_module(
         raise
     except Exception as e:
         logger.exception("Erro ao importar módulo")
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, f"Erro interno: {str(e)}")
+        raise HTTPException(
+            status.HTTP_500_INTERNAL_SERVER_ERROR, f"Erro interno: {str(e)}"
+        )
     finally:
         if tmp_dir is not None and tmp_dir.exists():
             shutil.rmtree(tmp_dir, ignore_errors=True)

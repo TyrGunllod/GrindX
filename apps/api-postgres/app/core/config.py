@@ -61,7 +61,9 @@ class Settings(BaseSettings):
         """Resolved import directory path."""
         if self.IMPORT_DIR:
             return self.IMPORT_DIR
-        return str(Path(__file__).resolve().parent.parent.parent.parent.parent / "import")
+        return str(
+            Path(__file__).resolve().parent.parent.parent.parent.parent / "import"
+        )
 
     # --- Rate Limiting ---
     RATE_LIMIT_REQUESTS: int = 100

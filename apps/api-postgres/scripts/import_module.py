@@ -53,7 +53,14 @@ def validate_manifest(import_dir: Path) -> dict:
     with open(manifest_path, encoding="utf-8") as f:
         manifest = json.load(f)
 
-    required = ["module_name", "entity_name", "schema_name", "route_prefix", "frontend_url", "menu_label"]
+    required = [
+        "module_name",
+        "entity_name",
+        "schema_name",
+        "route_prefix",
+        "frontend_url",
+        "menu_label",
+    ]
     missing = [k for k in required if k not in manifest]
     if missing:
         raise ValueError(f"Campos obrigatórios ausentes no module.json: {missing}")
@@ -94,10 +101,14 @@ def copy_backend(import_dir: Path, module_name: str, force: bool) -> None:
 
     if dest.exists():
         if not force:
-            raise FileExistsError(f"Backend já existe em {dest}. Use --force para sobrescrever.")
+            raise FileExistsError(
+                f"Backend já existe em {dest}. Use --force para sobrescrever."
+            )
         tmp_dest = Path(tempfile.mktempdir(suffix="_backend"))
         try:
-            shutil.copytree(src, tmp_dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+            shutil.copytree(
+                src, tmp_dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
+            )
             shutil.rmtree(dest)
             shutil.move(str(tmp_dest), str(dest))
         except Exception:
@@ -106,7 +117,9 @@ def copy_backend(import_dir: Path, module_name: str, force: bool) -> None:
             raise
         logger.info("Backend copiado: %s -> %s", src, dest)
     else:
-        shutil.copytree(src, dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        shutil.copytree(
+            src, dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
+        )
         logger.info("Backend copiado: %s -> %s", src, dest)
 
 
@@ -123,7 +136,9 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
 
     if dest.exists():
         if not force:
-            raise FileExistsError(f"Frontend já existe em {dest}. Use --force para sobrescrever.")
+            raise FileExistsError(
+                f"Frontend já existe em {dest}. Use --force para sobrescrever."
+            )
         tmp_dest = Path(tempfile.mktempdir(suffix="_frontend"))
         try:
             shutil.copytree(src, tmp_dest)
@@ -165,7 +180,9 @@ def register_router(manifest: dict, force: bool) -> None:
 
     content = main_py.read_text(encoding="utf-8")
 
-    import_line = f"from app.routers.{module_name}_router import router as {module_name}_router"
+    import_line = (
+        f"from app.routers.{module_name}_router import router as {module_name}_router"
+    )
     register_line = f"app.include_router({module_name}_router)"
 
     if import_line in content and register_line in content:
@@ -186,9 +203,13 @@ def register_router(manifest: dict, force: bool) -> None:
             last_include_idx = i
 
     if last_import_idx is None:
-        logger.warning("Não foi possível encontrar local para inserir import do router em main.py")
+        logger.warning(
+            "Não foi possível encontrar local para inserir import do router em main.py"
+        )
     if last_include_idx is None:
-        logger.warning("Não foi possível encontrar local para inserir app.include_router() em main.py")
+        logger.warning(
+            "Não foi possível encontrar local para inserir app.include_router() em main.py"
+        )
 
     if last_import_idx is not None and import_line not in content:
         lines.insert(last_import_idx + 1, import_line + "\n")
@@ -222,7 +243,10 @@ def register_alembic_import(manifest: dict, force: bool) -> None:
         env_py.write_text(content, encoding="utf-8")
         logger.info("Import registrado em alembic/env.py")
     else:
-        logger.warning("Marker não encontrado em alembic/env.py. Adicione manualmente: %s", import_line)
+        logger.warning(
+            "Marker não encontrado em alembic/env.py. Adicione manualmente: %s",
+            import_line,
+        )
 
 
 def run_migrations() -> None:
@@ -235,12 +259,15 @@ def run_migrations() -> None:
         check=False,
     )
     if result.returncode != 0:
-        raise RuntimeError(f"Migration falhou:\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}")
+        raise RuntimeError(
+            f"Migration falhou:\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}"
+        )
     logger.info("Migrations executadas com sucesso")
 
 
 def register_menu(manifest: dict) -> None:
     import sys as _sys
+
     module_name = manifest["module_name"]
     label = manifest.get("menu_label", module_name)
     url = manifest.get("frontend_url", f"modules/{module_name}/index.html")
@@ -264,7 +291,9 @@ def register_menu(manifest: dict) -> None:
 
         existing = db.query(Modulo).filter(Modulo.slug == slug).first()
         if existing:
-            logger.info("Módulo já registrado no menu (slug=%s, id=%d)", slug, existing.id)
+            logger.info(
+                "Módulo já registrado no menu (slug=%s, id=%d)", slug, existing.id
+            )
         else:
             mod = Modulo(aba_id=aba.id, nome=label, slug=slug, url=url, icone=icone)
             db.add(mod)
@@ -295,7 +324,9 @@ def rollback(backup_dir: Path | None) -> None:
     logger.info("Rollback concluído: %d arquivos restaurados", restored)
 
 
-def import_module(module_name: str, import_dir: Path, force: bool = False, dry_run: bool = False) -> dict:
+def import_module(
+    module_name: str, import_dir: Path, force: bool = False, dry_run: bool = False
+) -> dict:
     steps = []
     backup_path = None
 
@@ -347,8 +378,12 @@ def import_module(module_name: str, import_dir: Path, force: bool = False, dry_r
 def main():
     parser = argparse.ArgumentParser(description="Importa um módulo .zip para o GrindX")
     parser.add_argument("module_name", help="Nome do módulo (snake_case)")
-    parser.add_argument("--import-dir", required=True, help="Diretório com o conteúdo extraído do .zip")
-    parser.add_argument("--force", action="store_true", help="Sobrescrever módulo existente")
+    parser.add_argument(
+        "--import-dir", required=True, help="Diretório com o conteúdo extraído do .zip"
+    )
+    parser.add_argument(
+        "--force", action="store_true", help="Sobrescrever módulo existente"
+    )
     parser.add_argument("--dry-run", action="store_true", help="Apenas simular")
     args = parser.parse_args()
 
@@ -357,7 +392,9 @@ def main():
         print(f"ERRO: Diretório não encontrado: {import_dir}")
         sys.exit(1)
 
-    result = import_module(args.module_name, import_dir, force=args.force, dry_run=args.dry_run)
+    result = import_module(
+        args.module_name, import_dir, force=args.force, dry_run=args.dry_run
+    )
     print(json.dumps(result, indent=2, ensure_ascii=False))
     sys.exit(0 if result["success"] else 1)
 
