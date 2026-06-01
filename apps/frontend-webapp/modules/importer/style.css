@@ -44,6 +44,7 @@ td {
 .log-step { padding: var(--space-1) var(--space-2); border-radius: 4px; margin-bottom: 4px; font-size: 0.9em; }
 .log-step.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .log-step.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.log-step.info { background: rgba(0, 194, 224, 0.1); color: var(--primary); }
 
 /* Linha da tabela */
 .module-row:hover {

@@ -148,10 +148,47 @@ class ImporterController extends window.grindx.controllers.BaseController {
                 btn.textContent = isRemove ? 'Remover' : 'Importar';
             }
         } catch (err) {
-            logDiv.innerHTML = '<div class="log-step error" style="font-weight:bold">Falha: ' + (err.message || 'Erro desconhecido') + '</div>';
-            btn.disabled = false;
-            btn.textContent = isRemove ? 'Remover' : 'Importar';
+            if (!isRemove) {
+                logDiv.innerHTML = '<div class="log-step info" style="font-weight:bold">Aguardando servidor reiniciar...</div><div class="loading-spinner" style="margin-top: 10px;"></div>';
+                await this.aguardarServidor(this.currentSlug, logDiv, btn);
+            } else {
+                logDiv.innerHTML = '<div class="log-step error" style="font-weight:bold">Falha: ' + (err.message || 'Erro desconhecido') + '</div>';
+                btn.disabled = false;
+                btn.textContent = 'Remover';
+            }
         }
+    }
+
+    async aguardarServidor(slug, logDiv, btn) {
+        var maxTentativas = 30;
+        var tentativa = 0;
+
+        while (tentativa < maxTentativas) {
+            await new Promise(r => setTimeout(r, 2000));
+            tentativa++;
+
+            try {
+                var data = await window.grindx.api.get('/import/scan');
+                var modulo = (data.modules || []).find(m => m.slug === slug);
+
+                if (modulo && modulo.ja_importado) {
+                    logDiv.innerHTML = '<div class="log-step success" style="font-weight:bold">✓ Módulo importado com sucesso!</div>';
+                    btn.disabled = false;
+                    btn.textContent = 'Importar';
+                    setTimeout(() => {
+                        this.importModal.close();
+                        this.carregar();
+                    }, 1500);
+                    return;
+                }
+            } catch (e) {
+                logDiv.innerHTML = '<div class="log-step info" style="font-weight:bold">Aguardando servidor reiniciar... (' + tentativa + '/' + maxTentativas + ')</div><div class="loading-spinner" style="margin-top: 10px;"></div>';
+            }
+        }
+
+        logDiv.innerHTML = '<div class="log-step error" style="font-weight:bold">Timeout: servidor não respondeu. Recarregue a página.</div>';
+        btn.disabled = false;
+        btn.textContent = 'Importar';
     }
 }
 
