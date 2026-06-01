@@ -1,8 +1,6 @@
 """Tests for register_router(), register_alembic_import(), and register_dependency() in import_module.py."""
 
-import tempfile
 import textwrap
-from pathlib import Path
 
 import pytest
 
@@ -12,7 +10,6 @@ from scripts.import_module import (
     register_dependency,
     register_router,
 )
-
 
 MAIN_PY_CONTENT = '''\
 from app.routers.health_router import router as health_router
@@ -71,10 +68,8 @@ def deps_py(tmp_path):
 
 
 @pytest.fixture
-def import_module():
-    import scripts.import_module as mod
-
-    return mod
+def import_mod():
+    return import_module
 
 
 class TestRegisterRouter:
@@ -115,7 +110,7 @@ class TestRegisterRouter:
         register_router(manifest, force=False, main_py=main_py)
 
         lines = main_py.read_text(encoding="utf-8").splitlines()
-        import_lines = [i for i, l in enumerate(lines) if "from app." in l and "import router as" in l]
+        import_lines = [i for i, line in enumerate(lines) if "from app." in line and "import router as" in line]
         assert import_lines[-1] == 2
         assert "from app.modules.projetos" in lines[2]
 
@@ -124,7 +119,7 @@ class TestRegisterRouter:
         register_router(manifest, force=False, main_py=main_py)
 
         lines = main_py.read_text(encoding="utf-8").splitlines()
-        include_lines = [i for i, l in enumerate(lines) if "app.include_router(" in l]
+        include_lines = [i for i, line in enumerate(lines) if "app.include_router(" in line]
         assert "app.include_router(projetos_router)" in lines[include_lines[-1]]
 
     def test_idempotent_when_already_registered(self, main_py):
@@ -186,7 +181,7 @@ class TestRegisterRouter:
 
         result = main_py.read_text(encoding="utf-8")
         lines = result.splitlines()
-        import_lines = [i for i, l in enumerate(lines) if "from app." in l and "import router as" in l]
+        import_lines = [i for i, line in enumerate(lines) if "from app." in line and "import router as" in line]
         assert "from app.modules.projetos.routers" in lines[import_lines[-1]]
 
 
@@ -208,10 +203,10 @@ class TestRegisterAlembicImport:
         lines = env_py.read_text(encoding="utf-8").splitlines()
         portal_idx = None
         projetos_idx = None
-        for i, l in enumerate(lines):
-            if "from app.modules.portal" in l:
+        for i, line in enumerate(lines):
+            if "from app.modules.portal" in line:
                 portal_idx = i
-            if "from app.modules.projetos" in l:
+            if "from app.modules.projetos" in line:
                 projetos_idx = i
         assert portal_idx is not None
         assert projetos_idx is not None
@@ -332,7 +327,7 @@ class TestRegisterDependency:
 
 
 class TestImportFlow:
-    def test_fluxo_completo_register_router_e_dependency(self, import_module, tmp_path):
+    def test_fluxo_completo_register_router_e_dependency(self, import_mod, tmp_path):
         """Simula o fluxo: register_router + register_dependency + register_alembic_import."""
         main_py = tmp_path / "main.py"
         main_py.write_text(textwrap.dedent("""\
@@ -356,17 +351,17 @@ class TestImportFlow:
         }
 
         # 1. Register router
-        import_module.register_router(manifest, main_py=main_py, force=False)
+        import_mod.register_router(manifest, main_py=main_py, force=False)
         content_main = main_py.read_text()
         assert "from app.modules.projeto.routers.projeto_router import router as projeto_router" in content_main
         assert "app.include_router(projeto_router)" in content_main
 
         # 2. Register dependency
-        import_module.register_dependency(manifest, force=False, deps_py=deps_py)
+        import_mod.register_dependency(manifest, force=False, deps_py=deps_py)
         content_deps = deps_py.read_text()
         assert "def get_projeto_service(" in content_deps
 
         # 3. Register alembic import
-        import_module.register_alembic_import(manifest, force=False, env_py=env_py)
+        import_mod.register_alembic_import(manifest, force=False, env_py=env_py)
         content_env = env_py.read_text()
         assert "from app.modules.projeto.models.projeto import Projeto  # noqa: F401" in content_env
