@@ -175,8 +175,8 @@ def seed_database():
                 name="Padrão GrindX",
                 is_active=True,
                 colors={
-                    "--skin-primary": "#2563eb",
-                    "--skin-primary-hover": "#1d4ed8",
+                    "--skin-primary": "#0cb9d4",
+                    "--skin-primary-hover": "#1dd4d7,
                     "--skin-danger": "#dc2626",
                     "--skin-success": "#16a34a",
                     "--skin-warning": "#ca8a04",
@@ -202,7 +202,7 @@ def seed_database():
                     "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.1)",
                     "--skin-shadow-modal": "0 20px 25px -5px rgba(0,0,0,0.2)",
                 },
-                logo_url="/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png",
+                logo_url="/uploads/logos/4b4ad446-6b40-4757-9ed0-45d264f31279.png",
                 company_name="GrindX",
                 copyright_text="© 2026 GrindX. Todos os direitos reservados.",
             )
