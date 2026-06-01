@@ -241,10 +241,23 @@ def remove_module(
                     marker_idx = i
                     break
             if marker_idx is not None:
-                new_lines = lines[:marker_idx]
-                new_lines.append(marker)
-                new_lines.extend(lines[marker_idx + 1:])
-                deps_py.write_text("\n".join(new_lines), encoding="utf-8")
+                before_marker = lines[:marker_idx]
+                clean_lines = []
+                skip_factory = False
+                for line in before_marker:
+                    if f"from app.modules.{module_name}" in line:
+                        continue
+                    if f"def get_{module_name}_service" in line:
+                        skip_factory = True
+                        continue
+                    if skip_factory:
+                        if line.strip() == "" or line.strip().startswith('"""') or line.strip().startswith("return") or line.strip().startswith("repository"):
+                            continue
+                        skip_factory = False
+                    clean_lines.append(line)
+                clean_lines.append(marker)
+                clean_lines.extend(lines[marker_idx + 1:])
+                deps_py.write_text("\n".join(clean_lines), encoding="utf-8")
                 steps.append("Dependency removida de dependencies.py")
                 logger.info("Dependency removida: %s", module_name)
     
