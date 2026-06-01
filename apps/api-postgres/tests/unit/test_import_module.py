@@ -11,19 +11,19 @@ from scripts.import_module import (
     register_router,
 )
 
-MAIN_PY_CONTENT = '''\
+MAIN_PY_CONTENT = """\
 from app.routers.health_router import router as health_router
 from app.routers.usuario_router import router as usuario_router
 
 app.include_router(health_router)
 app.include_router(usuario_router)
-'''
+"""
 
-ALEMBIC_ENV_CONTENT = '''\
+ALEMBIC_ENV_CONTENT = """\
 from app.modules.iam.models.usuario import Usuario  # noqa: F401
 from app.modules.org.models.empresa import Empresa  # noqa: F401
 from app.modules.portal.models.portal import Aba, Modulo  # noqa: F401
-'''
+"""
 
 DEPENDENCIES_CONTENT = '''\
 from fastapi import Depends
@@ -110,7 +110,11 @@ class TestRegisterRouter:
         register_router(manifest, force=False, main_py=main_py)
 
         lines = main_py.read_text(encoding="utf-8").splitlines()
-        import_lines = [i for i, line in enumerate(lines) if "from app." in line and "import router as" in line]
+        import_lines = [
+            i
+            for i, line in enumerate(lines)
+            if "from app." in line and "import router as" in line
+        ]
         assert import_lines[-1] == 2
         assert "from app.modules.projetos" in lines[2]
 
@@ -119,7 +123,9 @@ class TestRegisterRouter:
         register_router(manifest, force=False, main_py=main_py)
 
         lines = main_py.read_text(encoding="utf-8").splitlines()
-        include_lines = [i for i, line in enumerate(lines) if "app.include_router(" in line]
+        include_lines = [
+            i for i, line in enumerate(lines) if "app.include_router(" in line
+        ]
         assert "app.include_router(projetos_router)" in lines[include_lines[-1]]
 
     def test_idempotent_when_already_registered(self, main_py):
@@ -128,7 +134,12 @@ class TestRegisterRouter:
         register_router(manifest, force=False, main_py=main_py)
 
         content = main_py.read_text(encoding="utf-8")
-        assert content.count("from app.modules.projetos.routers.projetos_router import router as projetos_router") == 1
+        assert (
+            content.count(
+                "from app.modules.projetos.routers.projetos_router import router as projetos_router"
+            )
+            == 1
+        )
         assert content.count("app.include_router(projetos_router)") == 1
 
     def test_raises_when_partial_and_not_force(self, main_py):
@@ -181,7 +192,11 @@ class TestRegisterRouter:
 
         result = main_py.read_text(encoding="utf-8")
         lines = result.splitlines()
-        import_lines = [i for i, line in enumerate(lines) if "from app." in line and "import router as" in line]
+        import_lines = [
+            i
+            for i, line in enumerate(lines)
+            if "from app." in line and "import router as" in line
+        ]
         assert "from app.modules.projetos.routers" in lines[import_lines[-1]]
 
 
@@ -218,7 +233,10 @@ class TestRegisterAlembicImport:
         register_alembic_import(manifest, force=False, env_py=env_py)
 
         content = env_py.read_text(encoding="utf-8")
-        assert content.count("from app.modules.projetos.models.projetos import Projeto") == 1
+        assert (
+            content.count("from app.modules.projetos.models.projetos import Projeto")
+            == 1
+        )
 
     def test_correct_import_for_different_module(self, env_py):
         manifest = {"module_name": "financeiro", "entity_name": "Lancamento"}
@@ -237,7 +255,10 @@ class TestRegisterDependency:
         register_dependency(manifest, force=False, deps_py=deps_py)
 
         content = deps_py.read_text(encoding="utf-8")
-        assert "def get_projetos_service(db: Session = Depends(get_db)) -> ProjetoService:" in content
+        assert (
+            "def get_projetos_service(db: Session = Depends(get_db)) -> ProjetoService:"
+            in content
+        )
         assert "# --- Versões vinculadas das permissões ---" in content
 
         marker_idx = content.index("# --- Versões vinculadas das permissões ---")
@@ -249,8 +270,14 @@ class TestRegisterDependency:
         register_dependency(manifest, force=False, deps_py=deps_py)
 
         content = deps_py.read_text(encoding="utf-8")
-        assert "from app.modules.projetos.repositories.projetos_repository import ProjetoRepository" in content
-        assert "from app.modules.projetos.services.projetos_service import ProjetoService" in content
+        assert (
+            "from app.modules.projetos.repositories.projetos_repository import ProjetoRepository"
+            in content
+        )
+        assert (
+            "from app.modules.projetos.services.projetos_service import ProjetoService"
+            in content
+        )
 
     def test_generates_correct_factory_body(self, deps_py):
         manifest = {"module_name": "projetos", "entity_name": "Projeto"}
@@ -273,9 +300,18 @@ class TestRegisterDependency:
         register_dependency(manifest, force=False, deps_py=deps_py)
 
         content = deps_py.read_text(encoding="utf-8")
-        assert "from app.modules.financeiro.repositories.financeiro_repository import LancamentoRepository" in content
-        assert "from app.modules.financeiro.services.financeiro_service import LancamentoService" in content
-        assert "def get_financeiro_service(db: Session = Depends(get_db)) -> LancamentoService:" in content
+        assert (
+            "from app.modules.financeiro.repositories.financeiro_repository import LancamentoRepository"
+            in content
+        )
+        assert (
+            "from app.modules.financeiro.services.financeiro_service import LancamentoService"
+            in content
+        )
+        assert (
+            "def get_financeiro_service(db: Session = Depends(get_db)) -> LancamentoService:"
+            in content
+        )
 
     def test_raises_when_partial_and_not_force(self, deps_py):
         manifest = {"module_name": "projetos", "entity_name": "Projeto"}
@@ -330,20 +366,29 @@ class TestImportFlow:
     def test_fluxo_completo_register_router_e_dependency(self, import_mod, tmp_path):
         """Simula o fluxo: register_router + register_dependency + register_alembic_import."""
         main_py = tmp_path / "main.py"
-        main_py.write_text(textwrap.dedent("""\
+        main_py.write_text(
+            textwrap.dedent("""\
             from app.routers.health_router import router as health_router
             app.include_router(health_router)
-        """), encoding="utf-8")
+        """),
+            encoding="utf-8",
+        )
 
         deps_py = tmp_path / "dependencies.py"
-        deps_py.write_text(textwrap.dedent("""\
+        deps_py.write_text(
+            textwrap.dedent("""\
             # --- Versões vinculadas das permissões ---
-        """), encoding="utf-8")
+        """),
+            encoding="utf-8",
+        )
 
         env_py = tmp_path / "env.py"
-        env_py.write_text(textwrap.dedent("""\
+        env_py.write_text(
+            textwrap.dedent("""\
             from app.modules.portal.models.portal import Aba, Modulo  # noqa: F401
-        """), encoding="utf-8")
+        """),
+            encoding="utf-8",
+        )
 
         manifest = {
             "module_name": "projeto",
@@ -353,7 +398,10 @@ class TestImportFlow:
         # 1. Register router
         import_mod.register_router(manifest, main_py=main_py, force=False)
         content_main = main_py.read_text()
-        assert "from app.modules.projeto.routers.projeto_router import router as projeto_router" in content_main
+        assert (
+            "from app.modules.projeto.routers.projeto_router import router as projeto_router"
+            in content_main
+        )
         assert "app.include_router(projeto_router)" in content_main
 
         # 2. Register dependency
@@ -364,4 +412,7 @@ class TestImportFlow:
         # 3. Register alembic import
         import_mod.register_alembic_import(manifest, force=False, env_py=env_py)
         content_env = env_py.read_text()
-        assert "from app.modules.projeto.models.projeto import Projeto  # noqa: F401" in content_env
+        assert (
+            "from app.modules.projeto.models.projeto import Projeto  # noqa: F401"
+            in content_env
+        )

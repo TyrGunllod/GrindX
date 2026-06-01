@@ -227,7 +227,9 @@ def register_router(manifest: dict, force: bool, main_py: Path | None = None) ->
     logger.info("Router registrado em main.py")
 
 
-def register_dependency(manifest: dict, force: bool, deps_py: Path | None = None) -> None:
+def register_dependency(
+    manifest: dict, force: bool, deps_py: Path | None = None
+) -> None:
     module_name = manifest["module_name"]
     entity_name = manifest["entity_name"]
     if deps_py is None:
@@ -239,13 +241,17 @@ def register_dependency(manifest: dict, force: bool, deps_py: Path | None = None
     factory_name = f"get_{module_name}_service"
     import_repo = f"from app.modules.{module_name}.repositories.{module_name}_repository import {entity_name}Repository"
     import_svc = f"from app.modules.{module_name}.services.{module_name}_service import {entity_name}Service"
-    factory_sig = f"def {factory_name}(db: Session = Depends(get_db)) -> {entity_name}Service:"
+    factory_sig = (
+        f"def {factory_name}(db: Session = Depends(get_db)) -> {entity_name}Service:"
+    )
 
     if factory_name in content and import_repo in content and import_svc in content:
         logger.info("Dependency já registrado em dependencies.py")
         return
 
-    if not force and (factory_name in content or import_repo in content or import_svc in content):
+    if not force and (
+        factory_name in content or import_repo in content or import_svc in content
+    ):
         raise FileExistsError("Dependency parcialmente registrado. Use --force.")
 
     marker = "# --- Versões vinculadas das permissões ---"
@@ -274,7 +280,9 @@ def register_dependency(manifest: dict, force: bool, deps_py: Path | None = None
     logger.info("Dependency registrado em dependencies.py: %s", factory_name)
 
 
-def register_alembic_import(manifest: dict, force: bool, env_py: Path | None = None) -> None:
+def register_alembic_import(
+    manifest: dict, force: bool, env_py: Path | None = None
+) -> None:
     module_name = manifest["module_name"]
     entity_name = manifest["entity_name"]
     if env_py is None:
@@ -303,10 +311,19 @@ def register_alembic_import(manifest: dict, force: bool, env_py: Path | None = N
 
 def _get_venv_python() -> str:
     """Retorna o caminho do Python do venv do GrindX, se existir."""
-    venv_python = _get_monorepo_root() / "apps" / "api-postgres" / ".venv" / "Scripts" / "python.exe"
+    venv_python = (
+        _get_monorepo_root()
+        / "apps"
+        / "api-postgres"
+        / ".venv"
+        / "Scripts"
+        / "python.exe"
+    )
     if venv_python.exists():
         return str(venv_python)
-    venv_python = _get_monorepo_root() / "apps" / "api-postgres" / ".venv" / "bin" / "python"
+    venv_python = (
+        _get_monorepo_root() / "apps" / "api-postgres" / ".venv" / "bin" / "python"
+    )
     if venv_python.exists():
         return str(venv_python)
     return sys.executable
@@ -326,7 +343,9 @@ def run_migrations() -> None:
             timeout=120,
         )
     except subprocess.TimeoutExpired:
-        raise RuntimeError("Migration excedeu timeout de 120s. Verifique o banco de dados.")
+        raise RuntimeError(
+            "Migration excedeu timeout de 120s. Verifique o banco de dados."
+        )
     except KeyboardInterrupt:
         raise RuntimeError("Migration interrompida pelo usuário.")
     if result.returncode != 0:

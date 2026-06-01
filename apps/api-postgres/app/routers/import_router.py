@@ -74,11 +74,11 @@ def scan_imports(
         return ScanResponse(modules=[])
 
     existing_slugs = {m.slug for m in db.query(Modulo).all()}
-    
+
     api_dir = Path(__file__).resolve().parent.parent.parent
     backend_modules_dir = api_dir / "app" / "modules"
     frontend_modules_dir = api_dir.parent / "frontend-webapp" / "modules"
-    
+
     modules = []
     skipped = 0
 
@@ -92,7 +92,7 @@ def scan_imports(
         in_db = slug in existing_slugs
         in_backend_fs = (backend_modules_dir / slug).exists()
         in_frontend_fs = (frontend_modules_dir / slug).exists()
-        
+
         modules.append(
             ModuleInfo(
                 slug=slug,
@@ -173,7 +173,13 @@ def import_module(
         creationflags = 0
         if sys.platform == "win32":
             creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
-        result = subprocess.run(cmd, capture_output=True, text=True, check=False, creationflags=creationflags)
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            check=False,
+            creationflags=creationflags,
+        )
 
         try:
             result_data = json.loads(result.stdout.strip())
@@ -210,28 +216,30 @@ def import_module(
             shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
-@router.delete("/{module_name}", response_model=ImportResult, summary="Remove um módulo importado")
+@router.delete(
+    "/{module_name}", response_model=ImportResult, summary="Remove um módulo importado"
+)
 def remove_module(
     module_name: str,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
     steps = []
-    
+
     api_dir = Path(__file__).resolve().parent.parent.parent
     backend_dir = api_dir / "app" / "modules" / module_name
     frontend_dir = api_dir.parent / "frontend-webapp" / "modules" / module_name
-    
+
     if backend_dir.exists():
         shutil.rmtree(backend_dir)
         steps.append(f"Backend removido: {backend_dir}")
         logger.info("Backend removido: %s", backend_dir)
-    
+
     if frontend_dir.exists():
         shutil.rmtree(frontend_dir)
         steps.append(f"Frontend removido: {frontend_dir}")
         logger.info("Frontend removido: %s", frontend_dir)
-    
+
     deps_py = api_dir / "app" / "auth" / "dependencies.py"
     if deps_py.exists():
         content = deps_py.read_text(encoding="utf-8")
@@ -254,16 +262,21 @@ def remove_module(
                         skip_factory = True
                         continue
                     if skip_factory:
-                        if line.strip() == "" or line.strip().startswith('"""') or line.strip().startswith("return") or line.strip().startswith("repository"):
+                        if (
+                            line.strip() == ""
+                            or line.strip().startswith('"""')
+                            or line.strip().startswith("return")
+                            or line.strip().startswith("repository")
+                        ):
                             continue
                         skip_factory = False
                     clean_lines.append(line)
                 clean_lines.append(marker)
-                clean_lines.extend(lines[marker_idx + 1:])
+                clean_lines.extend(lines[marker_idx + 1 :])
                 deps_py.write_text("\n".join(clean_lines), encoding="utf-8")
                 steps.append("Dependency removida de dependencies.py")
                 logger.info("Dependency removida: %s", module_name)
-    
+
     env_py = api_dir / "alembic" / "env.py"
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
@@ -274,32 +287,38 @@ def remove_module(
             env_py.write_text("\n".join(new_lines), encoding="utf-8")
             steps.append("Import removida de alembic/env.py")
             logger.info("Import removida de env.py: %s", module_name)
-    
+
     main_py = api_dir / "app" / "main.py"
     if main_py.exists():
         content = main_py.read_text(encoding="utf-8")
-        import_line = f"from app.modules.{module_name}.routers.{module_name}_router import"
+        import_line = (
+            f"from app.modules.{module_name}.routers.{module_name}_router import"
+        )
         router_line = f"app.include_router({module_name}_router)"
         if import_line in content or router_line in content:
             lines = content.split("\n")
-            new_lines = [line for line in lines if import_line not in line and router_line not in line]
+            new_lines = [
+                line
+                for line in lines
+                if import_line not in line and router_line not in line
+            ]
             main_py.write_text("\n".join(new_lines), encoding="utf-8")
             steps.append("Router removido de main.py")
             logger.info("Router removido de main.py: %s", module_name)
-    
+
     modulo = db.query(Modulo).filter(Modulo.slug == module_name).first()
     if modulo:
         db.delete(modulo)
         db.commit()
         steps.append(f"Registro removido do banco (id={modulo.id})")
         logger.info("Registro removido: slug=%s, id=%d", module_name, modulo.id)
-    
+
     if not steps:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
             f"Módulo '{module_name}' não encontrado para remoção",
         )
-    
+
     return ImportResult(
         success=True,
         message=f"Módulo '{module_name}' removido com sucesso",
