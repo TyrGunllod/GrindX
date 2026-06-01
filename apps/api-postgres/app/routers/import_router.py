@@ -170,7 +170,10 @@ def import_module(
             cmd.append("--force")
 
         logger.info("Executando subprocesso: %s", " ".join(cmd))
-        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        creationflags = 0
+        if sys.platform == "win32":
+            creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False, creationflags=creationflags)
 
         try:
             result_data = json.loads(result.stdout.strip())
