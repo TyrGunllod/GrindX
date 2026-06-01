@@ -4,7 +4,6 @@ class ImporterController extends window.grindx.controllers.BaseController {
         this.dataTable = null;
         this.importModal = null;
         this.currentSlug = null;
-        this.isReimport = false;
         this.modules = [];
         this.init();
     }
@@ -28,7 +27,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
                     render: function(v, row) {
                         var slug = (row.slug || '').replace(/[&<>"']/g, '');
                         if (row.ja_importado) {
-                            return '<button class="btn btn-sm btn-warning" data-action="reimport" data-slug="' + slug + '">Reimportar</button>';
+                            return '<button class="btn btn-sm btn-danger" data-action="remove" data-slug="' + slug + '">Remover</button>';
                         }
                         return '<button class="btn btn-sm btn-primary" data-action="import" data-slug="' + slug + '">Importar</button>';
                     }
@@ -51,8 +50,10 @@ class ImporterController extends window.grindx.controllers.BaseController {
             if (btn) {
                 var slug = btn.dataset.slug;
                 var action = btn.dataset.action;
-                if (action === 'import' || action === 'reimport') {
-                    this.abrirModal(slug, action === 'reimport');
+                if (action === 'import') {
+                    this.abrirModalImportar(slug);
+                } else if (action === 'remove') {
+                    this.abrirModalRemover(slug);
                 }
                 return;
             }
@@ -75,30 +76,48 @@ class ImporterController extends window.grindx.controllers.BaseController {
         }
     }
 
-    abrirModal(slug, isReimport) {
+    abrirModalImportar(slug) {
         this.currentSlug = slug;
-        this.isReimport = isReimport;
         var safeSlug = (slug || '').replace(/[&<>"']/g, '');
         var body = document.getElementById('modalBody');
         body.innerHTML =
             '<p><strong>Módulo:</strong> ' + safeSlug + '</p>' +
-            '<p>' + (isReimport ? 'O módulo já existe. Reimportar sobrescreverá os arquivos atuais.' : 'Confirme para importar este módulo.') + '</p>' +
+            '<p>Confirme para importar este módulo.</p>' +
             '<div id="importLog" class="import-log hidden"></div>';
-        document.getElementById('modalTitle').textContent = isReimport ? 'Reimportar Módulo' : 'Importar Módulo';
-        document.getElementById('btnConfirm').textContent = isReimport ? 'Reimportar' : 'Importar';
+        document.getElementById('modalTitle').textContent = 'Importar Módulo';
+        document.getElementById('btnConfirm').textContent = 'Importar';
+        this.importModal.open();
+    }
+
+    abrirModalRemover(slug) {
+        this.currentSlug = slug;
+        var safeSlug = (slug || '').replace(/[&<>"']/g, '');
+        var body = document.getElementById('modalBody');
+        body.innerHTML =
+            '<p><strong>Módulo:</strong> ' + safeSlug + '</p>' +
+            '<p>Tem certeza que deseja remover este módulo? Os arquivos backend e frontend serão deletados.</p>' +
+            '<div id="importLog" class="import-log hidden"></div>';
+        document.getElementById('modalTitle').textContent = 'Remover Módulo';
+        document.getElementById('btnConfirm').textContent = 'Remover';
         this.importModal.open();
     }
 
     async confirmarImport() {
         var btn = document.getElementById('btnConfirm');
         var logDiv = document.getElementById('importLog');
+        var isRemove = document.getElementById('modalTitle').textContent === 'Remover Módulo';
         btn.disabled = true;
-        btn.textContent = 'Importando...';
+        btn.textContent = isRemove ? 'Removendo...' : 'Importando...';
         logDiv.classList.remove('hidden');
         logDiv.innerHTML = '<div class="loading-spinner"></div>';
 
         try {
-            var result = await window.grindx.api.post('/import/' + this.currentSlug, null, { params: { force: this.isReimport } });
+            var result;
+            if (isRemove) {
+                result = await window.grindx.api.delete('/import/' + this.currentSlug);
+            } else {
+                result = await window.grindx.api.post('/import/' + this.currentSlug);
+            }
 
             logDiv.innerHTML = '';
             var steps = result.steps || [];
@@ -113,7 +132,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
                 var div = document.createElement('div');
                 div.className = 'log-step success';
                 div.style.fontWeight = 'bold';
-                div.textContent = 'Modulo importado com sucesso!';
+                div.textContent = isRemove ? 'Módulo removido com sucesso!' : 'Módulo importado com sucesso!';
                 logDiv.appendChild(div);
                 setTimeout(() => {
                     this.importModal.close();
@@ -126,12 +145,12 @@ class ImporterController extends window.grindx.controllers.BaseController {
                 errDiv.textContent = 'Falha: ' + (result.error || 'Erro desconhecido');
                 logDiv.appendChild(errDiv);
                 btn.disabled = false;
-                btn.textContent = this.isReimport ? 'Reimportar' : 'Importar';
+                btn.textContent = isRemove ? 'Remover' : 'Importar';
             }
         } catch (err) {
             logDiv.innerHTML = '<div class="log-step error" style="font-weight:bold">Falha: ' + (err.message || 'Erro desconhecido') + '</div>';
             btn.disabled = false;
-            btn.textContent = this.isReimport ? 'Reimportar' : 'Importar';
+            btn.textContent = isRemove ? 'Remover' : 'Importar';
         }
     }
 }

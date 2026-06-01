@@ -205,3 +205,45 @@ def import_module(
     finally:
         if tmp_dir is not None and tmp_dir.exists():
             shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+@router.delete("/{module_name}", response_model=ImportResult, summary="Remove um módulo importado")
+def remove_module(
+    module_name: str,
+    db: Session = Depends(get_db),
+    _: None = Depends(require_role("admin")),
+):
+    steps = []
+    
+    api_dir = Path(__file__).resolve().parent.parent.parent
+    backend_dir = api_dir / "app" / "modules" / module_name
+    frontend_dir = api_dir.parent / "frontend-webapp" / "modules" / module_name
+    
+    if backend_dir.exists():
+        shutil.rmtree(backend_dir)
+        steps.append(f"Backend removido: {backend_dir}")
+        logger.info("Backend removido: %s", backend_dir)
+    
+    if frontend_dir.exists():
+        shutil.rmtree(frontend_dir)
+        steps.append(f"Frontend removido: {frontend_dir}")
+        logger.info("Frontend removido: %s", frontend_dir)
+    
+    modulo = db.query(Modulo).filter(Modulo.slug == module_name).first()
+    if modulo:
+        db.delete(modulo)
+        db.commit()
+        steps.append(f"Registro removido do banco (id={modulo.id})")
+        logger.info("Registro removido: slug=%s, id=%d", module_name, modulo.id)
+    
+    if not steps:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"Módulo '{module_name}' não encontrado para remoção",
+        )
+    
+    return ImportResult(
+        success=True,
+        message=f"Módulo '{module_name}' removido com sucesso",
+        steps=steps,
+    )
