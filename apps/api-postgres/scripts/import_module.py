@@ -173,16 +173,15 @@ def copy_migration(import_dir: Path) -> None:
         logger.info("Migration copiada: %s -> %s", f, dest_path)
 
 
-def register_router(manifest: dict, force: bool) -> None:
+def register_router(manifest: dict, force: bool, main_py: Path | None = None) -> None:
     module_name = manifest["module_name"]
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
-    main_py = api_dir / "app" / "main.py"
+    if main_py is None:
+        api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+        main_py = api_dir / "app" / "main.py"
 
     content = main_py.read_text(encoding="utf-8")
 
-    import_line = (
-        f"from app.routers.{module_name}_router import router as {module_name}_router"
-    )
+    import_line = f"from app.modules.{module_name}.routers.{module_name}_router import router as {module_name}_router"
     register_line = f"app.include_router({module_name}_router)"
 
     if import_line in content and register_line in content:
@@ -197,7 +196,7 @@ def register_router(manifest: dict, force: bool) -> None:
     last_include_idx = None
 
     for i, line in enumerate(lines):
-        if "from app.routers." in line and "import router as" in line:
+        if "from app." in line and "import router as" in line:
             last_import_idx = i
         if "app.include_router(" in line:
             last_include_idx = i
@@ -223,11 +222,12 @@ def register_router(manifest: dict, force: bool) -> None:
     logger.info("Router registrado em main.py")
 
 
-def register_alembic_import(manifest: dict, force: bool) -> None:
+def register_alembic_import(manifest: dict, force: bool, env_py: Path | None = None) -> None:
     module_name = manifest["module_name"]
     entity_name = manifest["entity_name"]
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
-    env_py = api_dir / "alembic" / "env.py"
+    if env_py is None:
+        api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+        env_py = api_dir / "alembic" / "env.py"
 
     content = env_py.read_text(encoding="utf-8")
 
