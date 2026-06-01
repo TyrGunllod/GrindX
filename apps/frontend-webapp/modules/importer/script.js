@@ -98,7 +98,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
         logDiv.innerHTML = '<div class="loading-spinner"></div>';
 
         try {
-            var result = await window.grindx.api.post('/import/' + this.currentSlug + '?force=' + this.isReimport);
+            var result = await window.grindx.api.post('/import/' + this.currentSlug, null, { params: { force: this.isReimport } });
 
             logDiv.innerHTML = '';
             var steps = result.steps || [];
