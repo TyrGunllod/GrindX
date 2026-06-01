@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.16.1 (2026-06-01)
+
+### Bug Fixes
+
+- **seed**: Corrigir aspas faltante em valor de cor
+  ([`bd6afda`](https://github.com/TyrGunllod/GrindX/commit/bd6afdaf58282ee4232c1087876c15797ce94d2f))
+
+### Chores
+
+- Limpar preview nao utilizado e atualizar seed
+  ([`be3942d`](https://github.com/TyrGunllod/GrindX/commit/be3942df78da23db1138644e80431c125fa02f53))
+
+
 ## v1.16.0 (2026-05-31)
 
 ### Bug Fixes
