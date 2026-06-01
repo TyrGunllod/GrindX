@@ -74,6 +74,11 @@ def scan_imports(
         return ScanResponse(modules=[])
 
     existing_slugs = {m.slug for m in db.query(Modulo).all()}
+    
+    api_dir = Path(__file__).resolve().parent.parent.parent
+    backend_modules_dir = api_dir / "app" / "modules"
+    frontend_modules_dir = api_dir.parent / "frontend-webapp" / "modules"
+    
     modules = []
     skipped = 0
 
@@ -84,6 +89,10 @@ def scan_imports(
             continue
 
         slug = manifest.get("module_name", zip_path.stem)
+        in_db = slug in existing_slugs
+        in_backend_fs = (backend_modules_dir / slug).exists()
+        in_frontend_fs = (frontend_modules_dir / slug).exists()
+        
         modules.append(
             ModuleInfo(
                 slug=slug,
@@ -92,7 +101,7 @@ def scan_imports(
                 version=manifest.get("version", "0.0.0"),
                 menu_label=manifest.get("menu_label", slug),
                 schema_name=manifest.get("schema_name", "org"),
-                ja_importado=slug in existing_slugs,
+                ja_importado=in_db or in_backend_fs or in_frontend_fs,
             )
         )
 
