@@ -301,15 +301,34 @@ def register_alembic_import(manifest: dict, force: bool, env_py: Path | None = N
         )
 
 
+def _get_venv_python() -> str:
+    """Retorna o caminho do Python do venv do GrindX, se existir."""
+    venv_python = _get_monorepo_root() / "apps" / "api-postgres" / ".venv" / "Scripts" / "python.exe"
+    if venv_python.exists():
+        return str(venv_python)
+    venv_python = _get_monorepo_root() / "apps" / "api-postgres" / ".venv" / "bin" / "python"
+    if venv_python.exists():
+        return str(venv_python)
+    return sys.executable
+
+
 def run_migrations() -> None:
     api_dir = _get_monorepo_root() / "apps" / "api-postgres"
-    result = subprocess.run(
-        [sys.executable, "-m", "alembic", "upgrade", "head"],
-        cwd=api_dir,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    python_exe = _get_venv_python()
+    logger.info("Usando Python: %s", python_exe)
+    try:
+        result = subprocess.run(
+            [python_exe, "-m", "alembic", "upgrade", "head"],
+            cwd=api_dir,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=120,
+        )
+    except subprocess.TimeoutExpired:
+        raise RuntimeError("Migration excedeu timeout de 120s. Verifique o banco de dados.")
+    except KeyboardInterrupt:
+        raise RuntimeError("Migration interrompida pelo usuário.")
     if result.returncode != 0:
         raise RuntimeError(
             f"Migration falhou:\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}"
