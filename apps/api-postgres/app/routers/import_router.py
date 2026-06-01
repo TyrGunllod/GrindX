@@ -229,6 +229,36 @@ def remove_module(
         steps.append(f"Frontend removido: {frontend_dir}")
         logger.info("Frontend removido: %s", frontend_dir)
     
+    deps_py = api_dir / "app" / "auth" / "dependencies.py"
+    if deps_py.exists():
+        content = deps_py.read_text(encoding="utf-8")
+        marker = "# --- Versões vinculadas das permissões ---"
+        if marker in content:
+            lines = content.split("\n")
+            marker_idx = None
+            for i, line in enumerate(lines):
+                if marker in line:
+                    marker_idx = i
+                    break
+            if marker_idx is not None:
+                new_lines = lines[:marker_idx]
+                new_lines.append(marker)
+                new_lines.extend(lines[marker_idx + 1:])
+                deps_py.write_text("\n".join(new_lines), encoding="utf-8")
+                steps.append("Dependency removida de dependencies.py")
+                logger.info("Dependency removida: %s", module_name)
+    
+    env_py = api_dir / "alembic" / "env.py"
+    if env_py.exists():
+        content = env_py.read_text(encoding="utf-8")
+        import_line = f"from app.modules.{module_name}.models.{module_name} import"
+        if import_line in content:
+            lines = content.split("\n")
+            new_lines = [line for line in lines if import_line not in line]
+            env_py.write_text("\n".join(new_lines), encoding="utf-8")
+            steps.append("Import removida de alembic/env.py")
+            logger.info("Import removida de env.py: %s", module_name)
+    
     modulo = db.query(Modulo).filter(Modulo.slug == module_name).first()
     if modulo:
         db.delete(modulo)
