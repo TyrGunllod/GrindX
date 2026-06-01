@@ -272,6 +272,18 @@ def remove_module(
             steps.append("Import removida de alembic/env.py")
             logger.info("Import removida de env.py: %s", module_name)
     
+    main_py = api_dir / "app" / "main.py"
+    if main_py.exists():
+        content = main_py.read_text(encoding="utf-8")
+        import_line = f"from app.modules.{module_name}.routers.{module_name}_router import"
+        router_line = f"app.include_router({module_name}_router)"
+        if import_line in content or router_line in content:
+            lines = content.split("\n")
+            new_lines = [line for line in lines if import_line not in line and router_line not in line]
+            main_py.write_text("\n".join(new_lines), encoding="utf-8")
+            steps.append("Router removido de main.py")
+            logger.info("Router removido de main.py: %s", module_name)
+    
     modulo = db.query(Modulo).filter(Modulo.slug == module_name).first()
     if modulo:
         db.delete(modulo)
