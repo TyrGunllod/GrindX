@@ -176,7 +176,7 @@ def seed_database():
                 is_active=True,
                 colors={
                     "--skin-primary": "#0cb9d4",
-                    "--skin-primary-hover": "#1dd4d7,
+                    "--skin-primary-hover": "#1dd4d7",
                     "--skin-danger": "#dc2626",
                     "--skin-success": "#16a34a",
                     "--skin-warning": "#ca8a04",
