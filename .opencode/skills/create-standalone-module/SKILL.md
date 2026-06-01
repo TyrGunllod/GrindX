@@ -41,6 +41,8 @@ Use `question` tool calls para perguntar. Pode perguntar múltiplos parâmetros 
 | 7 | `route_tag` | "Tag de agrupamento no Swagger (ex: `\"Recursos\"`)." | `"Recursos"` | `"{entity_name}"` |
 | 8 | `frontend_path` | "Caminho onde os arquivos frontend serão criados no portal (ex: `modules/recursos`)." | `modules/recursos` | `modules/{module_name}` |
 | 9 | `menu_label` | "Rótulo que aparece no menu lateral do portal para este módulo." | `"Recursos"` | `{entity_name}` |
+| 10 | `header_title` | "Título que aparece no cabeçalho da página do módulo (ex: \"Gerenciamento de Recursos\")." | `"Gerenciamento de Recursos"` | `"Gerenciamento de {entity_name}"` |
+| 11 | `header_description` | "Subtítulo/descrição que aparece abaixo do título no cabeçalho." | `"Cadastro e controle de recursos do sistema."` | `"Módulo de {menu_label} do GrindX."` |
 
 ## Directory Structure
 
@@ -97,6 +99,8 @@ Replace these placeholders:
 - `{route_tag}` — Swagger tag
 - `{menu_label}` — menu display name
 - `{route_api}` — API path
+- `{header_title}` — page header title
+- `{header_description}` — page header subtitle
 
 ## 1. Backend — Criar Todos os Arquivos
 
@@ -579,6 +583,48 @@ class TestService:
 - Apenas regras de layout (grid, flex, widths, margins, padding)
 - Testar visualmente com pelo menos 2 skins antes de exportar
 
+### 3.1.1 Header Padrão (Obrigatório)
+
+Todo módulo GrindX **deve** usar este padrão de header no `index.html`. Copie diretamente, substituindo apenas `{titulo}`, `{descricao}` e os botões de ação.
+
+**Referência:** `Preview/preview.html` (linhas 12–22)
+
+```html
+<header class="page-header mb-8">
+    <div>
+        <h1>{titulo}</h1>
+        <p class="text-muted">{descricao}</p>
+    </div>
+    <div class="actions-group" style="margin-top: var(--space-4);">
+        <!-- Botões de ação do módulo aqui -->
+    </div>
+</header>
+```
+
+**Regras obrigatórias:**
+- `<header class="page-header mb-8">` — **sem** classes `flex`, `justify-between`, `items-center`
+- `<div class="actions-group" style="margin-top: var(--space-4);">` — **sempre** incluir o `style` com `margin-top: var(--space-4)`
+- O `<div>` interno agrupa título + subtítulo; o `<div class="actions-group">` agrupa botões
+- Botões usam classes `btn`, `btn-primary`, `btn-secondary`, etc. + ícones Font Awesome
+
+**Exemplo com botões:**
+```html
+<header class="page-header mb-8">
+    <div>
+        <h1>Gerenciamento de Recursos</h1>
+        <p class="text-muted">Cadastro e controle de recursos do sistema.</p>
+    </div>
+    <div class="actions-group" style="margin-top: var(--space-4);">
+        <button class="btn" id="btnRefresh" title="Recarregar">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+        <button class="btn btn-primary" id="btnNovo">
+            <i class="fas fa-plus"></i> <span class="hide-mobile">Novo Recurso</span>
+        </button>
+    </div>
+</header>
+```
+
 ### 3.2 `index.html` e `script.js` (Padrão GrindX — HTML puro + CSS puro + Vanilla JS)
 
 **`index.html`:**
@@ -587,7 +633,7 @@ class TestService:
 - Templates de cards usando `<template>` ou template strings no JS
 - Atributos `data-*` para binding de eventos via delegated events
 - IDs únicos para binds, classes para estilização
-- Estrutura: `<div class="page-container">` → cabeçalho + grid + empty state + modais
+- Estrutura: `<div class="page-container">` → cabeçalho (usar padrão 3.1.1) + grid + empty state + modais
 
 **`script.js`:**
 - Vanilla JS puro, sem classes de framework, sem TypeScript
@@ -980,6 +1026,7 @@ pytest tests/ -k {module_name} -v
 - [ ] Tests: conftest.py, unit tests (mocked repo), integration tests (SQLite)
 - [ ] Migration: Alembic migration file (PostgreSQL)
 - [ ] Frontend: index.html, script.js, style.css (se Padrão GrindX: HTML puro, CSS com `var(--...)`, Vanilla JS puro)
+- [ ] Header segue padrão 3.1.1: `class="page-header mb-8"` sem flex, `actions-group` com `margin-top: var(--space-4)`
 - [ ] Support: requirements.txt, pytest.ini, run_tests.ps1
 - [ ] Testes passam: `pytest app/modules/{module_name}/tests/ -v`
 - [ ] `module.json` criado na raiz do standalone com metadados do módulo
