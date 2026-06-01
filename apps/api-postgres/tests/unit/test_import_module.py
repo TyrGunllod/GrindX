@@ -1,10 +1,12 @@
 """Tests for register_router(), register_alembic_import(), and register_dependency() in import_module.py."""
 
 import tempfile
+import textwrap
 from pathlib import Path
 
 import pytest
 
+import scripts.import_module as import_module
 from scripts.import_module import (
     register_alembic_import,
     register_dependency,
@@ -66,6 +68,13 @@ def deps_py(tmp_path):
     f = tmp_path / "dependencies.py"
     f.write_text(DEPENDENCIES_CONTENT, encoding="utf-8")
     return f
+
+
+@pytest.fixture
+def import_module():
+    import scripts.import_module as mod
+
+    return mod
 
 
 class TestRegisterRouter:
@@ -320,3 +329,44 @@ class TestRegisterDependency:
         assert marker_idx is not None
         assert factory_idx is not None
         assert factory_idx < marker_idx
+
+
+class TestImportFlow:
+    def test_fluxo_completo_register_router_e_dependency(self, import_module, tmp_path):
+        """Simula o fluxo: register_router + register_dependency + register_alembic_import."""
+        main_py = tmp_path / "main.py"
+        main_py.write_text(textwrap.dedent("""\
+            from app.routers.health_router import router as health_router
+            app.include_router(health_router)
+        """), encoding="utf-8")
+
+        deps_py = tmp_path / "dependencies.py"
+        deps_py.write_text(textwrap.dedent("""\
+            # --- Versões vinculadas das permissões ---
+        """), encoding="utf-8")
+
+        env_py = tmp_path / "env.py"
+        env_py.write_text(textwrap.dedent("""\
+            from app.modules.portal.models.portal import Aba, Modulo  # noqa: F401
+        """), encoding="utf-8")
+
+        manifest = {
+            "module_name": "projeto",
+            "entity_name": "Projeto",
+        }
+
+        # 1. Register router
+        import_module.register_router(manifest, main_py=main_py, force=False)
+        content_main = main_py.read_text()
+        assert "from app.modules.projeto.routers.projeto_router import router as projeto_router" in content_main
+        assert "app.include_router(projeto_router)" in content_main
+
+        # 2. Register dependency
+        import_module.register_dependency(manifest, force=False, deps_py=deps_py)
+        content_deps = deps_py.read_text()
+        assert "def get_projeto_service(" in content_deps
+
+        # 3. Register alembic import
+        import_module.register_alembic_import(manifest, force=False, env_py=env_py)
+        content_env = env_py.read_text()
+        assert "from app.modules.projeto.models.projeto import Projeto  # noqa: F401" in content_env
