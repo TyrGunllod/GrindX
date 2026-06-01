@@ -25,7 +25,6 @@
             <table class="w-full">
                 <thead>
                     <tr>
-                        <th scope="col"></th>
                         <th scope="col">Modulo</th>
                         <th scope="col">Versao</th>
                         <th scope="col">Schema</th>
@@ -36,7 +35,6 @@
                 <tbody>
                     <!-- Linha 1: Modulo importado -->
                     <tr class="module-row" data-slug="vendas">
-                        <td><i class="fas fa-chevron-right expand-icon"></i></td>
                         <td>Vendas</td>
                         <td>1.2.0</td>
                         <td>vendas</td>
@@ -44,44 +42,17 @@
                         <td><button class="btn btn-sm btn-warning">Reimportar</button></td>
                     </tr>
 
-                    <!-- Linha 2: Modulo expandido (card de detalhes) -->
+                    <!-- Linha 2: Modulo -->
                     <tr class="module-row" data-slug="estoque" style="background: rgba(0,194,224,0.02);">
-                        <td><i class="fas fa-chevron-down expand-icon" style="color: var(--primary);"></i></td>
                         <td>Estoque</td>
                         <td>2.0.1</td>
                         <td>estoque</td>
                         <td><span class="badge badge-success">Importado</span></td>
                         <td><button class="btn btn-sm btn-warning">Reimportar</button></td>
                     </tr>
-                    <!-- Card expandido da linha Estoque -->
-                    <tr class="module-card-expanded-row">
-                        <td colspan="6">
-                            <div class="module-card-expanded">
-                                <div class="card-grid">
-                                    <div class="card-field">
-                                        <div class="card-label">MODULO</div>
-                                        <div class="card-value">Estoque</div>
-                                    </div>
-                                    <div class="card-field">
-                                        <div class="card-label">VERSAO</div>
-                                        <div class="card-value">2.0.1</div>
-                                    </div>
-                                    <div class="card-field">
-                                        <div class="card-label">SCHEMA</div>
-                                        <div class="card-value">estoque</div>
-                                    </div>
-                                </div>
-                                <div class="card-actions">
-                                    <button class="btn btn-sm btn-warning">Reimportar</button>
-                                    <button class="btn btn-sm btn-secondary">Detalhes</button>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
 
                     <!-- Linha 3: Modulo novo -->
                     <tr class="module-row" data-slug="financeiro">
-                        <td><i class="fas fa-chevron-right expand-icon"></i></td>
                         <td>Financeiro</td>
                         <td>1.0.0</td>
                         <td>financeiro</td>
@@ -91,7 +62,6 @@
 
                     <!-- Linha 4: Modulo novo -->
                     <tr class="module-row" data-slug="rh">
-                        <td><i class="fas fa-chevron-right expand-icon"></i></td>
                         <td>RH</td>
                         <td>3.1.0</td>
                         <td>rh</td>

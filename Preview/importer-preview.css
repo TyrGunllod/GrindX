@@ -484,65 +484,7 @@ td {
 .log-step.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .log-step.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
-/* Card Inline */
-.module-card-expanded {
-    border: 1px solid var(--primary);
-    border-left: 3px solid var(--primary);
-    border-radius: 0 4px 4px 0;
-    padding: var(--space-4);
-    margin-bottom: var(--space-2);
-    background: rgba(0, 194, 224, 0.03);
-    animation: slideDown 200ms ease-out;
-}
-
-@keyframes slideDown {
-    from { opacity: 0; max-height: 0; }
-    to { opacity: 1; max-height: 200px; }
-}
-
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
-}
-
-.card-field {
-    display: flex;
-    flex-direction: column;
-}
-
-.card-label {
-    color: var(--text-muted);
-    font-size: 0.8em;
-    margin-bottom: 4px;
-}
-
-.card-value {
-    font-weight: 600;
-}
-
-.card-actions {
-    display: flex;
-    gap: var(--space-2);
-}
-
-/* Expand Icon */
-.expand-icon {
-    color: var(--text-muted);
-    font-size: 12px;
-    transition: transform 0.2s;
-}
-
-.module-row:hover .expand-icon {
-    color: var(--primary);
-}
-
 /* Table Row */
-.module-row {
-    cursor: pointer;
-}
-
 .module-row:hover {
     background: rgba(0, 194, 224, 0.02);
 }

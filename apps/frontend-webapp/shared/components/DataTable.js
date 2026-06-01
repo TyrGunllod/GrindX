@@ -29,11 +29,8 @@
                 const rowClass = this.rowClassName ? this.rowClassName(item) : '';
                 const rowDataset = this.rowDataset ? this.rowDataset(item) : {};
                 const dataAttrs = Object.entries(rowDataset).map(([k, v]) => `data-${k}="${v}"`).join(' ');
-                const expandIcon = this.rowClassName ? '<i class="fas fa-chevron-right expand-icon"></i>' : '';
-                
                 return `
                     <tr class="${rowClass}" ${dataAttrs}>
-                        ${expandIcon ? `<td style="width: 30px; text-align: center;">${expandIcon}</td>` : ''}
                         ${this.columns.map(column => {
                             const value = column.key ? item[column.key] : item;
                             const content = column.render ? column.render(value, item) : value;
@@ -45,7 +42,7 @@
         }
 
         renderEmpty(message, colspan) {
-            const totalCols = this.rowClassName ? this.columns.length + 1 : this.columns.length;
+            const totalCols = this.columns.length;
             this.tableBody.innerHTML = `<tr><td colspan="${colspan || totalCols}" class="text-center">${message}</td></tr>`;
         }
     }

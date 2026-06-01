@@ -56,12 +56,6 @@ class ImporterController extends window.grindx.controllers.BaseController {
                 }
                 return;
             }
-
-            var row = e.target.closest('.module-row');
-            if (row) {
-                var slug = row.dataset.slug;
-                this.abrirCard(slug);
-            }
         });
     }
 
@@ -79,54 +73,6 @@ class ImporterController extends window.grindx.controllers.BaseController {
         } catch (err) {
             this.toastError(err);
         }
-    }
-
-    abrirCard(slug) {
-        document.querySelectorAll('.module-card-expanded-row').forEach(row => {
-            row.remove();
-        });
-
-        const row = document.querySelector(`[data-slug="${slug}"]`);
-        const cardRow = this.criarCardExpandido(slug);
-        row.after(cardRow);
-
-        const icon = row.querySelector('.expand-icon');
-        if (icon) {
-            icon.className = 'fas fa-chevron-down expand-icon';
-        }
-    }
-
-    criarCardExpandido(slug) {
-        const module = this.modules.find(m => m.slug === slug);
-        const tr = document.createElement('tr');
-        tr.className = 'module-card-expanded-row';
-        tr.innerHTML = `
-            <td colspan="6">
-                <div class="module-card-expanded">
-                    <div class="card-grid">
-                        <div class="card-field">
-                            <div class="card-label">MÓDULO</div>
-                            <div class="card-value">${module.module_name}</div>
-                        </div>
-                        <div class="card-field">
-                            <div class="card-label">VERSÃO</div>
-                            <div class="card-value">${module.version}</div>
-                        </div>
-                        <div class="card-field">
-                            <div class="card-label">SCHEMA</div>
-                            <div class="card-value">${module.schema_name}</div>
-                        </div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn btn-sm ${module.ja_importado ? 'btn-warning' : 'btn-primary'}">
-                            ${module.ja_importado ? 'Reimportar' : 'Importar'}
-                        </button>
-                        <button class="btn btn-sm btn-secondary">Detalhes</button>
-                    </div>
-                </div>
-            </td>
-        `;
-        return tr;
     }
 
     abrirModal(slug, isReimport) {
