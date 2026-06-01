@@ -30,6 +30,7 @@ td {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     font-size: 0.875rem;
+    text-align: center;
 }
 
 .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; }
