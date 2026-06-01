@@ -127,8 +127,8 @@ class ImporterController extends window.grindx.controllers.BaseController {
             var steps = result.steps || [];
             steps.forEach(function(step) {
                 var div = document.createElement('div');
-                div.className = result.success ? 'log-step success' : 'log-step error';
-                div.textContent = (result.success ? '✓ ' : '✗ ') + step;
+                div.className = 'log-step success';
+                div.textContent = '✓ ' + step;
                 logDiv.appendChild(div);
             });
 
@@ -143,13 +143,18 @@ class ImporterController extends window.grindx.controllers.BaseController {
                     this.carregar();
                 }, 1500);
             } else {
-                var errDiv = document.createElement('div');
-                errDiv.className = 'log-step error';
-                errDiv.style.fontWeight = 'bold';
-                errDiv.textContent = 'Falha: ' + (result.error || 'Erro desconhecido');
-                logDiv.appendChild(errDiv);
-                btn.disabled = false;
-                btn.textContent = isRemove ? 'Remover' : 'Importar';
+                if (!isRemove) {
+                    logDiv.innerHTML = '<div class="log-step info" style="font-weight:bold">Aguardando servidor reiniciar...</div><div class="loading-spinner" style="margin-top: 10px;"></div>';
+                    await this.aguardarServidor(this.currentSlug, logDiv, btn);
+                } else {
+                    var errDiv = document.createElement('div');
+                    errDiv.className = 'log-step error';
+                    errDiv.style.fontWeight = 'bold';
+                    errDiv.textContent = 'Falha: ' + (result.error || 'Erro desconhecido');
+                    logDiv.appendChild(errDiv);
+                    btn.disabled = false;
+                    btn.textContent = 'Remover';
+                }
             }
         } catch (err) {
             if (!isRemove) {
