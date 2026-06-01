@@ -85,7 +85,9 @@ class ImporterController extends window.grindx.controllers.BaseController {
             '<p>Confirme para importar este módulo.</p>' +
             '<div id="importLog" class="import-log hidden"></div>';
         document.getElementById('modalTitle').textContent = 'Importar Módulo';
-        document.getElementById('btnConfirm').textContent = 'Importar';
+        var btn = document.getElementById('btnConfirm');
+        btn.textContent = 'Importar';
+        btn.disabled = false;
         this.importModal.open();
     }
 
@@ -98,7 +100,9 @@ class ImporterController extends window.grindx.controllers.BaseController {
             '<p>Tem certeza que deseja remover este módulo? Os arquivos backend e frontend serão deletados.</p>' +
             '<div id="importLog" class="import-log hidden"></div>';
         document.getElementById('modalTitle').textContent = 'Remover Módulo';
-        document.getElementById('btnConfirm').textContent = 'Remover';
+        var btn = document.getElementById('btnConfirm');
+        btn.textContent = 'Remover';
+        btn.disabled = false;
         this.importModal.open();
     }
 
