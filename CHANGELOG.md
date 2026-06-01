@@ -2,6 +2,87 @@
 
 <!-- version list -->
 
+## v1.17.0 (2026-06-01)
+
+### Bug Fixes
+
+- Raise RuntimeError when main.py has no router imports
+  ([`c562669`](https://github.com/TyrGunllod/GrindX/commit/c5626691b5f81624ae0eae5c58ac2fc5bfd65c0f))
+
+- **import**: Corrigir limpeza de dependencies.py e env.py
+  ([`59c4e7a`](https://github.com/TyrGunllod/GrindX/commit/59c4e7a90ae198ac02c04af584ec844852ee04f7))
+
+- **import**: Limpar dependencies.py e env.py ao remover modulo
+  ([`9624f90`](https://github.com/TyrGunllod/GrindX/commit/9624f907a3ea19348702e7b13a505f8c0aab3b3b))
+
+- **import**: Limpar main.py ao remover modulo
+  ([`dddfd56`](https://github.com/TyrGunllod/GrindX/commit/dddfd561f9ca94893a33e4c1613f739e7839dedb))
+
+- **import**: Passar force como query param correto
+  ([`12e007a`](https://github.com/TyrGunllod/GrindX/commit/12e007a19a0f4ac96f4bb066818e054ee36d24bd))
+
+- **import**: Prevenir interrupcao do subprocesso no Windows
+  ([`e4cf0c5`](https://github.com/TyrGunllod/GrindX/commit/e4cf0c555357127f1a5e76681927251e87b797cb))
+
+- **import**: Resetar estado do botao ao abrir modal
+  ([`bd1ea75`](https://github.com/TyrGunllod/GrindX/commit/bd1ea75b5c9d7c5bbe109387c24ff9f998f0c31f))
+
+- **import**: Tratar erro de importacao como possivel reinicio
+  ([`91e6ff7`](https://github.com/TyrGunllod/GrindX/commit/91e6ff7ab2be0647c2b7658f9f7ef18b72ec10c9))
+
+- **import**: Verificar filesystem no scan de modulos
+  ([`b87e26c`](https://github.com/TyrGunllod/GrindX/commit/b87e26cf74b39f41d3fdec3bec61d1fdd25d7784))
+
+- **import_module**: Correct router import path for standalone modules
+  ([`d95a685`](https://github.com/TyrGunllod/GrindX/commit/d95a6856da315f488a9ad9ac69e5f608021c6c41))
+
+- **importer**: Corrigir page-header para padrao vertical igual ao preview
+  ([`204a815`](https://github.com/TyrGunllod/GrindX/commit/204a8154cbaca36268ae95661d6a19744980cd91))
+
+- **importer**: Usar Python do venv + timeout 120s + tratar KeyboardInterrupt
+  ([`04df110`](https://github.com/TyrGunllod/GrindX/commit/04df1103815e749f9d0c82535c26133bfae5f9b8))
+
+- **test**: Corrigir erros de linting no test_import_module.py
+  ([`0989cea`](https://github.com/TyrGunllod/GrindX/commit/0989ceaeb1aca4aca930fb29d7e146228c962afa))
+
+### Chores
+
+- Commit pendente - seed, style, migration
+  ([`8b08685`](https://github.com/TyrGunllod/GrindX/commit/8b08685e04a8de0653df73ba06bb2a361268e293))
+
+### Code Style
+
+- Aplicar ruff format nos arquivos
+  ([`6c6695c`](https://github.com/TyrGunllod/GrindX/commit/6c6695cd97bb34b0d9a51dc394656e553937427f))
+
+- **importer**: Centralizar cabecalhos e valores da tabela
+  ([`f6858ff`](https://github.com/TyrGunllod/GrindX/commit/f6858ffe4432a49ffd8ca60891cc4199fa2b2fb4))
+
+### Features
+
+- Add register_dependency() to import_module.py
+  ([`d84031b`](https://github.com/TyrGunllod/GrindX/commit/d84031bc1cfc62adabc6d26edf083364fc06ade5))
+
+- **frontend**: Padronizar header dos modulos e adicionar push policy
+  ([`d653c02`](https://github.com/TyrGunllod/GrindX/commit/d653c02f923f4e94a7dde9a32866d280cd919793))
+
+- **import**: Aguardar reinicio do servidor apos importacao
+  ([`6baff93`](https://github.com/TyrGunllod/GrindX/commit/6baff939f87448abbe94e886aa6968d7a26493a1))
+
+- **import**: Substituir reimportar por remover
+  ([`4fbf718`](https://github.com/TyrGunllod/GrindX/commit/4fbf7188b554bf1a285c47fd16a2643d0eaa0226))
+
+### Refactoring
+
+- **importer**: Remover funcionalidade de expandir modulos
+  ([`4215153`](https://github.com/TyrGunllod/GrindX/commit/4215153b60f0964ef04f5af8649cae51e5de84c0))
+
+### Testing
+
+- Add integration test for complete import flow (Task 4)
+  ([`14c1d95`](https://github.com/TyrGunllod/GrindX/commit/14c1d954f7cbb7276c746f03f18a1a8ef1af00bb))
+
+
 ## v1.16.1 (2026-06-01)
 
 ### Bug Fixes
