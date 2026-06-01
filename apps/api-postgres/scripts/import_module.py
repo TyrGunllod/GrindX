@@ -209,6 +209,11 @@ def register_router(manifest: dict, force: bool, main_py: Path | None = None) ->
         logger.warning(
             "Não foi possível encontrar local para inserir app.include_router() em main.py"
         )
+    if last_import_idx is None and last_include_idx is None:
+        raise RuntimeError(
+            "Não foi possível encontrar nenhum import de router em main.py. "
+            "Adicione manualmente o import e o include_router."
+        )
 
     if last_import_idx is not None and import_line not in content:
         lines.insert(last_import_idx + 1, import_line + "\n")

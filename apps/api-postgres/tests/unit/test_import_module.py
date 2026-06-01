@@ -118,6 +118,15 @@ class TestRegisterRouter:
         content = main_py.read_text(encoding="utf-8")
         assert "app.include_router(projetos_router)" in content
 
+    def test_levanta_erro_se_main_py_sem_imports(self, tmp_path):
+        """Se main.py não tem imports de router, levanta erro."""
+        main_py = tmp_path / "main.py"
+        main_py.write_text("# empty main.py\n", encoding="utf-8")
+
+        manifest = {"module_name": "projeto"}
+        with pytest.raises(RuntimeError, match="Não foi possível encontrar"):
+            register_router(manifest, main_py=main_py, force=False)
+
     def test_matches_new_style_imports_for_position(self, tmp_path):
         """When main.py already has a new-style module import, find the last one."""
         content = (
