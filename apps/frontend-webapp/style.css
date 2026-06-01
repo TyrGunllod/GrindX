@@ -99,7 +99,7 @@ input:focus {
     background: var(--bg-card);
     border-radius: 1.5rem;
     border: 1px solid var(--border-color);
-    padding: var(--space-6);
+    padding: var(--space-4);
     width: 100%;
     max-width: 400px;
     box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
