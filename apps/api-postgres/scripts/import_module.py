@@ -227,6 +227,53 @@ def register_router(manifest: dict, force: bool, main_py: Path | None = None) ->
     logger.info("Router registrado em main.py")
 
 
+def register_dependency(manifest: dict, force: bool, deps_py: Path | None = None) -> None:
+    module_name = manifest["module_name"]
+    entity_name = manifest["entity_name"]
+    if deps_py is None:
+        api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+        deps_py = api_dir / "app" / "auth" / "dependencies.py"
+
+    content = deps_py.read_text(encoding="utf-8")
+
+    factory_name = f"get_{module_name}_service"
+    import_repo = f"from app.modules.{module_name}.repositories.{module_name}_repository import {entity_name}Repository"
+    import_svc = f"from app.modules.{module_name}.services.{module_name}_service import {entity_name}Service"
+    factory_sig = f"def {factory_name}(db: Session = Depends(get_db)) -> {entity_name}Service:"
+
+    if factory_name in content and import_repo in content and import_svc in content:
+        logger.info("Dependency já registrado em dependencies.py")
+        return
+
+    if not force and (factory_name in content or import_repo in content or import_svc in content):
+        raise FileExistsError("Dependency parcialmente registrado. Use --force.")
+
+    marker = "# --- Versões vinculadas das permissões ---"
+    if marker not in content:
+        raise RuntimeError(
+            "Marker '# --- Versões vinculadas das permissões ---' não encontrado em dependencies.py. "
+            "Adicione manualmente o factory."
+        )
+
+    factory_block = (
+        f"{import_repo}\n"
+        f"{import_svc}\n"
+        f"\n"
+        f"\n"
+        f"{factory_sig}\n"
+        f'    """Factory para o {entity_name}Service."""\n'
+        f"    repository = {entity_name}Repository(db)\n"
+        f"    return {entity_name}Service(repository)\n"
+        f"\n"
+        f"\n"
+        f"{marker}\n"
+    )
+
+    content = content.replace(marker, factory_block)
+    deps_py.write_text(content, encoding="utf-8")
+    logger.info("Dependency registrado em dependencies.py: %s", factory_name)
+
+
 def register_alembic_import(manifest: dict, force: bool, env_py: Path | None = None) -> None:
     module_name = manifest["module_name"]
     entity_name = manifest["entity_name"]
@@ -358,6 +405,10 @@ def import_module(
         if not dry_run:
             register_router(manifest, force)
         steps.append("Router registrado")
+
+        if not dry_run:
+            register_dependency(manifest, force)
+        steps.append("Dependency registrado em dependencies.py")
 
         if not dry_run:
             register_alembic_import(manifest, force)

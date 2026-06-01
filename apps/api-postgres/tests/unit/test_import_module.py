@@ -1,11 +1,15 @@
-"""Tests for register_router() and register_alembic_import() in import_module.py."""
+"""Tests for register_router(), register_alembic_import(), and register_dependency() in import_module.py."""
 
 import tempfile
 from pathlib import Path
 
 import pytest
 
-from scripts.import_module import register_alembic_import, register_router
+from scripts.import_module import (
+    register_alembic_import,
+    register_dependency,
+    register_router,
+)
 
 
 MAIN_PY_CONTENT = '''\
@@ -22,6 +26,26 @@ from app.modules.org.models.empresa import Empresa  # noqa: F401
 from app.modules.portal.models.portal import Aba, Modulo  # noqa: F401
 '''
 
+DEPENDENCIES_CONTENT = '''\
+from fastapi import Depends
+from sqlalchemy.orm import Session
+
+from app.auth.service import AuthService
+from app.database import get_db
+
+
+def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
+    """Factory para o AuthService."""
+    return AuthService(db)
+
+
+# --- Versões vinculadas das permissões ---
+
+
+def require_role(*roles_permitidas: str):
+    pass
+'''
+
 
 @pytest.fixture
 def main_py(tmp_path):
@@ -34,6 +58,13 @@ def main_py(tmp_path):
 def env_py(tmp_path):
     f = tmp_path / "env.py"
     f.write_text(ALEMBIC_ENV_CONTENT, encoding="utf-8")
+    return f
+
+
+@pytest.fixture
+def deps_py(tmp_path):
+    f = tmp_path / "dependencies.py"
+    f.write_text(DEPENDENCIES_CONTENT, encoding="utf-8")
     return f
 
 
@@ -194,3 +225,98 @@ class TestRegisterAlembicImport:
             "from app.modules.financeiro.models.financeiro import Lancamento  # noqa: F401"
             in content
         )
+
+
+class TestRegisterDependency:
+    def test_adds_factory_before_marker(self, deps_py):
+        manifest = {"module_name": "projetos", "entity_name": "Projeto"}
+        register_dependency(manifest, force=False, deps_py=deps_py)
+
+        content = deps_py.read_text(encoding="utf-8")
+        assert "def get_projetos_service(db: Session = Depends(get_db)) -> ProjetoService:" in content
+        assert "# --- Versões vinculadas das permissões ---" in content
+
+        marker_idx = content.index("# --- Versões vinculadas das permissões ---")
+        factory_idx = content.index("def get_projetos_service")
+        assert factory_idx < marker_idx
+
+    def test_generates_correct_imports(self, deps_py):
+        manifest = {"module_name": "projetos", "entity_name": "Projeto"}
+        register_dependency(manifest, force=False, deps_py=deps_py)
+
+        content = deps_py.read_text(encoding="utf-8")
+        assert "from app.modules.projetos.repositories.projetos_repository import ProjetoRepository" in content
+        assert "from app.modules.projetos.services.projetos_service import ProjetoService" in content
+
+    def test_generates_correct_factory_body(self, deps_py):
+        manifest = {"module_name": "projetos", "entity_name": "Projeto"}
+        register_dependency(manifest, force=False, deps_py=deps_py)
+
+        content = deps_py.read_text(encoding="utf-8")
+        assert "repository = ProjetoRepository(db)" in content
+        assert "return ProjetoService(repository)" in content
+
+    def test_idempotent_when_already_registered(self, deps_py):
+        manifest = {"module_name": "projetos", "entity_name": "Projeto"}
+        register_dependency(manifest, force=False, deps_py=deps_py)
+        register_dependency(manifest, force=False, deps_py=deps_py)
+
+        content = deps_py.read_text(encoding="utf-8")
+        assert content.count("def get_projetos_service") == 1
+
+    def test_different_module(self, deps_py):
+        manifest = {"module_name": "financeiro", "entity_name": "Lancamento"}
+        register_dependency(manifest, force=False, deps_py=deps_py)
+
+        content = deps_py.read_text(encoding="utf-8")
+        assert "from app.modules.financeiro.repositories.financeiro_repository import LancamentoRepository" in content
+        assert "from app.modules.financeiro.services.financeiro_service import LancamentoService" in content
+        assert "def get_financeiro_service(db: Session = Depends(get_db)) -> LancamentoService:" in content
+
+    def test_raises_when_partial_and_not_force(self, deps_py):
+        manifest = {"module_name": "projetos", "entity_name": "Projeto"}
+        deps_py.write_text(
+            DEPENDENCIES_CONTENT
+            + "def get_projetos_service(db: Session = Depends(get_db)) -> ProjetoService:\n",
+            encoding="utf-8",
+        )
+        with pytest.raises(FileExistsError, match="parcialmente"):
+            register_dependency(manifest, force=False, deps_py=deps_py)
+
+    def test_force_overwrites_partial(self, deps_py):
+        manifest = {"module_name": "projetos", "entity_name": "Projeto"}
+        deps_py.write_text(
+            DEPENDENCIES_CONTENT
+            + "def get_projetos_service(db: Session = Depends(get_db)) -> ProjetoService:\n",
+            encoding="utf-8",
+        )
+        register_dependency(manifest, force=True, deps_py=deps_py)
+
+        content = deps_py.read_text(encoding="utf-8")
+        assert "repository = ProjetoRepository(db)" in content
+
+    def test_raises_when_no_marker(self, tmp_path):
+        deps_py = tmp_path / "dependencies.py"
+        deps_py.write_text("# empty\n", encoding="utf-8")
+
+        manifest = {"module_name": "projetos", "entity_name": "Projeto"}
+        with pytest.raises(RuntimeError, match="Marker .* não encontrado"):
+            register_dependency(manifest, force=False, deps_py=deps_py)
+
+    def test_factory_inserted_before_marker_in_real_file(self, deps_py):
+        """Verify the factory is positioned correctly relative to marker."""
+        manifest = {"module_name": "projetos", "entity_name": "Projeto"}
+        register_dependency(manifest, force=False, deps_py=deps_py)
+
+        lines = deps_py.read_text(encoding="utf-8").splitlines()
+        marker_idx = None
+        factory_idx = None
+        for i, line in enumerate(lines):
+            if "# --- Versões vinculadas das permissões ---" in line:
+                marker_idx = i
+            if "def get_projetos_service" in line:
+                factory_idx = i
+
+        assert marker_idx is not None
+        assert factory_idx is not None
+        assert factory_idx < marker_idx
