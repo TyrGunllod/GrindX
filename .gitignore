@@ -74,6 +74,23 @@ apps/api-postgres/uploads/logos/
 import/
 
 # =========================
+# Imported Modules (not default)
+# Default modules: users, admin-skins, home, importer, structure
+# Backend: iam, org, portal are system modules
+# =========================
+apps/api-postgres/app/modules/gestao_projetos/
+apps/api-postgres/app/modules/gestao_projetos_*/
+apps/api-postgres/app/modules/gp_*/
+apps/frontend-webapp/modules/gestao_projetos_*/
+apps/frontend-webapp/modules/gp_*/
+apps/frontend-webapp/modules/cronograma/
+apps/frontend-webapp/modules/dashboard/
+apps/frontend-webapp/modules/projeto/
+apps/frontend-webapp/modules/recursos/
+apps/frontend-webapp/modules/tarefas/
+apps/frontend-webapp/modules/shared/
+
+# =========================
 # Containers
 # =========================
 *.tar
