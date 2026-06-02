@@ -228,17 +228,28 @@ def remove_module(
 
     api_dir = Path(__file__).resolve().parent.parent.parent
     backend_dir = api_dir / "app" / "modules" / module_name
-    frontend_dir = api_dir.parent / "frontend-webapp" / "modules" / module_name
+    frontend_dir = api_dir.parent / "frontend-webapp" / "modules"
 
     if backend_dir.exists():
         shutil.rmtree(backend_dir)
         steps.append(f"Backend removido: {backend_dir}")
         logger.info("Backend removido: %s", backend_dir)
 
-    if frontend_dir.exists():
-        shutil.rmtree(frontend_dir)
-        steps.append(f"Frontend removido: {frontend_dir}")
-        logger.info("Frontend removido: %s", frontend_dir)
+    modulos = db.query(Modulo).filter(
+        Modulo.slug.like(f"{module_name}%")
+    ).all()
+    removed_frontends = set()
+    for mod in modulos:
+        if mod.url and mod.url.startswith("modules/"):
+            parts = mod.url.split("/")
+            if len(parts) >= 2:
+                sub_name = parts[1]
+                sub_dir = frontend_dir / sub_name
+                if sub_dir.exists() and sub_name not in removed_frontends:
+                    shutil.rmtree(sub_dir)
+                    removed_frontends.add(sub_name)
+                    steps.append(f"Frontend removido: {sub_dir}")
+                    logger.info("Frontend removido: %s", sub_dir)
 
     deps_py = api_dir / "app" / "auth" / "dependencies.py"
     if deps_py.exists():
@@ -306,12 +317,15 @@ def remove_module(
             steps.append("Router removido de main.py")
             logger.info("Router removido de main.py: %s", module_name)
 
-    modulo = db.query(Modulo).filter(Modulo.slug == module_name).first()
-    if modulo:
-        db.delete(modulo)
+    modulos = db.query(Modulo).filter(
+        Modulo.slug.like(f"{module_name}%")
+    ).all()
+    for mod in modulos:
+        db.delete(mod)
+        steps.append(f"Registro removido do banco: {mod.slug} (id={mod.id})")
+        logger.info("Registro removido: slug=%s, id=%d", mod.slug, mod.id)
+    if modulos:
         db.commit()
-        steps.append(f"Registro removido do banco (id={modulo.id})")
-        logger.info("Registro removido: slug=%s, id=%d", module_name, modulo.id)
 
     if not steps:
         raise HTTPException(

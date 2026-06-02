@@ -128,34 +128,28 @@ def copy_backend(import_dir: Path, module_name: str, force: bool) -> None:
 
 
 def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
-    import tempfile
-
     src = import_dir / "frontend"
     frontend_dir = _get_monorepo_root() / "apps" / "frontend-webapp"
-    dest = frontend_dir / "modules" / module_name
+    dest_base = frontend_dir / "modules"
 
     if not src.exists():
         logger.warning("Diretório frontend não encontrado: %s", src)
         return
 
-    if dest.exists():
-        if not force:
-            raise FileExistsError(
-                f"Frontend já existe em {dest}. Use --force para sobrescrever."
-            )
-        tmp_dest = Path(tempfile.mktempdir(suffix="_frontend"))
-        try:
-            shutil.copytree(src, tmp_dest)
-            shutil.rmtree(dest)
-            shutil.move(str(tmp_dest), str(dest))
-        except Exception:
-            if tmp_dest.exists():
-                shutil.rmtree(tmp_dest, ignore_errors=True)
-            raise
-        logger.info("Frontend copiado: %s -> %s", src, dest)
-    else:
-        shutil.copytree(src, dest)
-        logger.info("Frontend copiado: %s -> %s", src, dest)
+    for item in src.iterdir():
+        if item.is_dir():
+            dest = dest_base / item.name
+            if dest.exists():
+                if not force:
+                    logger.warning("Frontend já existe: %s. Use --force para sobrescrever.", dest)
+                    continue
+                shutil.rmtree(dest)
+            shutil.copytree(item, dest)
+            logger.info("Frontend copiado: %s -> %s", item.name, dest)
+        elif item.is_file():
+            dest = dest_base / item.name
+            shutil.copy2(item, dest)
+            logger.info("Arquivo copiado: %s", item.name)
 
 
 def copy_migration(import_dir: Path) -> None:
@@ -364,13 +358,6 @@ def register_menu(manifest: dict) -> None:
 
     module_name = manifest["module_name"]
     label = manifest.get("menu_label", module_name)
-    url = manifest.get("frontend_url")
-    if not url:
-        frontend_tabs = manifest.get("frontend_tabs", [])
-        if frontend_tabs:
-            url = frontend_tabs[0].get("url", f"modules/{module_name}/index.html")
-        else:
-            url = f"modules/{module_name}/index.html"
     icone = manifest.get("menu_icone", "folder")
     slug = module_name
 
@@ -399,10 +386,28 @@ def register_menu(manifest: dict) -> None:
                 "Módulo já registrado no menu (slug=%s, id=%d)", slug, existing.id
             )
         else:
-            mod = Modulo(aba_id=aba.id, nome=label, slug=slug, url=url, icone=icone)
-            db.add(mod)
-            db.commit()
-            logger.info("Menu registrado: %s (slug=%s)", label, slug)
+            frontend_tabs = manifest.get("frontend_tabs", [])
+            if frontend_tabs:
+                for tab in frontend_tabs:
+                    tab_name = tab.get("name", module_name)
+                    tab_url = tab.get("url", f"modules/{module_name}/index.html")
+                    tab_icone = tab.get("menu_icone", icone)
+                    tab_slug = f"{module_name}_{tab_name.lower().replace(' ', '_')}"
+                    tab_mod = Modulo(
+                        aba_id=aba.id, nome=tab_name, slug=tab_slug,
+                        url=tab_url, icone=tab_icone,
+                    )
+                    db.add(tab_mod)
+                db.commit()
+                logger.info(
+                    "Menu registrado: %s (%d abas)", label, len(frontend_tabs)
+                )
+            else:
+                url = manifest.get("frontend_url", f"modules/{module_name}/index.html")
+                mod = Modulo(aba_id=aba.id, nome=label, slug=slug, url=url, icone=icone)
+                db.add(mod)
+                db.commit()
+                logger.info("Menu registrado: %s (slug=%s)", label, slug)
 
 
 def rollback(backup_dir: Path | None) -> None:
