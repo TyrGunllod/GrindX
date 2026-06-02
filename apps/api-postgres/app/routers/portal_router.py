@@ -219,6 +219,7 @@ def criar_modulo(
 def atualizar_modulo(
     modulo_id: int,
     nome: str,
+    aba_id: int,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
@@ -226,6 +227,7 @@ def atualizar_modulo(
     if not mod:
         raise HTTPException(404, "Módulo não encontrado")
     mod.nome = nome
+    mod.aba_id = aba_id
     db.commit()
     db.refresh(mod)
     return mod

@@ -293,6 +293,7 @@ class StructureController extends window.grindx.controllers.BaseController {
     async saveModulo() {
         if (this.currentModuloId) {
             const nome = document.getElementById('modNome').value;
+            const abaId = document.getElementById('modAbaId').value;
             if (!nome.trim()) {
                 window.grindx.components.LoadingSpinner.toast('Informe o nome do módulo.', 'warning');
                 return;
@@ -300,7 +301,7 @@ class StructureController extends window.grindx.controllers.BaseController {
             try {
                 await window.grindx.api.request(`/portal/modulos/${this.currentModuloId}`, {
                     method: 'PUT',
-                    params: { nome }
+                    params: { nome, aba_id: abaId }
                 });
                 await this.loadStructure();
                 this.toastSuccess('Módulo salvo com sucesso.');
@@ -453,7 +454,7 @@ class StructureController extends window.grindx.controllers.BaseController {
     }
 
     _setModuleFormReadonly(readonly) {
-        const fields = ['modAbaId', 'modUrl', 'modSlug', 'modIcone'];
+        const fields = ['modUrl', 'modSlug', 'modIcone'];
         fields.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
