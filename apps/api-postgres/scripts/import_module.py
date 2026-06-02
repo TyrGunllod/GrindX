@@ -179,8 +179,8 @@ def copy_migration(import_dir: Path) -> None:
 
 def register_router(manifest: dict, force: bool, main_py: Path | None = None) -> None:
     module_name = manifest["module_name"]
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     if main_py is None:
-        api_dir = _get_monorepo_root() / "apps" / "api-postgres"
         main_py = api_dir / "app" / "main.py"
 
     content = main_py.read_text(encoding="utf-8")
@@ -240,8 +240,8 @@ def register_dependency(
     manifest: dict, force: bool, deps_py: Path | None = None
 ) -> None:
     module_name = manifest["module_name"]
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     if deps_py is None:
-        api_dir = _get_monorepo_root() / "apps" / "api-postgres"
         deps_py = api_dir / "app" / "auth" / "dependencies.py"
 
     content = deps_py.read_text(encoding="utf-8")
@@ -306,8 +306,8 @@ def register_alembic_import(
     manifest: dict, force: bool, env_py: Path | None = None
 ) -> None:
     module_name = manifest["module_name"]
+    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
     if env_py is None:
-        api_dir = _get_monorepo_root() / "apps" / "api-postgres"
         env_py = api_dir / "alembic" / "env.py"
 
     content = env_py.read_text(encoding="utf-8")
