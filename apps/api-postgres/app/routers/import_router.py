@@ -270,22 +270,17 @@ def remove_module(
             if marker_idx is not None:
                 before_marker = lines[:marker_idx]
                 clean_lines = []
-                skip_factory = False
+                skip_until_def = False
                 for line in before_marker:
                     if f"from app.modules.{module_name}" in line:
                         continue
                     if line.strip().startswith("def get_") and module_name in line:
-                        skip_factory = True
+                        skip_until_def = True
                         continue
-                    if skip_factory:
-                        if (
-                            line.strip() == ""
-                            or line.strip().startswith('"""')
-                            or line.strip().startswith("return")
-                            or line.strip().startswith("repository")
-                        ):
+                    if skip_until_def:
+                        if line.strip() == "" or line.strip().startswith("return"):
                             continue
-                        skip_factory = False
+                        skip_until_def = False
                     clean_lines.append(line)
                 clean_lines.append(marker)
                 clean_lines.extend(lines[marker_idx + 1 :])
@@ -311,30 +306,23 @@ def remove_module(
     if main_py.exists():
         content = main_py.read_text(encoding="utf-8")
         lines = content.split("\n")
-        new_lines = [
-            line
-            for line in lines
-            if f"from app.modules.{module_name}" not in line
-            and f"app.include_router({line.split('import ')[1].split(' as')[0].strip()})"
-            not in line
-            or (f"from app.modules.{module_name}" not in line)
-        ]
 
-        new_lines = [
-            line for line in new_lines
-            if f"from app.modules.{module_name}" not in line
-        ]
-
-        include_routers = set()
+        router_vars = set()
         for line in lines:
             if f"from app.modules.{module_name}" in line and "import router as" in line:
-                var_name = line.split("import router as")[-1].strip()
-                include_routers.add(f"app.include_router({var_name})")
+                parts = line.split("import router as")
+                if len(parts) == 2:
+                    var_name = parts[1].strip()
+                    router_vars.add(var_name)
 
-        new_lines = [
-            line for line in new_lines
-            if not any(r in line for r in include_routers)
-        ]
+        new_lines = []
+        for line in lines:
+            if f"from app.modules.{module_name}" in line:
+                continue
+            stripped = line.strip()
+            if any(stripped == f"app.include_router({v})" for v in router_vars):
+                continue
+            new_lines.append(line)
 
         if len(new_lines) != len(lines):
             main_py.write_text("\n".join(new_lines), encoding="utf-8")
