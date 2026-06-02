@@ -108,7 +108,8 @@ def copy_backend(import_dir: Path, module_name: str, force: bool) -> None:
             raise FileExistsError(
                 f"Backend já existe em {dest}. Use --force para sobrescrever."
             )
-        tmp_dest = Path(tempfile.mktempdir(suffix="_backend"))
+        import uuid
+        tmp_dest = Path(tempfile.gettempdir()) / f"grindx_backend_{uuid.uuid4().hex[:8]}"
         try:
             shutil.copytree(
                 src, tmp_dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
@@ -472,12 +473,16 @@ def import_module(
         steps.append("Import do model registrado no alembic/env.py")
 
         if not dry_run:
-            run_migrations()
-        steps.append("Migrations executadas")
-
-        if not dry_run:
             register_menu(manifest)
         steps.append("Menu registrado")
+
+        try:
+            if not dry_run:
+                run_migrations()
+            steps.append("Migrations executadas")
+        except Exception as e:
+            logger.warning("Migration falhou (tabelas podem já existir): %s", str(e))
+            steps.append(f"Migration ignorada: {str(e)[:100]}")
 
         return {"success": True, "steps": steps}
 

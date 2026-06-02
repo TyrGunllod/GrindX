@@ -25,6 +25,7 @@ from app.modules.org.models.empresa import Empresa  # noqa: F401
 from app.modules.org.models.theme import CompanyTheme  # noqa: F401
 from app.modules.org.models.theme_history import ThemeHistory  # noqa: F401
 from app.modules.portal.models.portal import Aba, Modulo  # noqa: F401
+from app.modules.gestao_projetos.models.gestao_projetos import GestaoProjetos  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # the values of the [alembic] section of the .ini

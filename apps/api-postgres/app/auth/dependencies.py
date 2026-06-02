@@ -56,7 +56,18 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
     return AuthService(db)
 
 
+from app.modules.gestao_projetos.repositories.gestao_projetos_repository import GestaoProjetosRepository
+from app.modules.gestao_projetos.services.gestao_projetos_service import GestaoProjetosService
+
+
+def get_gestao_projetos_service(db: Session = Depends(get_db)) -> GestaoProjetosService:
+    """Factory para o GestaoProjetosService."""
+    repository = GestaoProjetosRepository(db)
+    return GestaoProjetosService(repository)
+
+
 # --- Versões vinculadas das permissões ---
+
 
 
 def require_role(*roles_permitidas: str | Role):

@@ -31,6 +31,7 @@ from app.routers.import_router import router as import_router
 from app.routers.portal_router import router as portal_router
 from app.routers.theme_router import router as theme_router
 from app.routers.usuario_router import router as usuario_router
+from app.modules.gestao_projetos.routers.gestao_projetos_router import router as gestao_projetos_router
 
 logger = structlog.get_logger(__name__)
 
@@ -123,3 +124,4 @@ app.include_router(usuario_router)
 app.include_router(portal_router)
 app.include_router(theme_router)
 app.include_router(import_router)
+app.include_router(gestao_projetos_router)
