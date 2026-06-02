@@ -109,7 +109,10 @@ def copy_backend(import_dir: Path, module_name: str, force: bool) -> None:
                 f"Backend já existe em {dest}. Use --force para sobrescrever."
             )
         import uuid
-        tmp_dest = Path(tempfile.gettempdir()) / f"grindx_backend_{uuid.uuid4().hex[:8]}"
+
+        tmp_dest = (
+            Path(tempfile.gettempdir()) / f"grindx_backend_{uuid.uuid4().hex[:8]}"
+        )
         try:
             shutil.copytree(
                 src, tmp_dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
@@ -142,7 +145,9 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
             dest = dest_base / item.name
             if dest.exists():
                 if not force:
-                    logger.warning("Frontend já existe: %s. Use --force para sobrescrever.", dest)
+                    logger.warning(
+                        "Frontend já existe: %s. Use --force para sobrescrever.", dest
+                    )
                     continue
                 shutil.rmtree(dest)
             shutil.copytree(item, dest)
@@ -185,7 +190,9 @@ def register_router(manifest: dict, force: bool, main_py: Path | None = None) ->
         logger.warning("Diretório de routers não encontrado: %s", routers_dir)
         return
 
-    router_files = [f.stem for f in routers_dir.glob("*_router.py") if f.stem != "__init__"]
+    router_files = [
+        f.stem for f in routers_dir.glob("*_router.py") if f.stem != "__init__"
+    ]
     if not router_files:
         logger.warning("Nenhum router encontrado em %s", routers_dir)
         return
@@ -245,7 +252,9 @@ def register_dependency(
         logger.warning("Diretório de repositories/services não encontrado")
         return
 
-    repo_files = [f.stem for f in repos_dir.glob("*_repository.py") if f.stem != "__init__"]
+    repo_files = [
+        f.stem for f in repos_dir.glob("*_repository.py") if f.stem != "__init__"
+    ]
     svc_files = [f.stem for f in svcs_dir.glob("*_service.py") if f.stem != "__init__"]
 
     marker = "# --- Versões vinculadas das permissões ---"
@@ -269,7 +278,11 @@ def register_dependency(
 
     for repo_file in sorted(repo_files):
         entity = repo_file.replace("_repository", "")
-        factory_name = f"get_{module_name}_{entity}_service" if entity != module_name else f"get_{module_name}_service"
+        factory_name = (
+            f"get_{module_name}_{entity}_service"
+            if entity != module_name
+            else f"get_{module_name}_service"
+        )
         factory_sig = f"def {factory_name}(db: Session = Depends(get_db)) -> {entity.title()}Service:"
         if factory_sig not in content:
             new_factories.append(
@@ -381,7 +394,8 @@ def register_menu(manifest: dict) -> None:
     logger.info(
         "Módulo importado: %s (%d abas disponíveis). "
         "Associe as abas manualmente no Portal → Estrutura.",
-        label, len(frontend_tabs)
+        label,
+        len(frontend_tabs),
     )
     for tab in frontend_tabs:
         tab_name = tab.get("name", module_name)

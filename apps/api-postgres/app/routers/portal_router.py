@@ -101,13 +101,15 @@ def listar_modulos_disponiveis(
 
     result = []
     for mod in db.query(Modulo).all():
-        result.append(AvailableModule(
-            slug=mod.slug,
-            nome=mod.nome,
-            url=mod.url,
-            ja_vinculado=True,
-            aba_vinculada=abas_map.get(mod.aba_id),
-        ))
+        result.append(
+            AvailableModule(
+                slug=mod.slug,
+                nome=mod.nome,
+                url=mod.url,
+                ja_vinculado=True,
+                aba_vinculada=abas_map.get(mod.aba_id),
+            )
+        )
 
     return result
 

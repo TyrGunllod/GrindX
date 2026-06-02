@@ -87,11 +87,15 @@ def scan_imports(
 
         slug = manifest.get("module_name", zip_path.stem)
         in_backend_fs = (backend_modules_dir / slug).exists()
-        in_frontend_fs = any(
-            item.name.startswith(f"{slug}_") or item.name.startswith(f"{slug}-")
-            for item in frontend_modules_dir.iterdir()
-            if item.is_dir()
-        ) if frontend_modules_dir.exists() else False
+        in_frontend_fs = (
+            any(
+                item.name.startswith(f"{slug}_") or item.name.startswith(f"{slug}-")
+                for item in frontend_modules_dir.iterdir()
+                if item.is_dir()
+            )
+            if frontend_modules_dir.exists()
+            else False
+        )
 
         modules.append(
             ModuleInfo(
@@ -289,7 +293,9 @@ def remove_module(
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
         lines = content.split("\n")
-        new_lines = [line for line in lines if f"from app.modules.{module_name}" not in line]
+        new_lines = [
+            line for line in lines if f"from app.modules.{module_name}" not in line
+        ]
         if len(new_lines) != len(lines):
             env_py.write_text("\n".join(new_lines), encoding="utf-8")
             steps.append("Import removida de alembic/env.py")
@@ -302,7 +308,11 @@ def remove_module(
     frontend_dir = api_dir.parent / "frontend-webapp" / "modules"
     if frontend_dir.exists():
         for item in frontend_dir.iterdir():
-            if item.is_dir() and item.name.startswith(f"{module_name}_") or item.name.startswith(f"{module_name}-"):
+            if (
+                item.is_dir()
+                and item.name.startswith(f"{module_name}_")
+                or item.name.startswith(f"{module_name}-")
+            ):
                 shutil.rmtree(item)
                 steps.append(f"Frontend removido: {item}")
 

@@ -59,8 +59,6 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
 # --- Versões vinculadas das permissões ---
 
 
-
-
 def require_role(*roles_permitidas: str | Role):
     """Atalho para shared.require_role vinculado ao get_current_user desta API."""
     from shared.security import permissions
