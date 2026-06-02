@@ -513,14 +513,17 @@ class StructureController extends window.grindx.controllers.BaseController {
     _renderPickerList(modules) {
         const list = document.getElementById('pickerList');
         if (!modules.length) {
-            list.innerHTML = '<div class="picker-empty">Nenhum módulo encontrado na pasta modules/.</div>';
+            list.innerHTML = '<div class="picker-empty">Nenhum módulo encontrado.</div>';
             return;
         }
         this._pickerModules = modules;
         list.innerHTML = modules.map(m => `
             <button type="button" class="picker-item${m.ja_vinculado ? ' linked' : ''}" data-slug="${m.slug}">
                 <div class="picker-item-info">
-                    <span class="picker-item-name">${m.nome}</span>
+                    <span class="picker-item-name">
+                        ${m.nome}
+                        ${m.fonte === 'zip' ? '<span class="picker-item-source">disponível para importar</span>' : ''}
+                    </span>
                     <span class="picker-item-path">${m.url}</span>
                     ${m.ja_vinculado ? `<span class="picker-item-badge">Vinculado em: ${m.aba_vinculada}</span>` : ''}
                 </div>
