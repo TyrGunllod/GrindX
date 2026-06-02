@@ -31,7 +31,11 @@ from app.routers.import_router import router as import_router
 from app.routers.portal_router import router as portal_router
 from app.routers.theme_router import router as theme_router
 from app.routers.usuario_router import router as usuario_router
-from app.modules.gestao_projetos.routers.gestao_projetos_router import router as gestao_projetos_router
+from app.modules.gestao_projetos.routers.projeto_router import router as projeto_router
+from app.modules.gestao_projetos.routers.tarefa_router import router as tarefa_router
+from app.modules.gestao_projetos.routers.recurso_router import router as recurso_router
+from app.modules.gestao_projetos.routers.dashboard_router import router as dashboard_router
+from app.modules.gestao_projetos.routers.cronograma_router import router as cronograma_router
 
 logger = structlog.get_logger(__name__)
 
@@ -124,4 +128,8 @@ app.include_router(usuario_router)
 app.include_router(portal_router)
 app.include_router(theme_router)
 app.include_router(import_router)
-app.include_router(gestao_projetos_router)
+app.include_router(projeto_router)
+app.include_router(tarefa_router)
+app.include_router(recurso_router)
+app.include_router(dashboard_router)
+app.include_router(cronograma_router)
