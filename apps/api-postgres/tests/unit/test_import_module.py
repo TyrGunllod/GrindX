@@ -82,7 +82,7 @@ def _mock_api_dir(
     model_files=None,
 ):
     """Create mock directory structure for a module."""
-    api_dir = tmp_path / "api-postgres"
+    api_dir = tmp_path / "apps" / "api-postgres"
     module_dir = api_dir / "app" / "modules" / module_name
 
     if router_files:
