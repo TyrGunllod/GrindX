@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cronograma</title>
+  <link rel="stylesheet" href="../../shared/core.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="page-container">
+    <header class="page-header">
+      <h1>Cronograma</h1>
+      <button class="btn btn--primary" id="btn-nova-tarefa" type="button">Nova Tarefa</button>
+    </header>
+
+    <section class="gantt-controls">
+      <div class="gantt-controls__filter">
+        <label for="filtro-projeto">Projeto:</label>
+        <select id="filtro-projeto" class="select">
+          <option value="">Todos os projetos</option>
+        </select>
+      </div>
+      <div class="gantt-controls__zoom">
+        <button class="btn btn--icon" id="zoom-out" type="button" title="Reduzir zoom">−</button>
+        <span class="gantt-controls__zoom-badge" id="zoom-label">Mês</span>
+        <button class="btn btn--icon" id="zoom-in" type="button" title="Aumentar zoom">+</button>
+      </div>
+    </section>
+
+    <section class="gantt-scroll" id="gantt-scroll">
+      <div class="gantt-viewport">
+        <div class="gantt-sidebar" id="gantt-sidebar"></div>
+        <div class="gantt-timeline" id="gantt-timeline">
+          <div class="gantt-header-months" id="gantt-header-months"></div>
+          <div class="gantt-header-days" id="gantt-header-days"></div>
+          <div class="gantt-body" id="gantt-body"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="gantt-legend" id="gantt-legend"></section>
+  </div>
+
+  <div class="modal-overlay" id="tarefa-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display: none;">
+    <div class="modal-card">
+      <header class="modal-header flex justify-between">
+        <h3 id="modal-title">Nova Tarefa</h3>
+        <button class="btn-icon" id="modal-close" aria-label="Fechar">&times;</button>
+      </header>
+      <div class="modal-body" id="modal-body"></div>
+      <footer class="modal-footer flex justify-end gap-2">
+        <button class="btn" type="button" id="modal-cancel">Cancelar</button>
+        <button class="btn btn-primary" type="button" id="modal-save">Salvar</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

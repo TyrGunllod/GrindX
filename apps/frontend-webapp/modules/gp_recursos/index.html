@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursos — GrindX</title>
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="page-header">
+            <div>
+                <h1 id="pageTitle">Recursos</h1>
+                <p class="text-muted">Gerencie a aloca&ccedil;&atilde;o de usu&aacute;rios nos projetos</p>
+            </div>
+            <button class="btn btn-primary" id="btnAlocar">+ Alocar Recurso</button>
+        </div>
+        <div class="summary-cards" id="summaryCards">
+            <div class="card">
+                <div class="card-header"><span class="card-title">Total Alocados</span></div>
+                <div class="card-body"><span class="card-value" id="totalAlocados">0</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title">Tarefas Ativas</span></div>
+                <div class="card-body"><span class="card-value" id="totalTarefasAtivas">0</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title">M&eacute;dia por Recurso</span></div>
+                <div class="card-body"><span class="card-value" id="mediaPorRecurso">0</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title">Tarefas Conclu&iacute;das</span></div>
+                <div class="card-body"><span class="card-value" id="totalTarefasConcluidas">0</span></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><h2 class="card-title">Recursos Alocados</h2></div>
+            <div class="card-body"><div id="dataTableContainer"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><h2 class="card-title">Distribui&ccedil;&atilde;o de Carga de Trabalho</h2></div>
+            <div class="card-body" id="workloadChart"></div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modalAlocar" role="dialog" aria-modal="true" aria-labelledby="modalTitle" style="display: none;">
+        <div class="modal-card">
+            <header class="modal-header flex justify-between">
+                <h3 id="modalTitle">Alocar Recurso</h3>
+                <button type="button" class="btn-icon" id="btnModalClose" aria-label="Fechar">&times;</button>
+            </header>
+            <form id="formAlocar" class="grid grid-md-2">
+                <div class="form-group">
+                    <label for="userSelect">Usu&aacute;rio</label>
+                    <select id="userSelect" required>
+                        <option value="">Selecione um usu&aacute;rio...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cargoContexto">Cargo no Projeto</label>
+                    <input type="text" id="cargoContexto" placeholder="Ex: Desenvolvedor Frontend" />
+                </div>
+                <div class="form-group">
+                    <label>Cor de Identifica&ccedil;&atilde;o</label>
+                    <div class="color-picker" id="colorPicker">
+                        <button type="button" class="color-swatch" data-color="#3b82f6" style="background:#3b82f6"></button>
+                        <button type="button" class="color-swatch" data-color="#10b981" style="background:#10b981"></button>
+                        <button type="button" class="color-swatch" data-color="#f59e0b" style="background:#f59e0b"></button>
+                        <button type="button" class="color-swatch" data-color="#ef4444" style="background:#ef4444"></button>
+                        <button type="button" class="color-swatch" data-color="#8b5cf6" style="background:#8b5cf6"></button>
+                        <button type="button" class="color-swatch" data-color="#ec4899" style="background:#ec4899"></button>
+                        <button type="button" class="color-swatch" data-color="#06b6d4" style="background:#06b6d4"></button>
+                        <button type="button" class="color-swatch" data-color="#84cc16" style="background:#84cc16"></button>
+                    </div>
+                    <input type="hidden" id="cor" value="#3b82f6" />
+                </div>
+            </form>
+            <footer class="modal-footer flex justify-end gap-2">
+                <button type="button" class="btn" id="btnCancelar">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnSalvar">Alocar</button>
+            </footer>
+        </div>
+    </div>
+    <script src="../../shared/app.js"></script>
+    <script src="../../shared/apiService.js"></script>
+    <script src="../../shared/components/LoadingSpinner.js"></script>
+    <script src="../../shared/components/DataTable.js"></script>
+    <script src="../../shared/components/ReusableModal.js"></script>
+    <script src="../../shared/validation.js"></script>
+    <script src="../../shared/baseController.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

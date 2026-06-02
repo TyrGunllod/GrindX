@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import List
 
+import shutil
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict
 from shared.schemas.auth import TokenPayload
@@ -245,6 +246,12 @@ def deletar_modulo(
             status.HTTP_403_FORBIDDEN,
             "Módulos da aba Gestão são protegidos e não podem ser excluídos.",
         )
+
+    api_dir = Path(__file__).resolve().parent.parent.parent
+    frontend_dir = api_dir.parent / "frontend-webapp" / "modules" / mod.slug
+    if frontend_dir.exists():
+        shutil.rmtree(frontend_dir)
+
     db.delete(mod)
     db.commit()
     return None
