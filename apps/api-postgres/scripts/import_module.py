@@ -392,7 +392,7 @@ def register_menu(manifest: dict) -> None:
                     tab_name = tab.get("name", module_name)
                     tab_url = tab.get("url", f"modules/{module_name}/index.html")
                     tab_icone = tab.get("menu_icone", icone)
-                    tab_slug = f"{module_name}_{tab_name.lower().replace(' ', '_')}"
+                    tab_slug = tab_url.split("/")[1] if "/" in tab_url else f"{module_name}_{tab_name.lower().replace(' ', '_')}"
                     tab_mod = Modulo(
                         aba_id=aba.id, nome=tab_name, slug=tab_slug,
                         url=tab_url, icone=tab_icone,
