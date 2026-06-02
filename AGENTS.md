@@ -12,7 +12,9 @@
 
 ## Pre-commit Checklist
 
-- Rodar linter e typecheck antes de commitar
+- Rodar `ruff format packages/ apps/` antes de commitar
+- Rodar `ruff check --fix .` antes de commitar
+- Rodar `ruff check .` para verificar (sem erros)
 - Não commitar secrets ou chaves
 - Commitar automaticamente após alterações
 
