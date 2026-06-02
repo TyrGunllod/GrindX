@@ -8,7 +8,6 @@ quando importados do nível do monorepo.
 import sys
 from pathlib import Path
 
-import pytest
 
 _packages_dir = str(Path(__file__).resolve().parent.parent.parent / "packages")
 if _packages_dir not in sys.path:

@@ -1,7 +1,7 @@
+import shutil
 from pathlib import Path
 from typing import List
 
-import shutil
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict
 from shared.schemas.auth import TokenPayload

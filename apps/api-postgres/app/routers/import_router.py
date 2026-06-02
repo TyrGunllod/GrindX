@@ -21,8 +21,6 @@ from sqlalchemy.orm import Session
 from app.auth.dependencies import require_role
 from app.core.config import settings
 from app.database import get_db
-from app.models.portal import Modulo
-from app.models.usuario import UsuarioModulo
 
 logger = structlog.get_logger(__name__)
 
@@ -291,7 +289,7 @@ def remove_module(
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
         lines = content.split("\n")
-        new_lines = [l for l in lines if f"from app.modules.{module_name}" not in l]
+        new_lines = [line for line in lines if f"from app.modules.{module_name}" not in line]
         if len(new_lines) != len(lines):
             env_py.write_text("\n".join(new_lines), encoding="utf-8")
             steps.append("Import removida de alembic/env.py")

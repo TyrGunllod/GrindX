@@ -8,7 +8,6 @@ corretamente para execução a partir da raiz do monorepo.
 import sys
 from pathlib import Path
 
-import pytest
 
 _root = Path(__file__).resolve().parent.parent.parent
 _packages_dir = str(_root / "packages")
@@ -73,7 +72,7 @@ class TestImportsPacotes:
     def test_import_shared_schemas(self):
         """Testa que o módulo shared.schemas pode ser importado."""
         from shared.schemas.auth import TokenPayload
-        from shared.schemas.base import ErrorResponse, PaginatedResponse
+        from shared.schemas.base import ErrorResponse
 
         payload = TokenPayload(sub="1", role="admin")
         assert payload is not None
