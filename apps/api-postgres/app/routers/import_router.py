@@ -195,6 +195,10 @@ def import_module(
                 if line:
                     logger.warning("[import subprocess] %s", line)
 
+        if result_data.get("success"):
+            zip_path.unlink(missing_ok=True)
+            logger.info("Zip removido após importação: %s", zip_path.name)
+
         return ImportResult(
             success=result_data.get("success", False),
             message="Módulo importado com sucesso"

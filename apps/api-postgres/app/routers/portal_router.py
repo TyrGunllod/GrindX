@@ -237,26 +237,6 @@ def deletar_modulo(
     if frontend_dir.exists():
         shutil.rmtree(frontend_dir)
 
-    from app.core.config import settings
-    import json
-    import zipfile
-    import_dir = Path(settings.import_dir_path)
-    if import_dir.exists():
-        for zip_file in import_dir.glob("*.zip"):
-            try:
-                with zipfile.ZipFile(zip_file, "r") as zf:
-                    if "module.json" not in zf.namelist():
-                        continue
-                    with zf.open("module.json") as f:
-                        manifest = json.load(f)
-                    manifest_name = manifest.get("module_name", "")
-                    frontend_tabs = [t.get("url", "").split("/")[1] for t in manifest.get("frontend_tabs", []) if "/" in t.get("url", "")]
-                    if mod.slug == manifest_name or mod.slug in frontend_tabs:
-                        zip_file.unlink()
-                        break
-            except Exception:
-                continue
-
     db.delete(mod)
     db.commit()
     return None
