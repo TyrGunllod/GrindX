@@ -232,29 +232,28 @@ def remove_module(
     steps = []
 
     api_dir = Path(__file__).resolve().parent.parent.parent
-    backend_dir = api_dir / "app" / "modules" / module_name
-    frontend_dir = api_dir.parent / "frontend-webapp" / "modules"
 
-    if backend_dir.exists():
-        shutil.rmtree(backend_dir)
-        steps.append(f"Backend removido: {backend_dir}")
-        logger.info("Backend removido: %s", backend_dir)
-
-    modulos = db.query(Modulo).filter(
-        Modulo.slug.like(f"{module_name}%")
-    ).all()
-    removed_frontends = set()
-    for mod in modulos:
-        if mod.url and mod.url.startswith("modules/"):
-            parts = mod.url.split("/")
-            if len(parts) >= 2:
-                sub_name = parts[1]
-                sub_dir = frontend_dir / sub_name
-                if sub_dir.exists() and sub_name not in removed_frontends:
-                    shutil.rmtree(sub_dir)
-                    removed_frontends.add(sub_name)
-                    steps.append(f"Frontend removido: {sub_dir}")
-                    logger.info("Frontend removido: %s", sub_dir)
+    main_py = api_dir / "app" / "main.py"
+    if main_py.exists():
+        content = main_py.read_text(encoding="utf-8")
+        lines = content.split("\n")
+        router_vars = set()
+        for line in lines:
+            if f"from app.modules.{module_name}" in line and "import router as" in line:
+                parts = line.split("import router as")
+                if len(parts) == 2:
+                    router_vars.add(parts[1].strip())
+        new_lines = []
+        for line in lines:
+            if f"from app.modules.{module_name}" in line:
+                continue
+            stripped = line.strip()
+            if any(stripped == f"app.include_router({v})" for v in router_vars):
+                continue
+            new_lines.append(line)
+        if len(new_lines) != len(lines):
+            main_py.write_text("\n".join(new_lines), encoding="utf-8")
+            steps.append("Router removido de main.py")
 
     deps_py = api_dir / "app" / "auth" / "dependencies.py"
     if deps_py.exists():
@@ -286,60 +285,41 @@ def remove_module(
                 clean_lines.extend(lines[marker_idx + 1 :])
                 deps_py.write_text("\n".join(clean_lines), encoding="utf-8")
                 steps.append("Dependency removida de dependencies.py")
-                logger.info("Dependency removida: %s", module_name)
 
     env_py = api_dir / "alembic" / "env.py"
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
         lines = content.split("\n")
-        new_lines = [
-            line
-            for line in lines
-            if f"from app.modules.{module_name}" not in line
-        ]
+        new_lines = [l for l in lines if f"from app.modules.{module_name}" not in l]
         if len(new_lines) != len(lines):
             env_py.write_text("\n".join(new_lines), encoding="utf-8")
             steps.append("Import removida de alembic/env.py")
-            logger.info("Import removida de env.py: %s", module_name)
 
-    main_py = api_dir / "app" / "main.py"
-    if main_py.exists():
-        content = main_py.read_text(encoding="utf-8")
-        lines = content.split("\n")
+    backend_dir = api_dir / "app" / "modules" / module_name
+    if backend_dir.exists():
+        shutil.rmtree(backend_dir)
+        steps.append(f"Backend removido: {backend_dir}")
 
-        router_vars = set()
-        for line in lines:
-            if f"from app.modules.{module_name}" in line and "import router as" in line:
-                parts = line.split("import router as")
-                if len(parts) == 2:
-                    var_name = parts[1].strip()
-                    router_vars.add(var_name)
-
-        new_lines = []
-        for line in lines:
-            if f"from app.modules.{module_name}" in line:
-                continue
-            stripped = line.strip()
-            if any(stripped == f"app.include_router({v})" for v in router_vars):
-                continue
-            new_lines.append(line)
-
-        if len(new_lines) != len(lines):
-            main_py.write_text("\n".join(new_lines), encoding="utf-8")
-            steps.append("Router removido de main.py")
-            logger.info("Router removido de main.py: %s", module_name)
-
+    frontend_dir = api_dir.parent / "frontend-webapp" / "modules"
     modulos = db.query(Modulo).filter(
         Modulo.slug.like(f"{module_name}%")
     ).all()
+    removed_frontends = set()
     for mod in modulos:
-        UsuarioModulo_query = db.query(UsuarioModulo).filter(
-            UsuarioModulo.modulo_id == mod.id
-        )
-        UsuarioModulo_query.delete()
+        if mod.url and mod.url.startswith("modules/"):
+            parts = mod.url.split("/")
+            if len(parts) >= 2:
+                sub_name = parts[1]
+                sub_dir = frontend_dir / sub_name
+                if sub_dir.exists() and sub_name not in removed_frontends:
+                    shutil.rmtree(sub_dir)
+                    removed_frontends.add(sub_name)
+                    steps.append(f"Frontend removido: {sub_dir}")
+
+    for mod in modulos:
+        db.query(UsuarioModulo).filter(UsuarioModulo.modulo_id == mod.id).delete()
         db.delete(mod)
-        steps.append(f"Registro removido do banco: {mod.slug} (id={mod.id})")
-        logger.info("Registro removido: slug=%s, id=%d", mod.slug, mod.id)
+        steps.append(f"Registro removido do banco: {mod.slug}")
     if modulos:
         db.commit()
 
