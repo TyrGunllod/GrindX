@@ -180,15 +180,30 @@ def register_router(manifest: dict, force: bool, main_py: Path | None = None) ->
 
     content = main_py.read_text(encoding="utf-8")
 
-    import_line = f"from app.modules.{module_name}.routers.{module_name}_router import router as {module_name}_router"
-    register_line = f"app.include_router({module_name}_router)"
-
-    if import_line in content and register_line in content:
-        logger.info("Router já registrado em main.py")
+    routers_dir = api_dir / "app" / "modules" / module_name / "routers"
+    if not routers_dir.exists():
+        logger.warning("Diretório de routers não encontrado: %s", routers_dir)
         return
 
-    if not force and (import_line in content or register_line in content):
-        raise FileExistsError("Router parcialmente registrado. Use --force.")
+    router_files = [f.stem for f in routers_dir.glob("*_router.py") if f.stem != "__init__"]
+    if not router_files:
+        logger.warning("Nenhum router encontrado em %s", routers_dir)
+        return
+
+    new_imports = []
+    new_includes = []
+    for router_file in sorted(router_files):
+        var_name = f"{router_file}_router"
+        import_line = f"from app.modules.{module_name}.routers.{router_file} import router as {var_name}"
+        include_line = f"app.include_router({var_name})"
+        if import_line not in content:
+            new_imports.append(import_line)
+        if include_line not in content:
+            new_includes.append(include_line)
+
+    if not new_imports and not new_includes:
+        logger.info("Routers já registrados em main.py")
+        return
 
     lines = content.splitlines(keepends=True)
     last_import_idx = None
@@ -200,112 +215,116 @@ def register_router(manifest: dict, force: bool, main_py: Path | None = None) ->
         if "app.include_router(" in line:
             last_include_idx = i
 
-    if last_import_idx is None:
-        logger.warning(
-            "Não foi possível encontrar local para inserir import do router em main.py"
-        )
-    if last_include_idx is None:
-        logger.warning(
-            "Não foi possível encontrar local para inserir app.include_router() em main.py"
-        )
-    if last_import_idx is None and last_include_idx is None:
-        raise RuntimeError(
-            "Não foi possível encontrar nenhum import de router em main.py. "
-            "Adicione manualmente o import e o include_router."
-        )
+    if last_import_idx is not None and new_imports:
+        for imp in reversed(new_imports):
+            lines.insert(last_import_idx + 1, imp + "\n")
+            if last_include_idx is not None and last_include_idx >= last_import_idx:
+                last_include_idx += 1
 
-    if last_import_idx is not None and import_line not in content:
-        lines.insert(last_import_idx + 1, import_line + "\n")
-        if last_include_idx is not None and last_include_idx >= last_import_idx:
-            last_include_idx += 1
-
-    if last_include_idx is not None and register_line not in content:
-        lines.insert(last_include_idx + 1, register_line + "\n")
+    if last_include_idx is not None and new_includes:
+        for inc in reversed(new_includes):
+            lines.insert(last_include_idx + 1, inc + "\n")
 
     main_py.write_text("".join(lines), encoding="utf-8")
-    logger.info("Router registrado em main.py")
+    logger.info("Routers registrados em main.py: %s", router_files)
 
 
 def register_dependency(
     manifest: dict, force: bool, deps_py: Path | None = None
 ) -> None:
     module_name = manifest["module_name"]
-    entity_name = manifest["entity_name"]
     if deps_py is None:
         api_dir = _get_monorepo_root() / "apps" / "api-postgres"
         deps_py = api_dir / "app" / "auth" / "dependencies.py"
 
     content = deps_py.read_text(encoding="utf-8")
 
-    factory_name = f"get_{module_name}_service"
-    import_repo = f"from app.modules.{module_name}.repositories.{module_name}_repository import {entity_name}Repository"
-    import_svc = f"from app.modules.{module_name}.services.{module_name}_service import {entity_name}Service"
-    factory_sig = (
-        f"def {factory_name}(db: Session = Depends(get_db)) -> {entity_name}Service:"
-    )
-
-    if factory_name in content and import_repo in content and import_svc in content:
-        logger.info("Dependency já registrado em dependencies.py")
+    repos_dir = api_dir / "app" / "modules" / module_name / "repositories"
+    svcs_dir = api_dir / "app" / "modules" / module_name / "services"
+    if not repos_dir.exists() or not svcs_dir.exists():
+        logger.warning("Diretório de repositories/services não encontrado")
         return
 
-    if not force and (
-        factory_name in content or import_repo in content or import_svc in content
-    ):
-        raise FileExistsError("Dependency parcialmente registrado. Use --force.")
+    repo_files = [f.stem for f in repos_dir.glob("*_repository.py") if f.stem != "__init__"]
+    svc_files = [f.stem for f in svcs_dir.glob("*_service.py") if f.stem != "__init__"]
 
     marker = "# --- Versões vinculadas das permissões ---"
     if marker not in content:
-        raise RuntimeError(
-            "Marker '# --- Versões vinculadas das permissões ---' não encontrado em dependencies.py. "
-            "Adicione manualmente o factory."
-        )
+        logger.warning("Marker não encontrado em dependencies.py")
+        return
 
-    factory_block = (
-        f"{import_repo}\n"
-        f"{import_svc}\n"
-        f"\n"
-        f"\n"
-        f"{factory_sig}\n"
-        f'    """Factory para o {entity_name}Service."""\n'
-        f"    repository = {entity_name}Repository(db)\n"
-        f"    return {entity_name}Service(repository)\n"
-        f"\n"
-        f"\n"
-        f"{marker}\n"
-    )
+    new_imports = []
+    new_factories = []
+    for repo_file in sorted(repo_files):
+        entity = repo_file.replace("_repository", "")
+        import_line = f"from app.modules.{module_name}.repositories.{repo_file} import {entity.title()}Repository"
+        if import_line not in content:
+            new_imports.append(import_line)
 
-    content = content.replace(marker, factory_block)
+    for svc_file in sorted(svc_files):
+        entity = svc_file.replace("_service", "")
+        import_line = f"from app.modules.{module_name}.services.{svc_file} import {entity.title()}Service"
+        if import_line not in content:
+            new_imports.append(import_line)
+
+    for repo_file in sorted(repo_files):
+        entity = repo_file.replace("_repository", "")
+        factory_name = f"get_{module_name}_{entity}_service" if entity != module_name else f"get_{module_name}_service"
+        factory_sig = f"def {factory_name}(db: Session = Depends(get_db)) -> {entity.title()}Service:"
+        if factory_sig not in content:
+            new_factories.append(
+                f"{factory_sig}\n"
+                f'    """Factory para o {entity.title()}Service."""\n'
+                f"    repository = {entity.title()}Repository(db)\n"
+                f"    return {entity.title()}Service(repository)\n"
+            )
+
+    if not new_imports and not new_factories:
+        logger.info("Dependencies já registrados em dependencies.py")
+        return
+
+    block = "\n".join(new_imports) + "\n\n" + "\n\n".join(new_factories) + "\n\n"
+    content = content.replace(marker, block + marker)
     deps_py.write_text(content, encoding="utf-8")
-    logger.info("Dependency registrado em dependencies.py: %s", factory_name)
+    logger.info("Dependencies registrados em dependencies.py")
 
 
 def register_alembic_import(
     manifest: dict, force: bool, env_py: Path | None = None
 ) -> None:
     module_name = manifest["module_name"]
-    entity_name = manifest["entity_name"]
     if env_py is None:
         api_dir = _get_monorepo_root() / "apps" / "api-postgres"
         env_py = api_dir / "alembic" / "env.py"
 
     content = env_py.read_text(encoding="utf-8")
 
-    import_line = f"from app.modules.{module_name}.models.{module_name} import {entity_name}  # noqa: F401"
-
-    if import_line in content:
-        logger.info("Import já registrado em alembic/env.py")
+    models_dir = api_dir / "app" / "modules" / module_name / "models"
+    if not models_dir.exists():
+        logger.warning("Diretório de models não encontrado: %s", models_dir)
         return
 
+    model_files = [f.stem for f in models_dir.glob("*.py") if f.stem != "__init__"]
+
     marker = "from app.modules.portal.models.portal import Aba, Modulo  # noqa: F401"
-    if marker in content:
-        content = content.replace(marker, marker + "\n" + import_line)
-        env_py.write_text(content, encoding="utf-8")
-        logger.info("Import registrado em alembic/env.py")
-    else:
-        logger.warning(
-            "Marker não encontrado em alembic/env.py. Adicione manualmente: %s",
-            import_line,
-        )
+    if marker not in content:
+        logger.warning("Marker não encontrado em alembic/env.py")
+        return
+
+    new_imports = []
+    for model_file in sorted(model_files):
+        entity = model_file.replace("_", " ").title().replace(" ", "")
+        import_line = f"from app.modules.{module_name}.models.{model_file} import {entity}  # noqa: F401"
+        if import_line not in content:
+            new_imports.append(import_line)
+
+    if not new_imports:
+        logger.info("Imports já registrados em alembic/env.py")
+        return
+
+    content = content.replace(marker, marker + "\n" + "\n".join(new_imports))
+    env_py.write_text(content, encoding="utf-8")
+    logger.info("Imports registrados em alembic/env.py: %s", model_files)
 
 
 def _get_venv_python() -> str:
