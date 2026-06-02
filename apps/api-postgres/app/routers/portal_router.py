@@ -95,38 +95,18 @@ def listar_modulos_disponiveis(
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
-    api_dir = Path(__file__).resolve().parent.parent.parent
-    frontend_modules_dir = api_dir.parent / "frontend-webapp" / "modules"
-
-    vinculados = {}
-    for mod in db.query(Modulo).all():
-        vinculados[mod.slug] = mod.aba_id
-
     abas_map = {}
     for aba in db.query(Aba).all():
         abas_map[aba.id] = aba.nome
 
     result = []
-    if not frontend_modules_dir.exists():
-        return result
-
-    for entry in sorted(frontend_modules_dir.iterdir()):
-        if not entry.is_dir() or entry.name.startswith("_"):
-            continue
-        index_file = entry / "index.html"
-        if not index_file.exists():
-            continue
-
-        slug = entry.name
-        ja_vinculado = slug in vinculados
-        aba_vinculada = abas_map.get(vinculados.get(slug)) if ja_vinculado else None
-
+    for mod in db.query(Modulo).all():
         result.append(AvailableModule(
-            slug=slug,
-            nome=slug.replace("-", " ").replace("_", " ").title(),
-            url=f"modules/{slug}/index.html",
-            ja_vinculado=ja_vinculado,
-            aba_vinculada=aba_vinculada,
+            slug=mod.slug,
+            nome=mod.nome,
+            url=mod.url,
+            ja_vinculado=True,
+            aba_vinculada=abas_map.get(mod.aba_id),
         ))
 
     return result
@@ -250,9 +230,15 @@ def deletar_modulo(
         )
 
     api_dir = Path(__file__).resolve().parent.parent.parent
+
     frontend_dir = api_dir.parent / "frontend-webapp" / "modules" / mod.slug
     if frontend_dir.exists():
         shutil.rmtree(frontend_dir)
+
+    from app.core.config import settings
+    import_dir = Path(settings.import_dir_path)
+    for zip_file in import_dir.glob(f"*{mod.slug}*.zip"):
+        zip_file.unlink()
 
     db.delete(mod)
     db.commit()

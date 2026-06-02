@@ -1,1 +1,0 @@
-# app/modules/gestao_projetos/__init__.py
