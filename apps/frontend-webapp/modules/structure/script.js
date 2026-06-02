@@ -520,12 +520,11 @@ class StructureController extends window.grindx.controllers.BaseController {
         list.innerHTML = modules.map(m => `
             <button type="button" class="picker-item${m.ja_vinculado ? ' linked' : ''}" data-slug="${m.slug}">
                 <div class="picker-item-info">
-                    <span class="picker-item-name">
-                        ${m.nome}
-                        ${m.fonte === 'zip' ? '<span class="picker-item-source">disponível para importar</span>' : ''}
-                    </span>
+                    <span class="picker-item-name">${m.nome}</span>
                     <span class="picker-item-path">${m.url}</span>
-                    ${m.ja_vinculado ? `<span class="picker-item-badge">Vinculado em: ${m.aba_vinculada}</span>` : ''}
+                    ${m.ja_vinculado
+                        ? `<span class="picker-item-badge">Vinculado em: ${m.aba_vinculada}</span>`
+                        : '<span class="picker-item-badge not-linked">Não vinculado</span>'}
                 </div>
                 <i class="fas fa-${m.ja_vinculado ? 'link' : 'plus'} picker-item-icon"></i>
             </button>

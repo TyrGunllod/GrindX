@@ -1,21 +1,15 @@
 from pathlib import Path
 from typing import List
 
-import json
-import structlog
-import zipfile
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict
 from shared.schemas.auth import TokenPayload
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user, require_role
-from app.core.config import settings
 from app.database import get_db
 from app.models.portal import Aba, Modulo
 from app.models.usuario import UsuarioModulo
-
-logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/v1/portal", tags=["Estrutura do Portal"])
 
@@ -51,7 +45,6 @@ class AvailableModule(BaseModel):
     url: str
     ja_vinculado: bool
     aba_vinculada: str | None = None
-    fonte: str = "pasta"
 
 
 @router.get("/menu", response_model=List[AbaResponse])
@@ -113,59 +106,27 @@ def listar_modulos_disponiveis(
         abas_map[aba.id] = aba.nome
 
     result = []
-    seen_slugs = set()
+    if not frontend_modules_dir.exists():
+        return result
 
-    if frontend_modules_dir.exists():
-        for entry in sorted(frontend_modules_dir.iterdir()):
-            if not entry.is_dir() or entry.name.startswith("_"):
-                continue
-            index_file = entry / "index.html"
-            if not index_file.exists():
-                continue
+    for entry in sorted(frontend_modules_dir.iterdir()):
+        if not entry.is_dir() or entry.name.startswith("_"):
+            continue
+        index_file = entry / "index.html"
+        if not index_file.exists():
+            continue
 
-            slug = entry.name
-            ja_vinculado = slug in vinculados
-            aba_vinculada = abas_map.get(vinculados.get(slug)) if ja_vinculado else None
+        slug = entry.name
+        ja_vinculado = slug in vinculados
+        aba_vinculada = abas_map.get(vinculados.get(slug)) if ja_vinculado else None
 
-            result.append(AvailableModule(
-                slug=slug,
-                nome=slug.replace("-", " ").replace("_", " ").title(),
-                url=f"modules/{slug}/index.html",
-                ja_vinculado=ja_vinculado,
-                aba_vinculada=aba_vinculada,
-            ))
-            seen_slugs.add(slug)
-
-    import_dir = Path(settings.import_dir_path)
-    if import_dir.exists():
-        for zip_path in sorted(import_dir.glob("*.zip")):
-            try:
-                with zipfile.ZipFile(zip_path, "r") as zf:
-                    if "module.json" not in zf.namelist():
-                        continue
-                    with zf.open("module.json") as f:
-                        manifest = json.load(f)
-            except Exception as e:
-                logger.warning("Erro ao ler manifest de %s: %s", zip_path.name, e)
-                continue
-
-            slug = manifest.get("module_name", zip_path.stem)
-            if slug in seen_slugs:
-                continue
-
-            frontend_url = manifest.get("frontend_url", f"modules/{slug}/index.html")
-            ja_vinculado = slug in vinculados
-            aba_vinculada = abas_map.get(vinculados.get(slug)) if ja_vinculado else None
-
-            result.append(AvailableModule(
-                slug=slug,
-                nome=manifest.get("menu_label", slug.replace("-", " ").replace("_", " ").title()),
-                url=frontend_url,
-                ja_vinculado=ja_vinculado,
-                aba_vinculada=aba_vinculada,
-                fonte="zip",
-            ))
-            seen_slugs.add(slug)
+        result.append(AvailableModule(
+            slug=slug,
+            nome=slug.replace("-", " ").replace("_", " ").title(),
+            url=f"modules/{slug}/index.html",
+            ja_vinculado=ja_vinculado,
+            aba_vinculada=aba_vinculada,
+        ))
 
     return result
 
