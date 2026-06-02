@@ -165,12 +165,35 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
     toggleGroup(abaId) {
         const group = document.getElementById(`group-${abaId}`);
-        if (group) group.classList.toggle('collapsed');
+        if (!group) return;
+
+        const wasCollapsed = group.classList.contains('collapsed');
+
+        this.mainNav.querySelectorAll('.nav-group').forEach(g => {
+            g.classList.add('collapsed');
+        });
+
+        if (wasCollapsed) {
+            group.classList.remove('collapsed');
+        }
     }
 
     toggleSubgroup(abaId) {
         const group = document.getElementById(`subgroup-${abaId}`);
-        if (group) group.classList.toggle('collapsed');
+        if (!group) return;
+
+        const wasCollapsed = group.classList.contains('collapsed');
+        const parent = group.closest('.nav-links-container');
+
+        if (parent) {
+            parent.querySelectorAll('.nav-subgroup').forEach(g => {
+                g.classList.add('collapsed');
+            });
+        }
+
+        if (wasCollapsed) {
+            group.classList.remove('collapsed');
+        }
     }
 
     handleNavigation(e) {
