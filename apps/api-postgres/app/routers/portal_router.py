@@ -229,6 +229,8 @@ def deletar_modulo(
             "Módulos da aba Gestão são protegidos e não podem ser excluídos.",
         )
 
+    db.query(UsuarioModulo).filter(UsuarioModulo.modulo_id == modulo_id).delete()
+
     api_dir = Path(__file__).resolve().parent.parent.parent
 
     frontend_dir = api_dir.parent / "frontend-webapp" / "modules" / mod.slug
