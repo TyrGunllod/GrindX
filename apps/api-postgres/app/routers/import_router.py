@@ -22,6 +22,7 @@ from app.auth.dependencies import require_role
 from app.core.config import settings
 from app.database import get_db
 from app.models.portal import Modulo
+from app.models.usuario import UsuarioModulo
 
 logger = structlog.get_logger(__name__)
 
@@ -273,7 +274,7 @@ def remove_module(
                 for line in before_marker:
                     if f"from app.modules.{module_name}" in line:
                         continue
-                    if f"def get_{module_name}_service" in line:
+                    if line.strip().startswith("def get_") and module_name in line:
                         skip_factory = True
                         continue
                     if skip_factory:
@@ -295,10 +296,13 @@ def remove_module(
     env_py = api_dir / "alembic" / "env.py"
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
-        import_line = f"from app.modules.{module_name}.models.{module_name} import"
-        if import_line in content:
-            lines = content.split("\n")
-            new_lines = [line for line in lines if import_line not in line]
+        lines = content.split("\n")
+        new_lines = [
+            line
+            for line in lines
+            if f"from app.modules.{module_name}" not in line
+        ]
+        if len(new_lines) != len(lines):
             env_py.write_text("\n".join(new_lines), encoding="utf-8")
             steps.append("Import removida de alembic/env.py")
             logger.info("Import removida de env.py: %s", module_name)
@@ -306,17 +310,33 @@ def remove_module(
     main_py = api_dir / "app" / "main.py"
     if main_py.exists():
         content = main_py.read_text(encoding="utf-8")
-        import_line = (
-            f"from app.modules.{module_name}.routers.{module_name}_router import"
-        )
-        router_line = f"app.include_router({module_name}_router)"
-        if import_line in content or router_line in content:
-            lines = content.split("\n")
-            new_lines = [
-                line
-                for line in lines
-                if import_line not in line and router_line not in line
-            ]
+        lines = content.split("\n")
+        new_lines = [
+            line
+            for line in lines
+            if f"from app.modules.{module_name}" not in line
+            and f"app.include_router({line.split('import ')[1].split(' as')[0].strip()})"
+            not in line
+            or (f"from app.modules.{module_name}" not in line)
+        ]
+
+        new_lines = [
+            line for line in new_lines
+            if f"from app.modules.{module_name}" not in line
+        ]
+
+        include_routers = set()
+        for line in lines:
+            if f"from app.modules.{module_name}" in line and "import router as" in line:
+                var_name = line.split("import router as")[-1].strip()
+                include_routers.add(f"app.include_router({var_name})")
+
+        new_lines = [
+            line for line in new_lines
+            if not any(r in line for r in include_routers)
+        ]
+
+        if len(new_lines) != len(lines):
             main_py.write_text("\n".join(new_lines), encoding="utf-8")
             steps.append("Router removido de main.py")
             logger.info("Router removido de main.py: %s", module_name)
@@ -325,6 +345,10 @@ def remove_module(
         Modulo.slug.like(f"{module_name}%")
     ).all()
     for mod in modulos:
+        UsuarioModulo_query = db.query(UsuarioModulo).filter(
+            UsuarioModulo.modulo_id == mod.id
+        )
+        UsuarioModulo_query.delete()
         db.delete(mod)
         steps.append(f"Registro removido do banco: {mod.slug} (id={mod.id})")
         logger.info("Registro removido: slug=%s, id=%d", mod.slug, mod.id)
