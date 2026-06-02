@@ -58,12 +58,16 @@ def validate_manifest(import_dir: Path) -> dict:
         "entity_name",
         "schema_name",
         "route_prefix",
-        "frontend_url",
         "menu_label",
     ]
     missing = [k for k in required if k not in manifest]
     if missing:
         raise ValueError(f"Campos obrigatórios ausentes no module.json: {missing}")
+
+    if "frontend_url" not in manifest and "frontend_tabs" not in manifest:
+        raise ValueError(
+            "Campo obrigatório ausente no module.json: frontend_url ou frontend_tabs"
+        )
 
     return manifest
 
@@ -360,7 +364,13 @@ def register_menu(manifest: dict) -> None:
 
     module_name = manifest["module_name"]
     label = manifest.get("menu_label", module_name)
-    url = manifest.get("frontend_url", f"modules/{module_name}/index.html")
+    url = manifest.get("frontend_url")
+    if not url:
+        frontend_tabs = manifest.get("frontend_tabs", [])
+        if frontend_tabs:
+            url = frontend_tabs[0].get("url", f"modules/{module_name}/index.html")
+        else:
+            url = f"modules/{module_name}/index.html"
     icone = manifest.get("menu_icone", "folder")
     slug = module_name
 
@@ -376,8 +386,12 @@ def register_menu(manifest: dict) -> None:
         if not aba:
             aba = db.query(Aba).order_by(Aba.id).first()
         if not aba:
-            logger.warning("Nenhuma aba encontrada para registrar o módulo no menu")
-            return
+            logger.warning("Nenhuma aba encontrada — criando aba 'Principal'")
+            aba = Aba(nome="Principal", icone="home", ordem=1)
+            db.add(aba)
+            db.commit()
+            db.refresh(aba)
+            logger.info("Aba criada: id=%d", aba.id)
 
         existing = db.query(Modulo).filter(Modulo.slug == slug).first()
         if existing:

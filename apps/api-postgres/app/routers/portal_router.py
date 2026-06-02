@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -36,6 +37,14 @@ class AbaResponse(BaseModel):
     children: List["AbaResponse"] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class AvailableModule(BaseModel):
+    slug: str
+    nome: str
+    url: str
+    ja_vinculado: bool
+    aba_vinculada: str | None = None
 
 
 @router.get("/menu", response_model=List[AbaResponse])
@@ -78,6 +87,48 @@ def obter_menu_dinamico(
         return result
 
     return build_tree(abas)
+
+
+@router.get("/modules/available", response_model=List[AvailableModule])
+def listar_modulos_disponiveis(
+    db: Session = Depends(get_db),
+    _: None = Depends(require_role("admin")),
+):
+    api_dir = Path(__file__).resolve().parent.parent.parent
+    frontend_modules_dir = api_dir.parent / "frontend-webapp" / "modules"
+
+    vinculados = {}
+    for mod in db.query(Modulo).all():
+        vinculados[mod.slug] = mod.aba_id
+
+    abas_map = {}
+    for aba in db.query(Aba).all():
+        abas_map[aba.id] = aba.nome
+
+    result = []
+    if not frontend_modules_dir.exists():
+        return result
+
+    for entry in sorted(frontend_modules_dir.iterdir()):
+        if not entry.is_dir() or entry.name.startswith("_"):
+            continue
+        index_file = entry / "index.html"
+        if not index_file.exists():
+            continue
+
+        slug = entry.name
+        ja_vinculado = slug in vinculados
+        aba_vinculada = abas_map.get(vinculados.get(slug)) if ja_vinculado else None
+
+        result.append(AvailableModule(
+            slug=slug,
+            nome=slug.replace("-", " ").replace("_", " ").title(),
+            url=f"modules/{slug}/index.html",
+            ja_vinculado=ja_vinculado,
+            aba_vinculada=aba_vinculada,
+        ))
+
+    return result
 
 
 # --- Gerenciamento de Abas ---
@@ -167,10 +218,6 @@ def criar_modulo(
 def atualizar_modulo(
     modulo_id: int,
     nome: str,
-    slug: str,
-    url: str,
-    icone: str,
-    aba_id: int,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
@@ -178,10 +225,6 @@ def atualizar_modulo(
     if not mod:
         raise HTTPException(404, "Módulo não encontrado")
     mod.nome = nome
-    mod.slug = slug
-    mod.url = url
-    mod.icone = icone
-    mod.aba_id = aba_id
     db.commit()
     db.refresh(mod)
     return mod

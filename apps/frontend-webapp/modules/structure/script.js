@@ -46,7 +46,6 @@ class StructureController extends window.grindx.controllers.BaseController {
 
         const moduleFields = [
             { label: 'Nome do Módulo', id: 'modNome', required: true },
-            { label: 'URL do Arquivo', id: 'modUrl', required: true },
             { label: 'Identificador (Slug)', id: 'modSlug', required: true }
         ];
 
@@ -68,10 +67,26 @@ class StructureController extends window.grindx.controllers.BaseController {
             label: 'Aba Destino'
         }));
         window.grindx.components.FormField.appendFields(this.moduloForm, moduleFields);
+
+        const urlGroup = document.createElement('div');
+        urlGroup.className = 'form-group';
+        urlGroup.innerHTML = `
+            <label for="modUrl">URL do Arquivo</label>
+            <div class="url-input-row">
+                <input type="text" id="modUrl" class="form-control" required placeholder="modules/home/index.html">
+                <button type="button" class="btn btn-browse" id="btnBrowseModule" title="Procurar módulo">
+                    <i class="fas fa-folder-open"></i>
+                </button>
+            </div>
+        `;
+        this.moduloForm.appendChild(urlGroup);
+
         this.moduloForm.appendChild(window.grindx.components.FormField.createIconSelect({
             id: 'modIcone',
             label: 'Ícone do Módulo'
         }));
+
+        this._createPickerModal();
     }
 
     bindEvents() {
@@ -82,8 +97,8 @@ class StructureController extends window.grindx.controllers.BaseController {
         document.getElementById('btnCancelAba').onclick = () => this.abaModalController.close();
         document.getElementById('btnCancelModulo').onclick = () => this.moduloModalController.close();
         document.getElementById('btnRefresh').onclick = () => this.loadStructure();
-        
-        // Eventos delegados para botões dinâmicos
+        document.getElementById('btnBrowseModule').onclick = () => this.openPickerModal();
+
         this.container.addEventListener('click', (e) => this.handleActionClick(e));
     }
 
@@ -271,10 +286,32 @@ class StructureController extends window.grindx.controllers.BaseController {
         const iconeSelect = document.getElementById('modIcone');
         iconeSelect.value = mod.icone || 'fas fa-cube';
         iconeSelect.dispatchEvent(new Event('change'));
+        this._setModuleFormReadonly(true);
         this.openModuloModal('Editar Módulo');
     }
 
     async saveModulo() {
+        if (this.currentModuloId) {
+            const nome = document.getElementById('modNome').value;
+            if (!nome.trim()) {
+                window.grindx.components.LoadingSpinner.toast('Informe o nome do módulo.', 'warning');
+                return;
+            }
+            try {
+                await window.grindx.api.request(`/portal/modulos/${this.currentModuloId}`, {
+                    method: 'PUT',
+                    params: { nome }
+                });
+                await this.loadStructure();
+                this.toastSuccess('Módulo salvo com sucesso.');
+                this.closeModals();
+                window.parent.postMessage('sidebar-update', '*');
+            } catch (err) {
+                this.toastError(err);
+            }
+            return;
+        }
+
         if (!this.validateModuloForm()) return;
 
         const abaId = document.getElementById('modAbaId').value;
@@ -283,13 +320,13 @@ class StructureController extends window.grindx.controllers.BaseController {
         const slug = document.getElementById('modSlug').value;
         const icone = document.getElementById('modIcone').value;
 
-        const method = this.currentModuloId ? 'PUT' : 'POST';
-        const endpoint = this.currentModuloId ? `/portal/modulos/${this.currentModuloId}` : '/portal/modulos';
-        const params = { nome, slug, url: moduleUrl, icone, aba_id: abaId };
         try {
-            await window.grindx.api.request(endpoint, { method, params });
+            await window.grindx.api.request('/portal/modulos', {
+                method: 'POST',
+                params: { nome, slug, url: moduleUrl, icone, aba_id: abaId }
+            });
             await this.loadStructure();
-            this.toastSuccess('Módulo salvo com sucesso.');
+            this.toastSuccess('Módulo criado com sucesso.');
             this.closeModals();
             window.parent.postMessage('sidebar-update', '*');
         } catch (err) {
@@ -405,12 +442,114 @@ class StructureController extends window.grindx.controllers.BaseController {
 
     openModuloModal(title = 'Novo Módulo') {
         document.getElementById('moduloModalTitle').textContent = title;
+        this._setModuleFormReadonly(false);
         this.moduloModalController.open();
     }
 
     closeModals() {
         this.abaModalController.close();
         this.moduloModalController.close();
+        if (this.pickerModalController) this.pickerModalController.close();
+    }
+
+    _setModuleFormReadonly(readonly) {
+        const fields = ['modAbaId', 'modUrl', 'modSlug', 'modIcone'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.disabled = readonly;
+                el.closest('.form-group')?.classList.toggle('field-readonly', readonly);
+            }
+        });
+        const browseBtn = document.getElementById('btnBrowseModule');
+        if (browseBtn) browseBtn.disabled = readonly;
+        const iconPicker = document.querySelector('#modIcone')?.parentElement?.querySelector('.icon-picker-grid');
+        if (iconPicker) iconPicker.style.pointerEvents = readonly ? 'none' : 'auto';
+    }
+
+    _createPickerModal() {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.id = 'pickerModal';
+        overlay.role = 'dialog';
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.style.display = 'none';
+        overlay.innerHTML = `
+            <div class="modal-card picker-modal">
+                <header class="modal-header">
+                    <h3>Selecionar Módulo</h3>
+                    <input type="text" id="pickerSearch" class="form-control" placeholder="Buscar módulo..." style="max-width: 260px;">
+                </header>
+                <div id="pickerList" class="picker-list"></div>
+                <footer class="modal-footer flex justify-end gap-2 mt-4">
+                    <button class="btn" id="btnCancelPicker">Cancelar</button>
+                </footer>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        this.pickerModalController = new window.grindx.components.ReusableModal(overlay, {
+            onClose: () => {}
+        });
+
+        document.getElementById('btnCancelPicker').onclick = () => this.pickerModalController.close();
+        document.getElementById('pickerSearch').addEventListener('input', (e) => this._filterPicker(e.target.value));
+    }
+
+    async openPickerModal() {
+        const list = document.getElementById('pickerList');
+        list.innerHTML = '<div class="picker-loading">Carregando módulos...</div>';
+        document.getElementById('pickerSearch').value = '';
+        this.pickerModalController.open();
+
+        try {
+            const modules = await window.grindx.api.get('/portal/modules/available');
+            this._renderPickerList(modules || []);
+        } catch (err) {
+            list.innerHTML = '<div class="picker-empty">Erro ao carregar módulos.</div>';
+        }
+    }
+
+    _renderPickerList(modules) {
+        const list = document.getElementById('pickerList');
+        if (!modules.length) {
+            list.innerHTML = '<div class="picker-empty">Nenhum módulo encontrado na pasta modules/.</div>';
+            return;
+        }
+        this._pickerModules = modules;
+        list.innerHTML = modules.map(m => `
+            <button type="button" class="picker-item${m.ja_vinculado ? ' linked' : ''}" data-slug="${m.slug}">
+                <div class="picker-item-info">
+                    <span class="picker-item-name">${m.nome}</span>
+                    <span class="picker-item-path">${m.url}</span>
+                    ${m.ja_vinculado ? `<span class="picker-item-badge">Vinculado em: ${m.aba_vinculada}</span>` : ''}
+                </div>
+                <i class="fas fa-${m.ja_vinculado ? 'link' : 'plus'} picker-item-icon"></i>
+            </button>
+        `).join('');
+
+        list.querySelectorAll('.picker-item').forEach(btn => {
+            btn.addEventListener('click', () => this._selectModule(btn.dataset.slug));
+        });
+    }
+
+    _filterPicker(query) {
+        const items = document.querySelectorAll('.picker-item');
+        const q = query.toLowerCase();
+        items.forEach(item => {
+            const name = item.querySelector('.picker-item-name').textContent.toLowerCase();
+            const path = item.querySelector('.picker-item-path').textContent.toLowerCase();
+            item.style.display = (name.includes(q) || path.includes(q)) ? '' : 'none';
+        });
+    }
+
+    _selectModule(slug) {
+        const mod = this._pickerModules?.find(m => m.slug === slug);
+        if (!mod) return;
+        document.getElementById('modUrl').value = mod.url;
+        document.getElementById('modNome').value = mod.nome;
+        document.getElementById('modSlug').value = mod.slug;
+        this.pickerModalController.close();
     }
 
     resetForms() {
