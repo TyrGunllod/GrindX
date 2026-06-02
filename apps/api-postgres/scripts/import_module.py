@@ -374,60 +374,19 @@ def run_migrations() -> None:
 
 
 def register_menu(manifest: dict) -> None:
-    import sys as _sys
-
     module_name = manifest["module_name"]
     label = manifest.get("menu_label", module_name)
-    icone = manifest.get("menu_icone", "folder")
-    slug = module_name
+    frontend_tabs = manifest.get("frontend_tabs", [])
 
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
-    if str(api_dir) not in _sys.path:
-        _sys.path.insert(0, str(api_dir))
-
-    from app.database import SessionLocal
-    from app.models.portal import Aba, Modulo
-
-    with SessionLocal() as db:
-        aba = db.query(Aba).filter(Aba.nome.ilike("%principal%")).first()
-        if not aba:
-            aba = db.query(Aba).order_by(Aba.id).first()
-        if not aba:
-            logger.warning("Nenhuma aba encontrada — criando aba 'Principal'")
-            aba = Aba(nome="Principal", icone="home", ordem=1)
-            db.add(aba)
-            db.commit()
-            db.refresh(aba)
-            logger.info("Aba criada: id=%d", aba.id)
-
-        existing = db.query(Modulo).filter(Modulo.slug == slug).first()
-        if existing:
-            logger.info(
-                "Módulo já registrado no menu (slug=%s, id=%d)", slug, existing.id
-            )
-        else:
-            frontend_tabs = manifest.get("frontend_tabs", [])
-            if frontend_tabs:
-                for tab in frontend_tabs:
-                    tab_name = tab.get("name", module_name)
-                    tab_url = tab.get("url", f"modules/{module_name}/index.html")
-                    tab_icone = tab.get("menu_icone", icone)
-                    tab_slug = tab_url.split("/")[1] if "/" in tab_url else f"{module_name}_{tab_name.lower().replace(' ', '_')}"
-                    tab_mod = Modulo(
-                        aba_id=aba.id, nome=tab_name, slug=tab_slug,
-                        url=tab_url, icone=tab_icone,
-                    )
-                    db.add(tab_mod)
-                db.commit()
-                logger.info(
-                    "Menu registrado: %s (%d abas)", label, len(frontend_tabs)
-                )
-            else:
-                url = manifest.get("frontend_url", f"modules/{module_name}/index.html")
-                mod = Modulo(aba_id=aba.id, nome=label, slug=slug, url=url, icone=icone)
-                db.add(mod)
-                db.commit()
-                logger.info("Menu registrado: %s (slug=%s)", label, slug)
+    logger.info(
+        "Módulo importado: %s (%d abas disponíveis). "
+        "Associe as abas manualmente no Portal → Estrutura.",
+        label, len(frontend_tabs)
+    )
+    for tab in frontend_tabs:
+        tab_name = tab.get("name", module_name)
+        tab_url = tab.get("url", "")
+        logger.info("  - %s: %s", tab_name, tab_url)
 
 
 def rollback(backup_dir: Path | None) -> None:

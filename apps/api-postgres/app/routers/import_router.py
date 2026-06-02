@@ -74,8 +74,6 @@ def scan_imports(
     if not import_dir.exists():
         return ScanResponse(modules=[])
 
-    existing_slugs = {m.slug for m in db.query(Modulo).all()}
-
     api_dir = Path(__file__).resolve().parent.parent.parent
     backend_modules_dir = api_dir / "app" / "modules"
     frontend_modules_dir = api_dir.parent / "frontend-webapp" / "modules"
@@ -90,9 +88,12 @@ def scan_imports(
             continue
 
         slug = manifest.get("module_name", zip_path.stem)
-        in_db = slug in existing_slugs
         in_backend_fs = (backend_modules_dir / slug).exists()
-        in_frontend_fs = (frontend_modules_dir / slug).exists()
+        in_frontend_fs = any(
+            item.name.startswith(f"{slug}_") or item.name.startswith(f"{slug}-")
+            for item in frontend_modules_dir.iterdir()
+            if item.is_dir()
+        ) if frontend_modules_dir.exists() else False
 
         modules.append(
             ModuleInfo(
@@ -102,7 +103,7 @@ def scan_imports(
                 version=manifest.get("version", "0.0.0"),
                 menu_label=manifest.get("menu_label", slug),
                 schema_name=manifest.get("schema_name", "org"),
-                ja_importado=in_db or in_backend_fs or in_frontend_fs,
+                ja_importado=in_backend_fs or in_frontend_fs,
             )
         )
 
@@ -301,27 +302,11 @@ def remove_module(
         steps.append(f"Backend removido: {backend_dir}")
 
     frontend_dir = api_dir.parent / "frontend-webapp" / "modules"
-    modulos = db.query(Modulo).filter(
-        Modulo.slug.like(f"{module_name}%")
-    ).all()
-    removed_frontends = set()
-    for mod in modulos:
-        if mod.url and mod.url.startswith("modules/"):
-            parts = mod.url.split("/")
-            if len(parts) >= 2:
-                sub_name = parts[1]
-                sub_dir = frontend_dir / sub_name
-                if sub_dir.exists() and sub_name not in removed_frontends:
-                    shutil.rmtree(sub_dir)
-                    removed_frontends.add(sub_name)
-                    steps.append(f"Frontend removido: {sub_dir}")
-
-    for mod in modulos:
-        db.query(UsuarioModulo).filter(UsuarioModulo.modulo_id == mod.id).delete()
-        db.delete(mod)
-        steps.append(f"Registro removido do banco: {mod.slug}")
-    if modulos:
-        db.commit()
+    if frontend_dir.exists():
+        for item in frontend_dir.iterdir():
+            if item.is_dir() and item.name.startswith(f"{module_name}_") or item.name.startswith(f"{module_name}-"):
+                shutil.rmtree(item)
+                steps.append(f"Frontend removido: {item}")
 
     if not steps:
         raise HTTPException(
