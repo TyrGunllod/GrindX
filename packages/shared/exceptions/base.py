@@ -123,8 +123,8 @@ class ForbiddenError(AppException):
 class CredenciaisInvalidasError(UnauthorizedError):
     """Username ou senha incorretos."""
 
-    def __init__(self) -> None:
-        super().__init__(message="Usuário ou senha incorretos.")
+    def __init__(self, message: str = "Usuário ou senha incorretos.") -> None:
+        super().__init__(message=message)
 
 
 class TokenExpiradoError(UnauthorizedError):
