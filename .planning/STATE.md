@@ -1,12 +1,12 @@
 ---
 gsd_state_version: '1.0'
-status: planning
+status: executing
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 9
-  completed_plans: 0
-  percent: 0
+  completed_plans: 3
+  percent: 33
 ---
 
 # Project State
@@ -16,33 +16,33 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-02)
 
 **Core value:** Eliminar todos os problemas técnicos identificados para que o GrindX seja seguro, performante e maintível — zero pendências no CONCERNS.md
-**Current focus:** Phase 1 — Security Hardening
+**Current focus:** Phase 1 — Security Hardening (executed, pending verification)
 
 ## Current Position
 
 Phase: 1 of 3 (Security Hardening)
-Plan: 0 of 3 in current phase
-Status: Plans created, ready to execute
-Last activity: 2026-06-02 — Phase 1 plans created (3 plans, wave 1)
+Plan: 3 of 3 in current phase
+Status: Wave 1 complete, all tests pass
+Last activity: 2026-06-02 — Phase 1 executed (3 plans, 22 tests pass)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 3
+- Average duration: ~7 min/plan
+- Total execution time: ~22 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1. Security Hardening | 3/3 | 22 min | ~7 min |
 
 **Recent Trend:**
-- Last 5 plans: -
-- Trend: -
+- Last 3 plans: 01-01 (3min), 01-02 (7min), 01-03 (12min)
+- Trend: Increasing complexity (config → middleware → auth+upload)
 
 *Updated after each plan completion*
 
@@ -63,6 +63,13 @@ Recent decisions affecting current work:
 - Rate limiting: SlowAPI, in-memory, dual keys (IP + user_id), both APIs
 - File upload: filetype library, logos + fontes only, no migration of existing uploads
 - CORS: Strict production, env var config, dev allows *, both APIs
+
+**Phase 1 Execution Results:**
+- SEC-01 ✓: SECRET_KEY entropy validation (Shannon, 3.5 bits/char)
+- SEC-02 ✓: Temp password expiry (15min, secrets module)
+- SEC-03 ✓: Rate limiting dual keys (SlowAPI, user_id + IP)
+- SEC-04 ✓: File upload magic bytes (filetype library)
+- SEC-05 ✓: CORS strict production (never *)
 
 ### Pending Todos
 
@@ -85,5 +92,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-06-02
-Stopped at: Phase 1 plans created, ready to execute
+Stopped at: Phase 1 executed, pending verification
 Resume file: .planning/phases/01-security-hardening/

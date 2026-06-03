@@ -31,9 +31,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Config hardening: SECRET_KEY entropy validation + CORS strict production mode
-- [ ] 01-02-PLAN.md — Rate limiting: SlowAPI with dual keys (IP + user_id) for both APIs
-- [ ] 01-03-PLAN.md — Auth security + upload validation: temp password expiry + filetype magic bytes
+- [x] 01-01-PLAN.md — Config hardening: SECRET_KEY entropy validation + CORS strict production mode
+- [x] 01-02-PLAN.md — Rate limiting: SlowAPI with dual keys (IP + user_id) for both APIs
+- [x] 01-03-PLAN.md — Auth security + upload validation: temp password expiry + filetype magic bytes
 
 ### Phase 2: Infrastructure & Quality
 **Goal**: Test coverage is measurable, migrations are clean, and test infrastructure accurately reflects production schemas
@@ -72,6 +72,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Security Hardening | 0/3 | Not started | - |
+| 1. Security Hardening | 3/3 | Executed | - |
 | 2. Infrastructure & Quality | 0/3 | Not started | - |
 | 3. Performance & Resilience | 0/3 | Not started | - |
