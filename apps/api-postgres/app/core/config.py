@@ -5,6 +5,8 @@ Usa pydantic-settings para validação e tipagem segura.
 Todas as variáveis são obrigatórias a menos que tenham valor padrão.
 """
 
+import math
+from collections import Counter
 from pathlib import Path
 
 from pydantic import field_validator
@@ -33,6 +35,17 @@ class Settings(BaseSettings):
                 "SECRET_KEY deve ter pelo menos 32 caracteres. "
                 'Gere uma com: python -c "import secrets; print(secrets.token_hex(32))"'
             )
+        # Validação de entropia Shannon — rejeita chaves com baixa aleatoriedade
+        freq = Counter(v)
+        length = len(v)
+        entropy = -sum(
+            (count / length) * math.log2(count / length) for count in freq.values()
+        )
+        if entropy < 3.5:
+            raise ValueError(
+                f"SECRET_KEY tem entropia muito baixa ({entropy:.2f} bits/caractere). "
+                'Use uma chave aleatória: python -c "import secrets; print(secrets.token_hex(32))"'
+            )
         return v
 
     # --- CORS ---
@@ -42,6 +55,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "ERP API Postgres"
     APP_VERSION: str = APP_VERSION
     DEBUG: bool = False
+    ENVIRONMENT: str = "development"
     LOG_LEVEL: str = "INFO"
 
     # --- SMTP / Email ---
@@ -70,16 +84,41 @@ class Settings(BaseSettings):
     RATE_LIMIT_WINDOW_SECONDS: int = 60
 
     @property
+    def is_production(self) -> bool:
+        """Retorna True se o ambiente é produção."""
+        return self.ENVIRONMENT == "production"
+
+    @property
     def allowed_origins_list(self) -> list[str]:
         """Retorna lista de origens CORS permitidas."""
-        # Se for um formato de lista JSON ["*"], removemos os caracteres extras
+        # Em produção, CORS_ORIGINS é obrigatório e não pode ser "*"
+        if self.is_production:
+            if not self.CORS_ORIGINS.strip():
+                raise ValueError(
+                    "CORS_ORIGINS obrigatório em produção. "
+                    "Defina origins explícitos (ex: https://app.grindx.com)"
+                )
+            if "*" in self.CORS_ORIGINS:
+                raise ValueError("CORS_ORIGINS não pode ser '*' em produção")
+
+        # Parse das origens
         clean_value = (
             self.CORS_ORIGINS.replace("[", "")
             .replace("]", "")
             .replace('"', "")
             .replace("'", "")
         )
-        return [origin.strip() for origin in clean_value.split(",")]
+        parsed = [origin.strip() for origin in clean_value.split(",") if origin.strip()]
+
+        # Em dev com CORS_ORIGINS vazio, retorna localhost defaults
+        if not self.is_production and not parsed:
+            return [
+                "http://localhost:3000",
+                "http://localhost:5500",
+                "http://127.0.0.1:5500",
+            ]
+
+        return parsed
 
     model_config = SettingsConfigDict(
         env_file=".env",
