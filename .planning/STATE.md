@@ -22,8 +22,8 @@ See: .planning/PROJECT.md (updated 2026-06-02)
 
 Phase: 1 of 3 (Security Hardening)
 Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-06-02 — Roadmap created
+Status: Plans created, ready to execute
+Last activity: 2026-06-02 — Phase 1 plans created (3 plans, wave 1)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -85,5 +85,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-06-02
-Stopped at: Phase 1 context gathered, ready to plan
-Resume file: .planning/phase-01/01-CONTEXT.md
+Stopped at: Phase 1 plans created, ready to execute
+Resume file: .planning/phases/01-security-hardening/
