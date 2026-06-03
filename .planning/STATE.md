@@ -57,6 +57,13 @@ Recent decisions affecting current work:
 - Roadmap: 3 phases for 11 requirements — natural category boundaries
 - Roadmap: Measurable success criteria (entropy thresholds, coverage %, HTTP status codes)
 
+**Phase 1 Decisions (from discuss-phase):**
+- SECRET_KEY: Pydantic field_validator, Shannon entropy, 3.5 bits/char threshold, auto-generate in dev
+- Temp passwords: Campo expires_at no banco, 15min expiry, 16 char alphanum format
+- Rate limiting: SlowAPI, in-memory, dual keys (IP + user_id), both APIs
+- File upload: filetype library, logos + fontes only, no migration of existing uploads
+- CORS: Strict production, env var config, dev allows *, both APIs
+
 ### Pending Todos
 
 None yet.
@@ -71,10 +78,12 @@ Items acknowledged and carried forward from previous milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| Security | JWT token invalidation (SEC-06) | Deferred to v2 | Phase 1 discuss |
+| Security | Path traversal protection (SEC-07) | Deferred to v2 | Phase 1 discuss |
+| Security | Security headers CSP/HSTS (SEC-08) | Deferred to v2 | Phase 1 discuss |
 
 ## Session Continuity
 
 Last session: 2026-06-02
-Stopped at: Roadmap created, ready to plan Phase 1
-Resume file: None
+Stopped at: Phase 1 context gathered, ready to plan
+Resume file: .planning/phase-01/01-CONTEXT.md
