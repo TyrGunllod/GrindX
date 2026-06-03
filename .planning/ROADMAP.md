@@ -28,12 +28,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Rate limiter blocks requests by authenticated user_id after threshold, not just by IP (integration test with two users from same IP both get limited independently)
   4. File uploads reject files whose magic bytes don't match the declared type (test uploads a .txt renamed to .png and gets HTTP 400)
   5. CORS in production mode rejects requests from unlisted origins (test validates `Origin: evil.com` returns no CORS headers)
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
-- [ ] 01-03: TBD
+- [ ] 01-01-PLAN.md — Config hardening: SECRET_KEY entropy validation + CORS strict production mode
+- [ ] 01-02-PLAN.md — Rate limiting: SlowAPI with dual keys (IP + user_id) for both APIs
+- [ ] 01-03-PLAN.md — Auth security + upload validation: temp password expiry + filetype magic bytes
 
 ### Phase 2: Infrastructure & Quality
 **Goal**: Test coverage is measurable, migrations are clean, and test infrastructure accurately reflects production schemas
