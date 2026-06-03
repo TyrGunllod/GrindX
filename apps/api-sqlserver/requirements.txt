@@ -16,6 +16,9 @@ python-dotenv>=1.0.1
 python-jose[cryptography]>=3.3.0
 bcrypt>=4.1.2
 
+# === Security ===
+slowapi>=0.1.9
+
 # === Logging ===
 structlog>=24.1.0
 
