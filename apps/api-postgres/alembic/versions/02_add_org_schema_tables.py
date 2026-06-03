@@ -1,21 +1,25 @@
-"""criar tabelas gestao_projetos
+"""Consolidate org schema tables — replaces orphan migrations 001_create_tables and 0001_criar_tabela_projetos
 
-Revision ID: 001
-Revises:
-Create Date: 2026-06-02
+Revision ID: b2c3d4e5f6a7
+Revises: a1b2c3d4e5f6
+Create Date: 2026-06-03
 """
 
 from typing import Sequence
+
 from alembic import op
 import sqlalchemy as sa
 
-revision: str = "001"
-down_revision: str | None = None
+revision: str = "b2c3d4e5f6a7"
+down_revision: str | None = "a1b2c3d4e5f6"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
+    # Ensure org schema exists
+    op.execute("CREATE SCHEMA IF NOT EXISTS org")
+
     op.create_table(
         "projetos",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
@@ -44,7 +48,9 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.ForeignKeyConstraint(["gerente_id"], ["iam.usuarios.id"]),
+        sa.ForeignKeyConstraint(
+            ["gerente_id"], ["iam.usuarios.id"], ondelete="SET NULL"
+        ),
         schema="org",
     )
     op.create_index("ix_org_projetos_nome", "projetos", ["nome"], schema="org")
