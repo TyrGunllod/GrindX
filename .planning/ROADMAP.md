@@ -46,9 +46,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Migration consolidation: remove orphan migrations, create org schema tables at head
-- [ ] 02-02-PLAN.md — Coverage setup: pytest-cov with 70% threshold + CI enforcement
-- [ ] 02-03-PLAN.md — Schema validation: test _SCHEMA_TRANSLATE covers all PostgreSQL schemas
+- [x] 02-01-PLAN.md — Migration consolidation: remove orphan migrations, create org schema tables at head
+- [x] 02-02-PLAN.md — Coverage setup: pytest-cov with 70% threshold + CI enforcement
+- [x] 02-03-PLAN.md — Schema validation: test _SCHEMA_TRANSLATE covers all PostgreSQL schemas
 
 ### Phase 3: Performance & Resilience
 **Goal**: Application responds quickly under load and reports accurate health status for container orchestration
@@ -73,5 +73,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Security Hardening | 3/3 | Executed | - |
-| 2. Infrastructure & Quality | 0/3 | Planned | - |
+| 2. Infrastructure & Quality | 3/3 | Executed | - |
 | 3. Performance & Resilience | 0/3 | Not started | - |

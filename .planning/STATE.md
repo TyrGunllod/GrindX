@@ -5,8 +5,8 @@ progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 9
-  completed_plans: 3
-  percent: 33
+  completed_plans: 6
+  percent: 67
 ---
 
 # Project State
@@ -16,33 +16,34 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-02)
 
 **Core value:** Eliminar todos os problemas técnicos identificados para que o GrindX seja seguro, performante e maintível — zero pendências no CONCERNS.md
-**Current focus:** Phase 1 — Security Hardening (executed, pending verification)
+**Current focus:** Phase 2 — Infrastructure & Quality (executed, pending verification)
 
 ## Current Position
 
-Phase: 1 of 3 (Security Hardening)
+Phase: 2 of 3 (Infrastructure & Quality)
 Plan: 3 of 3 in current phase
-Status: Wave 1 complete, all tests pass
-Last activity: 2026-06-02 — Phase 1 executed (3 plans, 22 tests pass)
+Status: All waves complete, all tests pass
+Last activity: 2026-06-02 — Phase 2 executed (3 plans, 76% coverage)
 
-Progress: [███░░░░░░░] 33%
+Progress: [██████░░░░] 67%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~7 min/plan
-- Total execution time: ~22 min
+- Total plans completed: 6
+- Average duration: ~5 min/plan
+- Total execution time: ~35 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Security Hardening | 3/3 | 22 min | ~7 min |
+| 2. Infrastructure & Quality | 3/3 | 12 min | ~4 min |
 
 **Recent Trend:**
-- Last 3 plans: 01-01 (3min), 01-02 (7min), 01-03 (12min)
-- Trend: Increasing complexity (config → middleware → auth+upload)
+- Phase 2 plans: 02-01 (5min), 02-02 (5min), 02-03 (2min)
+- Trend: Simpler tasks (config/test) vs Phase 1 (security logic)
 
 *Updated after each plan completion*
 
@@ -71,6 +72,11 @@ Recent decisions affecting current work:
 - SEC-04 ✓: File upload magic bytes (filetype library)
 - SEC-05 ✓: CORS strict production (never *)
 
+**Phase 2 Execution Results:**
+- INFRA-01 ✓: pytest-cov with 70% threshold (76% actual coverage)
+- INFRA-02 ✓: Alembic migration consolidation (1 head, orphans removed)
+- INFRA-03 ✓: Schema translate validation (4 schemas tested)
+
 ### Pending Todos
 
 None yet.
@@ -92,5 +98,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-06-02
-Stopped at: Phase 1 executed, pending verification
-Resume file: .planning/phases/01-security-hardening/
+Stopped at: Phase 2 executed, pending verification
+Resume file: .planning/phases/02-infrastructure-quality/
