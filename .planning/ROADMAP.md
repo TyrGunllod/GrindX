@@ -43,12 +43,12 @@ Plans:
   1. `pytest --cov --cov-fail-under=70` runs successfully and fails the build if coverage drops below 70% (CI pipeline enforces this)
   2. `alembic heads` returns exactly one head with no migration conflicts (no duplicate `001_*` prefixes)
   3. Schema translate map validation test passes, confirming all PostgreSQL schemas (`iam`, `portal`, `catalogo`, `org`) are mapped in `_SCHEMA_TRANSLATE`
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
+- [ ] 02-01-PLAN.md — Migration consolidation: remove orphan migrations, create org schema tables at head
+- [ ] 02-02-PLAN.md — Coverage setup: pytest-cov with 70% threshold + CI enforcement
+- [ ] 02-03-PLAN.md — Schema validation: test _SCHEMA_TRANSLATE covers all PostgreSQL schemas
 
 ### Phase 3: Performance & Resilience
 **Goal**: Application responds quickly under load and reports accurate health status for container orchestration
@@ -73,5 +73,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Security Hardening | 3/3 | Executed | - |
-| 2. Infrastructure & Quality | 0/3 | Not started | - |
+| 2. Infrastructure & Quality | 0/3 | Planned | - |
 | 3. Performance & Resilience | 0/3 | Not started | - |
