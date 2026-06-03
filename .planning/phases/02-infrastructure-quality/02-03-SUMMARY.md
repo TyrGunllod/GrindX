@@ -61,3 +61,8 @@ tests\unit\test_schema_validation.py::test_expected_schemas_match_application_mo
 ## Commit
 
 - `d15285f`: test(02-03): adicionar testes de validação do schema translate map
+
+## Self-Check: PASSED
+
+- [x] `apps/api-postgres/tests/unit/test_schema_validation.py` exists
+- [x] Commit `d15285f` exists in git log
