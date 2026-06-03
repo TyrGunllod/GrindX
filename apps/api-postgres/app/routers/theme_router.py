@@ -7,6 +7,7 @@ Endpoints para CRUD de temas e ativação.
 import os
 import shutil
 
+import filetype
 import structlog
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel
@@ -29,6 +30,34 @@ class TemplateRequest(BaseModel):
 logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/v1/themes", tags=["Temas"])
+
+
+def _validate_file_magic(
+    file_bytes: bytes, allowed_mimes: set[str], file_label: str
+) -> None:
+    """Valida magic bytes do arquivo contra tipos MIME permitidos.
+
+    Args:
+        file_bytes: Conteúdo do arquivo.
+        allowed_mimes: Conjunto de MIME types permitidos.
+        file_label: Rótulo para mensagem de erro (ex: 'logo', 'fonte').
+
+    Raises:
+        HTTPException: Se o tipo não for detectável ou não corresponder.
+    """
+    kind = filetype.guess(file_bytes[:261])
+    if kind is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Não foi possível detectar o tipo do arquivo de {file_label}. "
+            "Verifique se o arquivo não está corrompido.",
+        )
+    if kind.mime not in allowed_mimes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Tipo de arquivo de {file_label} não corresponde ao conteúdo. "
+            f"Esperado: {', '.join(allowed_mimes)}. Detectado: {kind.mime}",
+        )
 
 
 def _get_theme_service(db: Session = Depends(get_db)) -> ThemeService:
@@ -341,7 +370,7 @@ def get_theme_history(
         413: {"model": ErrorResponse, "description": "Arquivo muito grande"},
     },
 )
-def upload_font(
+async def upload_font(
     file: UploadFile = File(...),
     current_user=Depends(require_role("admin")),
 ) -> dict:
@@ -356,17 +385,23 @@ def upload_font(
             detail=f"Tipo de arquivo não permitido. Extensões permitidas: {', '.join(allowed_exts)}",
         )
 
+    # Read file content for magic bytes validation
+    content = await file.read()
+
     # Validate file size (max 5MB)
     max_size = 5 * 1024 * 1024  # 5MB
-    file.file.seek(0, 2)
-    file_size = file.file.tell()
-    file.file.seek(0)
-
-    if file_size > max_size:
+    if len(content) > max_size:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             detail=f"Arquivo muito grande. Tamanho máximo: {max_size // (1024 * 1024)}MB",
         )
+
+    # Validate magic bytes
+    _validate_file_magic(
+        content,
+        {"font/sfnt", "font/woff", "font/woff2", "application/octet-stream"},
+        "fonte",
+    )
 
     import uuid
 
@@ -382,11 +417,11 @@ def upload_font(
     # Save file
     file_path = os.path.join(fonts_dir, unique_filename)
     with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        buffer.write(content)
 
     font_url = f"/uploads/fonts/{unique_filename}"
 
-    logger.info("Font uploaded", filename=unique_filename, size=file_size)
+    logger.info("Font uploaded", filename=unique_filename, size=len(content))
     return {"url": font_url}
 
 
@@ -401,7 +436,7 @@ def upload_font(
         413: {"model": ErrorResponse, "description": "Arquivo muito grande"},
     },
 )
-def upload_logo(
+async def upload_logo(
     theme_id: int,
     file: UploadFile = File(...),
     current_user=Depends(require_role("admin")),
@@ -410,7 +445,7 @@ def upload_logo(
     """Faz upload de um logo para o tema."""
     company_id = _require_company_id(current_user)
 
-    # Validate file type
+    # Validate file type (content_type check)
     allowed_types = ["image/jpeg", "image/png", "image/svg+xml", "image/gif"]
     if file.content_type not in allowed_types:
         raise HTTPException(
@@ -418,16 +453,23 @@ def upload_logo(
             detail=f"Tipo de arquivo não permitido. Tipos permitidos: {', '.join(allowed_types)}",
         )
 
+    # Read file content for magic bytes validation
+    content = await file.read()
+
     # Validate file size (max 5MB)
     max_size = 5 * 1024 * 1024  # 5MB
-    file.file.seek(0, 2)  # Seek to end
-    file_size = file.file.tell()
-    file.file.seek(0)  # Reset to beginning
-
-    if file_size > max_size:
+    if len(content) > max_size:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             detail=f"Arquivo muito grande. Tamanho máximo: {max_size // (1024 * 1024)}MB",
+        )
+
+    # SVG não suportado por magic bytes — validação por content_type
+    if file.content_type != "image/svg+xml":
+        _validate_file_magic(
+            content,
+            {"image/jpeg", "image/png", "image/gif", "image/webp"},
+            "logo",
         )
 
     # Verify theme belongs to company
@@ -461,7 +503,7 @@ def upload_logo(
     # Save file
     file_path = os.path.join(logos_dir, unique_filename)
     with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        buffer.write(content)
 
     # Construct URL
     logo_url = f"/uploads/logos/{unique_filename}"
@@ -472,6 +514,6 @@ def upload_logo(
     )
 
     logger.info(
-        "Logo uploaded", theme_id=theme_id, filename=unique_filename, size=file_size
+        "Logo uploaded", theme_id=theme_id, filename=unique_filename, size=len(content)
     )
     return updated_theme
