@@ -65,23 +65,23 @@ Quais fases cobrem quais requisitos. Atualizado durante criação do roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEC-01 | — | Pending |
-| SEC-02 | — | Pending |
-| SEC-03 | — | Pending |
-| SEC-04 | — | Pending |
-| SEC-05 | — | Pending |
-| INFRA-01 | — | Pending |
-| INFRA-02 | — | Pending |
-| INFRA-03 | — | Pending |
-| PERF-01 | — | Pending |
-| PERF-02 | — | Pending |
-| PERF-03 | — | Pending |
+| SEC-01 | Phase 1: Security Hardening | Pending |
+| SEC-02 | Phase 1: Security Hardening | Pending |
+| SEC-03 | Phase 1: Security Hardening | Pending |
+| SEC-04 | Phase 1: Security Hardening | Pending |
+| SEC-05 | Phase 1: Security Hardening | Pending |
+| INFRA-01 | Phase 2: Infrastructure & Quality | Pending |
+| INFRA-02 | Phase 2: Infrastructure & Quality | Pending |
+| INFRA-03 | Phase 2: Infrastructure & Quality | Pending |
+| PERF-01 | Phase 3: Performance & Resilience | Pending |
+| PERF-02 | Phase 3: Performance & Resilience | Pending |
+| PERF-03 | Phase 3: Performance & Resilience | Pending |
 
 **Coverage:**
 - v1 requirements: 11 total
-- Mapped to phases: 0
-- Unmapped: 11 ⚠️
+- Mapped to phases: 11
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-06-02*
-*Last updated: 2026-06-02 after initial definition*
+*Last updated: 2026-06-02 after roadmap creation*
