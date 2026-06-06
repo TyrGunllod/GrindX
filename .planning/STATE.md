@@ -4,9 +4,9 @@ status: executing
 progress:
   total_phases: 3
   completed_phases: 0
-  total_plans: 9
-  completed_plans: 6
-  percent: 67
+  total_plans: 10
+  completed_plans: 7
+  percent: 70
 ---
 
 # Project State
@@ -16,16 +16,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-02)
 
 **Core value:** Eliminar todos os problemas técnicos identificados para que o GrindX seja seguro, performante e maintível — zero pendências no CONCERNS.md
-**Current focus:** Phase 2 — Infrastructure & Quality (executed, pending verification)
+**Current focus:** Phase 1 — Gap closure complete, ready for Phase 2
 
 ## Current Position
 
-Phase: 2 of 3 (Infrastructure & Quality)
-Plan: 3 of 3 in current phase
-Status: All waves complete, all tests pass
-Last activity: 2026-06-02 — Phase 2 executed (3 plans, 76% coverage)
+Phase: 1 of 3 (Security Hardening)
+Plan: 4 of 4 in current phase (including gap closure)
+Status: Gap closure complete, all tests pass
+Last activity: 2026-06-06 — Phase 1 gap closure (fail-closed temp password expiry)
 
-Progress: [██████░░░░] 67%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
