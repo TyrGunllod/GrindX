@@ -34,6 +34,7 @@ Plans:
 - [x] 01-01-PLAN.md — Config hardening: SECRET_KEY entropy validation + CORS strict production mode
 - [x] 01-02-PLAN.md — Rate limiting: SlowAPI with dual keys (IP + user_id) for both APIs
 - [x] 01-03-PLAN.md — Auth security + upload validation: temp password expiry + filetype magic bytes
+- [ ] 01-04-PLAN.md — Gap closure: fix fail-open temp password expiry (expires_at=None bypass)
 
 ### Phase 2: Infrastructure & Quality
 **Goal**: Test coverage is measurable, migrations are clean, and test infrastructure accurately reflects production schemas
