@@ -1,0 +1,95 @@
+---
+status: complete
+phase: 01-security-hardening
+source: 01-01-SUMMARY.md, 01-02-SUMMARY.md, 01-03-SUMMARY.md
+started: 2026-06-02T23:30:00Z
+updated: 2026-06-06T19:30:00Z
+---
+
+## Current Test
+
+[testing complete]
+
+## Tests
+
+### 1. SECRET_KEY rejects low-entropy keys
+expected: App fails to start if SECRET_KEY has low Shannon entropy (e.g., "aaaa..."). Error message mentions "entropia muito baixa" and suggests generating a new key.
+result: pass
+
+### 2. SECRET_KEY accepts high-entropy keys
+expected: App starts normally with a random key like `secrets.token_hex(32)` (entropy ~3.9 bits/char).
+result: pass
+
+### 3. CORS rejects wildcard in production
+expected: With ENVIRONMENT=production and CORS_ORIGINS="*", app fails to start with error mentioning "não pode ser '*'".
+result: pass
+
+### 4. CORS requires explicit origins in production
+expected: With ENVIRONMENT=production and CORS_ORIGINS="", app fails to start with error mentioning "obrigatório em produção".
+result: pass
+
+### 5. Rate limiter blocks by IP
+expected: Sending more than RATE_LIMIT_REQUESTS requests to an unauthenticated endpoint (e.g., /health) returns HTTP 429 with "RATE_LIMIT_EXCEDIDO" message and Retry-After header.
+result: issue
+reported: "no"
+severity: major
+
+### 6. Rate limiter blocks by user_id
+expected: Authenticated user making more than RATE_LIMIT_REQUESTS requests gets HTTP 429. Two different users from same IP get independent limits.
+result: issue
+reported: "coluna usuarios.temp_password_hash não existe — migration not applied to production DB"
+severity: major
+
+### 7. Temp password is 16 alphanumeric chars
+expected: Calling forgot_password returns a password matching pattern `^[A-Za-z0-9]{16}$`.
+result: blocked
+blocked_by: third-party
+reason: "API returns 503 — email service not running. Temp password generation works (log shows 'senha_temporaria_gerada') but endpoint fails on email delivery."
+
+### 8. Temp password expires after 15 minutes
+expected: Login with temp password after 15 minutes returns error "Senha temporária expirada".
+result: skipped
+reason: "Blocked by Test 7 — email service required for temp password generation"
+
+### 9. File upload rejects mismatched magic bytes
+expected: Uploading a .txt file renamed to .png returns HTTP 400 with message about file type mismatch.
+result: pass
+
+### 10. File upload accepts valid files
+expected: Uploading a real PNG image or TTF font file succeeds without error.
+result: pass
+
+## Summary
+
+total: 10
+passed: 6
+issues: 2
+pending: 0
+skipped: 1
+blocked: 1
+
+## Gaps
+
+- truth: "Sending more than RATE_LIMIT_REQUESTS requests to an unauthenticated endpoint returns HTTP 429"
+  status: failed
+  reason: "User reported: no"
+  severity: major
+  test: 5
+  artifacts: []
+  missing: []
+
+- truth: "Authenticated user making more than RATE_LIMIT_REQUESTS requests gets HTTP 429"
+  status: failed
+  reason: "User reported: coluna usuarios.temp_password_hash não existe — migration not applied to production DB"
+  severity: major
+  test: 6
+  artifacts: []
+  missing: []
+
+- truth: "Alembic migrations run cleanly on production database"
+  status: failed
+  reason: "User reported: DuplicateTable: relação 'usuarios' já existe — database has tables but Alembic not stamped"
+  severity: blocker
+  test: 7
+  artifacts: []
+  missing: []
