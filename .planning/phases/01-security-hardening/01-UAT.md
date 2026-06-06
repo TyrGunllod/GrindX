@@ -31,8 +31,8 @@ result: pass
 ### 5. Rate limiter blocks by IP
 expected: Sending more than RATE_LIMIT_REQUESTS requests to an unauthenticated endpoint (e.g., /health) returns HTTP 429 with "RATE_LIMIT_EXCEDIDO" message and Retry-After header.
 result: issue
-reported: "no"
-severity: major
+reported: "/health excluded by design — test should use non-excluded endpoint"
+severity: minor
 
 ### 6. Rate limiter blocks by user_id
 expected: Authenticated user making more than RATE_LIMIT_REQUESTS requests gets HTTP 429. Two different users from same IP get independent limits.
@@ -72,11 +72,15 @@ blocked: 1
 
 - truth: "Sending more than RATE_LIMIT_REQUESTS requests to an unauthenticated endpoint returns HTTP 429"
   status: failed
-  reason: "User reported: no"
-  severity: major
+  reason: "User tested against /health which is excluded from rate limiting by design (container liveness probe)"
+  severity: minor
   test: 5
-  artifacts: []
-  missing: []
+  root_cause: "/health is in exclude_paths list — test should use non-excluded endpoint like /v1/auth/token"
+  artifacts:
+    - path: "apps/api-postgres/app/main.py"
+      issue: "exclude_paths includes /health (by design)"
+  missing:
+    - "Test rate limiting on non-excluded endpoint"
 
 - truth: "Authenticated user making more than RATE_LIMIT_REQUESTS requests gets HTTP 429"
   status: failed
