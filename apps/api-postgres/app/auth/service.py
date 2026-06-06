@@ -68,20 +68,30 @@ class AuthService:
             if password_ok:
                 # Check if temp password has expired
                 expires_at = usuario.expires_at
-                if expires_at is not None:
-                    # Handle SQLite naive datetimes
-                    if expires_at.tzinfo is None:
-                        expires_at = expires_at.replace(tzinfo=timezone.utc)
 
-                    if expires_at < datetime.now(timezone.utc):
-                        # Clear expired temp fields
-                        self.usuario_repo.atualizar(
-                            usuario,
-                            {"temp_password_hash": None, "expires_at": None},
-                        )
-                        raise CredenciaisInvalidasError(
-                            "Senha temporária expirada. Solicite uma nova."
-                        )
+                # Fail-closed: if temp password exists but no expiry, reject
+                if expires_at is None:
+                    self.usuario_repo.atualizar(
+                        usuario,
+                        {"temp_password_hash": None, "expires_at": None},
+                    )
+                    raise CredenciaisInvalidasError(
+                        "Senha temporária expirada. Solicite uma nova."
+                    )
+
+                # Handle SQLite naive datetimes
+                if expires_at.tzinfo is None:
+                    expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+                if expires_at < datetime.now(timezone.utc):
+                    # Clear expired temp fields
+                    self.usuario_repo.atualizar(
+                        usuario,
+                        {"temp_password_hash": None, "expires_at": None},
+                    )
+                    raise CredenciaisInvalidasError(
+                        "Senha temporária expirada. Solicite uma nova."
+                    )
 
                 # Valid temp password - clear temp fields and update main password
                 usuario.senha_hash = gerar_hash_senha(password)
@@ -222,18 +232,26 @@ class AuthService:
 
         # Check if temp password has expired
         expires_at = usuario.expires_at
-        if expires_at is not None:
-            # Handle SQLite naive datetimes
-            if expires_at.tzinfo is None:
-                expires_at = expires_at.replace(tzinfo=timezone.utc)
 
-            if expires_at < datetime.now(timezone.utc):
-                # Clear expired temp fields
-                self.usuario_repo.atualizar(
-                    usuario,
-                    {"temp_password_hash": None, "expires_at": None},
-                )
-                raise CredenciaisInvalidasError("Senha temporária expirada")
+        # Fail-closed: if temp password exists but no expiry, reject
+        if expires_at is None:
+            self.usuario_repo.atualizar(
+                usuario,
+                {"temp_password_hash": None, "expires_at": None},
+            )
+            raise CredenciaisInvalidasError("Senha temporária expirada")
+
+        # Handle SQLite naive datetimes
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+        if expires_at < datetime.now(timezone.utc):
+            # Clear expired temp fields
+            self.usuario_repo.atualizar(
+                usuario,
+                {"temp_password_hash": None, "expires_at": None},
+            )
+            raise CredenciaisInvalidasError("Senha temporária expirada")
 
         # Verify temp password
         if not usuario.temp_password_hash or not verificar_senha(
