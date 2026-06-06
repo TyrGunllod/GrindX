@@ -130,6 +130,32 @@ class TestTempPasswordExpiry:
         assert usuario.temp_password_hash is None
         assert usuario.expires_at is None
 
+    def test_temp_password_rejected_when_expires_at_is_none(self, db_session):
+        """Senha temporária sem expiração deve ser rejeitada no login (fail-closed)."""
+        # Create user with temp password but no expiry
+        usuario = Usuario(
+            username="testuser",
+            email="test@example.com",
+            nome_completo="Test User",
+            senha_hash=gerar_hash_senha("oldpassword"),
+            role="leitura",
+        )
+        db_session.add(usuario)
+        db_session.commit()
+
+        # Set temp password manually WITHOUT setting expires_at (None)
+        temp_password = "TempPass12345678"
+        usuario.temp_password_hash = gerar_hash_senha(temp_password)
+        # expires_at is left as None (fail-closed must reject)
+        db_session.commit()
+
+        # Attempt login with temp password — should be rejected
+        service = AuthService(db_session)
+        with pytest.raises(CredenciaisInvalidasError) as exc_info:
+            service.autenticar("testuser", temp_password)
+
+        assert "expirada" in str(exc_info.value).lower()
+
 
 class TestApplyTempPassword:
     """Testa aplicação de senha temporária."""
@@ -161,6 +187,32 @@ class TestApplyTempPassword:
 
         # Verify new password works
         assert verificar_senha(temp_password, usuario.senha_hash)
+
+    def test_apply_temp_password_rejected_when_expires_at_is_none(self, db_session):
+        """Aplicar senha temporária sem expiração deve ser rejeitado (fail-closed)."""
+        # Create user with temp password but no expiry
+        usuario = Usuario(
+            username="testuser",
+            email="test@example.com",
+            nome_completo="Test User",
+            senha_hash=gerar_hash_senha("oldpassword"),
+            role="leitura",
+        )
+        db_session.add(usuario)
+        db_session.commit()
+
+        # Set temp password manually WITHOUT setting expires_at (None)
+        temp_password = "TempPass12345678"
+        usuario.temp_password_hash = gerar_hash_senha(temp_password)
+        # expires_at is left as None (fail-closed must reject)
+        db_session.commit()
+
+        # Attempt to apply temp password — should be rejected
+        service = AuthService(db_session)
+        with pytest.raises(CredenciaisInvalidasError) as exc_info:
+            service.apply_temp_password("testuser", temp_password)
+
+        assert "expirada" in str(exc_info.value).lower()
 
     def test_apply_expired_temp_password_rejected(self, db_session):
         """Senha temporária expirada deve ser rejeitada ao aplicar."""
