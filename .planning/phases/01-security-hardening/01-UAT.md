@@ -1,9 +1,9 @@
 ---
-status: complete
+status: diagnosed
 phase: 01-security-hardening
 source: 01-01-SUMMARY.md, 01-02-SUMMARY.md, 01-03-SUMMARY.md
 started: 2026-06-02T23:30:00Z
-updated: 2026-06-06T19:30:00Z
+updated: 2026-06-06T19:55:00Z
 ---
 
 ## Current Test
@@ -42,14 +42,13 @@ severity: major
 
 ### 7. Temp password is 16 alphanumeric chars
 expected: Calling forgot_password returns a password matching pattern `^[A-Za-z0-9]{16}$`.
-result: blocked
-blocked_by: third-party
-reason: "API returns 503 — email service not running. Temp password generation works (log shows 'senha_temporaria_gerada') but endpoint fails on email delivery."
+result: pass
 
 ### 8. Temp password expires after 15 minutes
 expected: Login with temp password after 15 minutes returns error "Senha temporária expirada".
-result: skipped
-reason: "Blocked by Test 7 — email service required for temp password generation"
+result: issue
+reported: "nao rejeitou na senha mesmo apos 27 minutos"
+severity: major
 
 ### 9. File upload rejects mismatched magic bytes
 expected: Uploading a .txt file renamed to .png returns HTTP 400 with message about file type mismatch.
@@ -62,11 +61,11 @@ result: pass
 ## Summary
 
 total: 10
-passed: 6
+passed: 7
 issues: 2
 pending: 0
-skipped: 1
-blocked: 1
+skipped: 0
+blocked: 0
 
 ## Gaps
 
@@ -97,3 +96,18 @@ blocked: 1
   test: 7
   artifacts: []
   missing: []
+
+- truth: "Temp password expires after 15 minutes"
+  status: failed
+  reason: "User reported: nao rejeitou na senha mesmo apos 27 minutos"
+  severity: major
+  test: 8
+  root_cause: "Fail-open design in autenticar() — if expires_at is None (column added manually without migration), temp password is accepted without expiry check. Guard 'if expires_at is not None' skips entire expiry block when expires_at is None."
+  artifacts:
+    - path: "apps/api-postgres/app/auth/service.py"
+      issue: "Line 71: fail-open guard 'if expires_at is not None' skips expiry check when expires_at is None"
+    - path: "apps/api-postgres/app/modules/iam/models/usuario.py"
+      issue: "nullable=True allows None values for expires_at"
+  missing:
+    - "Change logic to fail-closed: reject temp password if expires_at is None"
+    - "Apply Alembic migration to ensure column has correct type"
