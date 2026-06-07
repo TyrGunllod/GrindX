@@ -7,6 +7,7 @@ Operações de persistência para temas/skins de empresas.
 from shared.exceptions.base import ConflictError
 from sqlalchemy.orm import Session
 
+from app.core.cache import _theme_cache, _theme_lock, get_or_set, invalidate
 from app.models.theme import CompanyTheme
 
 
@@ -17,12 +18,16 @@ class ThemeRepository:
         self.db = db
 
     def find_active_by_company_id(self, company_id: int) -> CompanyTheme | None:
-        """Busca o tema ativo de uma empresa."""
-        return (
-            self.db.query(CompanyTheme)
-            .filter(CompanyTheme.company_id == company_id, CompanyTheme.is_active)
-            .first()
-        )
+        """Busca o tema ativo de uma empresa (com cache)."""
+
+        def _fetch():
+            return (
+                self.db.query(CompanyTheme)
+                .filter(CompanyTheme.company_id == company_id, CompanyTheme.is_active)
+                .first()
+            )
+
+        return get_or_set(_theme_cache, _theme_lock, f"active:{company_id}", _fetch)
 
     def find_all_by_company_id(self, company_id: int) -> list[CompanyTheme]:
         """Busca todos os temas de uma empresa."""
@@ -66,6 +71,9 @@ class ThemeRepository:
         theme.is_active = True
         self.db.commit()
         self.db.refresh(theme)
+
+        # Invalida cache do tema ativo desta empresa
+        invalidate(_theme_cache, _theme_lock, f"active:{company_id}")
         return theme
 
     def delete(self, theme_id: int) -> None:

@@ -8,6 +8,7 @@ from shared.schemas.auth import TokenPayload
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user, require_role
+from app.core.cache import _portal_cache, _portal_lock, get_or_set, invalidate
 from app.database import get_db
 from app.models.portal import Aba, Modulo
 from app.models.usuario import UsuarioModulo
@@ -53,7 +54,11 @@ def obter_menu_dinamico(
     db: Session = Depends(get_db),
     current_user: TokenPayload = Depends(get_current_user),
 ):
-    abas = db.query(Aba).filter(Aba.ativo).order_by(Aba.ordem).all()
+    # Cache apenas a query base de abas ativas (antes do filtro por role)
+    def _fetch_abas():
+        return db.query(Aba).filter(Aba.ativo).order_by(Aba.ordem).all()
+
+    abas = get_or_set(_portal_cache, _portal_lock, "abas:active", _fetch_abas)
 
     if current_user.role != "admin":
         accessible_ids = {
@@ -130,6 +135,9 @@ def criar_aba(
     db.add(nova_aba)
     db.commit()
     db.refresh(nova_aba)
+
+    # Invalida cache de abas ativas
+    invalidate(_portal_cache, _portal_lock, "abas:active")
     return nova_aba
 
 
@@ -160,6 +168,9 @@ def atualizar_aba(
     aba.parent_id = parent_id
     db.commit()
     db.refresh(aba)
+
+    # Invalida cache de abas ativas
+    invalidate(_portal_cache, _portal_lock, "abas:active")
     return aba
 
 
@@ -172,6 +183,9 @@ def deletar_aba(
         raise HTTPException(404, "Aba não encontrada")
     db.delete(aba)
     db.commit()
+
+    # Invalida cache de abas ativas
+    invalidate(_portal_cache, _portal_lock, "abas:active")
     return None
 
 

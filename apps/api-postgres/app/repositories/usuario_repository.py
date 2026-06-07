@@ -8,6 +8,7 @@ Nenhuma regra de negócio deve existir nesta camada.
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.core.cache import _user_cache, _user_lock, get_or_set, invalidate
 from app.models.usuario import Usuario
 
 
@@ -18,7 +19,7 @@ class UsuarioRepository:
         self.db = db
 
     def buscar_por_id(self, usuario_id: int) -> Usuario | None:
-        """Busca um usuário pelo ID.
+        """Busca um usuário pelo ID (com cache).
 
         Args:
             usuario_id: ID do usuário.
@@ -26,11 +27,15 @@ class UsuarioRepository:
         Returns:
             Usuario encontrado ou None.
         """
-        stmt = select(Usuario).where(Usuario.id == usuario_id)
-        return self.db.execute(stmt).scalar_one_or_none()
+
+        def _fetch():
+            stmt = select(Usuario).where(Usuario.id == usuario_id)
+            return self.db.execute(stmt).scalar_one_or_none()
+
+        return get_or_set(_user_cache, _user_lock, f"id:{usuario_id}", _fetch)
 
     def buscar_por_username(self, username: str) -> Usuario | None:
-        """Busca um usuário pelo username (único).
+        """Busca um usuário pelo username (único, com cache).
 
         Args:
             username: Nome de usuário.
@@ -38,8 +43,12 @@ class UsuarioRepository:
         Returns:
             Usuario encontrado ou None.
         """
-        stmt = select(Usuario).where(Usuario.username == username)
-        return self.db.execute(stmt).scalar_one_or_none()
+
+        def _fetch():
+            stmt = select(Usuario).where(Usuario.username == username)
+            return self.db.execute(stmt).scalar_one_or_none()
+
+        return get_or_set(_user_cache, _user_lock, f"username:{username}", _fetch)
 
     def buscar_por_email(self, email: str) -> Usuario | None:
         """Busca um usuário pelo email (único).
@@ -167,6 +176,10 @@ class UsuarioRepository:
                 setattr(usuario, campo, valor)
         self.db.commit()
         self.db.refresh(usuario)
+
+        # Invalida cache do usuário atualizado
+        invalidate(_user_cache, _user_lock, f"id:{usuario.id}")
+        invalidate(_user_cache, _user_lock, f"username:{usuario.username}")
         return usuario
 
     def desativar(self, usuario: Usuario) -> Usuario:
@@ -181,6 +194,10 @@ class UsuarioRepository:
         usuario.ativo = False
         self.db.commit()
         self.db.refresh(usuario)
+
+        # Invalida cache do usuário desativado
+        invalidate(_user_cache, _user_lock, f"id:{usuario.id}")
+        invalidate(_user_cache, _user_lock, f"username:{usuario.username}")
         return usuario
 
     def deletar(self, usuario: Usuario) -> None:
@@ -191,5 +208,8 @@ class UsuarioRepository:
         Args:
             usuario: Instância do usuário a ser deletado.
         """
+        # Invalida cache antes de deletar
+        invalidate(_user_cache, _user_lock, f"id:{usuario.id}")
+        invalidate(_user_cache, _user_lock, f"username:{usuario.username}")
         self.db.delete(usuario)
         self.db.commit()

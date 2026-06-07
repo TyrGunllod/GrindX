@@ -181,3 +181,123 @@ class TestCacheRepositoryIntegration:
         assert result1 == mock_user
         assert result2 == mock_user
         fetch_fn.assert_called_once()
+
+    def test_theme_repository_caches_active(self):
+        """ThemeRepository.find_active_by_company_id deve cachear resultado."""
+        clear_all()
+
+        mock_db = MagicMock()
+        mock_theme = MagicMock()
+        mock_query = MagicMock()
+        mock_query.filter.return_value.first.return_value = mock_theme
+        mock_db.query.return_value = mock_query
+
+        from app.repositories.theme_repository import ThemeRepository
+
+        repo = ThemeRepository(mock_db)
+
+        # Primeira chamada — query no banco
+        result1 = repo.find_active_by_company_id(42)
+        # Segunda chamada — deve vir do cache
+        result2 = repo.find_active_by_company_id(42)
+
+        assert result1 == mock_theme
+        assert result2 == mock_theme
+        mock_db.query.assert_called_once()  # query executada apenas uma vez
+
+    def test_usuario_repository_caches_by_id(self):
+        """UsuarioRepository.buscar_por_id deve cachear resultado."""
+        clear_all()
+
+        mock_db = MagicMock()
+        mock_user = MagicMock()
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none.return_value = mock_user
+        mock_db.execute.return_value = mock_result
+
+        from app.repositories.usuario_repository import UsuarioRepository
+
+        repo = UsuarioRepository(mock_db)
+
+        # Primeira chamada — query no banco
+        result1 = repo.buscar_por_id(1)
+        # Segunda chamada — deve vir do cache
+        result2 = repo.buscar_por_id(1)
+
+        assert result1 == mock_user
+        assert result2 == mock_user
+        mock_db.execute.assert_called_once()  # query executada apenas uma vez
+
+    def test_usuario_repository_caches_by_username(self):
+        """UsuarioRepository.buscar_por_username deve cachear resultado."""
+        clear_all()
+
+        mock_db = MagicMock()
+        mock_user = MagicMock()
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none.return_value = mock_user
+        mock_db.execute.return_value = mock_result
+
+        from app.repositories.usuario_repository import UsuarioRepository
+
+        repo = UsuarioRepository(mock_db)
+
+        # Primeira chamada — query no banco
+        result1 = repo.buscar_por_username("admin")
+        # Segunda chamada — deve vir do cache
+        result2 = repo.buscar_por_username("admin")
+
+        assert result1 == mock_user
+        assert result2 == mock_user
+        mock_db.execute.assert_called_once()  # query executada apenas uma vez
+
+    def test_theme_cache_invalidated_on_activate(self):
+        """Cache de tema deve ser invalidado após activate_theme."""
+        clear_all()
+
+        # Popula o cache
+        mock_theme = MagicMock()
+        mock_theme.id = 1
+        mock_theme.company_id = 42
+        get_or_set(_theme_cache, _theme_lock, "active:42", lambda: mock_theme)
+        assert len(_theme_cache) == 1
+
+        # Simula activate_theme com mock db
+        mock_db = MagicMock()
+        mock_db.query.return_value.filter.return_value.update.return_value = None
+        mock_activated = MagicMock()
+        mock_activated.id = 1
+        mock_activated.company_id = 42
+        mock_activated.is_active = True
+        mock_db.get.return_value = mock_activated
+
+        from app.repositories.theme_repository import ThemeRepository
+
+        repo = ThemeRepository(mock_db)
+        repo.activate_theme(1, 42)
+
+        # Cache deve ter sido invalidado
+        assert "active:42" not in _theme_cache
+
+    def test_usuario_cache_invalidated_on_update(self):
+        """Cache de usuário deve ser invalidado após atualização."""
+        clear_all()
+
+        # Popula o cache
+        mock_user = MagicMock()
+        mock_user.id = 1
+        mock_user.username = "admin"
+        get_or_set(_user_cache, _user_lock, "id:1", lambda: mock_user)
+        get_or_set(_user_cache, _user_lock, "username:admin", lambda: mock_user)
+        assert len(_user_cache) == 2
+
+        # Simula atualização com mock db
+        mock_db = MagicMock()
+        from app.repositories.usuario_repository import UsuarioRepository
+
+        repo = UsuarioRepository(mock_db)
+        repo.atualizar(mock_user, {"nome_completo": "Novo Nome"})
+
+        # Ambas as chaves devem ter sido invalidadas
+        assert "id:1" not in _user_cache
+        assert "username:admin" not in _user_cache

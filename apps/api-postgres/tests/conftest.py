@@ -23,6 +23,16 @@ from app.database import get_db  # noqa: E402
 from app.main import app  # noqa: E402
 from app.modules.iam.base import IamBase  # noqa: E402
 
+
+@pytest.fixture(autouse=True)
+def _clear_cache():
+    """Limpa caches entre testes para evitar vazamento de estado."""
+    from app.core.cache import clear_all
+
+    clear_all()
+    yield
+    clear_all()
+
 _SCHEMA_TRANSLATE = {"iam": None, "portal": None, "catalogo": None, "org": None}
 
 # All bases share the same MetaData object
