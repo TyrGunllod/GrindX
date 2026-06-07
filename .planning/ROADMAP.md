@@ -59,12 +59,12 @@ Plans:
   1. Cached queries (active themes, company config) return from cache on second request within TTL — test validates cache hit rate and expiry behavior
   2. Database queries for common patterns (user lookup, theme listing) use indexes — Alembic migration creates composite/functional indexes and EXPLAIN shows index scan
   3. Health endpoint returns HTTP 200 with `{"status": "healthy"}` when DB is reachable, and HTTP 503 with `{"status": "degraded", "details": ...}` when DB is unreachable (test simulates both scenarios)
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [x] 03-01-PLAN.md — Caching layer: cachetools TTLCache for themes, users, portal (PERF-01)
+- [x] 03-02-PLAN.md — Database indexes: Alembic migration with composite B-tree indexes (PERF-02)
+- [x] 03-03-PLAN.md — Health checks: deep connectivity + schema validation for both APIs (PERF-03)
 
 ## Progress
 
@@ -73,6 +73,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Security Hardening | 3/3 | Executed | - |
+| 1. Security Hardening | 4/4 | Executed | - |
 | 2. Infrastructure & Quality | 3/3 | Executed | - |
-| 3. Performance & Resilience | 0/3 | Not started | - |
+| 3. Performance & Resilience | 3/3 | Executed | - |
