@@ -24,6 +24,9 @@ filetype>=1.2.0
 # === Logging ===
 structlog>=24.1.0
 
+# === Cache ===
+cachetools>=7.1.0
+
 # === Rate Limiting ===
 slowapi>=0.1.9
 
