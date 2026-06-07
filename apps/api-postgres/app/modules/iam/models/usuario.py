@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, func
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.modules.iam.base import IamBase
@@ -9,6 +9,13 @@ from app.modules.portal.models.portal import Modulo
 
 class Usuario(IamBase):
     __tablename__ = "usuarios"
+
+    __table_args__ = (
+        Index("ix_usuarios_role", "role"),
+        Index("ix_usuarios_ativo", "ativo"),
+        Index("ix_usuarios_empresa_id", "empresa_id"),
+        {"schema": "iam"},
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(

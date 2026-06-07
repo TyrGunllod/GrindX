@@ -8,6 +8,7 @@ from sqlalchemy import (
     Boolean,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     String,
     event,
@@ -37,6 +38,15 @@ def _deactivate_other_themes(session, flush_context, instances):
 
 class CompanyTheme(OrgBase):
     __tablename__ = "company_themes"
+
+    __table_args__ = (
+        Index(
+            "ix_company_themes_company_active",
+            "company_id",
+            "is_active",
+        ),
+        {"schema": "org"},
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     company_id: Mapped[int] = mapped_column(

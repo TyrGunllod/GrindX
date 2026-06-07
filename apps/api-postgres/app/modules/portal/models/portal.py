@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.modules.portal.base import PortalBase
@@ -21,6 +21,11 @@ class Aba(PortalBase):
 
 class Modulo(PortalBase):
     __tablename__ = "portal_modulos"
+
+    __table_args__ = (
+        Index("ix_portal_modulos_aba_id", "aba_id"),
+        {"schema": "portal"},
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     aba_id = Column(Integer, ForeignKey("portal.portal_abas.id"), nullable=False)
