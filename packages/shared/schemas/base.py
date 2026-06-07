@@ -54,14 +54,18 @@ class HealthCheckResponse(BaseModel):
         description="Versão do serviço",
         json_schema_extra={"examples": ["0.1.0"]},
     )
-    database: str = Field(
+    database: dict[str, Any] = Field(
         ...,
-        description="Status da conexão com o banco de dados",
-        json_schema_extra={"examples": ["connected"]},
+        description="Status detalhado da conexão com o banco de dados",
+        json_schema_extra={"examples": [{"postgres": "connected"}]},
     )
     timestamp: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         description="Timestamp da verificação",
+    )
+    details: dict[str, Any] | None = Field(
+        default=None,
+        description="Detalhes adicionais quando status é degraded",
     )
 
 
