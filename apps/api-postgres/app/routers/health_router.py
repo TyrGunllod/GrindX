@@ -38,12 +38,26 @@ def check_database_health(db: Session) -> dict[str, Any]:
         # Testa conectividade básica
         db.execute(text("SELECT 1"))
 
-        # Verifica se tabelas críticas existem
+        # Verifica se tabelas críticas existem (schema.table format)
         inspector = inspect(db.bind)
-        existing_tables = inspector.get_table_names()
-        missing_tables = [
-            t for t in _CRITICAL_TABLES if t not in existing_tables
-        ]
+        
+        # Mapeia tabelas críticas: schema -> [table_names]
+        critical_by_schema = {
+            "iam": ["usuarios"],
+            "org": ["company_themes", "empresas"],
+            "portal": ["portal_abas"],
+        }
+        
+        missing_tables = []
+        for schema, tables in critical_by_schema.items():
+            try:
+                existing_tables = inspector.get_table_names(schema=schema)
+                for table in tables:
+                    if table not in existing_tables:
+                        missing_tables.append(f"{schema}.{table}")
+            except Exception:
+                # Schema não existe ou inacessível
+                missing_tables.extend([f"{schema}.{t}" for t in tables])
 
         if missing_tables:
             logger.warning(
