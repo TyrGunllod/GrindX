@@ -23,7 +23,8 @@ logger = structlog.get_logger(__name__)
 router = APIRouter(tags=["Health"])
 
 # Tabelas críticas que devem existir para o funcionamento correto
-_CRITICAL_TABLES = ["usuarios", "company_themes", "portal_abas", "empresas"]
+# (schema.table_name format)
+_CRITICAL_TABLES = ["iam.usuarios", "org.company_themes", "portal.portal_abas", "org.empresas"]
 
 
 def check_database_health(db: Session) -> dict[str, Any]:
