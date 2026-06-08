@@ -15,8 +15,9 @@
    - Location: `apps/api-postgres/alembic/versions/`
 
 3. **SQLAlchemy model re-exports**
-   - ✗ NOT RESOLVED: `app/models/usuario.py` still re-exports from module
-   - Location: `apps/api-postgres/app/models/usuario.py:1`
+   - ✓ RESOLVED: Documented re-export pattern in Phase 4
+   - Note: Re-exports kept for backward compatibility, new code should import from modules
+   - Location: `apps/api-postgres/app/models/usuario.py`
 
 ### Medium Priority
 
@@ -30,9 +31,8 @@
    - Location: `apps/api-sqlserver/app/database.py`
 
 6. **Missing input sanitization in theme router**
-   - ⚠ PARTIALLY RESOLVED: File upload magic bytes validation added in Phase 1
-   - Still missing: Path traversal protection for template files
-   - Location: `apps/api-postgres/app/routers/theme_router.py:168`
+   - ✓ RESOLVED: Path traversal protection added in Phase 4
+   - Location: `apps/api-postgres/app/routers/theme_router.py`
 
 7. **Frontend has no build/bundle step**
    - ✗ NOT RESOLVED: Out of scope (frontend architecture decision)
@@ -93,8 +93,9 @@
    - Location: `apps/api-postgres/tests/unit/test_schema_validation.py`
 
 2. **PYTHONPATH dependency**
-   - ✗ NOT RESOLVED: Shared package still not installed via pip
-   - Location: `Makefile`, `AGENTS.md`
+   - ✓ RESOLVED: pyproject.toml created for shared package in Phase 4
+   - Note: Can now install via `pip install -e packages/shared`
+   - Location: `packages/shared/pyproject.toml`
 
 3. **Alembic migration ordering**
    - ✓ RESOLVED: Consolidated in Phase 2, single head at 006
@@ -115,8 +116,8 @@
    - Location: `apps/api-postgres/app/routers/health_router.py`
 
 3. **No structured error codes**
-   - ✗ NOT RESOLVED: Error codes still string-based
-   - Location: `packages/shared/exceptions/base.py`
+   - ✓ RESOLVED: ErrorCode registry created in Phase 4
+   - Location: `packages/shared/exceptions/codes.py`
 
 4. **No API documentation generation**
    - ✗ NOT RESOLVED: Swagger available but no export/SDK generation
@@ -139,13 +140,13 @@
 
 | Category | Resolved | Not Resolved | Deferred to V2 |
 |----------|----------|--------------|----------------|
-| Technical Debt | 2 | 2 | 0 |
+| Technical Debt | 2 | 1 | 0 |
 | Security | 5 | 0 | 1 |
 | Performance | 2 | 0 | 2 |
-| Fragile Areas | 2 | 2 | 0 |
-| Missing Features | 1 | 3 | 0 |
-| **Total** | **12** | **7** | **3** |
+| Fragile Areas | 3 | 1 | 0 |
+| Missing Features | 2 | 2 | 0 |
+| **Total** | **14** | **4** | **3** |
 
-**Progress:** 12/22 items resolved (55%)
+**Progress:** 14/21 items resolved (67%)
 **Out of Scope:** 3 items deferred to v2
-**Remaining:** 7 items not addressed in this remediation
+**Remaining:** 4 items not addressed in this remediation
