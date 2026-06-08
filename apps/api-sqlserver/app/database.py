@@ -23,6 +23,7 @@ if not _is_sqlite:
         pool_timeout=30,
         pool_recycle=1800,
         pool_pre_ping=True,
+        connect_args={"connect_timeout": 5},
     )
 else:
     _engine_kwargs["connect_args"] = {"check_same_thread": False}
