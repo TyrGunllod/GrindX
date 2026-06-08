@@ -1,9 +1,9 @@
 ---
-status: partial
+status: diagnosed
 phase: 03-performance-resilience
 source: 03-01-SUMMARY.md, 03-02-SUMMARY.md, 03-03-SUMMARY.md
 started: 2026-06-06T22:30:00Z
-updated: 2026-06-08T23:10:00Z
+updated: 2026-06-08T23:15:00Z
 ---
 
 ## Current Test
@@ -57,5 +57,10 @@ skipped: 0
   reason: "User reported: no, it lock on loading"
   severity: major
   test: 6
-  artifacts: []
-  missing: []
+  root_cause: "Missing connect_timeout in SQLAlchemy engine. psycopg default connect_timeout=0 means infinite wait on unreachable host."
+  artifacts:
+    - path: "apps/api-postgres/app/database.py"
+      issue: "Missing connect_args={'connect_timeout': 5} in _engine_kwargs"
+  missing:
+    - "Add connect_args={'connect_timeout': 5} to _engine_kwargs in database.py"
+  debug_session: ".planning/debug/health-check-hang.md"
