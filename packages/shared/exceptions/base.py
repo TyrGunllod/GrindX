@@ -19,6 +19,8 @@ Hierarquia:
     └── TokenExpiradoError
 """
 
+from shared.exceptions.codes import ErrorCode
+
 
 class AppException(Exception):
     """Exceção base para todas as exceções de domínio do ERP."""
@@ -61,7 +63,7 @@ class ConflictError(AppException):
 
     def __init__(self, message: str, details: dict | None = None) -> None:
         super().__init__(
-            error_code="CONFLITO",
+            error_code=ErrorCode.CONFLITO,
             message=message,
             status_code=409,
             details=details,
@@ -73,7 +75,7 @@ class BusinessValidationError(AppException):
 
     def __init__(self, message: str, details: dict | None = None) -> None:
         super().__init__(
-            error_code="VALIDACAO_NEGOCIO",
+            error_code=ErrorCode.VALIDACAO_NEGOCIO,
             message=message,
             status_code=422,
             details=details,
@@ -87,7 +89,7 @@ class DatabaseError(AppException):
         self, message: str = "Erro de comunicação com o banco de dados."
     ) -> None:
         super().__init__(
-            error_code="ERRO_BANCO_DADOS",
+            error_code=ErrorCode.ERRO_BANCO_DADOS,
             message=message,
             status_code=503,
         )
@@ -103,7 +105,7 @@ class UnauthorizedError(AppException):
 
     def __init__(self, message: str = "Credenciais inválidas.") -> None:
         super().__init__(
-            error_code="NAO_AUTORIZADO",
+            error_code=ErrorCode.NAO_AUTORIZADO,
             message=message,
             status_code=401,
         )
@@ -114,7 +116,7 @@ class ForbiddenError(AppException):
 
     def __init__(self, message: str = "Permissão insuficiente.") -> None:
         super().__init__(
-            error_code="ACESSO_NEGADO",
+            error_code=ErrorCode.ACESSO_NEGADO,
             message=message,
             status_code=403,
         )

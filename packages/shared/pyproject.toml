@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "grindx-shared"
+version = "1.0.0"
+description = "Pacote compartilhado do GrindX - security, schemas, exceptions"
+readme = "README.md"
+license = {text = "Proprietary"}
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.6.1",
+    "python-jose[cryptography]>=3.3.0",
+    "bcrypt>=4.1.2",
+    "fastapi>=0.110.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["shared*"]
+
+[tool.setuptools.package-dir]
+"" = "."

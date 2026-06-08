@@ -196,6 +196,13 @@ def create_theme_from_template(
     )
     template_path = os.path.join(templates_dir, f"{dados.template_slug}.json")
 
+    # Path traversal protection: ensure resolved path is within templates_dir
+    if not os.path.realpath(template_path).startswith(os.path.realpath(templates_dir)):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Template slug contém caracteres inválidos",
+        )
+
     if not os.path.exists(template_path):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
