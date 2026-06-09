@@ -24,7 +24,12 @@ router = APIRouter(tags=["Health"])
 
 # Tabelas críticas que devem existir para o funcionamento correto
 # (schema.table_name format)
-_CRITICAL_TABLES = ["iam.usuarios", "org.company_themes", "portal.portal_abas", "org.empresas"]
+_CRITICAL_TABLES = [
+    "iam.usuarios",
+    "org.company_themes",
+    "portal.portal_abas",
+    "org.empresas",
+]
 
 
 def check_database_health(db: Session) -> dict[str, Any]:
@@ -40,14 +45,14 @@ def check_database_health(db: Session) -> dict[str, Any]:
 
         # Verifica se tabelas críticas existem (schema.table format)
         inspector = inspect(db.bind)
-        
+
         # Mapeia tabelas críticas: schema -> [table_names]
         critical_by_schema = {
             "iam": ["usuarios"],
             "org": ["company_themes", "empresas"],
             "portal": ["portal_abas"],
         }
-        
+
         missing_tables = []
         for schema, tables in critical_by_schema.items():
             try:

@@ -140,8 +140,14 @@ class TestCacheBasic:
         get_or_set(_theme_cache, _theme_lock, "shared_key", lambda: "theme_val")
         get_or_set(_portal_cache, _portal_lock, "shared_key", lambda: "portal_val")
 
-        assert get_or_set(_theme_cache, _theme_lock, "shared_key", lambda: "x") == "theme_val"
-        assert get_or_set(_portal_cache, _portal_lock, "shared_key", lambda: "x") == "portal_val"
+        assert (
+            get_or_set(_theme_cache, _theme_lock, "shared_key", lambda: "x")
+            == "theme_val"
+        )
+        assert (
+            get_or_set(_portal_cache, _portal_lock, "shared_key", lambda: "x")
+            == "portal_val"
+        )
 
 
 @pytest.mark.unit

@@ -1,15 +1,29 @@
 """Exceções compartilhadas entre as APIs."""
 
-from shared.exceptions.codes import ErrorCode
 from shared.exceptions.base import (
     AppException,
-    NotFoundError,
-    ConflictError,
     BusinessValidationError,
-    DatabaseError,
-    UnauthorizedError,
-    ForbiddenError,
+    ConflictError,
     CredenciaisInvalidasError,
+    DatabaseError,
+    ForbiddenError,
+    NotFoundError,
     TokenExpiradoError,
     TokenInvalidoError,
+    UnauthorizedError,
 )
+from shared.exceptions.codes import ErrorCode
+
+__all__ = [
+    "AppException",
+    "BusinessValidationError",
+    "CredenciaisInvalidasError",
+    "ConflictError",
+    "DatabaseError",
+    "ErrorCode",
+    "ForbiddenError",
+    "NotFoundError",
+    "TokenExpiradoError",
+    "TokenInvalidoError",
+    "UnauthorizedError",
+]

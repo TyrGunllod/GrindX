@@ -16,12 +16,14 @@ Antes dos parâmetros do módulo, **sempre pergunte qual padrão de frontend e b
 
 **"Qual padrão de frontend e banco de dados você quer usar para este módulo?"**
 
-| Opção | Frontend | CSS | JS | Banco | Backend |
-|-------|----------|-----|----|-------|---------|
-| **(A) Padrão GrindX** (Recomendado) | HTML puro | CSS puro (`var(--...)`, Grid, Flex) | Vanilla JS (fetch, template strings, delegated events) | PostgreSQL (via SQLAlchemy + Alembic) | FastAPI + SQLAlchemy |
-| **(B) Outro padrão** | Especificar | Especificar | Especificar | Especificar | Especificar |
+| Opção | Frontend | CSS | JS | Banco | Backend | GrindX API |
+|-------|----------|-----|----|-------|---------|------------|
+| **(A) Padrão GrindX** (Recomendado) | HTML puro | CSS puro (`var(--...)`, Grid, Flex) | Vanilla JS (fetch, template strings, delegated events) | PostgreSQL (via SQLAlchemy + Alembic) | FastAPI + SQLAlchemy | `api-postgres` |
+| **(A2) GrindX + SQL Server** | HTML puro | CSS puro | Vanilla JS | SQL Server (via pyodbc, raw SQL) | FastAPI + SQLAlchemy | `api-sqlserver` |
+| **(B) Outro padrão** | Especificar | Especificar | Especificar | Especificar | Especificar | Especificar |
 
-- Se escolher **(A)**, siga os templates padrão desta skill (frontend: `index.html`, `script.js`, `style.css` sem dependências; backend: FastAPI + SQLAlchemy + PostgreSQL via Alembic).
+- Se escolher **(A)**, siga os templates padrão desta skill (frontend: `index.html`, `script.js`, `style.css` sem dependências; backend: FastAPI + SQLAlchemy + PostgreSQL via Alembic). Exporta para `api-postgres`.
+- Se escolher **(A2)**, segue o mesmo padrão frontend, mas usa SQL Server com raw SQL (sem ORM/Alembic). Exporta para `api-sqlserver`. Ideal para módulos que consultam ERP Protheus.
 - Se escolher **(B)**, pergunte detalhadamente qual frontend (React, Vue, etc.), qual CSS (Tailwind, styled-components, etc.), qual JS (TypeScript, jQuery, etc.) e qual banco (SQLite, MySQL, etc.). Anote as respostas e adapte os templates conforme necessário. **Documente o padrão escolhido no spec antes de implementar.**
 
 ## Parameter Questionnaire
@@ -39,10 +41,21 @@ Use `question` tool calls para perguntar. Pode perguntar múltiplos parâmetros 
 | 5 | `route_prefix` | "Prefixo da URL da API, começando com `/v1/` (ex: `/v1/recursos`)." | `/v1/recursos` | `/v1/{module_name}s` |
 | 6 | `route_api` | "Caminho da API sem a barra inicial (ex: `v1/recursos`). Usado nas chamadas REST do frontend." | `v1/recursos` | `{route_prefix}` sem `/` |
 | 7 | `route_tag` | "Tag de agrupamento no Swagger (ex: `\"Recursos\"`)." | `"Recursos"` | `"{entity_name}"` |
-| 8 | `frontend_path` | "Caminho onde os arquivos frontend serão criados no portal (ex: `modules/recursos`)." | `modules/recursos` | `modules/{module_name}` |
-| 9 | `menu_label` | "Rótulo que aparece no menu lateral do portal para este módulo." | `"Recursos"` | `{entity_name}` |
-| 10 | `header_title` | "Título que aparece no cabeçalho da página do módulo (ex: \"Gerenciamento de Recursos\")." | `"Gerenciamento de Recursos"` | `"Gerenciamento de {entity_name}"` |
-| 11 | `header_description` | "Subtítulo/descrição que aparece abaixo do título no cabeçalho." | `"Cadastro e controle de recursos do sistema."` | `"Módulo de {menu_label} do GrindX."` |
+| 8 | `frontend_prefix` | "Prefixo abreviado para os sub-módulos frontend (ex: `gp` para gestao_projetos → `gp_dashboard`, `gp_projeto`). Melhora legibilidade." | `gp` | Primeiras letras do module_name |
+| 9 | `frontend_tabs` | "Array de abas/tabs do frontend. Cada tab tem `name`, `url`, `menu_icone`, `order`. Ex: Dashboard, Projetos, Tarefas." | Ver exemplo abaixo | — |
+| 10 | `menu_label` | "Rótulo que aparece no menu lateral do portal para este módulo." | `"Gestão de Projetos"` | `{entity_name}` |
+
+**Exemplo de `frontend_tabs`:**
+```json
+{
+  "frontend_tabs": [
+    {"name": "Dashboard", "url": "modules/gp_dashboard/index.html", "menu_icone": "chart-bar", "order": 1},
+    {"name": "Projetos", "url": "modules/gp_projeto/index.html", "menu_icone": "folder", "order": 2}
+  ]
+}
+```
+
+**Nota sobre naming:** O `frontend_prefix` é usado para abreviar nomes de diretórios frontend. Exemplo: `gestao_projetos` → prefixo `gp` → `gp_dashboard`, `gp_projeto`, `gp_tarefas`.
 
 ## Directory Structure
 
@@ -74,16 +87,26 @@ Project_Management/modulo-{module_name}/        # Standalone root
 │   │   └── test_{module_name}_integration.py
 │   ├── export.py                               # Self-registration script
 │   └── README.md
-├── frontend/                                    # Vanilla JS frontend
-│   ├── index.html
-│   ├── script.js
-│   └── style.css                               # Skin-inheriting (var(--...))
+├── frontend/                                    # Vanilla JS frontend (sub-modules)
+│   ├── {frontend_prefix}_{tab1}/               # Ex: gp_dashboard/
+│   │   ├── index.html
+│   │   ├── script.js
+│   │   └── style.css
+│   ├── {frontend_prefix}_{tab2}/               # Ex: gp_projeto/
+│   │   ├── index.html
+│   │   ├── script.js
+│   │   └── style.css
+│   └── shared/                                  # CSS compartilhado (opcional)
+│       └── core.css
 ├── migration/
 │   └── {revision}_{table_name}.py              # Alembic migration
+├── Makefile                                    # Comandos: test, package, import, clean
 ├── requirements.txt                             # Dependencies
 ├── pytest.ini
 └── run_tests.{ps1|sh}                           # Test runner script
 ```
+
+**Nota sobre frontend:** Cada aba/taba do módulo tem seu próprio diretório com prefixo abreviado. Exemplo: módulo `gestao_projetos` com prefixo `gp` → `gp_dashboard/`, `gp_projeto/`, `gp_tarefas/`.
 
 ## Parameters Template (use in all code blocks)
 
@@ -99,8 +122,8 @@ Replace these placeholders:
 - `{route_tag}` — Swagger tag
 - `{menu_label}` — menu display name
 - `{route_api}` — API path
-- `{header_title}` — page header title
-- `{header_description}` — page header subtitle
+- `{frontend_prefix}` — prefixo abreviado para frontend (ex: gp)
+- `{frontend_tabs}` — array de abas do frontend
 
 ## 1. Backend — Criar Todos os Arquivos
 
@@ -313,20 +336,54 @@ def criar(self, dados: {entity_name}Create):
 
 ### 1.6 Router — `routers/{module_name}_router.py`
 
+**IMPORTANTE: Dual-context compatibility** — O router deve funcionar tanto standalone quanto importado no GrindX. Use try/except para detectar o contexto:
+
+```python
+# Detectar contexto: GrindX vs Standalone
+try:
+    from app.database import get_db
+    from app.auth.dependencies import get_current_user as _auth_dependency
+    _grindx_mode = True
+except ImportError:
+    from app.core.database_protheus import get_db_protheus as get_db
+    from app.core.auth import verify_api_key as _auth_dependency
+    _grindx_mode = False
+```
+
+- **GrindX**: usa `app.database.get_db` (SQLAlchemy session) + JWT auth (`get_current_user`)
+- **Standalone**: usa `app.core.database_protheus.get_db_protheus` + API key auth (`verify_api_key`)
+- Ambos são injetados via `Depends()` — o FastAPI resolve automaticamente
+
+**Template do router:**
+
 ```python
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 from shared.schemas.base import ErrorResponse, MessageResponse, PaginatedResponse
-from shared.security.permissions import Role
 
-from app.auth.dependencies import get_{module_name}_service, require_role
 from app.modules.{module_name}.schemas.{module_name} import {entity_name}Create, {entity_name}Response, {entity_name}Update
 from app.modules.{module_name}.services.{module_name}_service import {entity_name}Service
+from app.modules.{module_name}.repositories.{module_name}_repository import {entity_name}Repository
+
+try:
+    from app.database import get_db
+    from app.auth.dependencies import get_current_user as _auth_dependency
+    _grindx_mode = True
+except ImportError:
+    from app.core.database_protheus import get_db_protheus as get_db
+    from app.core.auth import verify_api_key as _auth_dependency
+    _grindx_mode = False
 
 router = APIRouter(prefix="{route_prefix}", tags=["{route_tag}"])
 
 
+def get_{module_name}_service(db: Session = Depends(get_db)) -> {entity_name}Service:
+    repository = {entity_name}Repository(db)
+    return {entity_name}Service(repository)
+
+
 @router.get("", response_model=PaginatedResponse[{entity_name}Response],
-    summary="Listar", dependencies=[Depends(require_role(Role.ADMIN, Role.OPERADOR, Role.LEITURA))])
+    summary="Listar", dependencies=[Depends(_auth_dependency)])
 def listar(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100),
     service: {entity_name}Service = Depends(get_{module_name}_service)):
     return service.listar(page, page_size)
@@ -334,28 +391,28 @@ def listar(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100),
 
 @router.get("/{{id}}", response_model={entity_name}Response,
     summary="Buscar por ID", responses={{404: {{"model": ErrorResponse}}}},
-    dependencies=[Depends(require_role(Role.ADMIN, Role.OPERADOR, Role.LEITURA))])
+    dependencies=[Depends(_auth_dependency)])
 def buscar(id: int, service: {entity_name}Service = Depends(get_{module_name}_service)):
     return service.buscar(id)
 
 
 @router.post("", response_model={entity_name}Response, status_code=201,
     summary="Criar", responses={{409: {{"model": ErrorResponse}}}},
-    dependencies=[Depends(require_role(Role.ADMIN, Role.OPERADOR))])
+    dependencies=[Depends(_auth_dependency)])
 def criar(dados: {entity_name}Create, service: {entity_name}Service = Depends(get_{module_name}_service)):
     return service.criar(dados)
 
 
 @router.put("/{{id}}", response_model={entity_name}Response,
     summary="Atualizar", responses={{404: {{"model": ErrorResponse}}}},
-    dependencies=[Depends(require_role(Role.ADMIN, Role.OPERADOR))])
+    dependencies=[Depends(_auth_dependency)])
 def atualizar(id: int, dados: {entity_name}Update, service: {entity_name}Service = Depends(get_{module_name}_service)):
     return service.atualizar(id, dados)
 
 
 @router.delete("/{{id}}", response_model=MessageResponse,
     summary="Desativar", responses={{404: {{"model": ErrorResponse}}}},
-    dependencies=[Depends(require_role(Role.ADMIN))])
+    dependencies=[Depends(_auth_dependency)])
 def desativar(id: int, service: {entity_name}Service = Depends(get_{module_name}_service)):
     service.desativar(id)
     return MessageResponse(message=f"{entity_name} {{id}} desativado com sucesso.")
@@ -395,6 +452,7 @@ Requer a variável de ambiente GRINDX_PACKAGES apontando para o diretório
 packages/ do projeto GrindX (ex: D:\\_Projetos\\GrindX\\packages).
 """
 
+import importlib.util
 import os
 import sys
 from pathlib import Path
@@ -408,10 +466,27 @@ GRINDX_PACKAGES = os.environ.get(
     "GRINDX_PACKAGES",
     str(Path(__file__).resolve().parent.parent.parent.parent.parent.parent.parent / "GrindX" / "packages"),
 )
-if GRINDX_PACKAGES not in sys.path:
-    sys.path.insert(0, GRINDX_PACKAGES)
+GRINDX_API = str(Path(GRINDX_PACKAGES).parent / "apps" / "api-postgres")
+LOCAL_MODULES = str(Path(__file__).resolve().parent.parent.parent)
 
-from app.modules.iam.base import IamBase
+for p in [GRINDX_PACKAGES, GRINDX_API, LOCAL_MODULES]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+import app  # noqa: E402
+import app.modules  # noqa: E402
+
+_local_pkg = Path(LOCAL_MODULES) / "{module_name}"
+_spec = importlib.util.spec_from_file_location(
+    "app.modules.{module_name}",
+    str(_local_pkg / "__init__.py"),
+    submodule_search_locations=[str(_local_pkg)],
+)
+_mod = importlib.util.module_from_spec(_spec)
+sys.modules["app.modules.{module_name}"] = _mod
+_spec.loader.exec_module(_mod)
+
+from app.modules.iam.base import IamBase  # noqa: E402
 
 _SCHEMA_TRANSLATE = {{"iam": None, "portal": None, "catalogo": None, "org": None}}
 _all_metadata = IamBase.metadata
@@ -451,6 +526,8 @@ def service(repository):
     from app.modules.{module_name}.services.{module_name}_service import {entity_name}Service
     return {entity_name}Service(repository)
 ```
+
+**NOTA:** O padrão `importlib.util` injeta o módulo local no namespace `app.modules.*` do GrindX, evitando conflito entre o pacote `app` local e o do GrindX.
 
 ### 2.2 `tests/test_{module_name}_unit.py`
 
@@ -575,6 +652,86 @@ class TestService:
 
 .page-container {{ padding: var(--space-6); }}
 .page-header {{ display: flex; flex-direction: column; align-items: flex-start; margin-bottom: var(--space-6); }}
+
+/* Buttons — padrão GrindX (core.css) */
+.btn {{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2) var(--space-4);
+    border-radius: 0.5rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    min-height: 44px;
+    gap: var(--space-2);
+}}
+.btn-primary {{ background: var(--primary); color: white; }}
+.btn-primary:hover {{ background: var(--primary-hover); transform: translateY(-1px); }}
+.btn-primary:focus {{ outline: 3px solid var(--focus-ring); outline-offset: 2px; }}
+.btn-secondary {{ background: var(--border-color); color: var(--text-main); }}
+.btn-secondary:hover {{ background: var(--text-muted); color: white; }}
+.btn-danger {{ background: var(--danger); color: white; }}
+.btn-danger:hover {{ filter: brightness(0.9); transform: translateY(-1px); }}
+.btn-outline {{ border: 1px solid var(--border-color); background: transparent; color: var(--text-main); }}
+.btn-outline:hover {{ background: var(--accent); }}
+.btn-sm {{ padding: var(--space-1) var(--space-2); min-height: 32px; font-size: 0.8rem; }}
+.btn:disabled {{ cursor: not-allowed; opacity: 0.65; transform: none; }}
+.btn-icon {{
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 0.25rem;
+}}
+.btn-icon:hover {{ color: var(--text-main); background: rgba(0,0,0,0.05); }}
+
+/* Modal — padrão GrindX skins (modal-overlay + modal-card) */
+.modal-overlay {{
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--space-4);
+}}
+.modal-card {{
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 600px;
+    border-radius: 0.5rem;
+    padding: var(--space-8);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+}}
+.modal-card--sm {{ max-width: 400px; }}
+.modal-header {{
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--space-2);
+}}
+.modal-header h2 {{ margin: 0; font-size: var(--font-size-xl); }}
+.modal-body {{ display: flex; flex-direction: column; gap: var(--space-4); }}
+.modal-footer {{
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+}}
+.hidden {{ display: none !important; }}
 ```
 
 **Regras de herança de skins:**
@@ -582,58 +739,40 @@ class TestService:
 - **Nunca** definir cores fixas, fontes ou breakpoints
 - Apenas regras de layout (grid, flex, widths, margins, padding)
 - Testar visualmente com pelo menos 2 skins antes de exportar
-
-### 3.1.1 Header Padrão (Obrigatório)
-
-Todo módulo GrindX **deve** usar este padrão de header no `index.html`. Copie diretamente, substituindo apenas `{titulo}`, `{descricao}` e os botões de ação.
-
-**Referência:** `Preview/preview.html` (linhas 12–22)
-
-```html
-<header class="page-header mb-8">
-    <div>
-        <h1>{titulo}</h1>
-        <p class="text-muted">{descricao}</p>
-    </div>
-    <div class="actions-group" style="margin-top: var(--space-4);">
-        <!-- Botões de ação do módulo aqui -->
-    </div>
-</header>
-```
-
-**Regras obrigatórias:**
-- `<header class="page-header mb-8">` — **sem** classes `flex`, `justify-between`, `items-center`
-- `<div class="actions-group" style="margin-top: var(--space-4);">` — **sempre** incluir o `style` com `margin-top: var(--space-4)`
-- O `<div>` interno agrupa título + subtítulo; o `<div class="actions-group">` agrupa botões
-- Botões usam classes `btn`, `btn-primary`, `btn-secondary`, etc. + ícones Font Awesome
-
-**Exemplo com botões:**
-```html
-<header class="page-header mb-8">
-    <div>
-        <h1>Gerenciamento de Recursos</h1>
-        <p class="text-muted">Cadastro e controle de recursos do sistema.</p>
-    </div>
-    <div class="actions-group" style="margin-top: var(--space-4);">
-        <button class="btn" id="btnRefresh" title="Recarregar">
-            <i class="fas fa-sync-alt"></i>
-        </button>
-        <button class="btn btn-primary" id="btnNovo">
-            <i class="fas fa-plus"></i> <span class="hide-mobile">Novo Recurso</span>
-        </button>
-    </div>
-</header>
-```
+- Botões e modais seguem o padrão canonical do `core.css` do GrindX
+- Modal usa `modal-overlay` + `modal-card` (NÃO `<dialog>` nativo)
 
 ### 3.2 `index.html` e `script.js` (Padrão GrindX — HTML puro + CSS puro + Vanilla JS)
 
 **`index.html`:**
 - HTML5 semântico, **zero dependências externas** (sem CDN, sem bibliotecas, sem frameworks)
-- Modais usando `<dialog>` nativo com `<form method="dialog">`
+- Modais usando `<div class="modal-overlay" style="display: none;">` + `<div class="modal-card">` com toggle via `style.display`
+- Atributos de acessibilidade: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`
+- Botão fechar com `btn-icon` e `&times;`
+- Footer com `modal-footer flex justify-end gap-2`
 - Templates de cards usando `<template>` ou template strings no JS
 - Atributos `data-*` para binding de eventos via delegated events
 - IDs únicos para binds, classes para estilização
-- Estrutura: `<div class="page-container">` → cabeçalho (usar padrão 3.1.1) + grid + empty state + modais
+- Estrutura: `<div class="page-container">` → cabeçalho + grid + empty state + modais
+
+**Estrutura padrão do modal:**
+```html
+<div class="modal-overlay" id="modal-id" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display: none;">
+  <div class="modal-card">
+    <header class="modal-header flex justify-between">
+      <h3 id="modal-title">Título</h3>
+      <button class="btn-icon" id="close-modal" aria-label="Fechar">&times;</button>
+    </header>
+    <form id="form-id" class="grid grid-md-2">
+      <!-- campos do formulário -->
+    </form>
+    <footer class="modal-footer flex justify-end gap-2">
+      <button type="button" class="btn" id="btn-cancel">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btn-save">Salvar</button>
+    </footer>
+  </div>
+</div>
+```
 
 **`script.js`:**
 - Vanilla JS puro, sem classes de framework, sem TypeScript
@@ -652,16 +791,16 @@ let editingId = null
 
 // API calls
 const api = {
-  async listar() { return fetch('/api/v1/...').then(r => r.json()) },
-  async criar(dados) { return fetch('/api/v1/...', { method: 'POST', body: JSON.stringify(dados), headers: {'Content-Type': 'application/json'} }).then(r => r.json()) },
-  async atualizar(id, dados) { return fetch(`/api/v1/.../${id}`, { method: 'PUT', body: JSON.stringify(dados), headers: {'Content-Type': 'application/json'} }).then(r => r.json()) },
-  async excluir(id) { return fetch(`/api/v1/.../${id}`, { method: 'DELETE' }).then(r => r.json()) },
+  async listar() { return fetch('/v1/...').then(r => r.json()) },
+  async criar(dados) { return fetch('/v1/...', { method: 'POST', body: JSON.stringify(dados), headers: {'Content-Type': 'application/json'} }).then(r => r.json()) },
+  async atualizar(id, dados) { return fetch(`/v1/.../${id}`, { method: 'PUT', body: JSON.stringify(dados), headers: {'Content-Type': 'application/json'} }).then(r => r.json()) },
+  async excluir(id) { return fetch(`/v1/.../${id}`, { method: 'DELETE' }).then(r => r.json()) },
 }
 
 // Render
 function renderizar() { /* template strings -> innerHTML */ }
-function abrirModal(item) { /* editingId = item?.id, preencher form, dialog.showModal() */ }
-function fecharModal() { /* dialog.close() */ }
+function abrirModal(item) { /* editingId = item?.id, preencher form, style.display = 'flex' */ }
+function fecharModal() { /* style.display = 'none' */ }
 
 // Handlers
 async function handleSubmit(e) { /* ... */ }
@@ -679,7 +818,65 @@ document.addEventListener('DOMContentLoaded', async () => {
 - NUNCA importar bibliotecas externas (React, Vue, jQuery, Axios, etc.)
 - NUNCA usar TypeScript no frontend (apenas JS puro com `// @ts-nocheck` se necessário)
 - Eventos de clique em ações (editar/excluir) usam `data-action` + `e.target.closest()` no container
-- Modais usam `<dialog>.showModal()` e `<dialog>.close()`
+- Modais usam `style.display = 'flex'` para abrir e `style.display = 'none'` para fechar
+- Modais devem ter `role="dialog"`, `aria-modal="true"`, `aria-labelledby`
+- Botão fechar deve ter `aria-label="Fechar"`
+
+**Dual-context auth (GrindX JWT vs Standalone API Key):**
+
+O frontend deve detectar se está rodando dentro do GrindX e usar o wrapper de API correto:
+
+```javascript
+// Detectar contexto (session existe via app.js, que é compartilhado)
+const _isGrindx = typeof window !== 'undefined' && window.grindx && window.grindx.session;
+
+// Helper: fetch com auth automática
+async function _fetch(url, options) {
+    const headers = {};
+    if (_isGrindx) {
+        const token = window.grindx.session.getToken();
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+    } else if (API_KEY) {
+        headers['X-API-Key'] = API_KEY;
+    }
+    const response = await fetch(url, { ...options, headers: { ...headers, ...options?.headers } });
+    return response.json();
+}
+
+// Helper: download de PDF/binário
+function downloadFromUrl(url, filename) {
+    if (_isGrindx) {
+        const token = window.grindx.session.getToken();
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        fetch(url, { headers })
+            .then(res => { if (!res.ok) throw new Error('Erro ao baixar'); return res.blob(); })
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl; a.download = filename;
+                document.body.appendChild(a); a.click();
+                setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(blobUrl); }, 1000);
+            });
+    } else {
+        const urlWithKey = API_KEY ? url + (url.includes('?') ? '&' : '?') + 'api_key=' + API_KEY : url;
+        const a = document.createElement('a');
+        a.href = urlWithKey; a.download = filename;
+        document.body.appendChild(a); a.click();
+        setTimeout(() => document.body.removeChild(a), 1000);
+    }
+}
+```
+
+**IMPORTANTE:** O módulo DEVE incluir `app.js` no `<head>` para ter acesso a `window.grindx.session`:
+```html
+<script src="../../shared/app.js"></script>
+<script src="script.js" defer></script>
+```
+
+- **GrindX**: `window.grindx.session.getToken()` retorna o JWT (via `localStorage.access_token`)
+- **Standalone**: usa `X-API-Key` header
+- Para PDFs standalone, usa `?api_key=` query param (pois downloads não suportam headers custom)
+- **NÃO usar `window.grindx.api`** — ele aponta para api-postgres (porta 8002), não api-sqlserver
 
 ## 4. Migration
 
@@ -750,6 +947,94 @@ fastapi>=0.110
 testpaths = app/modules/{module_name}/tests
 ```
 
+### `Makefile`
+
+Cross-platform Makefile (funciona no Linux, Mac e Windows com GnuMake):
+
+```makefile
+# ==========================================
+# Módulo {entity_name} — Standalone
+# ==========================================
+
+MODULE := {module_name}
+ENTITY := {entity_name}
+
+.PHONY: test test-unit test-integration package export dry-run clean help
+
+# ==========================================
+# Testes
+# ==========================================
+
+test:
+	@python -m pytest app/modules/$(MODULE)/tests/ -v --tb=short
+
+test-unit:
+	@python -m pytest app/modules/$(MODULE)/tests/ -v --tb=short -k "unit"
+
+test-integration:
+	@python -m pytest app/modules/$(MODULE)/tests/ -v --tb=short -k "integration"
+
+# ==========================================
+# Empacotamento & Exportação
+# ==========================================
+
+package:
+	@python -m app.modules.$(MODULE).export package
+	@echo.
+	@echo Zip gerado: dist/modulo-$(MODULE).zip
+	@echo Estrutura:
+	@python -c "import zipfile; [print('  ' + f) for f in zipfile.ZipFile('dist/modulo-$(MODULE).zip').namelist()[:10]]"
+	@python -c "import zipfile; n=len(zipfile.ZipFile('dist/modulo-$(MODULE).zip').namelist()); print(f'  ... ({n} arquivos total)')"
+
+dry-run:
+	@python -m app.modules.$(MODULE).export package --dry-run
+
+export:
+	@python -m app.modules.$(MODULE).export
+
+export-dry:
+	@python -m app.modules.$(MODULE).export --dry-run
+
+# ==========================================
+# Importação
+# ==========================================
+
+import: package
+	@echo.
+	@echo Copiando zip para import/ do GrindX...
+	@python -c "import shutil,os; os.makedirs('../GrindX/import',exist_ok=True); shutil.copy2('dist/modulo-$(MODULE).zip','../GrindX/import/'); print('Copiado para ../GrindX/import/modulo-$(MODULE).zip')"
+	@echo.
+	@echo Proximo passo: importar via API ou frontend
+	@echo   API:  curl -X POST -H "Authorization: Bearer ^<token^>" "http://localhost:8000/v1/import/$(MODULE)?force=true"
+	@echo   Frontend: Gestao -> Importar Modulos -> $(ENTITY) -> Importar
+
+# ==========================================
+# Utilitários
+# ==========================================
+
+clean:
+	@echo Limpando caches...
+	@if exist dist rmdir /s /q dist
+	@for /d /r . %%d in (__pycache__) do @if exist "%%d" rmdir /s /q "%%d"
+	@if exist .pytest_cache rmdir /s /q .pytest_cache
+	@echo Limpeza concluida
+
+help:
+	@echo.
+	@echo Modulo $(ENTITY) — Comandos disponibles:
+	@echo.
+	@echo   make test             Roda todos os testes
+	@echo   make test-unit        Roda apenas testes unitarios
+	@echo   make test-integration Roda apenas testes de integracao
+	@echo   make package          Gera o zip para importacao
+	@echo   make dry-run          Simula a geracao do zip
+	@echo   make export           Exporta direto para o GrindX (CLI)
+	@echo   make import           Gera zip + copia para import/ do GrindX
+	@echo   make clean            Limpa caches e __pycache__
+	@echo   make help             Exibe esta ajuda
+	@echo
+```
+
 ## 6. Manifesto (`module.json`)
 
 Criar `module.json` na raiz do standalone com os metadados do módulo. Este arquivo é usado pelo sistema de importação do GrindX.
@@ -760,10 +1045,17 @@ Criar `module.json` na raiz do standalone com os metadados do módulo. Este arqu
   "entity_name": "{entity_name}",
   "version": "1.0.0",
   "schema_name": "{schema_name}",
-  "table_name": "{table_name}",
+  "tables": ["{table_name}"],
   "route_prefix": "{route_prefix}",
   "route_tag": "{route_tag}",
-  "frontend_url": "{frontend_path}/index.html",
+  "frontend_tabs": [
+    {
+      "name": "Nome da Aba",
+      "url": "modules/{frontend_prefix}_{aba}/index.html",
+      "menu_icone": "icon-name",
+      "order": 1
+    }
+  ],
   "menu_label": "{menu_label}",
   "menu_icone": "folder",
   "role_minima": "operador",
@@ -771,7 +1063,17 @@ Criar `module.json` na raiz do standalone com os metadados do módulo. Este arqu
 }
 ```
 
+**Campos do `frontend_tabs`:**
+- `name`: Nome da aba exibido no menu
+- `url`: Caminho relativo ao `frontend-webapp/modules/`
+- `menu_icone`: Nome do ícone (Font Awesome sem `fa-`)
+- `order`: Ordem de exibição no menu
+
+**Nota:** O `register_menu` no GrindX apenas loga as informações do módulo. A associação com abas deve ser feita manualmente no Portal → Estrutura após a importação.
+
 O `module.json` deve ser incluído no `.zip` gerado pelo comando `package` do `export.py`.
+
+Para o procedimento completo de importação via zip, veja `docs/IMPORTACAO.md`.
 
 ## 7. export.py
 
@@ -803,11 +1105,14 @@ logger = structlog.get_logger(__name__)
 
 MODULE_NAME = "{entity_name}"
 MODULE_SRC = Path(__file__).parent
+STANDALONE_ROOT = MODULE_SRC.parent.parent.parent  # raiz do modulo-{module_name}/
 GRINDX_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent.parent.parent / "GrindX"
-GRINDX_API = GRINDX_ROOT / "packages" / "api-postgres"
+# Alterar para "api-sqlserver" se o módulo usa SQL Server (Protheus)
+# Backend fica em apps/, frontend em packages/
+GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
 GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
-FRONTEND_SRC = MODULE_SRC.parent.parent.parent.parent.parent / "frontend"
-MIGRATION_SRC = MODULE_SRC.parent.parent.parent.parent.parent / "migration"
+FRONTEND_SRC = STANDALONE_ROOT / "frontend"
+MIGRATION_SRC = STANDALONE_ROOT / "migration"
 
 ROUTER_IMPORT = "from app.modules.{module_name}.routers.{module_name}_router import router as {module_name}_router"
 ROUTER_REGISTER = "app.include_router({module_name}_router)"
@@ -824,13 +1129,20 @@ def copy_backend(dry_run: bool = False):
 
 
 def copy_frontend(dry_run: bool = False):
-    dest = GRINDX_FRONTEND / "modules" / "{module_name}"
+    dest_base = GRINDX_FRONTEND / "modules"
     if dry_run:
-        logger.info("[DRY-RUN] Copiaria %%s -> %%s", FRONTEND_SRC, dest)
+        logger.info("[DRY-RUN] Copiaria sub-modulos de %%s -> %%s", FRONTEND_SRC, dest_base)
     else:
-        if dest.exists(): shutil.rmtree(dest)
-        shutil.copytree(FRONTEND_SRC, dest)
-        logger.info("Frontend copiado")
+        for sub in FRONTEND_SRC.iterdir():
+            if sub.is_dir():
+                dest = dest_base / sub.name
+                if dest.exists(): shutil.rmtree(dest)
+                shutil.copytree(sub, dest)
+                logger.info("Frontend copiado: %%s -> %%s", sub.name, dest)
+            elif sub.is_file():
+                dest = dest_base / sub.name
+                shutil.copy2(sub, dest)
+                logger.info("Arquivo copiado: %%s", sub.name)
 
 
 def copy_migration(dry_run: bool = False):
@@ -917,11 +1229,16 @@ def run_migrations(dry_run: bool = False):
 
 
 def package(dry_run: bool = False):
-    """Empacota o módulo em um .zip com module.json para distribuição."""
+    """Empacota o módulo em um .zip com module.json para distribuição.
+
+    IMPORTANTE: O frontend no zip deve ser `frontend/custos/...`, NÃO `frontend/modules/custos/`.
+    O GrindX importer coloca os arquivos de frontend em `modules/`, então se o zip
+    tiver `frontend/modules/custos/`, o resultado será `modules/frontend/modules/custos/` (caminho errado).
+    """
     module_dir = MODULE_SRC
     frontend_dir = FRONTEND_SRC
     migration_dir = MIGRATION_SRC
-    dist_dir = module_dir.parent.parent.parent.parent.parent / "dist"
+    dist_dir = STANDALONE_ROOT / "dist"
     zip_path = dist_dir / f"modulo-{MODULE_NAME.lower()}.zip"
 
     if dry_run:
@@ -935,19 +1252,26 @@ def package(dry_run: bool = False):
     dist_dir.mkdir(parents=True, exist_ok=True)
 
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
-        manifest_path = MODULE_SRC.parent / "module.json"
+        manifest_path = STANDALONE_ROOT / "module.json"
         if manifest_path.exists():
             zf.write(manifest_path, "module.json")
 
-        for file in MODULE_SRC.rglob("*"):
+        # Backend: mantém app/modules/{module_name}/ no zip
+        for file in module_dir.rglob("*"):
             if file.is_file() and "__pycache__" not in file.parts and not file.name.endswith(".pyc"):
-                arcname = str(file.relative_to(MODULE_SRC.parent.parent.parent.parent.parent))
+                arcname = str(file.relative_to(STANDALONE_ROOT))
                 zf.write(file, arcname)
 
         if frontend_dir.exists():
             for file in frontend_dir.rglob("*"):
                 if file.is_file():
-                    arcname = str(Path("frontend") / file.relative_to(frontend_dir))
+                    # Remove prefixo 'modules/' para evitar path duplicado no importer
+                    # frontend/modules/gp_dashboard/ → frontend/gp_dashboard/
+                    rel = file.relative_to(frontend_dir)
+                    parts = list(rel.parts)
+                    if parts and parts[0] == "modules":
+                        parts = parts[1:]
+                    arcname = str(Path("frontend") / Path(*parts))
                     zf.write(file, arcname)
 
         if migration_dir.exists():
@@ -990,7 +1314,7 @@ if __name__ == "__main__":
         if getattr(args, "grindx_root", None):
             global GRINDX_ROOT, GRINDX_API, GRINDX_FRONTEND
             GRINDX_ROOT = Path(args.grindx_root)
-            GRINDX_API = GRINDX_ROOT / "packages" / "api-postgres"
+            GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
             GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
         export(dry_run=args.dry_run)
 ```
@@ -1002,19 +1326,36 @@ if __name__ == "__main__":
 # (seguir os templates acima manualmente ou com subagent)
 
 # 2. Rodar testes (independente, fora do GrindX)
+make test                                          # via Makefile
+# ou manualmente:
 $env:GRINDX_PACKAGES = "D:\\_Projetos\\GrindX\\packages"
 python -m pytest app/modules/{module_name}/tests/ -v
 # Esperado: 10+ testes PASS
 
 # 3. Gerar pacote .zip (após testes verdes)
-python -m app.modules.{module_name}.package --dry-run   # simular
-python -m app.modules.{module_name}.package              # gerar dist/modulo-{module_name}.zip
+make package                                       # via Makefile
+# ou manualmente:
+python -m app.modules.{module_name}.export package
 
-# 4. Exportar para o GrindX (via CLI, alternativa ao .zip)
-python -m app.modules.{module_name}.export --dry-run   # simular
-python -m app.modules.{module_name}.export              # executar
+# 4. Verificar estrutura do zip
+# (o make package já exibe a estrutura)
+# ou manualmente:
+python -c "import zipfile; [print(f) for f in zipfile.ZipFile('dist/modulo-{module_name}.zip').namelist()]"
 
-# 5. Verificar no GrindX
+# 5. Importar no GrindX
+make import                                        # gera zip + copia para import/
+# ou manualmente:
+Copy-Item dist\modulo-{module_name}.zip D:\_Projetos\GrindX\import\
+# Via API: POST /v1/import/{module_name}
+# Via frontend: Gestão → Importar Módulos
+# Veja docs/IMPORTACAO.md para procedimento completo e ordem de importação
+
+# 6. Exportar para o GrindX (via CLI, alternativa ao .zip)
+make export                                        # via Makefile
+# ou manualmente:
+python -m app.modules.{module_name}.export
+
+# 7. Verificar no GrindX
 cd D:\\_Projetos\\GrindX\\packages\\api-postgres
 pytest tests/ -k {module_name} -v
 ```
@@ -1022,15 +1363,24 @@ pytest tests/ -k {module_name} -v
 ## Registration Checklist
 
 - [ ] **Tech Stack definido**: Padrão GrindX (HTML puro + CSS puro + Vanilla JS + PostgreSQL) ou padrão alternativo especificado
+- [ ] **Frontend prefix definido**: Prefixo abreviado para sub-módulos (ex: `gp` para gestao_projetos)
+- [ ] **Frontend tabs definido**: Array de abas com name, url, menu_icone, order
 - [ ] Backend: base, model, schemas, repository, service, router + __init__.py
-- [ ] Tests: conftest.py, unit tests (mocked repo), integration tests (SQLite)
-- [ ] Migration: Alembic migration file (PostgreSQL)
-- [ ] Frontend: index.html, script.js, style.css (se Padrão GrindX: HTML puro, CSS com `var(--...)`, Vanilla JS puro)
-- [ ] Header segue padrão 3.1.1: `class="page-header mb-8"` sem flex, `actions-group` com `margin-top: var(--space-4)`
-- [ ] Support: requirements.txt, pytest.ini, run_tests.ps1
+- [ ] **Router dual-context**: try/except para `get_db`/`get_current_user` (GrindX) vs `get_db_protheus`/`verify_api_key` (standalone)
+- [ ] **Frontend dual-context**: `_fetch()` e `downloadFromUrl()` com detecção `window.grindx.session` + `index.html` inclui `app.js`
+- [ ] **PDF opcional**: se módulo gera PDF, instalar `xhtml2pdf` no venv do GrindX (`pip install xhtml2pdf`)
+- [ ] Tests: conftest.py (com padrão `importlib.util`), unit tests (mocked repo), integration tests (SQLite)
+- [ ] Migration: Alembic migration file (PostgreSQL) — ou diretório vazio para módulos read-only
+- [ ] Frontend: sub-módulos com prefixo (ex: `gp_dashboard/`, `gp_projeto/`), cada um com index.html, script.js, style.css
+- [ ] Modal: padrão `modal-overlay` + `modal-card` com `style.display`, `role="dialog"`, `aria-modal`, `aria-labelledby`
+- [ ] Support: requirements.txt, pytest.ini, run_tests.ps1, Makefile
 - [ ] Testes passam: `pytest app/modules/{module_name}/tests/ -v`
-- [ ] `module.json` criado na raiz do standalone com metadados do módulo
+- [ ] `module.json` criado na raiz do standalone com `frontend_tabs` array
+- [ ] `export.py`: usa `STANDALONE_ROOT` para paths de frontend, migration e dist
+- [ ] `export.py`: `copy_frontend` copia sub-módulos para `modules/` (raiz)
 - [ ] `export.py`: `--dry-run` simula sem alterar GrindX
 - [ ] `export.py`: `--grindx-root` aceita caminho customizado
-- [ ] `export.py`: comando `package` gera `.zip` com `module.json` incluso
+- [ ] `export.py`: comando `package` gera `.zip` com estrutura compatível com o importer
 - [ ] Herança de skins: style.css usa `var(--...)`, sem cores fixas
+- [ ] Zip verificado: `module.json` na raiz, `app/modules/{name}/` na raiz, `frontend/` na raiz (sem `modules/` extra)
+- [ ] **Pós-importação**: Associar abas manualmente no Portal → Estrutura

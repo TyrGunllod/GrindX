@@ -1,3 +1,60 @@
+## Monorepo Structure
+
+- `apps/api-postgres/` — FastAPI principal (porta 8002), JWT + RBAC, PostgreSQL via Alembic
+- `apps/api-sqlserver/` — FastAPI somente leitura (porta 8001), valida tokens do api-postgres
+- `apps/frontend-webapp/` — Portal vanilla JS (porta 5500), módulos via iframe, zero frameworks
+- `packages/shared/` — Pacote Python compartilhado (security, schemas, exceptions)
+- `tests/` — Testes de integração do monorepo (raiz)
+- `.opencode/skills/` — Skills customizadas (ex: `create-standalone-module`)
+
+## Developer Commands
+
+```powershell
+# APIs (cada uma tem seu .venv próprio em apps/<api>/.venv)
+make dev-postgres      # uvicorn porta 8002
+make dev-sqlserver     # uvicorn porta 8001
+make dev-frontend      # http.server porta 5500
+make dev-all           # todos (abre terminais separados via pwsh)
+
+# Banco
+make migrate           # alembic upgrade head
+make seed              # popula dados iniciais
+
+# Testes
+make test-postgres     # pytest apps/api-postgres/tests/
+make test-sqlserver    # pytest apps/api-sqlserver/tests/
+make test-shared       # pytest packages/shared/tests/
+make test-root         # pytest tests/ (raiz)
+make test-all          # todos acima
+
+# Containers
+make build             # podman-compose build
+make up                # podman-compose up -d
+make down              # podman-compose down
+```
+
+## PYTHONPATH — Crítico
+
+O módulo `shared` não está instalado via pip. Todos os comandos de dev e teste precisam de PYTHONPATH apontando para `packages/`:
+
+```powershell
+# Exemplo manual (Windows)
+set PYTHONPATH=..\..\packages && python -m pytest tests/ -v
+
+# No Makefile já está configurado automaticamente
+# No CI: PYTHONPATH=${{ github.workspace }}/packages
+```
+
+## Pre-commit Checklist
+
+```powershell
+ruff format packages/ apps/    # formata
+ruff check --fix .             # corrige lint
+ruff check .                   # verifica (sem erros)
+```
+
+Config Ruff (`apps/api-postgres/ruff.toml`): select E, F, I — ignore E501 — alembic/versions ignora I001.
+
 ## Commit Convention
 
 - Formato: [conventional commits](https://www.conventionalcommits.org/)
@@ -10,15 +67,44 @@
   Adiciona validação de campos obrigatórios no formulário de login.
   ```
 
-## Pre-commit Checklist
-
-- Rodar `ruff format packages/ apps/` antes de commitar
-- Rodar `ruff check --fix .` antes de commitar
-- Rodar `ruff check .` para verificar (sem erros)
-- Não commitar secrets ou chaves
-- Commitar automaticamente após alterações
-
 ## Push Policy
 
 - **Commit:** sempre após concluir uma alteração (automático)
 - **Push:** somente quando o usuário solicitar explicitamente (ex: "push", "subir", "enviar")
+
+## Semantic Release
+
+- Config em `pyproject.toml` (python-semantic-release, parser angular)
+- Versão definida em `apps/api-postgres/app/core/config.py` e `apps/api-sqlserver/app/core/config.py` (variável `APP_VERSION`)
+- Build command roda `scripts/update_frontend_version.py` que sincroniza `apps/frontend-webapp/version.json`
+- CI: único workflow `release.yml` (push para `main`) — testa lint + todos os testes + semantic release
+- CI usa SQLite in-memory (sem PostgreSQL real)
+
+## Arquitetura — Detalhes Não Óbvios
+
+- **api-postgres** schemas de banco: `iam`, `portal`, `catalogo`, `org` — módulos em `app/modules/`
+- **api-sqlserver** é read-only; nunca emite JWT, apenas valida tokens do api-postgres
+- **Frontend** usa `shared/core.css` (tokens CSS), `shared/app.js` (`UIFactory`), `skinLoader.js` para temas
+- **Módulos frontend** são standalone: cada um tem `index.html`, `script.js`, `style.css` próprio
+- **Design system**: Glassmorphism, `var(--...)` para tudo, nunca cores/fontes fixas no CSS dos módulos
+- **Containerização**: Podman (não Docker), `podman-compose.yml`
+
+## Criando Novos Módulos
+
+Usar a skill `.opencode/skills/create-standalone-module/SKILL.md` — cobre backend FastAPI + frontend vanilla JS + testes + migration + export.py. Seguir o checklist de registro ao final da skill.
+
+## Testes
+
+- pytest com markers: `unit`, `integration`, `slow` (definidos no `pytest.ini` raiz)
+- Cada API tem seu próprio `tests/` com `conftest.py` e fixtures
+- Testes de integração usam SQLite in-memory com `schema_translate_map` para simular schemas PostgreSQL
+- `test-root` precisa de PYTHONPATH com todos os pacotes: `apps/api-postgres;apps/api-sqlserver;packages`
+- Fixtures globais em `tests/conftest.py` adicionam `packages/` ao sys.path
+
+## Arquivos de Config Importantes
+
+- `pyproject.toml` — semantic release config
+- `pytest.ini` — config pytest (raiz)
+- `apps/api-postgres/ruff.toml` — rules do ruff
+- `podman-compose.yml` — orquestração de containers
+- `Makefile` — automação de tasks (Windows/PowerShell)

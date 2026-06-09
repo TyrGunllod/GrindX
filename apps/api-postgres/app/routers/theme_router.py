@@ -5,7 +5,6 @@ Endpoints para CRUD de temas e ativação.
 """
 
 import os
-import shutil
 
 import filetype
 import structlog

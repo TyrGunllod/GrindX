@@ -33,6 +33,7 @@ def _clear_cache():
     yield
     clear_all()
 
+
 _SCHEMA_TRANSLATE = {"iam": None, "portal": None, "catalogo": None, "org": None}
 
 # All bases share the same MetaData object

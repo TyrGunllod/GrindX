@@ -9,7 +9,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from shared.exceptions.base import CredenciaisInvalidasError, NotFoundError
+from shared.exceptions.base import CredenciaisInvalidasError
 from shared.security.jwt import gerar_hash_senha, verificar_senha
 
 from app.auth.service import AuthService

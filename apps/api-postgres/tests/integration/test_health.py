@@ -49,18 +49,14 @@ class TestHealthCheckHealthy:
         assert data["service"] is not None
         assert len(data["service"]) > 0
 
-    def test_health_includes_version(
-        self, client: TestClient, db_session: Session
-    ):
+    def test_health_includes_version(self, client: TestClient, db_session: Session):
         """GET /health inclui versão do serviço na resposta."""
         response = client.get("/health")
         data = response.json()
         assert data["version"] is not None
         assert len(data["version"]) > 0
 
-    def test_health_includes_timestamp(
-        self, client: TestClient, db_session: Session
-    ):
+    def test_health_includes_timestamp(self, client: TestClient, db_session: Session):
         """GET /health inclui timestamp na resposta."""
         response = client.get("/health")
         data = response.json()

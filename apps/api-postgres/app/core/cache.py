@@ -27,9 +27,7 @@ _portal_lock = threading.Lock()
 _user_lock = threading.Lock()
 
 
-def get_or_set(
-    cache: TTLCache, lock: threading.Lock, key: str, fetch_fn
-) -> object:
+def get_or_set(cache: TTLCache, lock: threading.Lock, key: str, fetch_fn) -> object:
     """Obtém valor do cache ou executa fetch_fn e armazena o resultado.
 
     Args:

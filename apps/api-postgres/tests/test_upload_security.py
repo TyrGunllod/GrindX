@@ -83,9 +83,7 @@ class TestUploadMagicBytes:
         # OR if it gets detected as something else → "doesn't match"
         assert "não corresponde" in detail or "detectar" in detail
 
-    def test_valid_png_accepted(
-        self, client: TestClient, auth_headers_with_company
-    ):
+    def test_valid_png_accepted(self, client: TestClient, auth_headers_with_company):
         """Arquivo PNG válido deve passar na validação de magic bytes."""
         # Create minimal valid PNG (signature + IHDR chunk)
         png_signature = b"\x89PNG\r\n\x1a\n"
@@ -122,7 +120,9 @@ class TestUploadMagicBytes:
         # Should succeed (not 400 for magic bytes)
         assert response.status_code == 200
 
-    def test_corrupted_file_rejected(self, client: TestClient, auth_headers_with_company):
+    def test_corrupted_file_rejected(
+        self, client: TestClient, auth_headers_with_company
+    ):
         """Arquivo vazio/corrompido deve retornar HTTP 400."""
         # Create empty file
         empty_file = io.BytesIO(b"")
@@ -135,7 +135,10 @@ class TestUploadMagicBytes:
         )
 
         assert response.status_code == 400
-        assert "corrompido" in response.json()["detail"].lower() or "detectar" in response.json()["detail"].lower()
+        assert (
+            "corrompido" in response.json()["detail"].lower()
+            or "detectar" in response.json()["detail"].lower()
+        )
 
     def test_font_with_wrong_extension_rejected(
         self, client: TestClient, auth_headers_with_company

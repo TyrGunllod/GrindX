@@ -11,7 +11,6 @@ against a real DB). The migration itself is tested by running
 """
 
 import pytest
-from sqlalchemy import inspect
 
 from app.modules.iam.models.usuario import Usuario
 from app.modules.org.models.theme import CompanyTheme
@@ -83,9 +82,7 @@ def test_usuario_role_index_definition(db_session):
     assert role_index is not None, "Index 'ix_usuarios_role' not found on Usuario"
 
     column_names = {col.name for col in role_index.columns}
-    assert "role" in column_names, (
-        f"Index missing role column. Columns: {column_names}"
-    )
+    assert "role" in column_names, f"Index missing role column. Columns: {column_names}"
 
 
 @pytest.mark.integration

@@ -67,9 +67,7 @@ class TestRateLimitByUserID:
                 break
 
         if not hit_limit:
-            pytest.skip(
-                "Could not trigger rate limit with 100 authenticated requests"
-            )
+            pytest.skip("Could not trigger rate limit with 100 authenticated requests")
 
 
 class TestIndependentUserLimits:

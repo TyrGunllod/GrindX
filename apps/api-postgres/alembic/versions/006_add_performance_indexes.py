@@ -67,8 +67,12 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Drop all performance indexes."""
-    op.drop_index("ix_portal_modulos_aba_id", table_name="portal_modulos", schema="portal")
+    op.drop_index(
+        "ix_portal_modulos_aba_id", table_name="portal_modulos", schema="portal"
+    )
     op.drop_index("ix_usuarios_empresa_id", table_name="usuarios", schema="iam")
     op.drop_index("ix_usuarios_ativo", table_name="usuarios", schema="iam")
     op.drop_index("ix_usuarios_role", table_name="usuarios", schema="iam")
-    op.drop_index("ix_company_themes_company_active", table_name="company_themes", schema="org")
+    op.drop_index(
+        "ix_company_themes_company_active", table_name="company_themes", schema="org"
+    )
