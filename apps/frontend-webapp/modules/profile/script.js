@@ -2,9 +2,14 @@
     let currentUser = {};
 
     async function loadProfile() {
-        const profile = await window.grindx.api.get('/auth/me');
-        if (!profile) return;
-        currentUser = profile;
+        try {
+            const profile = await window.grindx.api.get('/auth/me');
+            if (!profile) return;
+            currentUser = profile;
+        } catch (err) {
+            showToast(err.message || 'Erro ao carregar perfil.', 'error');
+            return;
+        }
 
         document.getElementById('profileUsername').value = profile.username || '';
         document.getElementById('profileRole').value = formatRole(profile.role);
@@ -71,10 +76,9 @@
 
             const selectedTheme = document.querySelector('.theme-option.active')?.dataset.theme;
             if (selectedTheme && selectedTheme !== window.grindx.theme.theme) {
-                window.grindx.theme.toggle();
-                if (window.grindx.theme.theme !== selectedTheme) {
-                    window.grindx.theme.toggle();
-                }
+                window.grindx.theme.theme = selectedTheme;
+                window.grindx.storage.set('grindx_theme', selectedTheme);
+                window.grindx.theme.apply();
                 window.parent.postMessage('theme-changed', '*');
             }
 

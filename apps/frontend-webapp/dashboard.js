@@ -75,6 +75,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
             window.addEventListener('message', (e) => {
                 if (e.data === 'sidebar-update') this.loadDynamicMenu();
+                if (e.data === 'profile-saved') this.loadCurrentUserProfile();
             });
 
             window.addEventListener('layoutchange', (e) => {
