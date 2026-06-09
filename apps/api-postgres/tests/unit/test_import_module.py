@@ -39,7 +39,7 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
     return AuthService(db)
 
 
-# --- Versoes vinculadas das permissoes ---
+# --- Versões vinculadas das permissões ---
 
 
 def require_role(*roles_permitidas: str):
@@ -331,11 +331,12 @@ class TestRegisterDependency:
             register_dependency(manifest, force=False, deps_py=deps_py)
 
         content = deps_py.read_text(encoding="utf-8")
-        assert "def get_projetos_projetos_service" in content
-        assert "# --- Versoes vinculadas das permissoes ---" in content
+        # When module_name == entity, factory is get_{module}_service (not get_{module}_{entity}_service)
+        assert "def get_projetos_service" in content
+        assert "# --- Versões vinculadas das permissões ---" in content
 
-        marker_idx = content.index("# --- Versoes vinculadas das permissoes ---")
-        factory_idx = content.index("def get_projetos_projetos_service")
+        marker_idx = content.index("# --- Versões vinculadas das permissões ---")
+        factory_idx = content.index("def get_projetos_service")
         assert factory_idx < marker_idx
 
     def test_generates_correct_imports(self, deps_py, tmp_path):
@@ -387,7 +388,8 @@ class TestRegisterDependency:
             register_dependency(manifest, force=False, deps_py=deps_py)
 
         content = deps_py.read_text(encoding="utf-8")
-        assert content.count("def get_projetos_projetos_service") == 1
+        # When module_name == entity, factory is get_{module}_service
+        assert content.count("def get_projetos_service") == 1
 
     def test_different_module(self, deps_py, tmp_path):
         _mock_api_dir(
@@ -452,7 +454,7 @@ class TestRegisterDependency:
         marker_idx = None
         factory_idx = None
         for i, line in enumerate(lines):
-            if "# --- Versoes vinculadas das permissoes ---" in line:
+            if "# --- Versões vinculadas das permissões ---" in line:
                 marker_idx = i
             if "def get_projetos_" in line:
                 factory_idx = i
@@ -477,7 +479,7 @@ class TestImportFlow:
         deps_py = tmp_path / "dependencies.py"
         deps_py.write_text(
             textwrap.dedent("""\
-            # --- Versoes vinculadas das permissoes ---
+            # --- Versões vinculadas das permissões ---
         """),
             encoding="utf-8",
         )
@@ -517,7 +519,8 @@ class TestImportFlow:
             # 2. Register dependency
             import_mod.register_dependency(manifest, force=False, deps_py=deps_py)
             content_deps = deps_py.read_text()
-            assert "def get_projeto_projeto_service(" in content_deps
+            # When module_name == entity, factory is get_{module}_service
+            assert "def get_projeto_service(" in content_deps
 
             # 3. Register alembic import
             import_mod.register_alembic_import(manifest, force=False, env_py=env_py)
