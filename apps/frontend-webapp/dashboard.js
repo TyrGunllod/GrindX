@@ -159,14 +159,14 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 });
                 return childMods.map(mod => `
                     <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
-                        <i class="${mod.icone || 'fas fa-cube'}"></i> ${mod.nome}
+                        <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text">${mod.nome}</span>
                     </button>
                 `).join('');
             }).join('');
 
             const directModsHtml = modulos.map(mod => `
                 <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
-                    <i class="${mod.icone || 'fas fa-cube'}"></i> ${mod.nome}
+                    <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text">${mod.nome}</span>
                 </button>
             `).join('');
 

@@ -675,6 +675,7 @@ iframe {
     top: calc(100% + 6px);
     left: 0;
     min-width: 200px;
+    max-width: min(calc(100vw - 32px), 360px);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
@@ -711,6 +712,11 @@ iframe {
     transition: background 0.15s;
     text-align: left;
     white-space: nowrap;
+}
+.nav-dropdown-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
 }
 .nav-dropdown-item i {
     font-size: 0.85rem;
