@@ -55,7 +55,12 @@ def check_database_health(db: Session) -> dict[str, Any]:
         if is_sqlite:
             # SQLite: verificar tabelas sem prefixo de schema
             existing_tables = inspector.get_table_names()
-            critical_tables_flat = ["usuarios", "company_themes", "portal_abas", "empresas"]
+            critical_tables_flat = [
+                "usuarios",
+                "company_themes",
+                "portal_abas",
+                "empresas",
+            ]
             for table in critical_tables_flat:
                 if table not in existing_tables:
                     missing_tables.append(table)
