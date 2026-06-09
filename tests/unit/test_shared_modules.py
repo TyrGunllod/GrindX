@@ -63,7 +63,7 @@ class TestSharedSchemas:
             status="healthy",
             service="test",
             version="1.0.0",
-            database="connected",
+            database={"postgres": "connected"},
         )
         assert health.status == "healthy"
 
