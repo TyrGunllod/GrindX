@@ -37,6 +37,7 @@ const SKIN_DEFAULTS = {
     copyright_text: '© 2026 GrindX. Todos os direitos reservados.',
     logo_url: null,
     logo_short_url: null,
+    layout_mode: 'topbar',
 };
 
 const FONT_CDN_MAP = {
@@ -187,6 +188,23 @@ class SkinLoader {
         this._applyFonts(skin.fonts);
         this._updateBranding(skin.company_name, skin.copyright_text);
         this._updateLogos(skin.logo_url, skin.logo_short_url);
+        if (skin.layout_mode) {
+            this.applyLayout(skin.layout_mode);
+        }
+    }
+
+    /**
+     * Aplica a classe de layout no <html> e dispara evento
+     * @param {string} mode - 'sidebar' ou 'topbar'
+     */
+    applyLayout(mode) {
+        const root = document.documentElement;
+        root.classList.remove('layout-sidebar', 'layout-topbar');
+        const validMode = ['sidebar', 'topbar'].includes(mode) ? mode : 'topbar';
+        root.classList.add(`layout-${validMode}`);
+        window.dispatchEvent(new CustomEvent('layoutchange', {
+            detail: { mode: validMode }
+        }));
     }
 
     _applyColors(colors) {
