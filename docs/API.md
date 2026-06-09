@@ -1,4 +1,4 @@
-<!-- title: API Reference — GrindX | updated: 2026-05-28 -->
+<!-- title: API Reference — GrindX | updated: 2026-06-09 -->
 
 # API Reference — GrindX
 
@@ -170,59 +170,7 @@ Remove um usuário. Requer perfil `admin`.
 
 ---
 
-## Produtos
 
-### `GET /v1/produtos/`
-
-Lista produtos. Acessível para `admin` e `operador`.
-
-**Query params opcionais:** `skip` (int), `limit` (int)
-
-**Response 200:**
-
-```json
-[
-  {
-    "id": 1,
-    "nome": "Produto A",
-    "descricao": "Descrição do produto",
-    "preco": 49.90,
-    "estoque": 100,
-    "ativo": true
-  }
-]
-```
-
-### `POST /v1/produtos/`
-
-Cria um produto. Requer `admin` ou `operador`.
-
-**Body:**
-
-```json
-{
-  "nome": "Produto B",
-  "descricao": "Descrição",
-  "preco": 29.90,
-  "estoque": 50
-}
-```
-
-**Response 201:** Objeto do produto criado.
-
-### `GET /v1/produtos/{id}`
-
-Retorna produto pelo ID.
-
-### `PUT /v1/produtos/{id}`
-
-Atualiza produto. Requer `admin` ou `operador`.
-
-### `DELETE /v1/produtos/{id}`
-
-Remove produto. Requer `admin`.
-
----
 
 ## Códigos de Erro Padrão
 
@@ -461,3 +409,45 @@ Cria um tema a partir de um template existente.
 ```
 
 **Response 201:** Objeto do tema criado.
+
+---
+
+## Importação de Módulos
+
+Endpoints para escanear e importar módulos frontend a partir de arquivos ZIP. Requer perfil `admin`.
+
+### `POST /v1/import/scan`
+
+Escaneia um arquivo ZIP de módulo e retorna metadados encontrados no manifest.
+
+**Body (multipart/form-data):**
+- `file`: arquivo .zip contendo o módulo
+
+**Response 200:**
+```json
+{
+  "name": "meu-modulo",
+  "version": "1.0.0",
+  "description": "Descrição do módulo",
+  "slug": "meu-modulo",
+  "frontend_dir": "modules/meu-modulo/",
+  "has_migration": false,
+  "has_api": true,
+  "api_module": "app.modules.meu_modulo"
+}
+```
+
+### `POST /v1/import/{slug}`
+
+Importa (instala) um módulo previamente escaneado.
+
+**Path params:** `slug` — slug do módulo retornado pelo scan
+
+**Response 200:**
+```json
+{
+  "message": "Módulo 'meu-modulo' importado com sucesso",
+  "slug": "meu-modulo",
+  "frontend_dir": "modules/meu-modulo/"
+}
+```
