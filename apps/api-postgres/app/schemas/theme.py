@@ -26,6 +26,11 @@ class ThemeCreate(BaseModel):
     copyright_text: Optional[str] = Field(
         default=None, max_length=200, description="Texto do rodapé"
     )
+    layout_mode: str = Field(
+        default="topbar",
+        pattern="^(sidebar|topbar)$",
+        description="Modo de layout: 'sidebar' ou 'topbar'",
+    )
 
 
 class ThemeUpdate(BaseModel):
@@ -40,6 +45,11 @@ class ThemeUpdate(BaseModel):
     logo_short_url: Optional[str] = Field(default=None, max_length=500)
     company_name: Optional[str] = Field(default=None, max_length=100)
     copyright_text: Optional[str] = Field(default=None, max_length=200)
+    layout_mode: Optional[str] = Field(
+        default=None,
+        pattern="^(sidebar|topbar)$",
+        description="Modo de layout: 'sidebar' ou 'topbar'",
+    )
 
 
 class ThemeFontResponse(BaseModel):
@@ -63,6 +73,7 @@ class ThemeResponse(BaseModel):
     logo_short_url: str | None = None
     company_name: str | None = None
     copyright_text: str | None = None
+    layout_mode: str = "topbar"
     criado_em: datetime | None = None
     atualizado_em: datetime | None = None
 
