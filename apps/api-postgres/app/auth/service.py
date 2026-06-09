@@ -196,6 +196,26 @@ class AuthService:
             username=usuario.username,
         )
 
+    def update_profile(self, user_id: int, email: str | None = None, nome_completo: str | None = None) -> Usuario:
+        usuario = self.usuario_repo.buscar_por_id(user_id)
+        if not usuario:
+            raise NotFoundError(resource="Usuário", identifier=user_id)
+
+        dados: dict[str, str] = {}
+        if email is not None:
+            if email != usuario.email:
+                existing = self.usuario_repo.buscar_por_email(email)
+                if existing:
+                    raise ConflictError(f"E-mail '{email}' já está em uso")
+            dados["email"] = email
+        if nome_completo is not None:
+            dados["nome_completo"] = nome_completo
+
+        if not dados:
+            return usuario
+
+        return self.usuario_repo.atualizar(usuario, dados)
+
     def forgot_password(self, username: str) -> tuple[str, str, str]:
         usuario = self.usuario_repo.buscar_por_username(username)
         if not usuario:

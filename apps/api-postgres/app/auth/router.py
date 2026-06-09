@@ -25,6 +25,7 @@ from app.schemas.usuario import (
     ChangePasswordRequest,
     ForgotPasswordRequest,
     UsuarioResponse,
+    UsuarioUpdate,
 )
 from app.services.email_service import EmailService
 
@@ -160,6 +161,24 @@ def forgot_password(
 
     auth_service.apply_temp_password(dados.username, temp_password)
     return {"message": "Nova senha enviada para o e-mail cadastrado."}
+
+
+@router.put(
+    "/me",
+    response_model=UsuarioResponse,
+    summary="Atualizar próprio perfil",
+    description="Permite que o usuário autenticado atualize seu próprio email e/ou nome completo.",
+)
+def update_me(
+    dados: UsuarioUpdate,
+    current_user: TokenPayload = Depends(get_current_user),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    return auth_service.update_profile(
+        int(current_user.sub),
+        email=dados.email,
+        nome_completo=dados.nome_completo,
+    )
 
 
 @router.post(
