@@ -1,7 +1,8 @@
 """
 Router de autenticação.
 
-Endpoints para login (emissão de tokens) e refresh de tokens JWT.
+Endpoints para login (emissão de tokens), refresh de tokens JWT
+e autogerenciamento de perfil do usuário logado.
 Centralizado na api-postgres — ambas as APIs validam tokens stateless.
 """
 
@@ -174,11 +175,17 @@ def update_me(
     current_user: TokenPayload = Depends(get_current_user),
     auth_service: AuthService = Depends(get_auth_service),
 ):
-    return auth_service.update_profile(
+    """Atualiza email e/ou nome completo do próprio usuário autenticado."""
+    result = auth_service.update_profile(
         int(current_user.sub),
         email=dados.email,
         nome_completo=dados.nome_completo,
     )
+    logger.info(
+        "perfil_atualizado_via_api",
+        usuario_id=int(current_user.sub),
+    )
+    return result
 
 
 @router.post(

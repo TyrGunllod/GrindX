@@ -197,6 +197,20 @@ class AuthService:
         )
 
     def update_profile(self, user_id: int, email: str | None = None, nome_completo: str | None = None) -> Usuario:
+        """Atualiza o perfil do próprio usuário (email e/ou nome completo).
+
+        Args:
+            user_id: ID do usuário.
+            email: Novo e-mail (opcional).
+            nome_completo: Novo nome completo (opcional).
+
+        Returns:
+            Usuario atualizado.
+
+        Raises:
+            NotFoundError: Se o usuário não for encontrado.
+            ConflictError: Se o e-mail já estiver em uso por outro usuário.
+        """
         usuario = self.usuario_repo.buscar_por_id(user_id)
         if not usuario:
             raise NotFoundError(resource="Usuário", identifier=user_id)
@@ -214,7 +228,13 @@ class AuthService:
         if not dados:
             return usuario
 
-        return self.usuario_repo.atualizar(usuario, dados)
+        usuario_atualizado = self.usuario_repo.atualizar(usuario, dados)
+        logger.info(
+            "perfil_atualizado",
+            usuario_id=user_id,
+            campos_alterados=list(dados.keys()),
+        )
+        return usuario_atualizado
 
     def forgot_password(self, username: str) -> tuple[str, str, str]:
         usuario = self.usuario_repo.buscar_por_username(username)
