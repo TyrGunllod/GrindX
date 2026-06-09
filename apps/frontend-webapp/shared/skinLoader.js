@@ -281,13 +281,15 @@ class SkinLoader {
         // Atualiza logo no sidebar
         const logoEl = document.querySelector('.logo-grindx');
         if (logoEl) {
-            logoEl.innerHTML = companyName.substring(0, 1) + '<span class="logo-full">' + companyName.substring(1) + '</span>';
+            const textEl = logoEl.querySelector('.logo-text');
+            if (textEl) textEl.textContent = companyName;
         }
 
         // Atualiza logo no topbar
         const topbarLogoEl = document.querySelector('.topbar-logo');
         if (topbarLogoEl) {
-            topbarLogoEl.innerHTML = companyName.substring(0, 1) + '<span class="logo-full">' + companyName.substring(1) + '</span>';
+            const textEl = topbarLogoEl.querySelector('.logo-text');
+            if (textEl) textEl.textContent = companyName;
         }
 
         // Auto-genera copyright se não fornecido
@@ -314,22 +316,23 @@ class SkinLoader {
             const logoEl = document.querySelector('.logo-grindx');
             if (logoEl) {
                 const name = (this.currentSkin && this.currentSkin.company_name) || 'GrindX';
-                const initial = name.substring(0, 1);
-                const rest = name.substring(1);
                 const fullUrl = this._resolveUrl(logoUrl);
-                logoEl.innerHTML = '';
-                const img = document.createElement('img');
+                // Preserva o dropdown e insere/atualiza a imagem antes do texto
+                let img = logoEl.querySelector('.logo-img');
+                const textEl = logoEl.querySelector('.logo-text');
+                if (!img) {
+                    img = document.createElement('img');
+                    img.className = 'logo-img';
+                    img.alt = 'Logo';
+                    img.style.maxHeight = '32px';
+                    img.style.width = 'auto';
+                    logoEl.insertBefore(img, textEl);
+                }
                 img.src = fullUrl;
-                img.alt = 'Logo';
-                img.style.maxHeight = '32px';
-                img.style.width = 'auto';
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'logo-full';
-                nameSpan.textContent = name;
-                logoEl.appendChild(img);
-                logoEl.appendChild(nameSpan);
+                if (textEl) textEl.textContent = name;
                 img.onerror = function () {
-                    logoEl.innerHTML = initial + '<span class="logo-full">' + rest + '</span>';
+                    img.remove();
+                    if (textEl) textEl.textContent = name;
                 };
             }
         }

@@ -82,18 +82,17 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 this.applyLayout(e.detail.mode);
             });
 
-            // Logo click handlers (sidebar + topbar)
-            document.querySelectorAll('.logo-clickable').forEach(el => {
-                el.addEventListener('click', (e) => {
+            // Logo click handlers using event delegation
+            document.addEventListener('click', (e) => {
+                const logo = e.target.closest('.logo-clickable');
+                if (logo) {
                     e.stopPropagation();
-                    el.classList.toggle('open');
-                });
-            });
-
-            document.addEventListener('click', () => {
-                document.querySelectorAll('.logo-clickable.open').forEach(el => {
-                    el.classList.remove('open');
-                });
+                    logo.classList.toggle('open');
+                } else {
+                    document.querySelectorAll('.logo-clickable.open').forEach(el => {
+                        el.classList.remove('open');
+                    });
+                }
             });
 
             document.querySelectorAll('[data-profile="true"]').forEach(btn => {
