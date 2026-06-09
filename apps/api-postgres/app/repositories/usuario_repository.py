@@ -159,6 +159,8 @@ class UsuarioRepository:
         self.db.add(usuario)
         self.db.commit()
         self.db.refresh(usuario)
+        # Invalida cache de busca por username para novo usuário
+        invalidate(_user_cache, _user_lock, f"username:{usuario.username}")
         return usuario
 
     def atualizar(self, usuario: Usuario, dados: dict) -> Usuario:

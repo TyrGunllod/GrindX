@@ -30,6 +30,8 @@ def usuario_mock() -> Usuario:
     usuario.email = "test@example.com"
     usuario.nome_completo = "Test Usuario"
     usuario.senha_hash = gerar_hash_senha("senha123")
+    usuario.temp_password_hash = None
+    usuario.expires_at = None
     usuario.role = "admin"
     usuario.ativo = True
     usuario.empresa_id = None

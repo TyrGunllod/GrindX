@@ -43,26 +43,38 @@ def check_database_health(db: Session) -> dict[str, Any]:
         # Testa conectividade básica
         db.execute(text("SELECT 1"))
 
-        # Verifica se tabelas críticas existem (schema.table format)
+        # Verifica se tabelas críticas existem
         inspector = inspect(db.bind)
 
-        # Mapeia tabelas críticas: schema -> [table_names]
-        critical_by_schema = {
-            "iam": ["usuarios"],
-            "org": ["company_themes", "empresas"],
-            "portal": ["portal_abas"],
-        }
+        # Para SQLite (testes), as tabelas não têm prefixo de schema
+        # Para PostgreSQL, precisamos verificar por schema
+        is_sqlite = str(db.bind.url).startswith("sqlite")
 
         missing_tables = []
-        for schema, tables in critical_by_schema.items():
-            try:
-                existing_tables = inspector.get_table_names(schema=schema)
-                for table in tables:
-                    if table not in existing_tables:
-                        missing_tables.append(f"{schema}.{table}")
-            except Exception:
-                # Schema não existe ou inacessível
-                missing_tables.extend([f"{schema}.{t}" for t in tables])
+
+        if is_sqlite:
+            # SQLite: verificar tabelas sem prefixo de schema
+            existing_tables = inspector.get_table_names()
+            critical_tables_flat = ["usuarios", "company_themes", "portal_abas", "empresas"]
+            for table in critical_tables_flat:
+                if table not in existing_tables:
+                    missing_tables.append(table)
+        else:
+            # PostgreSQL: verificar por schema
+            critical_by_schema = {
+                "iam": ["usuarios"],
+                "org": ["company_themes", "empresas"],
+                "portal": ["portal_abas"],
+            }
+            for schema, tables in critical_by_schema.items():
+                try:
+                    existing_tables = inspector.get_table_names(schema=schema)
+                    for table in tables:
+                        if table not in existing_tables:
+                            missing_tables.append(f"{schema}.{table}")
+                except Exception:
+                    # Schema não existe ou inacessível
+                    missing_tables.extend([f"{schema}.{t}" for t in tables])
 
         if missing_tables:
             logger.warning(
