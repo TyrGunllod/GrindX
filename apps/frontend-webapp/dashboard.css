@@ -224,10 +224,10 @@
 }
 
 .top-bar {
-    height: 35px;
-    padding: 0 var(--space-4);
+    height: 0px;
+  /*  padding: 0 var(--space-4);
     background: var(--bg-card);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);*/
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -235,7 +235,7 @@
 
 .top-bar-title {
     font-weight: 600;
-    font-size: 1.125rem;
+    font-size: 0.9rem;
     color: var(--text-main);
 }
 
@@ -366,25 +366,20 @@ iframe {
     user-select: none;
 }
 
-.logo-clickable .logo-user-dropdown {
+.logo-clickable > .user-dropdown {
     position: absolute;
     top: 100%;
     left: 0;
-    min-width: 200px;
+    right: auto;
     margin-top: 4px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-4px);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
-    pointer-events: none;
     z-index: 1000;
 }
 
-.logo-clickable.open .logo-user-dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    pointer-events: auto;
+.logo-clickable.open > .user-dropdown {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
 }
 
 .dropdown-user-info {
@@ -409,7 +404,7 @@ iframe {
     margin-top: 2px;
 }
 
-.sidebar.collapsed .logo-clickable .logo-user-dropdown {
+.sidebar.collapsed .logo-clickable > .user-dropdown {
     left: 100%;
     top: 0;
     margin-top: 0;
@@ -546,15 +541,14 @@ iframe {
 .topbar-logo {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
     font-family: var(--font-display);
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 2.5px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 3px;
     color: var(--text-main);
-    padding-right: var(--space-4);
+    padding: 0 16px;
     border-right: 1px solid var(--border-color);
-    margin-right: var(--space-3);
     flex-shrink: 0;
     user-select: none;
     cursor: pointer;
@@ -562,10 +556,9 @@ iframe {
 }
 .topbar-logo .brand-x { color: var(--brand-is); }
 
-.topbar-logo .logo-user-dropdown {
-    position: absolute;
-    top: 100%;
+.topbar-logo.logo-clickable > .user-dropdown {
     left: 0;
+    right: auto;
 }
 
 /* ── NAV GROUPS (hover dropdowns) ── */
