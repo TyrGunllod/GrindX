@@ -602,8 +602,19 @@ iframe {
     align-items: center;
     gap: 4px;
     flex: 1;
-    overflow-x: auto;
     scrollbar-width: none;
+    overflow: visible;
+}
+.topbar-nav-scroll {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    overflow-y: visible;
+    scrollbar-width: none;
+    padding-bottom: 160px;
+    margin-bottom: -160px;
+    min-width: 0;
 }
 .topbar-nav::-webkit-scrollbar { display: none; }
 

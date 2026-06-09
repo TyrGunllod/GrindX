@@ -146,7 +146,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         this._lastAbas = abas;
         if (this.currentLayout !== 'topbar') return;
 
-        this.topbarNav.innerHTML = abas.map((aba, idx) => {
+        const groupsHtml = abas.map((aba, idx) => {
             const modulos = (aba.modulos || []).filter(mod => {
                 if (mod.role_minima === 'admin' && this.user.role !== 'admin') return false;
                 return true;
@@ -188,6 +188,8 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 ${separator}
             `;
         }).join('');
+
+        this.topbarNav.innerHTML = `<div class="topbar-nav-scroll">${groupsHtml}</div>`;
 
         this._bindTopbarDropdowns();
         this._bindTopbarNavClicks();
