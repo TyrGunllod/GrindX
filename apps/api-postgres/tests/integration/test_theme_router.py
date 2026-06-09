@@ -242,3 +242,68 @@ def test_create_from_template(client: TestClient, admin_auth_headers: dict):
     data = resp.json()
     assert data["name"] == "My Blue Theme"
     assert data["colors"]["--skin-primary"] == "#2563eb"
+
+
+# --- Task 7: Layout mode tests ---
+
+
+def test_create_theme_with_layout_mode(client: TestClient, admin_auth_headers: dict):
+    """Testa que layout_mode é retornando na criação."""
+    response = client.post(
+        "/v1/themes",
+        json={
+            "name": "Layout API Test",
+            "icon_library": "fontawesome",
+            "layout_mode": "topbar",
+        },
+        headers=admin_auth_headers,
+    )
+    assert response.status_code == 201
+    assert response.json()["layout_mode"] == "topbar"
+
+
+def test_update_theme_layout_mode(client: TestClient, admin_auth_headers: dict):
+    """Testa atualização de layout_mode via API."""
+    # Criar tema
+    create_resp = client.post(
+        "/v1/themes",
+        json={
+            "name": "Layout Update Test",
+            "icon_library": "fontawesome",
+            "layout_mode": "topbar",
+        },
+        headers=admin_auth_headers,
+    )
+    theme_id = create_resp.json()["id"]
+
+    # Atualizar layout_mode
+    update_resp = client.put(
+        f"/v1/themes/{theme_id}",
+        json={"layout_mode": "sidebar"},
+        headers=admin_auth_headers,
+    )
+    assert update_resp.status_code == 200
+    assert update_resp.json()["layout_mode"] == "sidebar"
+
+
+def test_get_active_theme_includes_layout_mode(
+    client: TestClient, admin_auth_headers: dict
+):
+    """Testa que tema ativo retorna layout_mode."""
+    # Criar e ativar tema
+    create_resp = client.post(
+        "/v1/themes",
+        json={
+            "name": "Active Layout",
+            "icon_library": "fontawesome",
+            "layout_mode": "topbar",
+        },
+        headers=admin_auth_headers,
+    )
+    theme_id = create_resp.json()["id"]
+    client.post(f"/v1/themes/{theme_id}/activate", headers=admin_auth_headers)
+
+    # Buscar tema ativo
+    get_resp = client.get("/v1/themes/active", headers=admin_auth_headers)
+    assert get_resp.status_code == 200
+    assert get_resp.json()["layout_mode"] == "topbar"
