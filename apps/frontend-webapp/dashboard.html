@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="shared/core.css">
     <link rel="stylesheet" href="dashboard.css">
 </head>
-<body class="dashboard-layout">
+<body class="dashboard-layout layout-topbar">
 
     <!-- A11y: Skip to content link -->
     <a href="#moduleViewport" class="sr-only focus:not-sr-only">Pular para o conteúdo</a>
@@ -80,6 +80,41 @@
               <div class="copyright-text">© 2026 GrindX. Desenvolvido por Alex Grellet.</div>
            </footer>
        </aside>
+
+       <!-- Navigation Topbar (Topbar Mode) -->
+       <header class="topbar" id="topbar" style="display:none;" role="banner">
+           <div class="topbar-logo" aria-hidden="true">
+               G<span class="logo-full">RIND</span><span style="color: var(--brand-is);">X</span>
+           </div>
+           <nav class="topbar-nav" id="topbarNav" aria-label="Navegação Principal">
+               <!-- Renderizado dinamicamente por renderTopbarNav() -->
+           </nav>
+           <div class="topbar-right">
+               <button class="btn-icon" id="themeToggleTopbar" aria-label="Alternar tema">
+                   <i class="fas fa-moon"></i>
+               </button>
+               <div class="user-pill-compact" id="userPillTopbar" tabindex="0" role="button" aria-label="Menu do usuário" aria-haspopup="true">
+                   <div class="user-avatar-sm" id="userAvatarTopbar">...</div>
+                   <div class="user-pill-info">
+                       <span class="user-pill-name" id="userNameTopbar">...</span>
+                       <span class="user-pill-role" id="userRoleTopbar">...</span>
+                   </div>
+                   <i class="fas fa-chevron-down" style="font-size:0.6rem;color:var(--text-muted);margin-left:2px;"></i>
+                   <div class="user-dropdown" id="userDropdownTopbar" role="menu">
+                       <button class="nav-dropdown-item" role="menuitem">
+                           <i class="fas fa-user"></i> Meu Perfil
+                       </button>
+                       <button class="nav-dropdown-item" role="menuitem" id="passwordBtnTopbar">
+                           <i class="fas fa-key"></i> Alterar Senha
+                       </button>
+                       <div class="nav-dropdown-divider"></div>
+                       <button class="nav-dropdown-item danger" role="menuitem" id="logoutBtnTopbar">
+                           <i class="fas fa-power-off"></i> Sair
+                       </button>
+                   </div>
+               </div>
+           </div>
+       </header>
 
       <!-- Preview Banner (shown when skin_preview query param is present) -->
       <div id="skinPreviewBanner" class="skin-preview-banner" style="display: none;">
