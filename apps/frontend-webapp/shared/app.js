@@ -6,7 +6,7 @@
 const DEFAULT_GRINDX_CONFIG = {
     DEFAULT_LANG: 'pt-BR',
     SUPPORTED_LANGS: ['pt-BR', 'en-US', 'es-ES'],
-    API_BASE_URL: 'http://127.0.0.1:8002/v1'
+    API_BASE_URL: window.GRINDX_CONFIG?.API_BASE_URL || 'http://localhost:8002'
 };
 
 const GRINDX_CONFIG = {
@@ -215,7 +215,28 @@ class ThemeManager {
 const storage = new StorageManager();
 const session = new SessionManager(storage);
 
-// Export Singleton Instance
+/**
+ * GLOBAL API - GrindX
+ *
+ * Ponto de acesso central para todas as funcionalidades do frontend.
+ * Módulos devem usar window.grindx para acessar:
+ *   - grindx.config — Configurações da aplicação
+ *   - grindx.session — Gerenciamento de sessão (tokens JWT)
+ *   - grindx.storage — Armazenamento local com cache
+ *   - grindx.i18n — Internacionalização
+ *   - grindx.ui — Factory de componentes UI
+ *   - grindx.theme — Gerenciamento de temas/skins
+ *   - grindx.api — Serviço HTTP para chamadas à API
+ *
+ * ATENÇÃO: Este é um global singleton. Módulos NÃO devem criar
+ * instâncias próprias dos managers — devem usar window.grindx.
+ *
+ * Ordem de carregamento:
+ * 1. config.js (define window.GRINDX_CONFIG)
+ * 2. app.js (usa GRINDX_CONFIG para criar grindx)
+ * 3. apiService.js (adiciona grindx.api)
+ * 4. Módulos (usam window.grindx.*)
+ */
 const grindx = {
     config: GRINDX_CONFIG,
     storage,
@@ -225,4 +246,4 @@ const grindx = {
     theme: new ThemeManager(storage),
 };
 
-window.grindx = grindx; // Global accessibility
+window.grindx = grindx;
