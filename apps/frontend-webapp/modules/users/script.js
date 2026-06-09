@@ -83,7 +83,6 @@ class UsersController extends window.grindx.controllers.BaseController {
     }
 
     bindEvents() {
-        document.getElementById('btnRefresh').onclick = () => this.loadUsers();
         document.getElementById('addUserBtn').onclick = () => this.modalController.open();
         document.getElementById('closeModal').onclick = () => this.modalController.close();
         document.getElementById('btnCancel').onclick = () => this.modalController.close();

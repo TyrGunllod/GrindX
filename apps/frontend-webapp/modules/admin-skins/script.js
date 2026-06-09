@@ -27,8 +27,8 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
     setupEvents() {
         // Header buttons
-        document.getElementById('btnRefresh')?.addEventListener('click', () => this.loadSkins());
-        document.getElementById('btnNewSkin')?.addEventListener('click', () => this.openNewSkinModal());
+        document.getElementById('btnUseTemplate')?.addEventListener('click', () => this.openTemplatePicker());
+        document.getElementById('btnImportSkin')?.addEventListener('click', () => this.importSkin());
 
         // Modals
         document.getElementById('btnCloseModal')?.addEventListener('click', () => this.closeModal());
@@ -206,21 +206,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             `;
         }).join('');
 
-        grid.innerHTML = cards + `
-            <div class="skin-card add-skin-card" style="border-style: solid; cursor: default;">
-                <div style="display: flex; flex-direction: column; gap: 0.75rem; padding: 0.5rem 0;">
-                    <div class="add-skin-option" onclick="window.adminSkins.openNewSkinModal()" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; cursor: pointer; border-radius: var(--skin-radius-md, 0.5rem); transition: background 0.2s; color: var(--skin-text-muted);">
-                        <i class="fas fa-plus" style="font-size: 1.25rem; width: 1.5rem; text-align: center;"></i>
-                        <div style="font-weight: 500;">Criar Nova Skin</div>
-                    </div>
-                    <div class="add-skin-divider" style="height: 1px; background: var(--border-color, #e2e8f0); margin: 0 0.25rem;"></div>
-                    <div class="add-skin-option" onclick="window.adminSkins.openTemplatePicker()" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; cursor: pointer; border-radius: var(--skin-radius-md, 0.5rem); transition: background 0.2s; color: var(--skin-text-muted);">
-                        <i class="fas fa-th-large" style="font-size: 1.25rem; width: 1.5rem; text-align: center;"></i>
-                        <div style="font-weight: 500;">Usar Template</div>
-                    </div>
-                </div>
-            </div>
-        `;
+        grid.innerHTML = cards;
     }
 
     renderTemplates() {
@@ -255,6 +241,59 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         document.getElementById('modalTitle').textContent = 'Nova Skin';
         this.resetForm();
         this.openModal();
+    }
+
+    async importSkin() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.style.display = 'none';
+        document.body.appendChild(input);
+
+        input.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) {
+                document.body.removeChild(input);
+                return;
+            }
+
+            try {
+                const text = await file.text();
+                const skinData = JSON.parse(text);
+
+                // Validate required fields
+                if (!skinData.name) {
+                    alert('Arquivo JSON inválido: campo "name" é obrigatório.');
+                    document.body.removeChild(input);
+                    return;
+                }
+
+                // Send to API
+                const resp = await fetch(`${this.apiBase}/themes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${this.token}`,
+                    },
+                    body: JSON.stringify(skinData),
+                });
+
+                if (!resp.ok) {
+                    const err = await resp.json();
+                    throw new Error(err.detail || 'Erro ao importar skin');
+                }
+
+                await this.loadSkins();
+                alert(`Skin "${skinData.name}" importada com sucesso!`);
+            } catch (err) {
+                console.error('Erro ao importar skin:', err);
+                alert(err.message || 'Erro ao processar o arquivo JSON.');
+            }
+
+            document.body.removeChild(input);
+        });
+
+        input.click();
     }
 
     async editSkin(id) {

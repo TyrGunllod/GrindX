@@ -96,7 +96,6 @@ class StructureController extends window.grindx.controllers.BaseController {
         document.getElementById('btnSaveModulo').onclick = () => this.saveModulo();
         document.getElementById('btnCancelAba').onclick = () => this.abaModalController.close();
         document.getElementById('btnCancelModulo').onclick = () => this.moduloModalController.close();
-        document.getElementById('btnRefresh').onclick = () => this.loadStructure();
         document.getElementById('btnBrowseModule').onclick = () => this.openPickerModal();
 
         this.container.addEventListener('click', (e) => this.handleActionClick(e));
