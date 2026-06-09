@@ -98,7 +98,6 @@ Items acknowledged and carried forward from previous milestone close:
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
 | Security | JWT token invalidation (SEC-06) | Deferred to v2 | Phase 1 discuss |
-| Security | Path traversal protection (SEC-07) | Deferred to v2 | Phase 1 discuss |
 | Security | Security headers CSP/HSTS (SEC-08) | Deferred to v2 | Phase 1 discuss |
 | Performance | Redis cache | Deferred to v2 | Phase 3 discuss |
 | Performance | Async SQLAlchemy | Deferred to v2 | Phase 3 discuss |
