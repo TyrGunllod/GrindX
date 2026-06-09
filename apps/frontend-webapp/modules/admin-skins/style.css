@@ -194,6 +194,12 @@
     box-shadow: 0 0 0 2px var(--skin-focus-ring, rgba(0, 194, 224, 0.35));
 }
 
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted, #64748b);
+    margin-top: 0.15rem;
+}
+
 /* Color Input Groups */
 .color-grid {
     display: grid;

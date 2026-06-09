@@ -308,6 +308,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         document.getElementById('skinName').value = skin.name || '';
         document.getElementById('companyName').value = skin.company_name || '';
         document.getElementById('copyrightText').value = skin.copyright_text || '';
+        document.getElementById('layoutMode').value = skin.layout_mode || 'topbar';
 
         const logoPreview = document.getElementById('logoPreview');
         if (logoPreview) {
@@ -524,6 +525,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 custom: this.customFonts,
             },
             icon_library: 'fontawesome',
+            layout_mode: document.getElementById('layoutMode').value || 'topbar',
             tokens: {
                 '--skin-radius-sm': document.getElementById('radiusSm').value,
                 '--skin-radius-md': document.getElementById('radiusMd').value,
@@ -928,6 +930,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         document.getElementById('skinName').value = '';
         document.getElementById('companyName').value = '';
         document.getElementById('copyrightText').value = '';
+        document.getElementById('layoutMode').value = 'topbar';
         this.resetPreview();
         document.getElementById('fontHeading').value = 'Barlow Condensed';
         document.getElementById('fontBody').value = 'DM Sans';
