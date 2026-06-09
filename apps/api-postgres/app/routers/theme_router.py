@@ -225,6 +225,7 @@ def create_theme_from_template(
     copyright_text = template_data.get("copyright_text")
     logo_url = template_data.get("logo_url")
     logo_short_url = template_data.get("logo_short_url")
+    layout_mode = template_data.get("layout_mode", "topbar")
 
     return service.create_theme(
         company_id=company_id,
@@ -237,6 +238,7 @@ def create_theme_from_template(
         logo_short_url=logo_short_url,
         company_name=company_name,
         copyright_text=copyright_text,
+        layout_mode=layout_mode,
     )
 
 
