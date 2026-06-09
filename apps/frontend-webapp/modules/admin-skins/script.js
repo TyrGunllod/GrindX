@@ -567,8 +567,17 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             this.toastSuccess('Skin salva com sucesso.');
             setTimeout(() => {
                 if (window.parent !== window) {
+                    // Limpa cache do pai antes de recarregar
+                    const companyId = window.grindx.session.getUserProfile()?.empresa_id;
+                    if (companyId && window.parent.skinLoader) {
+                        window.parent.skinLoader.clearCache(parseInt(companyId));
+                    }
                     window.parent.location.reload();
                 } else {
+                    const companyId = window.grindx.session.getUserProfile()?.empresa_id;
+                    if (companyId && window.skinLoader) {
+                        window.skinLoader.clearCache(parseInt(companyId));
+                    }
                     location.reload();
                 }
             }, 1500);
@@ -589,11 +598,19 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             this.toastSuccess('Skin ativada com sucesso.');
             setTimeout(() => {
                 if (window.parent !== window) {
+                    const companyId = window.grindx.session.getUserProfile()?.empresa_id;
+                    if (companyId && window.parent.skinLoader) {
+                        window.parent.skinLoader.clearCache(parseInt(companyId));
+                    }
                     window.parent.location.reload();
                 } else {
                     const companyId = window.grindx.session.getUserProfile()?.empresa_id;
                     if (companyId && window.skinLoader) {
-                        window.skinLoader.reload(parseInt(companyId));
+                        window.skinLoader.clearCache(parseInt(companyId));
+                    }
+                    const companyIdReload = window.grindx.session.getUserProfile()?.empresa_id;
+                    if (companyIdReload && window.skinLoader) {
+                        window.skinLoader.reload(parseInt(companyIdReload));
                     }
                 }
             }, 1500);

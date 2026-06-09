@@ -55,6 +55,9 @@ class ThemeRepository:
                 setattr(theme, key, value)
         self.db.commit()
         self.db.refresh(theme)
+
+        # Invalida cache do tema ativo desta empresa
+        invalidate(_theme_cache, _theme_lock, f"active:{theme.company_id}")
         return theme
 
     def activate_theme(self, theme_id: int, company_id: int) -> CompanyTheme:

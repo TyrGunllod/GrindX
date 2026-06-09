@@ -369,6 +369,15 @@ class SkinLoader {
         }
     }
 
+    clearCache(companyId) {
+        try {
+            if (!window.localStorage) return;
+            window.localStorage.removeItem(`skin_cache_${companyId}`);
+        } catch (e) {
+            console.warn('SkinLoader: Erro ao limpar cache', e);
+        }
+    }
+
     async _fetchAndUpdateCache(companyId, currentSkin) {
         try {
             const skin = await this._fetchFromAPI(companyId);
