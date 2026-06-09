@@ -146,6 +146,8 @@ class DashboardController extends window.grindx.controllers.BaseController {
         this._lastAbas = abas;
         if (this.currentLayout !== 'topbar') return;
 
+        const trunc = (s, n) => s && s.length > n ? s.substring(0, n) + '...' : s;
+
         const groupsHtml = abas.map((aba, idx) => {
             const modulos = (aba.modulos || []).filter(mod => {
                 if (mod.role_minima === 'admin' && this.user.role !== 'admin') return false;
@@ -159,14 +161,14 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 });
                 return childMods.map(mod => `
                     <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
-                        <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text">${mod.nome}</span>
+                        <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
                     </button>
                 `).join('');
             }).join('');
 
             const directModsHtml = modulos.map(mod => `
                 <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
-                    <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text">${mod.nome}</span>
+                    <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
                 </button>
             `).join('');
 
@@ -176,7 +178,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 <div class="nav-group-topbar" data-group="${aba.id}">
                     <button class="nav-group-trigger" aria-haspopup="true" aria-expanded="false">
                         <i class="${aba.icone || 'fas fa-folder'} icon"></i>
-                        <span>${aba.nome}</span>
+                        <span title="${aba.nome}">${trunc(aba.nome, 16)}</span>
                         <i class="fas fa-chevron-down chevron"></i>
                         <span class="active-dot"></span>
                     </button>
