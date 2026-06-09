@@ -41,7 +41,7 @@ pipeline {
         stage('Test API Postgres') {
             steps {
                 dir('apps/api-postgres') {
-                    sh 'PYTHONPATH=../../packages python3 -m pytest tests/ -v --tb=short --strict-markers'
+                    sh 'PYTHONPATH=../../packages python3 -m pytest tests/ -v --tb=short --strict-markers --cov=app --cov-report=term-missing --cov-fail-under=70'
                 }
             }
         }
@@ -49,7 +49,7 @@ pipeline {
         stage('Test API SQL Server') {
             steps {
                 dir('apps/api-sqlserver') {
-                    sh 'PYTHONPATH=../../packages python3 -m pytest tests/ -v --tb=short --strict-markers'
+                    sh 'PYTHONPATH=../../packages python3 -m pytest tests/ -v --tb=short --strict-markers --cov=app --cov-report=term-missing --cov-fail-under=70'
                 }
             }
         }
@@ -57,14 +57,14 @@ pipeline {
         stage('Test Shared') {
             steps {
                 dir('packages/shared') {
-                    sh 'PYTHONPATH=.. python3 -m pytest tests/ -v --tb=short --strict-markers'
+                    sh 'PYTHONPATH=.. python3 -m pytest tests/ -v --tb=short --strict-markers --cov=app --cov-report=term-missing --cov-fail-under=70'
                 }
             }
         }
 
         stage('Test Root') {
             steps {
-                sh 'PYTHONPATH=apps/api-postgres:apps/api-sqlserver:packages python3 -m pytest tests/ -v --tb=short --strict-markers'
+                sh 'PYTHONPATH=apps/api-postgres:apps/api-sqlserver:packages python3 -m pytest tests/ -v --tb=short --strict-markers --cov=app --cov-report=term-missing --cov-fail-under=70'
             }
         }
     }
