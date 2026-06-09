@@ -201,7 +201,9 @@ def register_router(manifest: dict, force: bool, main_py: Path | None = None) ->
     new_includes = []
     for router_file in sorted(router_files):
         # Don't add _router suffix if the file name already ends with _router
-        var_name = router_file if router_file.endswith("_router") else f"{router_file}_router"
+        var_name = (
+            router_file if router_file.endswith("_router") else f"{router_file}_router"
+        )
         import_line = f"from app.modules.{module_name}.routers.{router_file} import router as {var_name}"
         include_line = f"app.include_router({var_name})"
         if import_line not in content:
