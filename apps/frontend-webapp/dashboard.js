@@ -10,6 +10,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
         this.mainNav = document.getElementById('mainNav');
         this.viewport = document.getElementById('moduleViewport');
         this.loader = document.getElementById('moduleLoader');
+        this.topbar = document.getElementById('topbar');
+        this.topbarNav = document.getElementById('topbarNav');
+        this.currentLayout = 'topbar';
 
         this.init();
     }
@@ -84,6 +87,31 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 if (e.data === 'sidebar-update') this.loadDynamicMenu();
             });
 
+            window.addEventListener('layoutchange', (e) => {
+                this.applyLayout(e.detail.mode);
+            });
+
+            // Topbar events
+            document.getElementById('logoutBtnTopbar')?.addEventListener('click', () => this.logout());
+            document.getElementById('passwordBtnTopbar')?.addEventListener('click', () => this.openPasswordModal());
+            document.getElementById('themeToggleTopbar')?.addEventListener('click', () => {
+                window.grindx.theme.toggle();
+                this.updateThemeIcon();
+                this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));
+            });
+
+            // Topbar user pill dropdown
+            const userPillTopbar = document.getElementById('userPillTopbar');
+            if (userPillTopbar) {
+                userPillTopbar.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userPillTopbar.classList.toggle('open');
+                });
+            }
+            document.addEventListener('click', () => {
+                document.getElementById('userPillTopbar')?.classList.remove('open');
+            });
+
         }
 
     toggleSidebarCollapse() {
@@ -103,6 +131,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         try {
             const menuData = await window.grindx.api.get('/portal/menu');
             this.renderSidebar(menuData);
+            this.renderTopbarNav(menuData);
         } catch (err) {
             console.error('Falha ao carregar menu dinâmico:', err);
         }
@@ -111,6 +140,140 @@ class DashboardController extends window.grindx.controllers.BaseController {
     renderSidebar(abas) {
         this.mainNav.innerHTML = abas.map(aba => this._renderNavGroup(aba)).join('');
         this.moduleViewport = document.getElementById('moduleViewport');
+    }
+
+    renderTopbarNav(abas) {
+        this._lastAbas = abas;
+        if (this.currentLayout !== 'topbar') return;
+
+        this.topbarNav.innerHTML = abas.map((aba, idx) => {
+            const modulos = (aba.modulos || []).filter(mod => {
+                if (mod.role_minima === 'admin' && this.user.role !== 'admin') return false;
+                return true;
+            });
+
+            const childrenHtml = (aba.children || []).map(child => {
+                const childMods = (child.modulos || []).filter(mod => {
+                    if (mod.role_minima === 'admin' && this.user.role !== 'admin') return false;
+                    return true;
+                });
+                return childMods.map(mod => `
+                    <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
+                        <i class="${mod.icone || 'fas fa-cube'}"></i> ${mod.nome}
+                    </button>
+                `).join('');
+            }).join('');
+
+            const directModsHtml = modulos.map(mod => `
+                <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
+                    <i class="${mod.icone || 'fas fa-cube'}"></i> ${mod.nome}
+                </button>
+            `).join('');
+
+            const separator = idx < abas.length - 1 ? '<div class="nav-separator"></div>' : '';
+
+            return `
+                <div class="nav-group-topbar" data-group="${aba.id}">
+                    <button class="nav-group-trigger" aria-haspopup="true" aria-expanded="false">
+                        <i class="${aba.icone || 'fas fa-folder'} icon"></i>
+                        <span>${aba.nome}</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                        <span class="active-dot"></span>
+                    </button>
+                    <div class="nav-dropdown" role="menu">
+                        ${childrenHtml}
+                        ${directModsHtml}
+                    </div>
+                </div>
+                ${separator}
+            `;
+        }).join('');
+
+        this._bindTopbarDropdowns();
+        this._bindTopbarNavClicks();
+    }
+
+    _bindTopbarDropdowns() {
+        const groups = this.topbarNav.querySelectorAll('.nav-group-topbar');
+        let closeTimeout = null;
+
+        groups.forEach(group => {
+            group.addEventListener('mouseenter', () => {
+                clearTimeout(closeTimeout);
+                groups.forEach(g => { if (g !== group) g.classList.remove('open'); });
+                group.classList.add('open');
+                group.querySelector('.nav-group-trigger').setAttribute('aria-expanded', 'true');
+            });
+
+            group.addEventListener('mouseleave', () => {
+                closeTimeout = setTimeout(() => {
+                    group.classList.remove('open');
+                    group.querySelector('.nav-group-trigger').setAttribute('aria-expanded', 'false');
+                }, 120);
+            });
+        });
+
+        document.addEventListener('click', () => {
+            groups.forEach(g => {
+                g.classList.remove('open');
+                g.querySelector('.nav-group-trigger').setAttribute('aria-expanded', 'false');
+            });
+        });
+    }
+
+    _bindTopbarNavClicks() {
+        this.topbarNav.querySelectorAll('.nav-dropdown-item[data-module]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                this.topbarNav.querySelectorAll('.nav-dropdown-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                this.topbarNav.querySelectorAll('.nav-group-topbar').forEach(g => g.classList.remove('has-active'));
+                item.closest('.nav-group-topbar')?.classList.add('has-active');
+
+                this.navigateToModule(item.dataset.url);
+
+                const group = item.closest('.nav-group-topbar');
+                if (group) {
+                    group.classList.remove('open');
+                    group.querySelector('.nav-group-trigger').setAttribute('aria-expanded', 'false');
+                }
+
+                document.getElementById('activeModuleTitle').textContent = item.textContent.trim();
+            });
+        });
+    }
+
+    applyLayout(mode) {
+        this.currentLayout = mode;
+        const body = document.body;
+        body.classList.remove('layout-sidebar', 'layout-topbar');
+        body.classList.add(`layout-${mode}`);
+
+        if (mode === 'topbar') {
+            this.sidebar.style.display = 'none';
+            this.topbar.style.display = 'flex';
+            this.updateTopbarUserUI(this.user);
+            if (this._lastAbas) this.renderTopbarNav(this._lastAbas);
+        } else {
+            this.sidebar.style.display = '';
+            this.topbar.style.display = 'none';
+        }
+    }
+
+    updateTopbarUserUI(user) {
+        if (!user) return;
+        const displayName = this.getUserDisplayName(user);
+        const userNameEl = document.getElementById('userNameTopbar');
+        const userRoleEl = document.getElementById('userRoleTopbar');
+        const avatarEl = document.getElementById('userAvatarTopbar');
+        if (userNameEl) userNameEl.textContent = displayName;
+        if (userRoleEl) userRoleEl.textContent = this.formatRole(user.role);
+        if (avatarEl) {
+            const initials = this.getInitials(displayName);
+            avatarEl.textContent = initials;
+        }
     }
 
     _renderNavGroup(aba) {
@@ -322,6 +485,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
          document.getElementById('userRole').textContent = this.formatRole(user.role);
          const icons = { admin: 'user-cog', operador: 'user-tie', leitura: 'user' };
          document.getElementById('userAvatar').innerHTML = `<i class="fas fa-${icons[user.role] || 'user'}"></i>`;
+         this.updateTopbarUserUI(user);
      }
 
     getUserDisplayName(user) {
@@ -450,9 +614,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
     }
 
     loadInitialView() {
-        // Tenta carregar o primeiro módulo disponível ou o dashboard
         setTimeout(() => {
-            const firstLink = this.mainNav.querySelector('.nav-link');
+            const firstLink = this.mainNav.querySelector('.nav-link')
+                || this.topbarNav.querySelector('.nav-dropdown-item');
             if (firstLink) firstLink.click();
         }, 500);
     }
