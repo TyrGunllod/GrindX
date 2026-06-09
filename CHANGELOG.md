@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.19.1 (2026-06-09)
+
+### Bug Fixes
+
+- Tornar update_frontend_version.py independente do CWD
+  ([`66727d5`](https://github.com/TyrGunllod/GrindX/commit/66727d572edf9e88720a042001bb812e2841c670))
+
+
 ## v1.19.0 (2026-06-09)
 
 ### Bug Fixes
