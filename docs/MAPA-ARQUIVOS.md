@@ -1,8 +1,8 @@
-<!-- title: Mapa de Arquivos GrindX | updated: 2026-05-28 -->
+<!-- title: Mapa de Arquivos GrindX | updated: 2026-06-09 -->
 
 # GrindX — Mapa de Arquivos
 
-Inventário completo do projeto. Atualizado em 2026-05-28.
+Inventário completo do projeto. Atualizado em 2026-06-09.
 
 **Status geral: funcionalidades principais implementadas e rodando.**
 
@@ -25,7 +25,12 @@ GrindX/
 │   ├── DEPLOYMENT.md           ✅ Deploy com containers
 │   ├── SECURITY.md             ✅ JWT e RBAC
 │   ├── SETUP.md                ✅ Guia de instalação
-│   └── SKILLS.md               ✅ Skills do assistente
+│   ├── SKILLS.md               ✅ Skills do assistente
+│   ├── Revisions/
+│   │   └── REVISAO-GRINDX.md   ✅ Revisão de pendências
+│   └── superpowers/
+│       ├── specs/              ✅ Design specs
+│       └── plans/              ✅ Implementation plans
 │
 ├── apps/
 │   │
@@ -88,7 +93,10 @@ GrindX/
 │   │   │   │   ├── 002_add_usuario_modulos.py      ✅
 │   │   │   │   ├── 003_add_empresa_and_theme.py    ✅ Skin system
 │   │   │   │   ├── 004_add_theme_history.py        ✅ Skin system v2
-│   │   │   │   └── 005_add_aba_parent_id.py        ✅
+│   │   │   │   ├── 005_add_aba_parent_id.py        ✅
+│   │   │   │   ├── 006_add_performance_indexes.py  ✅
+│   │   │   │   ├── 007_add_org_schema_tables.py    ✅
+│   │   │   │   └── 008_add_temp_password_fields.py ✅
 │   │   │   ├── README.md               ✅
 │   │   │   ├── env.py                  ✅
 │   │   │   └── script.py.mako          ✅
@@ -212,7 +220,6 @@ GrindX/
 │   │   │       ├── script.js           ✅
 │   │   │       └── style.css           ✅
 │   │   ├── shared/
-│   │   │   ├── components/
 │   │   │   ├── fonts/
 │   │   │   │   ├── barlow-condensed-400.woff2 ✅ Self-hosted fonts
 │   │   │   │   ├── barlow-condensed-700.woff2 ✅ Self-hosted fonts
@@ -237,6 +244,10 @@ GrindX/
 │   │   ├── dashboard.js                ✅
 │   │   ├── index.html                  ✅ forgot-password modal
 │   │   ├── script.js                   ✅ forgot-password controller
+│   │   ├── skins/
+│   │   │   ├── grindx-default.json     ✅ Skin system
+│   │   │   └── royal-purple.json       ✅ Skin system
+│   │   ├── version.json                ✅ Semantic release version
 │   │   └── style.css                   ✅ modal styles (forgot-password)
 │   │
 ├── packages/
@@ -276,7 +287,16 @@ GrindX/
 ├── MAPA-ARQUIVOS.md                    ✅ Este arquivo
 ├── README.md                           ✅
 ├── podman-compose.yml                  ✅
-└── pytest.ini                          ✅
+├── pytest.ini                          ✅
+├── scripts/
+│   ├── update_frontend_version.py   ✅ Semantic release
+│   ├── generate_favicon.py          ✅
+│   └── export_openapi.py            ✅
+└── .planning/
+    ├── PROJECT.md                   ✅
+    ├── STATE.md                     ✅
+    ├── ROADMAP.md                   ✅
+    └── REQUIREMENTS.md              ✅
 ```
 
 ---
