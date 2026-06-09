@@ -8,7 +8,6 @@ Create Date: 2026-06-03
 from typing import Sequence
 
 from alembic import op
-import sqlalchemy as sa
 
 revision: str = "b2c3d4e5f6a7"
 down_revision: str | None = "a1b2c3d4e5f6"
@@ -78,9 +77,15 @@ def upgrade() -> None:
             FOREIGN KEY (responsavel_id) REFERENCES org.recursos(id) ON DELETE SET NULL
         )
     """)
-    op.execute("CREATE INDEX IF NOT EXISTS ix_org_tarefas_titulo ON org.tarefas (titulo)")
-    op.execute("CREATE INDEX IF NOT EXISTS ix_org_tarefas_projeto_id ON org.tarefas (projeto_id)")
-    op.execute("CREATE INDEX IF NOT EXISTS ix_org_tarefas_responsavel_id ON org.tarefas (responsavel_id)")
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_org_tarefas_titulo ON org.tarefas (titulo)"
+    )
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_org_tarefas_projeto_id ON org.tarefas (projeto_id)"
+    )
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_org_tarefas_responsavel_id ON org.tarefas (responsavel_id)"
+    )
 
     # registros_tarefas
     op.execute("""
@@ -97,8 +102,12 @@ def upgrade() -> None:
             FOREIGN KEY (autor_id) REFERENCES org.recursos(id) ON DELETE SET NULL
         )
     """)
-    op.execute("CREATE INDEX IF NOT EXISTS ix_org_registros_tarefas_tarefa_id ON org.registros_tarefas (tarefa_id)")
-    op.execute("CREATE INDEX IF NOT EXISTS ix_org_registros_tarefas_autor_id ON org.registros_tarefas (autor_id)")
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_org_registros_tarefas_tarefa_id ON org.registros_tarefas (tarefa_id)"
+    )
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_org_registros_tarefas_autor_id ON org.registros_tarefas (autor_id)"
+    )
 
 
 def downgrade() -> None:

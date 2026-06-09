@@ -22,7 +22,9 @@ def upgrade() -> None:
     """Add layout_mode column with topbar default; existing themes get sidebar."""
     op.add_column(
         "company_themes",
-        sa.Column("layout_mode", sa.String(20), nullable=False, server_default="topbar"),
+        sa.Column(
+            "layout_mode", sa.String(20), nullable=False, server_default="topbar"
+        ),
         schema="org",
     )
     op.execute(

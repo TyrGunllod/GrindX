@@ -6,7 +6,6 @@ Create Date: 2026-05-20 09:50:00.000000
 
 """
 
-import sqlalchemy as sa
 
 from alembic import op
 
@@ -86,7 +85,11 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("usuario_modulos")
-    op.drop_index("ix_portal_modulos_aba_id", table_name="portal_modulos", schema="portal")
+    op.drop_index(
+        "ix_portal_modulos_aba_id", table_name="portal_modulos", schema="portal"
+    )
     op.drop_table("portal_modulos", schema="portal")
-    op.drop_constraint("fk_aba_parent", "portal_abas", schema="portal", type_="foreignkey")
+    op.drop_constraint(
+        "fk_aba_parent", "portal_abas", schema="portal", type_="foreignkey"
+    )
     op.drop_table("portal_abas", schema="portal")

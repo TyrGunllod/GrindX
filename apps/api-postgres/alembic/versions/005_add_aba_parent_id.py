@@ -6,9 +6,7 @@ Create Date: 2026-05-25 23:00:00.000000
 
 """
 
-import sqlalchemy as sa
 
-from alembic import op
 
 revision = "005_add_aba_parent_id"
 down_revision = "004_add_theme_history"
