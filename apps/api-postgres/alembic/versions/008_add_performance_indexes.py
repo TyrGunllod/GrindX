@@ -18,51 +18,37 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    """Create indexes for common query patterns."""
+    """Create indexes for common query patterns (idempotente)."""
     # Composite index for find_active_by_company_id (themes by company + active status)
-    op.create_index(
-        "ix_company_themes_company_active",
-        "company_themes",
-        ["company_id", "is_active"],
-        unique=False,
-        schema="org",
-    )
+    op.execute("""
+        CREATE INDEX IF NOT EXISTS ix_company_themes_company_active
+        ON org.company_themes (company_id, is_active)
+    """)
 
     # Index for listar_por_role (users filtered by role)
-    op.create_index(
-        "ix_usuarios_role",
-        "usuarios",
-        ["role"],
-        unique=False,
-        schema="iam",
-    )
+    op.execute("""
+        CREATE INDEX IF NOT EXISTS ix_usuarios_role
+        ON iam.usuarios (role)
+    """)
 
     # Index for listar_ativos (active users)
-    op.create_index(
-        "ix_usuarios_ativo",
-        "usuarios",
-        ["ativo"],
-        unique=False,
-        schema="iam",
-    )
+    op.execute("""
+        CREATE INDEX IF NOT EXISTS ix_usuarios_ativo
+        ON iam.usuarios (ativo)
+    """)
 
     # Index for empresa_id joins (users by company)
-    op.create_index(
-        "ix_usuarios_empresa_id",
-        "usuarios",
-        ["empresa_id"],
-        unique=False,
-        schema="iam",
-    )
+    op.execute("""
+        CREATE INDEX IF NOT EXISTS ix_usuarios_empresa_id
+        ON iam.usuarios (empresa_id)
+    """)
 
     # Index for module lookups by tab (portal modulos by aba)
-    op.create_index(
-        "ix_portal_modulos_aba_id",
-        "portal_modulos",
-        ["aba_id"],
-        unique=False,
-        schema="portal",
-    )
+    # NOTA: ix_portal_modulos_aba_id já é criado na migration 002
+    op.execute("""
+        CREATE INDEX IF NOT EXISTS ix_portal_modulos_aba_id
+        ON portal.portal_modulos (aba_id)
+    """)
 
 
 def downgrade() -> None:

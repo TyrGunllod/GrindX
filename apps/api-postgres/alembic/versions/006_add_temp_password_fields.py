@@ -20,26 +20,34 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Add temp_password_hash and expires_at columns to usuarios table."""
-    op.add_column(
-        "usuarios",
-        sa.Column(
-            "temp_password_hash",
-            sa.String(255),
-            nullable=True,
-            comment="Hash bcrypt da senha temporária",
-        ),
-        schema="iam",
-    )
-    op.add_column(
-        "usuarios",
-        sa.Column(
-            "expires_at",
-            sa.DateTime(timezone=True),
-            nullable=True,
-            comment="Expiração da senha temporária",
-        ),
-        schema="iam",
-    )
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_schema = 'iam' AND table_name = 'usuarios'
+                AND column_name = 'temp_password_hash'
+            ) THEN
+                ALTER TABLE iam.usuarios ADD COLUMN temp_password_hash VARCHAR(255) NULL;
+                COMMENT ON COLUMN iam.usuarios.temp_password_hash
+                    IS 'Hash bcrypt da senha temporaria';
+            END IF;
+        END $$;
+    """)
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_schema = 'iam' AND table_name = 'usuarios'
+                AND column_name = 'expires_at'
+            ) THEN
+                ALTER TABLE iam.usuarios ADD COLUMN expires_at TIMESTAMP WITH TIME ZONE NULL;
+                COMMENT ON COLUMN iam.usuarios.expires_at
+                    IS 'Expiracao da senha temporaria';
+            END IF;
+        END $$;
+    """)
 
 
 def downgrade() -> None:

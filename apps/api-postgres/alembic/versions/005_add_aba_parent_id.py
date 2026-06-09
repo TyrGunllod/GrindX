@@ -17,20 +17,11 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "portal_abas",
-        sa.Column("parent_id", sa.Integer(), nullable=True),
-    )
-    op.create_foreign_key(
-        "fk_aba_parent",
-        "portal_abas",
-        "portal_abas",
-        ["parent_id"],
-        ["id"],
-        ondelete="CASCADE",
-    )
+    # parent_id e FK já existem desde a migration 002 (criação de portal_abas)
+    # Esta migration agora é um no-op para bancos que já foram criados com a 002 atualizada
+    pass
 
 
 def downgrade() -> None:
-    op.drop_constraint("fk_aba_parent", "portal_abas", type_="foreignkey")
-    op.drop_column("portal_abas", "parent_id")
+    # Nada a reverter — parent_id faz parte da criação original da tabela
+    pass

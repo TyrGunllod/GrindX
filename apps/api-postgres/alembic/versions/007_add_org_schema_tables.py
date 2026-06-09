@@ -20,152 +20,85 @@ def upgrade() -> None:
     # Ensure org schema exists
     op.execute("CREATE SCHEMA IF NOT EXISTS org")
 
-    op.create_table(
-        "projetos",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("nome", sa.String(length=200), nullable=False),
-        sa.Column("descricao", sa.Text(), nullable=True),
-        sa.Column(
-            "status", sa.String(length=20), server_default="planning", nullable=False
-        ),
-        sa.Column("data_inicio", sa.Date(), nullable=False),
-        sa.Column("data_fim", sa.Date(), nullable=False),
-        sa.Column("cor", sa.String(length=7), server_default="#3b82f6", nullable=False),
-        sa.Column("gerente_id", sa.Integer(), nullable=True),
-        sa.Column(
-            "ativo", sa.Boolean(), server_default=sa.text("true"), nullable=False
-        ),
-        sa.Column(
-            "criado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.Column(
-            "atualizado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        sa.ForeignKeyConstraint(
-            ["gerente_id"], ["iam.usuarios.id"], ondelete="SET NULL"
-        ),
-        schema="org",
-    )
-    op.create_index("ix_org_projetos_nome", "projetos", ["nome"], schema="org")
+    # projetos
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS org.projetos (
+            id SERIAL NOT NULL,
+            nome VARCHAR(200) NOT NULL,
+            descricao TEXT,
+            status VARCHAR(20) DEFAULT 'planning' NOT NULL,
+            data_inicio DATE NOT NULL,
+            data_fim DATE NOT NULL,
+            cor VARCHAR(7) DEFAULT '#3b82f6' NOT NULL,
+            gerente_id INTEGER,
+            ativo BOOLEAN DEFAULT true NOT NULL,
+            criado_em TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+            atualizado_em TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+            PRIMARY KEY (id),
+            FOREIGN KEY (gerente_id) REFERENCES iam.usuarios(id) ON DELETE SET NULL
+        )
+    """)
+    op.execute("CREATE INDEX IF NOT EXISTS ix_org_projetos_nome ON org.projetos (nome)")
 
-    op.create_table(
-        "recursos",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("projeto_id", sa.Integer(), nullable=False),
-        sa.Column("cargo_contexto", sa.String(length=100), nullable=True),
-        sa.Column("cor", sa.String(length=7), server_default="#3b82f6", nullable=False),
-        sa.Column(
-            "alocado", sa.Boolean(), server_default=sa.text("true"), nullable=False
-        ),
-        sa.Column(
-            "criado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.Column(
-            "atualizado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        sa.ForeignKeyConstraint(["user_id"], ["iam.usuarios.id"]),
-        sa.UniqueConstraint("user_id", "projeto_id", name="uq_recurso_user_projeto"),
-        schema="org",
-    )
+    # recursos
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS org.recursos (
+            id SERIAL NOT NULL,
+            user_id INTEGER NOT NULL,
+            projeto_id INTEGER NOT NULL,
+            cargo_contexto VARCHAR(100),
+            cor VARCHAR(7) DEFAULT '#3b82f6' NOT NULL,
+            alocado BOOLEAN DEFAULT true NOT NULL,
+            criado_em TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+            atualizado_em TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+            PRIMARY KEY (id),
+            FOREIGN KEY (user_id) REFERENCES iam.usuarios(id),
+            UNIQUE (user_id, projeto_id)
+        )
+    """)
 
-    op.create_table(
-        "tarefas",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("titulo", sa.String(length=255), nullable=False),
-        sa.Column("descricao", sa.Text(), nullable=True),
-        sa.Column(
-            "status", sa.String(length=20), server_default="todo", nullable=False
-        ),
-        sa.Column(
-            "prioridade", sa.String(length=10), server_default="medium", nullable=False
-        ),
-        sa.Column("data_inicio", sa.Date(), nullable=False),
-        sa.Column("data_fim", sa.Date(), nullable=False),
-        sa.Column(
-            "progresso", sa.Integer(), server_default=sa.text("0"), nullable=False
-        ),
-        sa.Column("projeto_id", sa.Integer(), nullable=True),
-        sa.Column("responsavel_id", sa.Integer(), nullable=True),
-        sa.Column(
-            "ativo", sa.Boolean(), server_default=sa.text("true"), nullable=False
-        ),
-        sa.Column(
-            "criado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.Column(
-            "atualizado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        sa.ForeignKeyConstraint(
-            ["projeto_id"], ["org.projetos.id"], ondelete="CASCADE"
-        ),
-        sa.ForeignKeyConstraint(
-            ["responsavel_id"], ["org.recursos.id"], ondelete="SET NULL"
-        ),
-        schema="org",
-    )
-    op.create_index("ix_org_tarefas_titulo", "tarefas", ["titulo"], schema="org")
-    op.create_index(
-        "ix_org_tarefas_projeto_id", "tarefas", ["projeto_id"], schema="org"
-    )
-    op.create_index(
-        "ix_org_tarefas_responsavel_id", "tarefas", ["responsavel_id"], schema="org"
-    )
+    # tarefas
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS org.tarefas (
+            id SERIAL NOT NULL,
+            titulo VARCHAR(255) NOT NULL,
+            descricao TEXT,
+            status VARCHAR(20) DEFAULT 'todo' NOT NULL,
+            prioridade VARCHAR(10) DEFAULT 'medium' NOT NULL,
+            data_inicio DATE NOT NULL,
+            data_fim DATE NOT NULL,
+            progresso INTEGER DEFAULT 0 NOT NULL,
+            projeto_id INTEGER,
+            responsavel_id INTEGER,
+            ativo BOOLEAN DEFAULT true NOT NULL,
+            criado_em TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+            atualizado_em TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+            PRIMARY KEY (id),
+            FOREIGN KEY (projeto_id) REFERENCES org.projetos(id) ON DELETE CASCADE,
+            FOREIGN KEY (responsavel_id) REFERENCES org.recursos(id) ON DELETE SET NULL
+        )
+    """)
+    op.execute("CREATE INDEX IF NOT EXISTS ix_org_tarefas_titulo ON org.tarefas (titulo)")
+    op.execute("CREATE INDEX IF NOT EXISTS ix_org_tarefas_projeto_id ON org.tarefas (projeto_id)")
+    op.execute("CREATE INDEX IF NOT EXISTS ix_org_tarefas_responsavel_id ON org.tarefas (responsavel_id)")
 
-    op.create_table(
-        "registros_tarefas",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("tarefa_id", sa.Integer(), nullable=False),
-        sa.Column("tipo", sa.String(length=20), server_default="log", nullable=False),
-        sa.Column("conteudo", sa.Text(), nullable=False),
-        sa.Column("autor_id", sa.Integer(), nullable=True),
-        sa.Column(
-            "ativo", sa.Boolean(), server_default=sa.text("true"), nullable=False
-        ),
-        sa.Column(
-            "criado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        sa.ForeignKeyConstraint(["tarefa_id"], ["org.tarefas.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["autor_id"], ["org.recursos.id"], ondelete="SET NULL"),
-        schema="org",
-    )
-    op.create_index(
-        "ix_org_registros_tarefas_tarefa_id",
-        "registros_tarefas",
-        ["tarefa_id"],
-        schema="org",
-    )
-    op.create_index(
-        "ix_org_registros_tarefas_autor_id",
-        "registros_tarefas",
-        ["autor_id"],
-        schema="org",
-    )
+    # registros_tarefas
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS org.registros_tarefas (
+            id SERIAL NOT NULL,
+            tarefa_id INTEGER NOT NULL,
+            tipo VARCHAR(20) DEFAULT 'log' NOT NULL,
+            conteudo TEXT NOT NULL,
+            autor_id INTEGER,
+            ativo BOOLEAN DEFAULT true NOT NULL,
+            criado_em TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+            PRIMARY KEY (id),
+            FOREIGN KEY (tarefa_id) REFERENCES org.tarefas(id) ON DELETE CASCADE,
+            FOREIGN KEY (autor_id) REFERENCES org.recursos(id) ON DELETE SET NULL
+        )
+    """)
+    op.execute("CREATE INDEX IF NOT EXISTS ix_org_registros_tarefas_tarefa_id ON org.registros_tarefas (tarefa_id)")
+    op.execute("CREATE INDEX IF NOT EXISTS ix_org_registros_tarefas_autor_id ON org.registros_tarefas (autor_id)")
 
 
 def downgrade() -> None:

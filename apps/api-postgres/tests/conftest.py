@@ -14,8 +14,8 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-# Adiciona o diretório raiz dos packages ao sys.path para importar shared
-_packages_dir = str(Path(__file__).resolve().parent.parent.parent)
+# Adiciona o diretório packages ao sys.path para importar shared
+_packages_dir = str(Path(__file__).resolve().parent.parent.parent / "packages")
 if _packages_dir not in sys.path:
     sys.path.insert(0, _packages_dir)
 
