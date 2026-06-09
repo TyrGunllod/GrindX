@@ -11,6 +11,6 @@
  */
 
 window.GRINDX_CONFIG = {
-  // URL base da API — incluir /v1/ para todas as chamadas
-  API_BASE_URL: "http://localhost:8002/v1",
+  // URL base da API — usa variavel injetada (window.__GRINDX_API_URL) ou fallback dev
+  API_BASE_URL: window.__GRINDX_API_URL || "http://localhost:8002/v1",
 };
