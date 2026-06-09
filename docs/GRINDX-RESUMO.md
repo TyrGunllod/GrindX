@@ -19,6 +19,7 @@ Monorepo Python + Vanilla JS. Dois backends FastAPI independentes compartilhando
 ## Funcionalidades
 
 - **Sub-abas (nested menu):** navegação hierárquica dinâmica gerenciada pelo banco
+- **Dual layout:** sidebar (padrão) e topbar, selecionável por empresa via tema
 - **Forgot-password:** fluxo completo de recuperação de senha com envio de email
 - **Skin system:** temas visuais customizáveis por empresa com persistência
 - **Troca de senha:** alteração de senha pelo próprio usuário logado

@@ -10,6 +10,12 @@ Este documento descreve o sistema de micro-módulos do GrindX e como estender o 
 
 O Portal funciona como um **Shell (Host)**. Ele não contém a lógica de negócio das páginas, mas sim o "esqueleto" (Menu Lateral, Topbar, Autenticação).
 
+O dashboard suporta dois modos de layout, configuráveis por empresa via tema:
+- **sidebar** (padrão): menu lateral fixo à esquerda, viewport ao lado
+- **topbar**: menu horizontal no topo, viewport ocupando largura total
+
+A escolha do layout é persistida no banco (`company_themes.layout_mode`) e aplicada automaticamente pelo `skinLoader` ao carregar o tema ativo.
+
 As páginas de negócio são carregadas dentro de um `<iframe>` no Viewport central. Isso garante:
 
 1. **Isolamento de Erros:** Um erro em um módulo não derruba o portal inteiro

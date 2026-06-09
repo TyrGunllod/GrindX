@@ -142,7 +142,7 @@ Representa uma empresa/organização no sistema.
 
 ### Schema `org` — CompanyTheme
 
-Tema visual (skin) personalizado por empresa.
+Tema visual (skin) personalizado por empresa. Suporta dois layouts: `sidebar` (padrão para temas existentes) e `topbar`.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
@@ -150,6 +150,7 @@ Tema visual (skin) personalizado por empresa.
 | `company_id` | Integer FK → `org.empresas` | Empresa dona do tema |
 | `name` | String(100) | Nome da skin |
 | `is_active` | Boolean | Skin ativa (apenas 1 por empresa) |
+| `layout_mode` | String(20) | `topbar` (padrão) ou `sidebar` |
 | `colors` | JSON (nullable) | Overrides de cores CSS (`--skin-*`) |
 | `fonts` | JSON (nullable) | Overrides de fontes (`heading`, `body`) |
 | `tokens` | JSON (nullable) | Tokens CSS extras (`--skin-radius-*`, `--skin-shadow-*`) |
@@ -229,6 +230,10 @@ As migrações ficam em `apps/api-postgres/alembic/versions/`.
 | `003_add_empresa_model.py` | Adiciona modelo Empresa (`public`) |
 | `004_add_usuario_empresa.py` | Adiciona empresa_id em Usuario (`public`) |
 | `005_add_aba_parent_id.py` | Adiciona parent_id em portal_abas (`public`) |
+| `006_add_performance_indexes.py` | Índices B-tree para performance |
+| `007_add_org_schema_tables.py` | Cria schema `org` e move tabelas |
+| `008_add_temp_password_fields.py` | Campos de senha temporária |
+| `009_add_layout_mode.py` | Adiciona `layout_mode` em `company_themes` |
 
 ---
 

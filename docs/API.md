@@ -320,6 +320,7 @@ Lista todos os temas da empresa do usuário logado.
     "tokens": {"--skin-radius-md": "0.5rem", "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.1)", ...},
     "icon_library": "fontawesome",
     "logo_url": "/uploads/logos/uuid.jpg",
+    "layout_mode": "topbar",
     "company_name": "Acme Corp",
     "copyright_text": "© 2026 Acme Corp. Todos os direitos reservados.",
     "criado_em": "2026-05-20T10:00:00",
@@ -336,6 +337,7 @@ Cria um novo tema para a empresa do usuário logado.
 ```json
 {
   "name": "Acme Blue",
+  "layout_mode": "topbar",
   "colors": {"--skin-primary": "#0055aa"},
   "fonts": {"heading": "Inter", "body": "Roboto"},
   "tokens": {"--skin-radius-md": "0.75rem"},
