@@ -3,7 +3,7 @@
 - `apps/api-postgres/` — FastAPI principal (porta 8002), JWT + RBAC, PostgreSQL via Alembic
 - `apps/api-sqlserver/` — FastAPI somente leitura (porta 8001), valida tokens do api-postgres
 - `apps/frontend-webapp/` — Portal vanilla JS (porta 5500), módulos via iframe, zero frameworks
-- `packages/shared/` — Pacote Python compartilhado (security, schemas, exceptions)
+- `packages/shared/` — Pacote Python compartilhado (security, schemas, exceptions, error codes)
 - `tests/` — Testes de integração do monorepo (raiz)
 - `.opencode/skills/` — Skills customizadas (ex: `create-standalone-module`)
 
@@ -89,6 +89,39 @@ Config Ruff (`apps/api-postgres/ruff.toml`): select E, F, I — ignore E501 — 
 - **Design system**: Glassmorphism, `var(--...)` para tudo, nunca cores/fontes fixas no CSS dos módulos
 - **Containerização**: Podman (não Docker), `podman-compose.yml`
 
+## Segurança (implementada)
+
+- **SECRET_KEY**: Validação de entropia Shannon (mínimo 3.5 bits/caractere) via Pydantic field_validator
+- **Senhas temporárias**: 16 caracteres alfanuméricos via `secrets` module, expiração de 15 minutos
+- **Rate limiting**: SlowAPI com chaves duplas (IP para não-autenticados, user_id para autenticados)
+- **File upload**: Validação de magic bytes via `filetype` library
+- **CORS**: Modo strict em produção (nunca `*`), configuração via env var `CORS_ORIGINS`
+- **Health checks**: Verificação profunda de conectividade + schema validation
+
+## Performance (implementada)
+
+- **Cache**: cachetools TTLCache (15 min TTL) para temas, usuários e portal
+- **Índices**: 5 índices B-tree via migração Alembic (company_themes composite, usuarios role/ativo/empresa_id, portal_modulos aba_id)
+- **Health checks**: Verificação de conectividade + schema validation para PostgreSQL e SQL Server
+
+## Infraestrutura (implementada)
+
+- **pytest-cov**: Threshold mínimo de 70%, enforcement no CI
+- **Migrações**: Cadeia linear com único head (consolidação de migrações órfãs)
+- **Schema validation**: Testes que verificam `_SCHEMA_TRANSLATE` cobre todos os schemas
+
+## API Versioning
+
+- Todas as rotas usam prefixo `/v1/` padronizado
+- Arquivo `apps/api-postgres/app/core/versioning.py` documenta a estratégia
+- Para nova versão: criar rotas com `/v2/`, manter `/v1/` por 6 meses
+
+## Error Codes
+
+- Registro centralizado em `packages/shared/exceptions/codes.py`
+- Use `ErrorCode.CONSTANT` em vez de hardcoding de strings
+- Exemplo: `from shared.exceptions.codes import ErrorCode; raise CredenciaisInvalidasError()`
+
 ## Criando Novos Módulos
 
 Usar a skill `.opencode/skills/create-standalone-module/SKILL.md` — cobre backend FastAPI + frontend vanilla JS + testes + migration + export.py. Seguir o checklist de registro ao final da skill.
@@ -104,7 +137,9 @@ Usar a skill `.opencode/skills/create-standalone-module/SKILL.md` — cobre back
 ## Arquivos de Config Importantes
 
 - `pyproject.toml` — semantic release config
-- `pytest.ini` — config pytest (raiz)
+- `pytest.ini` — config pytest (raiz) com `--cov=app --cov-fail-under=70`
 - `apps/api-postgres/ruff.toml` — rules do ruff
 - `podman-compose.yml` — orquestração de containers
 - `Makefile` — automação de tasks (Windows/PowerShell)
+- `apps/api-postgres/app/core/versioning.py` — estratégia de versionamento de API
+- `packages/shared/exceptions/codes.py` — registro centralizado de error codes

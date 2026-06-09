@@ -2,6 +2,50 @@
 
 <!-- version list -->
 
+## v1.18.0 (2026-06-09)
+
+### Features
+
+- **security**: SECRET_KEY com validação de entropia Shannon (mínimo 3.5 bits/caractere)
+- **security**: Senhas temporárias com expiração de 15 minutos via `secrets` module
+- **security**: Rate limiting com SlowAPI e chaves duplas (IP + user_id) para ambas as APIs
+- **security**: Validação de magic bytes em uploads via biblioteca `filetype`
+- **security**: CORS strict mode em produção (nunca `*`)
+- **cache**: Camada de cache in-memory com `cachetools` TTLCache (15 min TTL)
+- **indexes**: 5 índices B-tree via migração Alembic para queries comuns
+- **health**: Health checks profundos com verificação de conectividade + schema
+- **versioning**: Módulo de versionamento de API documentado (`versioning.py`)
+- **docs**: Script para exportação OpenAPI (`scripts/export_openapi.py`)
+
+### Bug Fixes
+
+- **health**: Corrigir health check para SQLite (tabelas sem prefixo de schema)
+- **health**: Adicionar `connect_timeout=5` para evitar hang quando DB inacessível
+- **auth**: Corrigir cache invalidation após criar usuário
+- **auth**: Corrigir mock de `temp_password_hash` e `expires_at` em testes
+- **frontend**: Adicionar prefixo `/v1/` correto nas chamadas API
+
+### Improvements
+
+- **error-codes**: Registro centralizado de códigos de erro (`packages/shared/exceptions/codes.py`)
+- **path-traversal**: Proteção contra directory traversal no theme_router
+- **model-docs**: Documentação de re-exports em `app/models/usuario.py`
+- **config**: Centralização de API URLs no frontend
+- **lint**: Correção de todos os erros de lint e formatação com ruff
+
+### Infrastructure
+
+- **pytest-cov**: Configurado com threshold de 70% mínimo
+- **migrations**: Consolidação de migrações órfãs (cadeia linear com único head)
+- **schema**: Validação de `_SCHEMA_TRANSLATE` cobre todos os 4 schemas PostgreSQL
+
+### Documentation
+
+- **AGENTS.md**: Atualizado com informações de segurança, performance e infraestrutura
+- **CONCERNS.md**: 17/21 itens resolvidos (81%)
+
+---
+
 ## v1.17.0 (2026-06-01)
 
 ### Bug Fixes
