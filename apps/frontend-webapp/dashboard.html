@@ -26,8 +26,22 @@
      <!-- Navigation Sidebar (Mobile Overlay + Desktop Persistent) -->
       <aside class="sidebar" id="sidebar" aria-label="Navegação Principal">
            <header class="sidebar-header">
-               <div class="logo-grindx font-display" style="font-size: 1.3rem; letter-spacing: 3px; color: var(--text-main);padding: 5px" aria-hidden="true">
-                    G<span class="logo-full">RIND</span><span style="color: var(--brand-is);">X</span>
+               <div class="logo-grindx font-display logo-clickable" style="font-size: 1.3rem; letter-spacing: 3px; color: var(--text-main);padding: 5px" tabindex="0" role="button" aria-label="Menu do usuário" aria-haspopup="true">
+                     G<span class="logo-full">RIND</span><span style="color: var(--brand-is);">X</span>
+                     <div class="user-dropdown logo-user-dropdown" id="userDropdownSidebar" role="menu">
+                         <div class="dropdown-user-info">
+                             <strong class="dropdown-user-name" id="userNameSidebar">...</strong>
+                             <span class="dropdown-user-role" id="userRoleSidebar">...</span>
+                         </div>
+                         <div class="nav-dropdown-divider"></div>
+                         <button class="nav-dropdown-item" role="menuitem" data-profile="true">
+                             <i class="fas fa-user"></i> Meu Perfil
+                         </button>
+                         <div class="nav-dropdown-divider"></div>
+                         <button class="nav-dropdown-item danger" role="menuitem" id="logoutBtnSidebar">
+                             <i class="fas fa-power-off"></i> Sair
+                         </button>
+                     </div>
                </div>
                <button class="btn-icon collapse-btn hide-mobile" id="toggleCollapse" aria-label="Recolher menu">
                   <i class="fas fa-chevron-left"></i>
@@ -67,52 +81,34 @@
            </nav>
 
           <footer class="sidebar-footer">
-              <div class="user-pill">
-                  <div id="userAvatar" class="avatar" aria-hidden="true">...</div>
-                  <div class="user-meta">
-                      <strong id="userName">...</strong>
-                      <span id="userRole">...</span>
-                  </div>
-                  <button id="logoutBtn" class="btn-icon" aria-label="Encerrar sessão">
-                      <i class="fas fa-power-off"></i>
-                  </button>
-              </div>
-              <div class="copyright-text">© 2026 GrindX. Desenvolvido por Alex Grellet.</div>
-           </footer>
+               <div class="copyright-text">© 2026 GrindX. Desenvolvido por Alex Grellet.</div>
+            </footer>
        </aside>
 
        <!-- Navigation Topbar (Topbar Mode) -->
        <header class="topbar" id="topbar" style="display:none;" role="banner">
-           <div class="topbar-logo" aria-hidden="true">
+           <div class="topbar-logo logo-clickable" tabindex="0" role="button" aria-label="Menu do usuário" aria-haspopup="true">
                G<span class="logo-full">RIND</span><span style="color: var(--brand-is);">X</span>
+               <div class="user-dropdown logo-user-dropdown" id="userDropdownTopbar" role="menu">
+                   <div class="dropdown-user-info">
+                       <strong class="dropdown-user-name" id="userNameTopbarDropdown">...</strong>
+                       <span class="dropdown-user-role" id="userRoleTopbarDropdown">...</span>
+                   </div>
+                   <div class="nav-dropdown-divider"></div>
+                   <button class="nav-dropdown-item" role="menuitem" data-profile="true">
+                       <i class="fas fa-user"></i> Meu Perfil
+                   </button>
+                   <div class="nav-dropdown-divider"></div>
+                   <button class="nav-dropdown-item danger" role="menuitem" id="logoutBtnTopbar">
+                       <i class="fas fa-power-off"></i> Sair
+                   </button>
+               </div>
            </div>
            <nav class="topbar-nav" id="topbarNav" aria-label="Navegação Principal">
                <!-- Renderizado dinamicamente por renderTopbarNav() -->
            </nav>
-           <div class="topbar-right">
-               <button class="btn-icon" id="themeToggleTopbar" aria-label="Alternar tema">
-                   <i class="fas fa-moon"></i>
-               </button>
-               <div class="user-pill-compact" id="userPillTopbar" tabindex="0" role="button" aria-label="Menu do usuário" aria-haspopup="true">
-                   <div class="user-avatar-sm" id="userAvatarTopbar">...</div>
-                   <div class="user-pill-info">
-                       <span class="user-pill-name" id="userNameTopbar">...</span>
-                       <span class="user-pill-role" id="userRoleTopbar">...</span>
-                   </div>
-                   <i class="fas fa-chevron-down" style="font-size:0.6rem;color:var(--text-muted);margin-left:2px;"></i>
-                   <div class="user-dropdown" id="userDropdownTopbar" role="menu">
-                       <button class="nav-dropdown-item" role="menuitem">
-                           <i class="fas fa-user"></i> Meu Perfil
-                       </button>
-                       <button class="nav-dropdown-item" role="menuitem" id="passwordBtnTopbar">
-                           <i class="fas fa-key"></i> Alterar Senha
-                       </button>
-                       <div class="nav-dropdown-divider"></div>
-                       <button class="nav-dropdown-item danger" role="menuitem" id="logoutBtnTopbar">
-                           <i class="fas fa-power-off"></i> Sair
-                       </button>
-                   </div>
-               </div>
+           <div class="topbar-right" id="topbarRight">
+               <!-- Espaço reservado para futuras abas -->
            </div>
        </header>
 
@@ -134,9 +130,6 @@
                  <i class="fas fa-bars"></i>
              </button>
              <div class="top-bar-title" id="activeModuleTitle">Painel de Controle</div>
-             <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Alternar tema">
-                 <i class="fas fa-moon"></i>
-             </button>
          </header>
 
          <section class="content-area" id="moduleViewport" role="region" aria-live="polite" style="padding: 5px; margin: 0px;">
@@ -147,32 +140,7 @@
          </section>
      </main>
 
-    <!-- Password Change Modal -->
-    <div class="modal-overlay" id="passwordModal" role="dialog" aria-modal="true" style="display: none;">
-        <div class="modal-card" style="max-width: 420px;">
-            <header class="modal-header">
-                <h3>Alterar Senha</h3>
-            </header>
-            <form id="passwordForm">
-                <div class="form-group">
-                    <label for="currentPassword">Senha Atual</label>
-                    <input type="password" id="currentPassword" class="form-control" required minlength="1">
-                </div>
-                <div class="form-group">
-                    <label for="newPassword">Nova Senha</label>
-                    <input type="password" id="newPassword" class="form-control" required minlength="6">
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirmar Nova Senha</label>
-                    <input type="password" id="confirmPassword" class="form-control" required minlength="6">
-                </div>
-            </form>
-            <footer class="modal-footer flex justify-end gap-2">
-                <button id="cancelPasswordBtn" class="btn btn-secondary" type="button">Cancelar</button>
-                <button id="savePasswordBtn" class="btn btn-primary" type="button">Salvar</button>
-            </footer>
-        </div>
-    </div>
+
 
     <!-- Core Scripts -->
     <script src="shared/app.js"></script>
