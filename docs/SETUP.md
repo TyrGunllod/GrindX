@@ -1,4 +1,4 @@
-<!-- title: Guia de Instalação — GrindX | updated: 2026-05-25 -->
+<!-- title: Guia de Instalação — GrindX | updated: 2026-06-09 -->
 
 # Guia de Instalação — GrindX
 
