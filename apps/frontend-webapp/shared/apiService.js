@@ -52,7 +52,7 @@
 
         if (response.status === 401) {
             const url = response.url || '';
-            if (!url.includes('/auth/token') && !url.includes('/auth/refresh')) {
+            if (!url.endsWith('/auth/token') && !url.includes('/auth/refresh')) {
                 window.grindx.session.clear();
                 window.location.href = 'index.html';
                 throw new Error('Sessão expirada. Faça login novamente.');
