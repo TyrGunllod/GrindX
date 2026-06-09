@@ -222,3 +222,38 @@ def test_delete_theme_logs_history(
     assert captured.get("action") == "deleted"
     assert captured.get("theme_snapshot") is not None
     assert captured["theme_snapshot"]["name"] == "Delete Test"
+
+
+def test_create_theme_with_layout_mode(theme_service: ThemeService, empresa: Empresa):
+    """Testa criação de tema com layout_mode."""
+    result = theme_service.create_theme(
+        company_id=empresa.id,
+        name="Layout Test",
+        icon_library="fontawesome",
+        layout_mode="topbar",
+    )
+    assert result["layout_mode"] == "topbar"
+
+
+def test_create_theme_default_layout_mode(theme_service: ThemeService, empresa: Empresa):
+    """Testa que layout_mode padrão é 'topbar'."""
+    result = theme_service.create_theme(
+        company_id=empresa.id,
+        name="Default Layout",
+        icon_library="fontawesome",
+    )
+    assert result["layout_mode"] == "topbar"
+
+
+def test_update_theme_layout_mode(theme_service: ThemeService, empresa: Empresa):
+    """Testa atualização de layout_mode."""
+    created = theme_service.create_theme(
+        company_id=empresa.id,
+        name="Update Layout",
+        icon_library="fontawesome",
+        layout_mode="topbar",
+    )
+    updated = theme_service.update_theme(
+        created["id"], company_id=empresa.id, layout_mode="sidebar"
+    )
+    assert updated["layout_mode"] == "sidebar"
