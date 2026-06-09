@@ -88,6 +88,12 @@ class CompanyTheme(OrgBase):
     copyright_text: Mapped[str | None] = mapped_column(
         String(200), nullable=True, comment="Texto do rodapé"
     )
+    layout_mode: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        server_default=text("'topbar'"),
+        comment="Modo de layout: 'sidebar' ou 'topbar'",
+    )
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
