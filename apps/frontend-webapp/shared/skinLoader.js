@@ -284,6 +284,12 @@ class SkinLoader {
             logoEl.innerHTML = companyName.substring(0, 1) + '<span class="logo-full">' + companyName.substring(1) + '</span>';
         }
 
+        // Atualiza logo no topbar
+        const topbarLogoEl = document.querySelector('.topbar-logo');
+        if (topbarLogoEl) {
+            topbarLogoEl.innerHTML = companyName.substring(0, 1) + '<span class="logo-full">' + companyName.substring(1) + '</span>';
+        }
+
         // Auto-genera copyright se não fornecido
         if (!copyrightText) {
             const year = new Date().getFullYear();
