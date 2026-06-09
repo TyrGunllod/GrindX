@@ -2,6 +2,55 @@
 
 <!-- version list -->
 
+## v1.19.0 (2026-06-09)
+
+### Bug Fixes
+
+- Atualizar APP_VERSION para 1.18.0
+  ([`fe6c0dd`](https://github.com/TyrGunllod/GrindX/commit/fe6c0dd33d792a3e06d7981cf3353547bf002440))
+
+- Corrigir CI para usar requirements-dev.txt e remover slowapi duplicado no api-sqlserver
+  ([`5724260`](https://github.com/TyrGunllod/GrindX/commit/572426080fd2ec9c143a73a8a80cb4de446e2f67))
+
+- Remover SEC-07 dos itens adiados no STATE.md
+  ([`b7031b8`](https://github.com/TyrGunllod/GrindX/commit/b7031b8c5e527ac07f857da1d35c8bb7b14ee136))
+
+- Remover slowapi duplicado no requirements.txt
+  ([`065dff1`](https://github.com/TyrGunllod/GrindX/commit/065dff18a29448c22a79d4ddad71be5602ac996a))
+
+- Sincronizar version.json automaticamente no release
+  ([`456e183`](https://github.com/TyrGunllod/GrindX/commit/456e183dde09d67ca9e5fc1a9cd965401e5387a6))
+
+### Continuous Integration
+
+- Adicionar coverage threshold 70% ao Jenkinsfile
+  ([`bb52f69`](https://github.com/TyrGunllod/GrindX/commit/bb52f697e0db0d8fcdfb8fbb69d703c6c9452f42))
+
+### Documentation
+
+- Atualizar API.md — remover produtos, adicionar import
+  ([`22d6723`](https://github.com/TyrGunllod/GrindX/commit/22d67230b93180a9adfa86c87509932ac94fc714))
+
+- Atualizar MAPA-ARQUIVOS com estrutura atual
+  ([`70485ef`](https://github.com/TyrGunllod/GrindX/commit/70485ef047fe84049b86365633aa749436ad0374))
+
+- Atualizar SETUP com paths apps/
+  ([`e9d628e`](https://github.com/TyrGunllod/GrindX/commit/e9d628eef1848576a1b09655c8d34ec68ea1d8b4))
+
+### Features
+
+- Tornar API_BASE_URL injetavel via window.__GRINDX_API_URL
+  ([`6fd0783`](https://github.com/TyrGunllod/GrindX/commit/6fd078395f0470f1ac214a4d7ac108b9a0add420))
+
+### Refactoring
+
+- Renomear migracoes para padrao sequencial (001-008)
+  ([`2240761`](https://github.com/TyrGunllod/GrindX/commit/2240761a7212feced90c9264600ccb6cd3d5c6cb))
+
+- Separar dependencias dev/prod no api-postgres
+  ([`66dcf11`](https://github.com/TyrGunllod/GrindX/commit/66dcf11e326b965add4040dd90d617863b35f8e1))
+
+
 ## v1.18.0 (2026-06-09)
 
 ### Features
