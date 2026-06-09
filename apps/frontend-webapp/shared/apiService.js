@@ -50,6 +50,15 @@
             return null;
         }
 
+        if (response.status === 401) {
+            const url = response.url || '';
+            if (!url.includes('/auth/token') && !url.includes('/auth/refresh')) {
+                window.grindx.session.clear();
+                window.location.href = 'index.html';
+                throw new Error('Sessão expirada. Faça login novamente.');
+            }
+        }
+
         const contentType = response.headers.get('content-type') || '';
         const hasJson = contentType.includes('application/json');
         const payload = hasJson ? await response.json() : await response.text();
