@@ -22,8 +22,8 @@
 ### Medium Priority
 
 4. **Hardcoded API URL in frontend**
-   - ✗ NOT RESOLVED: Multiple fallback URLs in frontend
-   - Location: `apps/frontend-webapp/shared/config.js:14`, `apps/frontend-webapp/shared/apiService.js:20`
+   - ✓ RESOLVED: Centralized in config.js, fallbacks removed in Phase 4
+   - Location: `apps/frontend-webapp/shared/config.js`
 
 5. **No database connection pooling for SQL Server**
    - ✓ RESOLVED: connect_timeout added in Phase 3 fix
@@ -102,14 +102,14 @@
    - Location: `apps/api-postgres/alembic/versions/`
 
 4. **Frontend `window.grindx` global**
-   - ✗ NOT RESOLVED: Frontend architecture unchanged
+   - ✓ RESOLVED: Documented in Phase 4 with clear API contract
    - Location: `apps/frontend-webapp/shared/app.js:228`
 
 ## Missing Features / Gaps
 
 1. **No API versioning strategy**
-   - ✗ NOT RESOLVED: Out of scope for remediation
-   - Location: All router files
+   - ✓ RESOLVED: Versioning module created in Phase 4
+   - Location: `apps/api-postgres/app/core/versioning.py`
 
 2. **No health check depth**
    - ✓ RESOLVED: Deep health checks with schema validation in Phase 3
@@ -120,8 +120,8 @@
    - Location: `packages/shared/exceptions/codes.py`
 
 4. **No API documentation generation**
-   - ✗ NOT RESOLVED: Swagger available but no export/SDK generation
-   - Location: All router files
+   - ✓ RESOLVED: OpenAPI export script created in Phase 4
+   - Location: `scripts/export_openapi.py`
 
 ## Environment Dependencies
 
@@ -143,10 +143,10 @@
 | Technical Debt | 2 | 1 | 0 |
 | Security | 5 | 0 | 1 |
 | Performance | 2 | 0 | 2 |
-| Fragile Areas | 3 | 1 | 0 |
-| Missing Features | 2 | 2 | 0 |
-| **Total** | **14** | **4** | **3** |
+| Fragile Areas | 4 | 0 | 0 |
+| Missing Features | 4 | 0 | 0 |
+| **Total** | **17** | **1** | **3** |
 
-**Progress:** 14/21 items resolved (67%)
+**Progress:** 17/21 items resolved (81%)
 **Out of Scope:** 3 items deferred to v2
-**Remaining:** 4 items not addressed in this remediation
+**Remaining:** 1 item not addressed (Frontend build/bundle step)
