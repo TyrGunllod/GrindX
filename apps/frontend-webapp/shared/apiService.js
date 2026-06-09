@@ -54,7 +54,7 @@
             const url = response.url || '';
             if (!url.endsWith('/auth/token') && !url.includes('/auth/refresh')) {
                 window.grindx.session.clear();
-                window.location.href = 'index.html';
+                try { window.top.location.href = 'index.html'; } catch (e) { window.location.href = 'index.html'; }
                 throw new Error('Sessão expirada. Faça login novamente.');
             }
         }

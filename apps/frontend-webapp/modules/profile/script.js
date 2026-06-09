@@ -1,15 +1,32 @@
 (function initProfile() {
     let currentUser = {};
 
-    async function loadProfile() {
+    function getUserData() {
         try {
-            const profile = await window.grindx.api.get('/auth/me');
-            if (!profile) return;
-            currentUser = profile;
+            return window.parent.grindx?.session?.getUserProfile?.() || {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    async function loadProfile() {
+        let profile = null;
+        try {
+            profile = await window.grindx.api.get('/auth/me');
         } catch (err) {
-            showToast(err.message || 'Erro ao carregar perfil.', 'error');
+            profile = getUserData();
+        }
+
+        if (!profile || !profile.username) {
+            profile = getUserData();
+        }
+
+        if (!profile || !profile.username) {
+            showToast('Erro ao carregar perfil.', 'error');
             return;
         }
+
+        currentUser = profile;
 
         document.getElementById('profileUsername').value = profile.username || '';
         document.getElementById('profileRole').value = formatRole(profile.role);
