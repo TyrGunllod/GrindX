@@ -22,9 +22,6 @@ slowapi>=0.1.9
 # === Logging ===
 structlog>=24.1.0
 
-# === Rate Limiting ===
-slowapi>=0.1.9
-
 # === Testes ===
 pytest>=8.0.0
 pytest-asyncio>=0.23.5
