@@ -196,7 +196,9 @@ class AuthService:
             username=usuario.username,
         )
 
-    def update_profile(self, user_id: int, email: str | None = None, nome_completo: str | None = None) -> Usuario:
+    def update_profile(
+        self, user_id: int, email: str | None = None, nome_completo: str | None = None
+    ) -> Usuario:
         """Atualiza o perfil do próprio usuário (email e/ou nome completo).
 
         Args:
