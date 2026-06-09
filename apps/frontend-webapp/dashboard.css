@@ -41,12 +41,11 @@
     gap: 0.5rem;
 }
 
-.sidebar.collapsed .logo-full {
+.sidebar.collapsed .logo-full,
+.sidebar.collapsed .logo-short,
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .logo-img {
     display: none;
-}
-
-.sidebar.collapsed .logo-short {
-    display: inline;
 }
 
 .sidebar.open {

@@ -312,29 +312,31 @@ class SkinLoader {
     }
 
     _updateLogos(logoUrl, logoShortUrl) {
-        if (logoUrl) {
-            const logoEl = document.querySelector('.logo-grindx');
-            if (logoEl) {
-                const name = (this.currentSkin && this.currentSkin.company_name) || 'GrindX';
-                const fullUrl = this._resolveUrl(logoUrl);
-                // Preserva o dropdown e insere/atualiza a imagem antes do texto
-                let img = logoEl.querySelector('.logo-img');
-                const textEl = logoEl.querySelector('.logo-text');
-                if (!img) {
-                    img = document.createElement('img');
-                    img.className = 'logo-img';
-                    img.alt = 'Logo';
-                    img.style.maxHeight = '32px';
-                    img.style.width = 'auto';
-                    logoEl.insertBefore(img, textEl);
-                }
-                img.src = fullUrl;
-                if (textEl) textEl.textContent = name;
-                img.onerror = function () {
-                    img.remove();
-                    if (textEl) textEl.textContent = name;
-                };
+        const updateLogoElement = (container) => {
+            if (!container) return;
+            const name = (this.currentSkin && this.currentSkin.company_name) || 'GrindX';
+            const fullUrl = this._resolveUrl(logoUrl);
+            let img = container.querySelector('.logo-img');
+            const textEl = container.querySelector('.logo-text');
+            if (!img) {
+                img = document.createElement('img');
+                img.className = 'logo-img';
+                img.alt = 'Logo';
+                img.style.maxHeight = '32px';
+                img.style.width = 'auto';
+                container.insertBefore(img, textEl);
             }
+            img.src = fullUrl;
+            if (textEl) textEl.textContent = name;
+            img.onerror = function () {
+                img.remove();
+                if (textEl) textEl.textContent = name;
+            };
+        };
+
+        if (logoUrl) {
+            updateLogoElement(document.querySelector('.logo-grindx'));
+            updateLogoElement(document.querySelector('.topbar-logo'));
         }
         if (logoShortUrl) {
             const favicon = document.querySelector('link[rel="icon"]');
