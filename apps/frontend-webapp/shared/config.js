@@ -11,6 +11,6 @@
  */
 
 window.GRINDX_CONFIG = {
-  // URL base da API — alterar para o IP do servidor em producao
-  API_BASE_URL: "http://localhost:8002",
+  // URL base da API — incluir /v1/ para todas as chamadas
+  API_BASE_URL: "http://localhost:8002/v1",
 };

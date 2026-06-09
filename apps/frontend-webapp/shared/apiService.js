@@ -17,7 +17,7 @@
         // Quando acessado via localhost, usa localhost:8002
         // Quando acessado via outro IP, usa esse IP:8002
         const hostname = window.location.hostname;
-        return `http://${hostname}:8002`;
+        return `http://${hostname}:8002/v1`;
     };
 
     function buildApiUrl(endpoint, params = {}) {
