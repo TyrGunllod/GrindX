@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.19.2 (2026-06-09)
+
+### Bug Fixes
+
+- Atualizar APP_VERSION para 1.19.0 (sync com CHANGELOG)
+  ([`81d9137`](https://github.com/TyrGunllod/GrindX/commit/81d91375271ca1ff7b4c72ec7139cb5ff287b19a))
+
+
 ## v1.19.1 (2026-06-09)
 
 ### Bug Fixes
