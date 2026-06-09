@@ -51,6 +51,7 @@ class ThemeService:
         logo_short_url: str | None = None,
         company_name: str | None = None,
         copyright_text: str | None = None,
+        layout_mode: str = "topbar",
     ) -> dict:
         """Cria um novo tema."""
 
@@ -65,6 +66,7 @@ class ThemeService:
             logo_short_url=logo_short_url,
             company_name=company_name,
             copyright_text=copyright_text,
+            layout_mode=layout_mode,
         )
         theme = self.repo.create(theme)
 
@@ -99,6 +101,7 @@ class ThemeService:
             "logo_short_url": theme.logo_short_url,
             "company_name": theme.company_name,
             "copyright_text": theme.copyright_text,
+            "layout_mode": theme.layout_mode,
         }
 
         theme = self.repo.update(theme, **kwargs)
@@ -174,6 +177,7 @@ class ThemeService:
             "logo_short_url": theme.logo_short_url,
             "company_name": theme.company_name,
             "copyright_text": theme.copyright_text,
+            "layout_mode": theme.layout_mode,
             "criado_em": theme.criado_em.isoformat() if theme.criado_em else None,
             "atualizado_em": theme.atualizado_em.isoformat()
             if theme.atualizado_em
