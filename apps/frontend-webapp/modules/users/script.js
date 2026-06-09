@@ -105,7 +105,7 @@ class UsersController extends window.grindx.controllers.BaseController {
 
         try {
             console.log('Solicitando listagem de usuários...');
-            const result = await window.grindx.api.get('/usuarios');
+            const result = await window.grindx.api.get('/v1/usuarios');
             console.log('Dados recebidos:', result);
 
             if (result && Array.isArray(result.items)) {
@@ -147,7 +147,7 @@ class UsersController extends window.grindx.controllers.BaseController {
     async deleteUser(id) {
         if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
         try {
-            await window.grindx.api.delete(`/usuarios/${id}`);
+            await window.grindx.api.delete(`/v1/usuarios/${id}`);
             this.users = this.users.filter(user => String(user.id) !== String(id));
             this.renderTableOrEmpty();
             this.toastSuccess('Usuário excluído com sucesso.');
@@ -158,7 +158,7 @@ class UsersController extends window.grindx.controllers.BaseController {
 
     async toggleUserStatus(id, novoStatus) {
         try {
-            const updatedUser = await window.grindx.api.put(`/usuarios/${id}`, { ativo: novoStatus });
+            const updatedUser = await window.grindx.api.put(`/v1/usuarios/${id}`, { ativo: novoStatus });
             this.upsertUser(updatedUser);
             this.renderTableOrEmpty();
             this.toastSuccess(`Usuário ${novoStatus ? 'ativado' : 'desativado'} com sucesso.`);
@@ -181,10 +181,10 @@ class UsersController extends window.grindx.controllers.BaseController {
 
         try {
             if (this.currentUserId) {
-                const updatedUser = await window.grindx.api.put(`/usuarios/${this.currentUserId}`, formData);
+                const updatedUser = await window.grindx.api.put(`/v1/usuarios/${this.currentUserId}`, formData);
                 this.upsertUser(updatedUser);
             } else {
-                const createdUser = await window.grindx.api.post('/usuarios', formData);
+                const createdUser = await window.grindx.api.post('/v1/usuarios', formData);
                 this.upsertUser(createdUser);
             }
 
@@ -236,8 +236,8 @@ class UsersController extends window.grindx.controllers.BaseController {
         try {
             // Busca módulos do usuário e menu completo
             const [userModulos, menu] = await Promise.all([
-                window.grindx.api.get(`/usuarios/${id}/modulos`),
-                window.grindx.api.get('/portal/menu') // Assumindo que este endpoint existe e retorna tudo para admin ou já foi filtrado no backend para admin
+                window.grindx.api.get(`/v1/usuarios/${id}/modulos`),
+                window.grindx.api.get('/v1/portal/menu') // Assumindo que este endpoint existe e retorna tudo para admin ou já foi filtrado no backend para admin
             ]);
 
             const liberados = userModulos.modulos || [];
@@ -270,7 +270,7 @@ class UsersController extends window.grindx.controllers.BaseController {
         const moduloIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
 
         try {
-            await window.grindx.api.put(`/usuarios/${this.currentUserId}/modulos`, { modulo_ids: moduloIds });
+            await window.grindx.api.put(`/v1/usuarios/${this.currentUserId}/modulos`, { modulo_ids: moduloIds });
             this.toastSuccess('Permissões atualizadas com sucesso.');
             this.permissoesController.close();
         } catch (err) {

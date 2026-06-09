@@ -40,7 +40,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
     async loadCurrentUserProfile() {
         try {
-            const profile = await window.grindx.api.get('/auth/me');
+            const profile = await window.grindx.api.get('/v1/auth/me');
 
             if (!profile) return;
 
@@ -101,7 +101,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
     async loadDynamicMenu() {
         try {
-            const menuData = await window.grindx.api.get('/portal/menu');
+            const menuData = await window.grindx.api.get('/v1/portal/menu');
             this.renderSidebar(menuData);
         } catch (err) {
             console.error('Falha ao carregar menu dinâmico:', err);
@@ -390,7 +390,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         }
 
         try {
-            await window.grindx.api.post('/auth/change-password', {
+            await window.grindx.api.post('/v1/auth/change-password', {
                 current_password: currentPassword,
                 new_password: newPassword,
             });

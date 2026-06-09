@@ -109,7 +109,7 @@ class StructureController extends window.grindx.controllers.BaseController {
         );
 
         try {
-            this.data = await window.grindx.api.get('/portal/menu');
+            this.data = await window.grindx.api.get('/v1/portal/menu');
             if (Array.isArray(this.data) && this.data.length) {
                 this.renderStructure(this.data);
             } else {
@@ -252,7 +252,7 @@ class StructureController extends window.grindx.controllers.BaseController {
         }
         if (!confirm('Excluir esta aba e todos os seus módulos?')) return;
         try {
-            await window.grindx.api.delete(`/portal/abas/${id}`);
+            await window.grindx.api.delete(`/v1/portal/abas/${id}`);
             await this.loadStructure();
             this.toastSuccess('Aba excluída com sucesso.');
             window.parent.postMessage('sidebar-update', '*');
@@ -359,7 +359,7 @@ class StructureController extends window.grindx.controllers.BaseController {
         }
         if (!confirm('Excluir este módulo?')) return;
         try {
-            await window.grindx.api.delete(`/portal/modulos/${id}`);
+            await window.grindx.api.delete(`/v1/portal/modulos/${id}`);
             await this.loadStructure();
             this.toastSuccess('Módulo excluído com sucesso.');
             window.parent.postMessage('sidebar-update', '*');
@@ -504,7 +504,7 @@ class StructureController extends window.grindx.controllers.BaseController {
         this.pickerModalController.open();
 
         try {
-            const modules = await window.grindx.api.get('/portal/modules/available');
+            const modules = await window.grindx.api.get('/v1/portal/modules/available');
             this._renderPickerList(modules || []);
         } catch (err) {
             list.innerHTML = '<div class="picker-empty">Erro ao carregar módulos.</div>';
