@@ -64,7 +64,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
         try {
             var container = document.getElementById('dataTableContainer');
             window.grindx.components.LoadingSpinner.setContainerState(container, window.grindx.components.LoadingSpinner.create());
-                var data = await window.grindx.api.get('/v1/import/scan');
+            var data = await window.grindx.api.get('/import/scan');
             this.modules = data.modules || [];
             if (this.modules.length === 0) {
                 this.dataTable.renderEmpty('Nenhum módulo encontrado. Coloque um .zip na pasta import/ do servidor.');
@@ -118,9 +118,9 @@ class ImporterController extends window.grindx.controllers.BaseController {
         try {
             var result;
             if (isRemove) {
-                result = await window.grindx.api.delete('/v1/import/' + this.currentSlug);
+                result = await window.grindx.api.delete('/import/' + this.currentSlug);
             } else {
-                result = await window.grindx.api.post('/v1/import/' + this.currentSlug);
+                result = await window.grindx.api.post('/import/' + this.currentSlug);
             }
 
             logDiv.innerHTML = '';
@@ -177,7 +177,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
             tentativa++;
 
             try {
-            var data = await window.grindx.api.get('/v1/import/scan');
+                var data = await window.grindx.api.get('/import/scan');
                 var modulo = (data.modules || []).find(m => m.slug === slug);
 
                 if (modulo && modulo.ja_importado) {

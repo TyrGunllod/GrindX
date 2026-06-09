@@ -39,7 +39,7 @@ class AuthController {
     }
 
     async performLogin({ username, password }) {
-        return window.grindx.api.post('/v1/auth/token', { username, password }, { auth: false });
+        return window.grindx.api.post('/auth/token', { username, password }, { auth: false });
     }
 
     handleSuccess(result, credentials) {
@@ -115,7 +115,7 @@ class ForgotPasswordController {
         const username = document.getElementById('forgotUsername').value;
 
         try {
-            await window.grindx.api.post('/v1/auth/forgot-password', { username }, { auth: false });
+            await window.grindx.api.post('/auth/forgot-password', { username }, { auth: false });
             this.message.className = 'alert alert-success';
             this.message.textContent = 'Nova senha enviada para o e-mail cadastrado.';
         } catch (err) {
