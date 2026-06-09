@@ -59,13 +59,6 @@ class DashboardController extends window.grindx.controllers.BaseController {
             document.getElementById('openSidebar')?.addEventListener('click', () => this.toggleSidebar(true));
             document.getElementById('closeSidebar')?.addEventListener('click', () => this.toggleSidebar(false));
             this.mainNav.addEventListener('click', (e) => this.handleNavigation(e));
-            document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
-
-            document.getElementById('themeToggle')?.addEventListener('click', () => {
-                window.grindx.theme.toggle();
-                this.updateThemeIcon();
-                this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));
-            });
 
             document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
 
@@ -74,14 +67,11 @@ class DashboardController extends window.grindx.controllers.BaseController {
             document.getElementById('closePreviewBtn')?.addEventListener('click', () => {
                 this.hideSkinPreviewBanner();
                 window.skinLoader.exitPreviewMode();
-                // Reload normal skin
                 const companyId = this.user?.company_id;
                 if (companyId && window.skinLoader) {
                     window.skinLoader.load(parseInt(companyId));
                 }
             });
-
-            document.getElementById('userAvatar')?.addEventListener('click', () => this.openPasswordModal());
 
             window.addEventListener('message', (e) => {
                 if (e.data === 'sidebar-update') this.loadDynamicMenu();
@@ -91,27 +81,32 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 this.applyLayout(e.detail.mode);
             });
 
-            // Topbar events
-            document.getElementById('logoutBtnTopbar')?.addEventListener('click', () => this.logout());
-            document.getElementById('passwordBtnTopbar')?.addEventListener('click', () => this.openPasswordModal());
-            document.getElementById('themeToggleTopbar')?.addEventListener('click', () => {
-                window.grindx.theme.toggle();
-                this.updateThemeIcon();
-                this.viewport.querySelectorAll('iframe').forEach(f => this.applySkinToIframe(f));
-            });
-
-            // Topbar user pill dropdown
-            const userPillTopbar = document.getElementById('userPillTopbar');
-            if (userPillTopbar) {
-                userPillTopbar.addEventListener('click', (e) => {
+            // Logo click handlers (sidebar + topbar)
+            document.querySelectorAll('.logo-clickable').forEach(el => {
+                el.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    userPillTopbar.classList.toggle('open');
+                    el.classList.toggle('open');
                 });
-            }
-            document.addEventListener('click', () => {
-                document.getElementById('userPillTopbar')?.classList.remove('open');
             });
 
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.logo-clickable.open').forEach(el => {
+                    el.classList.remove('open');
+                });
+            });
+
+            document.querySelectorAll('[data-profile="true"]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.loadProfileModule();
+                    document.querySelectorAll('.logo-clickable.open').forEach(el => {
+                        el.classList.remove('open');
+                    });
+                });
+            });
+
+            document.getElementById('logoutBtnSidebar')?.addEventListener('click', () => this.logout());
+            document.getElementById('logoutBtnTopbar')?.addEventListener('click', () => this.logout());
         }
 
     toggleSidebarCollapse() {
@@ -274,25 +269,10 @@ class DashboardController extends window.grindx.controllers.BaseController {
         if (mode === 'topbar') {
             this.sidebar.style.display = 'none';
             this.topbar.style.display = 'flex';
-            this.updateTopbarUserUI(this.user);
             if (this._lastAbas) this.renderTopbarNav(this._lastAbas);
         } else {
             this.sidebar.style.display = '';
             this.topbar.style.display = 'none';
-        }
-    }
-
-    updateTopbarUserUI(user) {
-        if (!user) return;
-        const displayName = this.getUserDisplayName(user);
-        const userNameEl = document.getElementById('userNameTopbar');
-        const userRoleEl = document.getElementById('userRoleTopbar');
-        const avatarEl = document.getElementById('userAvatarTopbar');
-        if (userNameEl) userNameEl.textContent = displayName;
-        if (userRoleEl) userRoleEl.textContent = this.formatRole(user.role);
-        if (avatarEl) {
-            const initials = this.getInitials(displayName);
-            avatarEl.textContent = initials;
         }
     }
 
@@ -501,11 +481,13 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
      updateUserUI(user) {
          const displayName = this.getUserDisplayName(user);
-         document.getElementById('userName').textContent = displayName;
-         document.getElementById('userRole').textContent = this.formatRole(user.role);
-         const icons = { admin: 'user-cog', operador: 'user-tie', leitura: 'user' };
-         document.getElementById('userAvatar').innerHTML = `<i class="fas fa-${icons[user.role] || 'user'}"></i>`;
-         this.updateTopbarUserUI(user);
+         const roleLabel = this.formatRole(user.role);
+         // Sidebar dropdown
+         document.getElementById('userNameSidebar').textContent = displayName;
+         document.getElementById('userRoleSidebar').textContent = roleLabel;
+         // Topbar dropdown
+         document.getElementById('userNameTopbarDropdown').textContent = displayName;
+         document.getElementById('userRoleTopbarDropdown').textContent = roleLabel;
      }
 
     getUserDisplayName(user) {
@@ -533,67 +515,6 @@ class DashboardController extends window.grindx.controllers.BaseController {
             leitura: 'Leitura'
         };
         return labels[role] || String(role || 'Usuário').toUpperCase();
-    }
-
-    updateThemeIcon() {
-        const icon = document.querySelector('#themeToggle i');
-        if (icon) icon.className = window.grindx.theme.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-    }
-
-    openPasswordModal() {
-        const modalEl = document.getElementById('passwordModal');
-        if (!modalEl) return;
-        this._passwordModal = new (window.grindx.components.ReusableModal)(modalEl, {
-            onClose: () => {
-                document.getElementById('passwordForm')?.reset();
-                document.querySelectorAll('#passwordForm .field-error').forEach(e => e.remove());
-                document.querySelectorAll('#passwordForm .is-invalid').forEach(e => e.classList.remove('is-invalid'));
-            }
-        });
-        this._passwordModal.open();
-        document.getElementById('savePasswordBtn')?.addEventListener('click', () => this.savePassword(), { once: true });
-        document.getElementById('cancelPasswordBtn')?.addEventListener('click', () => this._passwordModal?.close(), { once: true });
-    }
-
-    async savePassword() {
-        const currentPassword = document.getElementById('currentPassword')?.value;
-        const newPassword = document.getElementById('newPassword')?.value;
-        const confirmPassword = document.getElementById('confirmPassword')?.value;
-
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            this.showPasswordError('Preencha todos os campos.');
-            return;
-        }
-        if (newPassword !== confirmPassword) {
-            this.showPasswordError('Nova senha e confirmação não conferem.');
-            return;
-        }
-        if (newPassword.length < 6) {
-            this.showPasswordError('Nova senha deve ter no mínimo 6 caracteres.');
-            return;
-        }
-
-        try {
-            await window.grindx.api.post('/auth/change-password', {
-                current_password: currentPassword,
-                new_password: newPassword,
-            });
-            this._passwordModal?.close();
-            this.showToast('Senha alterada com sucesso.', 'success');
-        } catch (err) {
-            this.showPasswordError(err.message || 'Erro ao alterar senha.');
-        }
-    }
-
-    showPasswordError(msg) {
-        const footer = document.querySelector('#passwordModal .modal-footer');
-        if (!footer) return;
-        const existing = footer.querySelector('.field-error');
-        if (existing) existing.remove();
-        const err = document.createElement('p');
-        err.className = 'field-error';
-        err.textContent = msg;
-        footer.parentElement.insertBefore(err, footer);
     }
 
     showToast(message, type = 'success') {
@@ -639,6 +560,24 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 || this.topbarNav.querySelector('.nav-dropdown-item');
             if (firstLink) firstLink.click();
         }, 500);
+    }
+
+    loadProfileModule() {
+        const viewport = document.getElementById('moduleViewport');
+        if (!viewport) return;
+        this.showLoader(true);
+        const iframe = document.createElement('iframe');
+        iframe.src = 'modules/profile/index.html';
+        iframe.className = 'module-frame';
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('aria-label', 'Meu Perfil');
+        viewport.innerHTML = '';
+        viewport.appendChild(iframe);
+        document.getElementById('activeModuleTitle').textContent = 'Meu Perfil';
+        iframe.addEventListener('load', () => {
+            this.showLoader(false);
+            this.applySkinToIframe(iframe);
+        });
     }
 
     loadCompanySkin() {
