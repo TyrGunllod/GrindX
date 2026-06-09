@@ -2,8 +2,11 @@ import json
 import re
 from pathlib import Path
 
-API_POSTGRES_CONFIG = Path("apps/api-postgres/app/core/config.py")
-FRONTEND_VERSION_JSON = Path("apps/frontend-webapp/version.json")
+# Resolve a raiz do projeto: scripts/update_frontend_version.py → ../
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+API_POSTGRES_CONFIG = PROJECT_ROOT / "apps/api-postgres/app/core/config.py"
+FRONTEND_VERSION_JSON = PROJECT_ROOT / "apps/frontend-webapp/version.json"
 
 content = API_POSTGRES_CONFIG.read_text(encoding="utf-8")
 match = re.search(r'APP_VERSION\s*=\s*"([^"]+)"', content)
