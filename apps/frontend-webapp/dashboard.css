@@ -837,12 +837,19 @@ iframe {
     width: calc(100% - 88px);
 }
 
+.layout-topbar {
+    flex-direction: column;
+}
 .layout-topbar .sidebar {
     display: none !important;
 }
 .layout-topbar .topbar {
     display: flex;
+    width: 100%;
+    flex-shrink: 0;
 }
 .layout-topbar .main-viewport {
     width: 100%;
+    flex: 1;
+    min-height: 0;
 }
