@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.22.4 (2026-06-10)
+
+### Bug Fixes
+
+- Force sidebar mode on mobile/tablet, revert buttons to previous format
+  ([`99aa0b4`](https://github.com/TyrGunllod/GrindX/commit/99aa0b4180ec9286663e88d5bf61b986734dffe1))
+
+
 ## v1.22.3 (2026-06-10)
 
 ### Bug Fixes
