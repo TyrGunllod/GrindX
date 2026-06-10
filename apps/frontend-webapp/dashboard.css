@@ -311,31 +311,53 @@ iframe {
 
 
 
-/* Responsive Adjustments */
+/* ── Responsive Dashboard Shell ── */
+
+/* Tablet: 768px - 1023px — compact overlay sidebar */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sidebar {
+    width: 240px;
+  }
+  .sidebar .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  .sidebar .nav-title {
+    font-size: 0.7rem;
+  }
+  .sidebar .nav-links-container {
+    padding-left: 1.5rem;
+  }
+  .main-viewport {
+    margin-left: 0;
+  }
+}
+
+/* Desktop: >= 1024px — static sidebar */
 @media (min-width: 1024px) {
-    .sidebar {
-        position: static;
-        left: 0;
-    }
-    
-    .main-viewport {
-        margin-left: 0;
-        transition: margin-left 0.3s ease;
-    }
-    
-    .sidebar.collapsed ~ .main-viewport {
-        margin-left: 0px;
-    }
-    
-    .sidebar:not(.collapsed) ~ .main-viewport {
-        margin-left: 1px;
-    }
-    
-    .search-wrapper {
-        display: flex;
-    }
-    
-    .md-hide { display: none !important; }
+  .sidebar {
+    position: static;
+    left: 0;
+    width: var(--sidebar-width);
+  }
+  .sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+  }
+  .sidebar.open {
+    left: 0;
+  }
+  .sidebar.collapsed ~ .main-viewport {
+    margin-left: 0;
+  }
+  .sidebar:not(.collapsed) ~ .main-viewport {
+    margin-left: 1px;
+  }
+  .search-wrapper {
+    display: flex;
+  }
+  .md-hide { display: none !important; }
+  .hide-mobile { display: revert; }
+  #sidebarOverlay { display: none !important; }
 }
 
 .sidebar-footer {

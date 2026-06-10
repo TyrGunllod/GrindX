@@ -61,6 +61,8 @@ class DashboardController extends window.grindx.controllers.BaseController {
         setupEvents() {
             document.getElementById('openSidebar')?.addEventListener('click', () => this.toggleSidebar(true));
             document.getElementById('closeSidebar')?.addEventListener('click', () => this.toggleSidebar(false));
+            document.getElementById('sidebarOverlay')?.addEventListener('click', () => this.handleSidebarOverlayClick());
+            window.addEventListener('resize', () => this.handleSidebarResize());
             this.mainNav.addEventListener('click', (e) => this.handleNavigation(e));
 
             document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
@@ -507,6 +509,24 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
     toggleSidebar(isOpen) {
         this.sidebar.classList.toggle('open', isOpen);
+        const overlay = document.getElementById('sidebarOverlay');
+        if (overlay) {
+            overlay.style.display = isOpen ? 'block' : 'none';
+        }
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    }
+
+    handleSidebarOverlayClick() {
+        this.toggleSidebar(false);
+    }
+
+    handleSidebarResize() {
+        if (window.innerWidth >= 1024) {
+            this.sidebar.classList.remove('open');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (overlay) overlay.style.display = 'none';
+            document.body.style.overflow = '';
+        }
     }
 
      updateUserUI(user) {
