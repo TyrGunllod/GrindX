@@ -13,17 +13,17 @@ class ImporterController extends window.grindx.controllers.BaseController {
         this.importModal = new window.grindx.components.ReusableModal(document.getElementById('importModal'));
         this.dataTable = new window.grindx.components.DataTable('dataTableContainer', {
             columns: [
-                { key: 'module_name', label: 'Módulo' },
-                { key: 'version', label: 'Versão', width: '80px' },
-                { key: 'schema_name', label: 'Schema', width: '100px' },
+                { key: 'module_name', label: 'Módulo', dataLabel: 'Módulo' },
+                { key: 'version', label: 'Versão', width: '80px', dataLabel: 'Versão' },
+                { key: 'schema_name', label: 'Schema', width: '100px', dataLabel: 'Schema' },
                 {
-                    key: 'ja_importado', label: 'Status', width: '120px',
+                    key: 'ja_importado', label: 'Status', width: '120px', dataLabel: 'Status',
                     render: function(v) {
                         return v ? '<span class="badge badge-success">Importado</span>' : '<span class="badge badge-info">Novo</span>';
                     }
                 },
                 {
-                    key: 'acoes', label: 'Ações', width: '140px',
+                    key: 'acoes', label: 'Ações', width: '140px', dataLabel: 'Ações',
                     render: function(v, row) {
                         var slug = (row.slug || '').replace(/[&<>"']/g, '');
                         if (row.ja_importado) {
