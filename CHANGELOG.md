@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.22.2 (2026-06-10)
+
+### Bug Fixes
+
+- Sidebar hidden on mobile in topbar mode, and action buttons in table-to-card
+  ([`5e7194e`](https://github.com/TyrGunllod/GrindX/commit/5e7194ea82392186bb1ad348929475887cf5464d))
+
+
 ## v1.22.1 (2026-06-10)
 
 ### Bug Fixes
