@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.22.3 (2026-06-10)
+
+### Bug Fixes
+
+- **dashboard**: Proper top-bar height on mobile to fix iframe overlap
+  ([`9006cdd`](https://github.com/TyrGunllod/GrindX/commit/9006cdda61d863f7aaa2f870fcdfb08b14058b1c))
+
+
 ## v1.22.2 (2026-06-10)
 
 ### Bug Fixes
