@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.22.7 (2026-06-10)
+
+### Bug Fixes
+
+- **importer**: Add hide-mobile to Checar Arquivos button
+  ([`1755f61`](https://github.com/TyrGunllod/GrindX/commit/1755f61d3dde47fbe8e992203f746b931c6e514e))
+
+
 ## v1.22.6 (2026-06-10)
 
 ### Bug Fixes
