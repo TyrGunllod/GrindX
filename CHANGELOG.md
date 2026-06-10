@@ -2,6 +2,42 @@
 
 <!-- version list -->
 
+## v1.21.0 (2026-06-10)
+
+### Bug Fixes
+
+- **auth**: Reattach cached ORM object before refresh
+  ([`70f8f48`](https://github.com/TyrGunllod/GrindX/commit/70f8f4887699ef366165e52f76bfdb2bbe618af2))
+
+- **cors**: Garantir origins de dev sempre presentes
+  ([`a161320`](https://github.com/TyrGunllod/GrindX/commit/a161320397069af4c86f99dde69c2c6bab2dea38))
+
+- **dashboard**: Abrir abas no click em vez de hover para funcionar em touch
+  ([`62d10e7`](https://github.com/TyrGunllod/GrindX/commit/62d10e7dfd27359a8bd328c0433445612f41de7e))
+
+- **frontend**: Servir apple-touch-icon.png na raiz
+  ([`4feb35b`](https://github.com/TyrGunllod/GrindX/commit/4feb35bf089274dc70c31eb0dfb145cdbc64a7a7))
+
+### Documentation
+
+- **agents**: Adicionar regra de atualizacao de documentacao
+  ([`77e75d3`](https://github.com/TyrGunllod/GrindX/commit/77e75d357359c69869a84008cb01402648af6fb3))
+
+- **network**: Atualizar .env.example com DEV_NETWORK_IP e CORS_ORIGINS vazio
+  ([`876ac51`](https://github.com/TyrGunllod/GrindX/commit/876ac51b8cae7ca76d4ac4f22fa1e567f7bfe75a))
+
+### Features
+
+- **auth**: Persistir preferencia de tema light/dark no banco
+  ([`279206e`](https://github.com/TyrGunllod/GrindX/commit/279206e8294204b23422bb2841a787f8d0887872))
+
+- **network**: Centralizar IP de acesso externo via DEV_NETWORK_IP env var
+  ([`b18a0b8`](https://github.com/TyrGunllod/GrindX/commit/b18a0b814aa1362c68a0d372d5282133c00ec29f))
+
+- **skins**: Adicionar preview cards, snapshot original e API de restore
+  ([`9fd8a30`](https://github.com/TyrGunllod/GrindX/commit/9fd8a306c266b523a8f896a91288973dbf01a837))
+
+
 ## v1.20.0 (2026-06-10)
 
 ### Bug Fixes
