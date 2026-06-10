@@ -134,6 +134,12 @@ Usar a skill `.opencode/skills/create-standalone-module/SKILL.md` — cobre back
 - `test-root` precisa de PYTHONPATH com todos os pacotes: `apps/api-postgres;apps/api-sqlserver;packages`
 - Fixtures globais em `tests/conftest.py` adicionam `packages/` ao sys.path
 
+## Documentação
+
+- Manter `README.md`, `docs/API.md`, `docs/DATABASE.md`, `docs/SETUP.md` e `docs/README.md` **sempre atualizados** após qualquer alteração no código.
+- Atualizar contagem de testes, novos endpoints, campos em schemas, migrations e mudanças de fluxo.
+- O `AGENTS.md` também deve ser mantido atualizado (comandos, estrutura, políticas).
+
 ## Arquivos de Config Importantes
 
 - `pyproject.toml` — semantic release config
