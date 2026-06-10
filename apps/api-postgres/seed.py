@@ -212,10 +212,10 @@ def seed_database():
         else:
             if (
                 tema_padrao.logo_url
-                != "/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png"
+                != "/uploads/logos/grindx_logo.png"
             ):
                 tema_padrao.logo_url = (
-                    "/uploads/logos/a551e19f-857e-4f58-b7ac-74de9fa8d108.png"
+                    "/uploads/logos/grindx_logo.png"
                 )
                 print("[UPDATE] logo_url atualizado na skin 'Padrão GrindX'")
             print("[SKIP] Skin padrão 'Padrão GrindX' já existe")

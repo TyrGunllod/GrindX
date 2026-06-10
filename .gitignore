@@ -63,10 +63,9 @@ logs/
 # =========================
 # Uploads (test artifacts)
 # =========================
-packages/api-postgres/app/uploads/
-packages/api-postgres/uploads/fonts/
-packages/api-postgres/uploads/logos/
-apps/api-postgres/uploads/logos/
+apps/api-postgres/uploads/fonts/*
+apps/api-postgres/uploads/logos/*
+!apps/api-postgres/uploads/logos/grindx_logo.png
 
 # =========================
 # Import (module zips)
@@ -75,20 +74,16 @@ import/
 
 # =========================
 # Imported Modules (not default)
-# Default modules: users, admin-skins, home, importer, structure
+# Default modules: users, admin-skins, home, importer, structure, profile
 # Backend: iam, org, portal are system modules
 # =========================
-apps/api-postgres/app/modules/gestao_projetos/
-apps/api-postgres/app/modules/gestao_projetos_*/
-apps/api-postgres/app/modules/gp_*/
-apps/frontend-webapp/modules/gestao_projetos_*/
-apps/frontend-webapp/modules/gp_*/
-apps/frontend-webapp/modules/cronograma/
-apps/frontend-webapp/modules/dashboard/
-apps/frontend-webapp/modules/projeto/
-apps/frontend-webapp/modules/recursos/
-apps/frontend-webapp/modules/tarefas/
-apps/frontend-webapp/modules/shared/
+apps/frontend-webapp/modules/*
+!apps/frontend-webapp/modules/admin-skins
+!apps/frontend-webapp/modules/home
+!apps/frontend-webapp/modules/importer
+!apps/frontend-webapp/modules/structure
+!apps/frontend-webapp/modules/users
+!apps/frontend-webapp/modules/profile
 
 # =========================
 # Containers
