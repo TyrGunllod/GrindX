@@ -3,6 +3,14 @@
  * Gerencia a navegação baseada na estrutura vinda da API.
  */
 
+function debounce(fn, ms) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), ms);
+  };
+}
+
 class DashboardController extends window.grindx.controllers.BaseController {
     constructor() {
         super();
@@ -62,7 +70,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
             document.getElementById('openSidebar')?.addEventListener('click', () => this.toggleSidebar(true));
             document.getElementById('closeSidebar')?.addEventListener('click', () => this.toggleSidebar(false));
             document.getElementById('sidebarOverlay')?.addEventListener('click', () => this.handleSidebarOverlayClick());
-            window.addEventListener('resize', () => this.handleSidebarResize());
+            window.addEventListener('resize', debounce(() => this.handleSidebarResize(), 150));
             this.mainNav.addEventListener('click', (e) => this.handleNavigation(e));
 
             document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
@@ -511,7 +519,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         this.sidebar.classList.toggle('open', isOpen);
         const overlay = document.getElementById('sidebarOverlay');
         if (overlay) {
-            overlay.style.display = isOpen ? 'block' : 'none';
+            overlay.classList.toggle('is-visible', isOpen);
         }
         document.body.style.overflow = isOpen ? 'hidden' : '';
     }
@@ -524,7 +532,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         if (window.innerWidth >= 1024) {
             this.sidebar.classList.remove('open');
             const overlay = document.getElementById('sidebarOverlay');
-            if (overlay) overlay.style.display = 'none';
+            if (overlay) overlay.classList.remove('is-visible');
             document.body.style.overflow = '';
         }
     }

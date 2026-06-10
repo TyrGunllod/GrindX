@@ -86,7 +86,7 @@
         </aside>
 
         <!-- Sidebar overlay (mobile) -->
-        <div id="sidebarOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99;" aria-hidden="true"></div>
+        <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
 
         <!-- Navigation Topbar (Topbar Mode) -->
        <header class="topbar" id="topbar" style="display:none;" role="banner">
@@ -128,14 +128,14 @@
 
       <!-- Main Viewport -->
      <main class="main-viewport">
-         <header class="top-bar" style="padding: 15px;">
+         <header class="top-bar">
              <button class="btn-icon md-hide" id="openSidebar" aria-label="Abrir menu">
                  <i class="fas fa-bars"></i>
              </button>
              <div class="top-bar-title" id="activeModuleTitle">Painel de Controle</div>
          </header>
 
-         <section class="content-area" id="moduleViewport" role="region" aria-live="polite" style="padding: 5px; margin: 0px;">
+         <section class="content-area" id="moduleViewport" role="region" aria-live="polite">
              <!-- Os módulos serão injetados aqui -->
              <div class="loader-overlay" id="moduleLoader" style="display: none;">
                  <div class="spinner"></div>

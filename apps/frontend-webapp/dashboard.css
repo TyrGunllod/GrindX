@@ -10,6 +10,16 @@
     overflow: hidden;
 }
 
+/* Mobile sidebar overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  display: none;
+}
+.sidebar-overlay.is-visible { display: block; }
+
 /* Sidebar (Mobile First: Off-canvas) */
 .sidebar {
     position: fixed;
@@ -357,7 +367,7 @@ iframe {
   }
   .md-hide { display: none !important; }
   .hide-mobile { display: revert; }
-  #sidebarOverlay { display: none !important; }
+  .sidebar-overlay { display: none !important; }
 }
 
 .sidebar-footer {
