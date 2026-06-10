@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.22.1 (2026-06-10)
+
+### Bug Fixes
+
+- **ci**: Remove persist-credentials false and deduplicate release steps
+  ([`f497b40`](https://github.com/TyrGunllod/GrindX/commit/f497b403d645cffb2ae8e8cb15abb1a70d972b02))
+
+### Documentation
+
+- Update plan with space-050 naming fix
+  ([`da52b0f`](https://github.com/TyrGunllod/GrindX/commit/da52b0f31c5959431afde4f29b8f214b4c599c1d))
+
+
 ## v1.22.0 (2026-06-10)
 
 ### Bug Fixes
