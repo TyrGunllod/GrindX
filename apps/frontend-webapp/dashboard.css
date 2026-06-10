@@ -811,8 +811,10 @@ iframe {
 .layout-topbar {
     flex-direction: column;
 }
-.layout-topbar .sidebar {
+@media (min-width: 1024px) {
+  .layout-topbar .sidebar {
     display: none !important;
+  }
 }
 .layout-topbar .topbar {
     display: flex;
