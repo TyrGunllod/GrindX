@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v1.23.0 (2026-06-10)
+
+### Documentation
+
+- **deploy**: Atualizar DEPLOYMENT.md com parametros atuais
+  ([`0b99e7e`](https://github.com/TyrGunllod/GrindX/commit/0b99e7e75f8bea175fe6896d67fe3ea92a8744af))
+
+- **skill**: Add icon+hide-mobile button pattern to create-standalone-module
+  ([`c615f63`](https://github.com/TyrGunllod/GrindX/commit/c615f639e18f19ba817c8043e80dcfd2a92d7ad0))
+
+### Features
+
+- **infra**: Adicionar frontend via Nginx nos containers e regras de firewall
+  ([`cd180a7`](https://github.com/TyrGunllod/GrindX/commit/cd180a7b6cf679c1f3397a8c1544406c0871552e))
+
+
 ## v1.22.10 (2026-06-10)
 
 ### Bug Fixes
