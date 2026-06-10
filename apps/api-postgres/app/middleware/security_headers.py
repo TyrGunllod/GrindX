@@ -16,6 +16,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     # Rotas de documentação que precisam de CDN externo
     DOC_PATHS = ("/v1/docs", "/v1/redoc", "/v1/openapi.json")
 
+    def __init__(self, app, connect_srcs: list[str] | None = None):
+        super().__init__(app)
+        self._connect_srcs = " ".join(connect_srcs) if connect_srcs else "'self'"
+
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
@@ -47,6 +51,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
                 "script-src 'self' 'unsafe-inline'; "
                 "style-src 'self' 'unsafe-inline'; "
                 "img-src 'self' data: blob:; "
-                "connect-src 'self' http://localhost:8002 http://localhost:8001;"
+                f"connect-src {self._connect_srcs};"
             )
         return response

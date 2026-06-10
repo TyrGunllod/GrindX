@@ -96,6 +96,7 @@ Config Ruff (`apps/api-postgres/ruff.toml`): select E, F, I — ignore E501 — 
 - **Rate limiting**: SlowAPI com chaves duplas (IP para não-autenticados, user_id para autenticados)
 - **File upload**: Validação de magic bytes via `filetype` library
 - **CORS**: Modo strict em produção (nunca `*`), configuração via env var `CORS_ORIGINS`
+- **DEV_NETWORK_IP**: IP da rede local para acesso externo em dev (ex: `192.168.0.62`). Adiciona automaticamente a origem no CORS dev fallback e as URLs no CSP `connect-src`. Definir no `.env` de cada API.
 - **Health checks**: Verificação profunda de conectividade + schema validation
 
 ## Performance (implementada)
@@ -149,3 +150,4 @@ Usar a skill `.opencode/skills/create-standalone-module/SKILL.md` — cobre back
 - `Makefile` — automação de tasks (Windows/PowerShell)
 - `apps/api-postgres/app/core/versioning.py` — estratégia de versionamento de API
 - `packages/shared/exceptions/codes.py` — registro centralizado de error codes
+- `apps/api-postgres/.env.dev` / `apps/api-sqlserver/.env.dev` — exemplos com `DEV_NETWORK_IP` para acesso em rede local

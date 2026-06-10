@@ -80,7 +80,10 @@ app.add_middleware(
 )
 
 # Headers de segurança
-app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(
+    SecurityHeadersMiddleware,
+    connect_srcs=settings.csp_connect_srcs,
+)
 
 # Request ID para rastreabilidade
 app.add_middleware(RequestIdMiddleware)

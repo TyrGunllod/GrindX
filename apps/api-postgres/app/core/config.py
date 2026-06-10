@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     # --- CORS ---
     CORS_ORIGINS: str = "http://localhost:3000"
 
+    # --- IP da rede local para acesso externo em dev ---
+    DEV_NETWORK_IP: str = ""
+
     # --- Aplicação ---
     APP_NAME: str = "ERP API Postgres"
     APP_VERSION: str = APP_VERSION
@@ -127,13 +130,25 @@ class Settings(BaseSettings):
 
         # Em dev com CORS_ORIGINS vazio, retorna localhost defaults
         if not self.is_production and not parsed:
-            return [
+            origins = [
                 "http://localhost:3000",
                 "http://localhost:5500",
                 "http://127.0.0.1:5500",
             ]
+            if self.DEV_NETWORK_IP:
+                origins.append(f"http://{self.DEV_NETWORK_IP}:5500")
+            return origins
 
         return parsed
+
+    @property
+    def csp_connect_srcs(self) -> list[str]:
+        """URLs permitidas no CSP connect-src."""
+        srcs = ["'self'", "http://localhost:8001", "http://localhost:8002"]
+        if self.DEV_NETWORK_IP:
+            srcs.append(f"http://{self.DEV_NETWORK_IP}:8001")
+            srcs.append(f"http://{self.DEV_NETWORK_IP}:8002")
+        return srcs
 
     model_config = SettingsConfigDict(
         env_file=".env",

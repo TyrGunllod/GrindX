@@ -6,7 +6,7 @@
 const DEFAULT_GRINDX_CONFIG = {
     DEFAULT_LANG: 'pt-BR',
     SUPPORTED_LANGS: ['pt-BR', 'en-US', 'es-ES'],
-    API_BASE_URL: window.GRINDX_CONFIG?.API_BASE_URL || 'http://localhost:8002/v1'
+    API_BASE_URL: window.GRINDX_CONFIG?.API_BASE_URL || `http://${window.location.hostname}:8002/v1`
 };
 
 const GRINDX_CONFIG = {

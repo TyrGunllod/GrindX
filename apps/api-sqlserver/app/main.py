@@ -58,7 +58,10 @@ app.add_middleware(
     window_seconds=settings.RATE_LIMIT_WINDOW_SECONDS,
     exclude_paths=["/health", "/v1/docs", "/v1/redoc", "/v1/openapi.json"],
 )
-app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(
+    SecurityHeadersMiddleware,
+    connect_srcs=settings.csp_connect_srcs,
+)
 app.add_middleware(RequestIdMiddleware)
 app.add_middleware(
     CORSMiddleware,
