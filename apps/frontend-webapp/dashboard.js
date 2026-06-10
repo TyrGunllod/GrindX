@@ -301,6 +301,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
     }
 
     applyLayout(mode) {
+        if (window.innerWidth < 1024) {
+            mode = 'sidebar';
+        }
         this.currentLayout = mode;
         const body = document.body;
         body.classList.remove('layout-sidebar', 'layout-topbar');
