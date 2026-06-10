@@ -235,7 +235,9 @@ def test_create_theme_with_layout_mode(theme_service: ThemeService, empresa: Emp
     assert result["layout_mode"] == "topbar"
 
 
-def test_create_theme_default_layout_mode(theme_service: ThemeService, empresa: Empresa):
+def test_create_theme_default_layout_mode(
+    theme_service: ThemeService, empresa: Empresa
+):
     """Testa que layout_mode padrão é 'topbar'."""
     result = theme_service.create_theme(
         company_id=empresa.id,

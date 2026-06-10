@@ -210,13 +210,8 @@ def seed_database():
             session.flush()
             print(f"[OK] Skin padrão 'Padrão GrindX' criada (id={tema_padrao.id})")
         else:
-            if (
-                tema_padrao.logo_url
-                != "/uploads/logos/grindx_logo.png"
-            ):
-                tema_padrao.logo_url = (
-                    "/uploads/logos/grindx_logo.png"
-                )
+            if tema_padrao.logo_url != "/uploads/logos/grindx_logo.png":
+                tema_padrao.logo_url = "/uploads/logos/grindx_logo.png"
                 print("[UPDATE] logo_url atualizado na skin 'Padrão GrindX'")
             print("[SKIP] Skin padrão 'Padrão GrindX' já existe")
 
