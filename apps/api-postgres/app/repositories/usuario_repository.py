@@ -173,6 +173,8 @@ class UsuarioRepository:
         Returns:
             Usuario atualizado.
         """
+        # Reattach ao session atual (objeto pode vir do cache de request anterior)
+        usuario = self.db.merge(usuario)
         for campo, valor in dados.items():
             if hasattr(usuario, campo):
                 setattr(usuario, campo, valor)

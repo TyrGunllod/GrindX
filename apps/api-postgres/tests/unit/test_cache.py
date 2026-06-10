@@ -299,6 +299,7 @@ class TestCacheRepositoryIntegration:
 
         # Simula atualização com mock db
         mock_db = MagicMock()
+        mock_db.merge.return_value = mock_user  # merge() retorna o mesmo objeto
         from app.repositories.usuario_repository import UsuarioRepository
 
         repo = UsuarioRepository(mock_db)
