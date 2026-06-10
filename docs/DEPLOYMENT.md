@@ -131,7 +131,15 @@ make logs
 make down
 ```
 
-O `podman-compose.yml` define dois serviços: `api-postgres` (porta 8002) e `api-sqlserver` (porta 8001). O pacote `packages/shared` é montado como volume em `/app/shared` em ambos os containers. O frontend (`apps/frontend-webapp`) é servido separadamente via HTTP server ou Nginx.
+O `podman-compose.yml` define três serviços:
+
+| Serviço | Porta host | Imagem |
+|---------|-----------|--------|
+| `frontend` | 8080 | nginx:alpine (estático) |
+| `api-sqlserver` | 8001 | python:3.12-slim |
+| `api-postgres` | 8002 | python:3.12-slim |
+
+O pacote `packages/shared` é montado como volume em `/app/shared` nos containers das APIs. O frontend é servido via Nginx oficial com cache de assets e gzip.
 
 Os containers rodam com usuário não-root (UID 1001) e health checks configurados.
 
