@@ -286,7 +286,7 @@ input, select, textarea, button, a, .nav-link, .nav-dropdown-item,
 /* Mobile alias: hide in < 768px */
 .hide-mobile { display: none !important; }
 @media (min-width: 768px) {
-  .hide-mobile { display: revert; }
+  .hide-mobile { display: revert !important; }
 }
 /* Modal Styling (Shared) */
 .modal-overlay {
