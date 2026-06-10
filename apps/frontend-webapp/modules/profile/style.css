@@ -131,3 +131,7 @@
         padding: 16px;
     }
 }
+
+.theme-option {
+  min-height: 44px;
+}
