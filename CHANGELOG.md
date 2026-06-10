@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.22.5 (2026-06-10)
+
+### Bug Fixes
+
+- **dashboard**: Hide top-bar on desktop to fix iframe overlap
+  ([`4be9cce`](https://github.com/TyrGunllod/GrindX/commit/4be9cce11e5293ca80db870193bc6e4e0fa7fdda))
+
+
 ## v1.22.4 (2026-06-10)
 
 ### Bug Fixes
