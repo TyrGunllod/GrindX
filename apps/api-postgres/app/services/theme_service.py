@@ -6,6 +6,7 @@ Business logic para gestão de skins/temas de empresas.
 
 import json
 import os
+import re
 
 import structlog
 from shared.exceptions.base import NotFoundError
@@ -79,10 +80,10 @@ class ThemeService:
             theme_id=theme.id,
             company_id=theme.company_id,
             action="created",
-            theme_snapshot=self._to_dict(theme),
+            theme_snapshot=self._snapshot_dict(theme),
         )
 
-        self._save_snapshot_file(theme.id, self._to_dict(theme))
+        self._save_snapshot_file(theme)
 
         logger.info("Tema criado", theme_id=theme.id, company_id=company_id)
         return self._to_dict(theme)
@@ -125,7 +126,7 @@ class ThemeService:
             theme_id=theme.id,
             company_id=theme.company_id,
             action="updated",
-            theme_snapshot=updated_dict,
+            theme_snapshot=self._snapshot_dict(theme),
             changes=changes if changes else None,
         )
 
@@ -190,19 +191,48 @@ class ThemeService:
             else None,
         }
 
-    def _save_snapshot_file(self, theme_id: int, data: dict) -> None:
-        """Salva snapshot do tema como JSON na pasta de skins."""
+    @staticmethod
+    @staticmethod
+    def _snapshot_dict(theme) -> dict:
+        """Converte modelo para dict de snapshot (formato limpo, sem metadados)."""
+        return {
+            "name": theme.name,
+            "colors": theme.colors,
+            "fonts": theme.fonts,
+            "icon_library": theme.icon_library,
+            "tokens": theme.tokens,
+            "company_name": theme.company_name,
+            "copyright_text": theme.copyright_text,
+            "logo_url": theme.logo_url,
+            "logo_short_url": theme.logo_short_url,
+        }
+
+    @staticmethod
+    def _name_to_slug(name: str) -> str:
+        """Converte nome da skin para slug para nome de arquivo."""
+        slug = name.lower().strip()
+        slug = re.sub(r"[^a-z0-9]+", "-", slug)
+        slug = slug.strip("-")
+        return slug
+
+    def _save_snapshot_file(self, theme) -> None:
+        """Salva snapshot do tema como JSON na pasta de skins.
+
+        O arquivo é nomeado com o slug do nome do tema (ex: "GrindX Default" → "grindx-default.json").
+        """
         skins_dir = settings.skins_dir_path
         if not skins_dir:
             return
         try:
             os.makedirs(skins_dir, exist_ok=True)
-            filepath = os.path.join(skins_dir, f"{theme_id}.json")
+            slug = self._name_to_slug(theme.name)
+            data = self._snapshot_dict(theme)
+            filepath = os.path.join(skins_dir, f"{slug}.json")
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2, ensure_ascii=False, default=str)
-            logger.info("Snapshot salvo", theme_id=theme_id, path=filepath)
+            logger.info("Snapshot salvo", slug=slug, path=filepath)
         except Exception as e:
-            logger.error("Erro ao salvar snapshot", theme_id=theme_id, error=str(e))
+            logger.error("Erro ao salvar snapshot", error=str(e))
 
     def _log_history(
         self,

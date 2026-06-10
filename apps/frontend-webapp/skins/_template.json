@@ -11,7 +11,12 @@
     "--skin-text-main": "#1e293b",
     "--skin-text-muted": "#64748b",
     "--skin-border-color": "#e2e8f0",
-    "--skin-focus-ring": "rgba(0, 194, 224, 0.35)"
+    "--skin-focus-ring": "rgba(0, 194, 224, 0.35)",
+    "--skin-bg-main-dark": "#0f172a",
+    "--skin-bg-card-dark": "#1e293b",
+    "--skin-text-main-dark": "#f8fafc",
+    "--skin-text-muted-dark": "#94a3b8",
+    "--skin-border-color-dark": "rgba(255, 255, 255, 0.05)"
   },
   "fonts": {
     "heading": "Barlow Condensed",

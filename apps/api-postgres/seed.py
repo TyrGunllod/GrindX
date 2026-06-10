@@ -202,7 +202,7 @@ def seed_database():
                     "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.1)",
                     "--skin-shadow-modal": "0 20px 25px -5px rgba(0,0,0,0.2)",
                 },
-                logo_url="/uploads/logos/favicon.png",
+                logo_url="/uploads/logos/grindx_logo.png",
                 company_name="GrindX",
                 copyright_text="© 2026 GrindX. Todos os direitos reservados.",
             )

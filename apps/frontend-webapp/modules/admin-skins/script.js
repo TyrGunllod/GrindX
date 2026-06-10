@@ -498,7 +498,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             }
         } catch (_) {}
 
-        // Fallback: try JSON file by ID, then by name
+        // Fallback: try JSON file by slug (from name)
         const tryFetch = async (url) => {
             try {
                 const resp = await fetch(url);
@@ -507,20 +507,19 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             return null;
         };
 
-        let data = await tryFetch(`../../skins/${id}.json`);
-        if (!data && this._currentSnapshot) {
+        if (this._currentSnapshot) {
             const slug = this._currentSnapshot.name
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-|-$/g, '');
-            data = await tryFetch(`../../skins/${slug}.json`);
+            const data = await tryFetch(`../../skins/${slug}.json`);
+            if (data) {
+                this._originalSnapshot = { ...data, customFonts: [] };
+                return;
+            }
         }
 
-        if (data) {
-            this._originalSnapshot = { ...data, customFonts: [] };
-        } else {
-            this._originalSnapshot = this._currentSnapshot ? { ...this._currentSnapshot } : null;
-        }
+        this._originalSnapshot = this._currentSnapshot ? { ...this._currentSnapshot } : null;
     }
 
     setColor(colorId, textId, value) {

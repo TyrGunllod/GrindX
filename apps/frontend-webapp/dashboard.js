@@ -223,44 +223,45 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
     _bindTopbarDropdowns() {
         const groups = this.topbarNav.querySelectorAll('.nav-group-topbar');
-        let closeTimeout = null;
         const DROPDOWN_MARGIN = 8;
+
+        const positionDropdown = (trigger, dropdown) => {
+            const rect = trigger.getBoundingClientRect();
+            const ddWidth = dropdown.offsetWidth || 300;
+            let left = rect.left;
+            if (left + ddWidth > window.innerWidth - DROPDOWN_MARGIN) {
+                left = window.innerWidth - ddWidth - DROPDOWN_MARGIN;
+            }
+            if (left < DROPDOWN_MARGIN) left = DROPDOWN_MARGIN;
+            dropdown.style.top = (rect.bottom + 6) + 'px';
+            dropdown.style.left = left + 'px';
+        };
 
         groups.forEach(group => {
             const trigger = group.querySelector('.nav-group-trigger');
             const dropdown = group.querySelector('.nav-dropdown');
 
-            group.addEventListener('mouseenter', () => {
-                clearTimeout(closeTimeout);
-                groups.forEach(g => { if (g !== group) g.classList.remove('open'); });
-
-                const rect = trigger.getBoundingClientRect();
-                const ddWidth = dropdown.offsetWidth || 300;
-                let left = rect.left;
-                if (left + ddWidth > window.innerWidth - DROPDOWN_MARGIN) {
-                    left = window.innerWidth - ddWidth - DROPDOWN_MARGIN;
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = group.classList.contains('open');
+                groups.forEach(g => {
+                    g.classList.remove('open');
+                    const t = g.querySelector('.nav-group-trigger');
+                    if (t) t.setAttribute('aria-expanded', 'false');
+                });
+                if (!isOpen) {
+                    positionDropdown(trigger, dropdown);
+                    group.classList.add('open');
+                    trigger.setAttribute('aria-expanded', 'true');
                 }
-                if (left < DROPDOWN_MARGIN) left = DROPDOWN_MARGIN;
-
-                dropdown.style.top = (rect.bottom + 6) + 'px';
-                dropdown.style.left = left + 'px';
-
-                group.classList.add('open');
-                trigger.setAttribute('aria-expanded', 'true');
-            });
-
-            group.addEventListener('mouseleave', () => {
-                closeTimeout = setTimeout(() => {
-                    group.classList.remove('open');
-                    trigger.setAttribute('aria-expanded', 'false');
-                }, 120);
             });
         });
 
         document.addEventListener('click', () => {
             groups.forEach(g => {
                 g.classList.remove('open');
-                g.querySelector('.nav-group-trigger').setAttribute('aria-expanded', 'false');
+                const t = g.querySelector('.nav-group-trigger');
+                if (t) t.setAttribute('aria-expanded', 'false');
             });
         });
     }
