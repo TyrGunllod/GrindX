@@ -198,6 +198,14 @@ class ThemeManager {
         });
     }
 
+    syncFromProfile(themePreference) {
+        if (themePreference && themePreference !== this.theme) {
+            this.theme = themePreference;
+            this.storage.set('grindx_theme', this.theme);
+            this.apply();
+        }
+    }
+
     toggle() {
         this.theme = this.theme === 'dark' ? 'light' : 'dark';
         this.storage.set('grindx_theme', this.theme);

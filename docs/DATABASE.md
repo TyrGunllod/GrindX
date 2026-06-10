@@ -1,4 +1,4 @@
-<!-- title: Banco de Dados — GrindX | updated: 2026-05-28 -->
+<!-- title: Banco de Dados — GrindX | updated: 2026-06-10 -->
 
 # Banco de Dados — GrindX
 
@@ -68,6 +68,9 @@ Gerencia autenticação e controle de acesso.
 | `email` | String(255) único | E-mail |
 | `nome_completo` | String(150) | Nome exibido |
 | `senha_hash` | String(255) | Hash bcrypt |
+| `temp_password_hash` | String(255) nullable | Hash bcrypt da senha temporária |
+| `expires_at` | DateTime(tz) nullable | Expiração da senha temporária |
+| `theme_preference` | String(10) nullable | `light`, `dark` ou null (sistema) |
 | `role` | String(20) | `admin`, `operador` ou `leitura` |
 | `ativo` | Boolean | Se pode fazer login |
 | `empresa_id` | Integer FK → `org.empresas` (nullable) | Empresa do usuário |
@@ -142,7 +145,7 @@ Representa uma empresa/organização no sistema.
 
 ### Schema `org` — CompanyTheme
 
-Tema visual (skin) personalizado por empresa. Suporta dois layouts: `sidebar` (padrão para temas existentes) e `topbar`.
+Tema visual (skin) personalizado por empresa. Suporta dois layouts: `sidebar` e `topbar`.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
@@ -177,6 +180,10 @@ Histórico de alterações de tema para auditoria.
 | `changes` | JSON (nullable) | Diff das alterações (apenas em `updated`) |
 | `criado_em` | DateTime(tz) | Data da alteração |
 
+### Schema `org` — Projeto, Recurso, Tarefa, RegistroTarefa
+
+Tabelas criadas pela migration `007_add_org_schema_tables` para gestão de projetos. **Não possuem model class** — existem apenas no banco via SQL puro na migração.
+
 ---
 
 ## Conexão
@@ -206,7 +213,7 @@ cd apps/api-postgres
 alembic revision --autogenerate -m "adiciona campo X em Produto"
 
 # Aplicar todas as migrações pendentes
-python manage_db.py upgrade head
+make migrate
 
 # Ver migração atual
 alembic current
@@ -225,34 +232,32 @@ As migrações ficam em `apps/api-postgres/alembic/versions/`.
 
 | Arquivo | Descrição |
 |---------|-----------|
-| `001_initial.py` | Criação inicial dos modelos (schema `public`) |
-| `002_add_company_theme.py` | Adiciona CompanyTheme e ThemeHistory (`public`) |
-| `003_add_empresa_model.py` | Adiciona modelo Empresa (`public`) |
-| `004_add_usuario_empresa.py` | Adiciona empresa_id em Usuario (`public`) |
-| `005_add_aba_parent_id.py` | Adiciona parent_id em portal_abas (`public`) |
-| `006_add_performance_indexes.py` | Índices B-tree para performance |
-| `007_add_org_schema_tables.py` | Cria schema `org` e move tabelas |
-| `008_add_temp_password_fields.py` | Campos de senha temporária |
-| `009_add_layout_mode.py` | Adiciona `layout_mode` em `company_themes` |
+| `001_initial_schema` | Criação inicial: `usuarios`, `produtos` (schema `public`) |
+| `002_add_usuario_modulos` | Adiciona `portal_abas`, `portal_modulos`, `usuario_modulos` |
+| `003_add_empresa_and_theme` | Adiciona `empresas`, `company_themes`, `empresa_id` em `usuarios` |
+| `004_add_theme_history` | Adiciona `theme_history` |
+| `005_add_aba_parent_id` | Adiciona `parent_id` em `portal_abas` |
+| `006_add_temp_password_fields` | Adiciona `temp_password_hash`, `expires_at` em `usuarios` |
+| `007_add_org_schema_tables` | Cria schema `org` com `projetos`, `recursos`, `tarefas`, `registros_tarefas` |
+| `008_add_performance_indexes` | Índices B-tree para performance |
+| `009_add_layout_mode` | Adiciona `layout_mode` em `company_themes` |
+| `010_add_theme_preference` | Adiciona `theme_preference` em `usuarios` |
 
 ---
 
 ## Dados Iniciais (seed)
 
 ```powershell
-cd apps/api-postgres
-python seed.py
+make seed
 ```
 
-Cria:
+Cria (idempotente):
 
-- Skin "Padrão GrindX" com `logo_url` definido para um logo padrão
 - Empresa `GrindX` com dominio `grindx.local`
 - Usuário `admin` / `admin123` com role `admin` — vinculado à GrindX
-- Usuário `operador` / `operador123` com role `operador` — vinculado à GrindX
-- Usuário `leitura` / `leitura123` com role `leitura` — vinculado à GrindX
-- Usuários sem empresa são vinculados automaticamente à GrindX
-- Estrutura inicial de abas e módulos no portal
+- Skin "Padrão GrindX" com tema azul claro/escuro e fontes Barlow Condensed + DM Sans
+- Abas: `Principal` e `Gestão`
+- Módulos: `Dashboard`, `Usuários`, `Módulos & Abas`, `Skins`, `Importar Módulos`
 
 ---
 

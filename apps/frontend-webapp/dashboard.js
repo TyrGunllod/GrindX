@@ -50,6 +50,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
             this.user = { ...this.user, ...profile };
             window.grindx.session.setUserProfile(profile);
             this.updateUserUI(this.user);
+            if (profile.theme_preference) {
+                window.grindx.theme.syncFromProfile(profile.theme_preference);
+            }
         } catch (err) {
             console.warn('Não foi possível carregar o perfil do usuário logado:', err);
         }

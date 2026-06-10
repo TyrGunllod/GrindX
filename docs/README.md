@@ -1,4 +1,4 @@
-<!-- title: Documentação GrindX | updated: 2026-05-20 -->
+<!-- title: Documentação GrindX | updated: 2026-06-10 -->
 
 # GrindX — Documentação
 
@@ -8,7 +8,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 
 ## Status do Projeto
 
-**Em desenvolvimento ativo.** Backend, frontend, testes, CI/CD, assets visuais e sistema de skins implementados.
+**Em desenvolvimento ativo.** Backend, frontend, testes (178), CI/CD com semantic release, assets visuais e sistema de skins implementados.
 
 ---
 
@@ -34,10 +34,9 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 | Documento | Descrição |
 |-----------|-----------|
 | [README.md](../README.md) | Visão geral, arquitetura e como rodar |
-| [MAPA-ARQUIVOS.md](../MAPA-ARQUIVOS.md) | Inventário completo de arquivos |
-| [GRINDX-RESUMO.md](../GRINDX-RESUMO.md) | Resumo executivo e acesso rápido |
-| [CHANGELOG.md](../CHANGELOG.md) | Histórico de versões e releases |
-| [.opencode/skills/create-module/SKILL.md](../.opencode/skills/create-module/SKILL.md) | Skill para criar novos módulos (backend + frontend) |
+| [MAPA-ARQUIVOS.md](MAPA-ARQUIVOS.md) | Inventário completo de arquivos |
+| [ARCHITECTURE_PORTAL.md](../apps/frontend-webapp/ARCHITECTURE_PORTAL.md) | Como criar novos módulos frontend |
+| [SKILLS.md](SKILLS.md) | Skills do assistente e templates de criação |
 
 ### Pacotes
 
@@ -45,8 +44,6 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 |-----------|-----------|
 | [api-postgres/README.md](../apps/api-postgres/README.md) | API principal (FastAPI + PostgreSQL) |
 | [api-sqlserver/README.md](../apps/api-sqlserver/README.md) | API leitura (FastAPI + SQL Server) |
-| [ARCHITECTURE_PORTAL.md](../apps/frontend-webapp/ARCHITECTURE_PORTAL.md) | Como criar novos módulos frontend |
-| [SKILLS.md](SKILLS.md) | Skills do assistente e templates de criação |
 
 ---
 
@@ -64,4 +61,3 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 | Usuário | Senha | Perfil |
 |---------|-------|--------|
 | `admin` | `admin123` | Administrador |
-| `operador` | `operador123` | Operador |

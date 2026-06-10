@@ -97,6 +97,7 @@
                 window.grindx.storage.set('grindx_theme', selectedTheme);
                 window.grindx.theme.apply();
                 window.parent.postMessage('theme-changed', '*');
+                await window.grindx.api.put('/auth/me', { theme_preference: selectedTheme });
             }
 
             window.parent.postMessage('profile-saved', '*');

@@ -89,7 +89,9 @@ class Settings(BaseSettings):
             return self.SKINS_DIR
         return str(
             Path(__file__).resolve().parent.parent.parent.parent.parent
-            / "apps" / "frontend-webapp" / "skins"
+            / "apps"
+            / "frontend-webapp"
+            / "skins"
         )
 
     # --- Rate Limiting ---

@@ -36,6 +36,11 @@ class Usuario(IamBase):
     expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, comment="Expiração da senha temporária"
     )
+    theme_preference: Mapped[str | None] = mapped_column(
+        String(10),
+        nullable=True,
+        comment="Preferência de tema: light, dark ou null (sistema)",
+    )
     role: Mapped[str] = mapped_column(
         String(20),
         nullable=False,

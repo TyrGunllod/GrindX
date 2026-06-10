@@ -348,7 +348,9 @@ def delete_theme(
     "/{theme_id}/original-snapshot",
     summary="Snapshot original do tema",
     description="Retorna o snapshot do tema no momento da criação. Requer role admin.",
-    responses={404: {"model": ErrorResponse, "description": "Snapshot original não encontrado"}},
+    responses={
+        404: {"model": ErrorResponse, "description": "Snapshot original não encontrado"}
+    },
 )
 def get_original_theme_snapshot(
     theme_id: int,

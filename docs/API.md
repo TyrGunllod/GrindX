@@ -1,4 +1,4 @@
-<!-- title: API Reference — GrindX | updated: 2026-06-09 -->
+<!-- title: API Reference — GrindX | updated: 2026-06-10 -->
 
 # API Reference — GrindX
 
@@ -67,9 +67,26 @@ Retorna o perfil do usuário autenticado. Qualquer role pode acessar.
   "nome_completo": "Administrador",
   "role": "admin",
   "ativo": true,
-  "empresa_id": null
+  "theme_preference": "dark",
+  "empresa_id": 1
 }
 ```
+
+### `PUT /v1/auth/me`
+
+Atualiza o perfil do próprio usuário autenticado. Todos os campos são opcionais.
+
+**Body:**
+
+```json
+{
+  "email": "novo@email.com",
+  "nome_completo": "Novo Nome",
+  "theme_preference": "dark"
+}
+```
+
+**Response 200:** Objeto do usuário atualizado.
 
 ### `POST /v1/auth/change-password`
 
@@ -120,22 +137,28 @@ Verifica se a API está respondendo. Não exige autenticação.
 
 ### `GET /v1/usuarios/`
 
-Lista todos os usuários. Requer perfil `admin`.
+Lista todos os usuários (paginado, filtrável por role). Requer perfil `admin`.
+
+**Query params:** `page` (default 1), `page_size` (default 20), `role` (opcional)
 
 **Response 200:**
 
 ```json
-[
-  {
-    "id": 1,
-    "username": "admin",
-    "email": "admin@grindx.com",
-    "nome_completo": "Administrador",
-    "role": "admin",
-    "ativo": true,
-    "empresa_id": null
-  }
-]
+{
+  "items": [
+    {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@grindx.com",
+      "nome_completo": "Administrador",
+      "role": "admin",
+      "ativo": true,
+      "theme_preference": null,
+      "empresa_id": 1
+    }
+  ],
+  "total": 1
+}
 ```
 
 ### `POST /v1/usuarios/`
@@ -158,7 +181,7 @@ Cria um novo usuário. Requer perfil `admin`.
 
 ### `GET /v1/usuarios/{id}`
 
-Retorna um usuário pelo ID. Requer perfil `admin` ou o próprio usuário.
+Retorna um usuário pelo ID. Requer perfil `admin`.
 
 ### `PUT /v1/usuarios/{id}`
 
@@ -166,11 +189,17 @@ Atualiza dados de um usuário. Requer perfil `admin`.
 
 ### `DELETE /v1/usuarios/{id}`
 
-Remove um usuário. Requer perfil `admin`.
+Desativa (soft-delete) um usuário. Requer perfil `admin`.
+
+### `GET /v1/usuarios/{id}/modulos`
+
+Lista os módulos permitidos para um usuário. Requer `admin`.
+
+### `PUT /v1/usuarios/{id}/modulos`
+
+Substitui a lista de módulos permitidos de um usuário. Requer `admin`.
 
 ---
-
-
 
 ## Códigos de Erro Padrão
 
@@ -180,6 +209,7 @@ Remove um usuário. Requer perfil `admin`.
 | 401 | Token ausente ou expirado |
 | 403 | Permissão insuficiente para o perfil |
 | 404 | Recurso não encontrado |
+| 409 | Conflito (ex: username ou e-mail duplicado) |
 | 422 | Falha de validação Pydantic |
 | 429 | Rate limit excedido (100 req/min por padrão) |
 | 500 | Erro interno — consultar logs estruturados |
@@ -241,17 +271,6 @@ Cria uma nova aba no menu. Requer `admin`.
 
 Atualiza uma aba. Requer `admin`.
 
-**Body:**
-
-```json
-{
-  "nome": "Logística",
-  "icone": "truck",
-  "ordem": 2,
-  "parent_id": null
-}
-```
-
 ### `DELETE /v1/portal/abas/{id}`
 
 Remove uma aba e seus módulos. Requer `admin`.
@@ -280,19 +299,6 @@ Cria um módulo dentro de uma aba. Requer `admin`.
 
 Atualiza um módulo. Requer `admin`.
 
-**Body:**
-
-```json
-{
-  "nome": "Estoque",
-  "url": "/modules/estoque/index.html",
-  "icone": "package",
-  "ordem": 1,
-  "role_minima": "operador",
-  "slug": "estoque"
-}
-```
-
 ### `DELETE /v1/portal/modulos/{id}`
 
 Remove um módulo. Requer `admin`.
@@ -302,6 +308,12 @@ Remove um módulo. Requer `admin`.
 ## Temas / Skins
 
 Endpoints para gerenciar o sistema de skins visuais por empresa. O `company_id` é obtido automaticamente do token JWT do usuário logado. Requer perfil `admin`.
+
+### `GET /v1/themes/active`
+
+Retorna o tema ativo da empresa do usuário logado. Usado pelo `skinLoader` no boot do frontend.
+
+**Response 200:** Objeto do tema ativo ou 404 se nenhum encontrado.
 
 ### `GET /v1/themes/`
 
@@ -315,9 +327,9 @@ Lista todos os temas da empresa do usuário logado.
     "company_id": 1,
     "name": "Corporate Blue",
     "is_active": true,
-    "colors": {"--skin-primary": "#0055aa", "--skin-danger": "#ef4444", ...},
+    "colors": {"--skin-primary": "#0055aa", "--skin-danger": "#ef4444"},
     "fonts": {"heading": "Barlow Condensed", "body": "DM Sans"},
-    "tokens": {"--skin-radius-md": "0.5rem", "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.1)", ...},
+    "tokens": {"--skin-radius-md": "0.5rem", "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.1)"},
     "icon_library": "fontawesome",
     "logo_url": "/uploads/logos/uuid.jpg",
     "layout_mode": "topbar",
@@ -368,12 +380,6 @@ Ativa um tema (desativa automaticamente os outros da mesma empresa).
 
 **Response 200:** Objeto do tema ativado.
 
-### `GET /v1/themes/active`
-
-Retorna o tema ativo da empresa do usuário logado. Usado pelo `skinLoader` no boot do frontend.
-
-**Response 200:** Objeto do tema ativo ou 404 se nenhum encontrado.
-
 ### `GET /v1/themes/templates`
 
 Lista os templates de skin pré-configurados disponíveis.
@@ -381,8 +387,8 @@ Lista os templates de skin pré-configurados disponíveis.
 **Response 200:**
 ```json
 [
-  {"slug": "corporate-blue", "name": "Corporate Blue", "preview": {"--skin-primary": "#0055aa", ...}},
-  {"slug": "dark-minimal", "name": "Dark Minimal", "preview": {...}}
+  {"slug": "corporate-blue", "name": "Corporate Blue", "preview": {"--skin-primary": "#0055aa"}},
+  {"slug": "dark-minimal", "name": "Dark Minimal", "preview": {"--skin-primary": "#6b7280"}}
 ]
 ```
 

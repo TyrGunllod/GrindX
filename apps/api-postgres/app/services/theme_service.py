@@ -11,7 +11,6 @@ import structlog
 from shared.exceptions.base import NotFoundError
 
 from app.core.config import settings
-
 from app.models.theme import CompanyTheme
 from app.models.theme_history import ThemeHistory
 from app.repositories.theme_repository import ThemeRepository

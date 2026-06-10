@@ -1,4 +1,4 @@
-<!-- title: Guia de Instalação — GrindX | updated: 2026-06-09 -->
+<!-- title: Guia de Instalação — GrindX | updated: 2026-06-10 -->
 
 # Guia de Instalação — GrindX
 
@@ -60,15 +60,14 @@ EMAIL_FROM_NAME=GrindX Administrador
 ```
 
 ```powershell
-# Criar banco e rodar migrações
-python manage_db.py upgrade head
+# Rodar migrações (cria todas as tabelas do banco)
+make migrate
 
-# Popular dados iniciais (usuários admin/operador)
-python seed.py
-
-# Aplicar migração mais recente (sub-abas)
-alembic upgrade head
+# Popular dados iniciais
+make seed
 ```
+
+> **Ordem importante:** `migrate` deve rodar antes do `seed` para garantir que todas as tabelas (inclusive as sem model class, como `projetos`, `recursos`, `tarefas`, `registros_tarefas`) existam antes da inserção de dados.
 
 ---
 
@@ -123,7 +122,6 @@ Acessar: `http://localhost:5500`
 | Usuário | Senha | Perfil |
 |---------|-------|--------|
 | `admin` | `admin123` | Administrador — acesso total |
-| `operador` | `operador123` | Operador — leitura e criação |
 
 ---
 
@@ -131,15 +129,11 @@ Acessar: `http://localhost:5500`
 
 ```powershell
 # Da raiz do projeto
-pytest                   # testes da raiz (21 testes)
-
-# Por pacote
-make test-postgres       # 110 testes — api-postgres
+make test-postgres       # 178 testes — api-postgres
 make test-sqlserver      # testes api-sqlserver
 make test-shared         # 26 testes RBAC
-
-# Todos de uma vez
-make test-all
+make test-root           # 21 testes de integração do monorepo
+make test-all            # todos de uma vez
 ```
 
 Os testes usam SQLite in-memory — não precisam de PostgreSQL real rodando.
@@ -148,15 +142,7 @@ Os testes usam SQLite in-memory — não precisam de PostgreSQL real rodando.
 
 ## 7. Migrações de Banco (Alembic)
 
-Os modelos foram reorganizados em **4 schemas de domínio** (`iam`, `portal`, `catalogo`, `org`) dentro de `app/modules/`. As migrações existentes (001–005) criaram as tabelas no schema `public`. A estrutura de modelos está em `app/modules/{schema}/models/`, com shims de compatibilidade em `app/models/`.
-
-Para recriar o banco do zero com os schemas:
-
-```powershell
-dropdb grindx
-createdb grindx
-python seed.py
-```
+Os modelos foram reorganizados em **4 schemas de domínio** (`iam`, `portal`, `catalogo`, `org`) dentro de `app/modules/`. Todas as bases compartilham um único `registry()` e `MetaData()`, com schema definido via `__table_args__` herdado.
 
 ```powershell
 cd apps/api-postgres
@@ -165,13 +151,25 @@ cd apps/api-postgres
 alembic revision --autogenerate -m "descricao da mudanca"
 
 # Aplicar migrações pendentes
-python manage_db.py upgrade head
+make migrate
 
 # Ver estado atual
 alembic current
 
 # Reverter uma migração
 alembic downgrade -1
+```
+
+Para recriar o banco do zero:
+
+```powershell
+# Dropar e recriar o database
+psql -U postgres -c "DROP DATABASE IF EXISTS grindx"
+psql -U postgres -c "CREATE DATABASE grindx"
+
+# Aplicar migrações + seed
+make migrate
+make seed
 ```
 
 ---
@@ -200,11 +198,23 @@ make logs    # ver logs em tempo real
 <script src="../../shared/apiService.js"></script>
 ```
 
-4. Cadastrar a URL do módulo no painel de **Gestão de Estrutura** dentro do portal
+4. Cadastrar a URL do módulo no painel de **Módulos & Abas** dentro do portal
 
-> As **Abas** agora suportam `parent_id` para aninhamento hierárquico (sub-abas). Ao cadastrar uma aba, é possível definir uma aba pai para criar sub-menus.
+> As **Abas** suportam `parent_id` para aninhamento hierárquico (sub-abas). Ao cadastrar uma aba, é possível definir uma aba pai para criar sub-menus.
 
 Ver [`ARCHITECTURE_PORTAL.md`](../apps/frontend-webapp/ARCHITECTURE_PORTAL.md) para o guia completo.
+
+---
+
+## 10. Criar um Novo Módulo Completo (backend + frontend)
+
+Usar a skill do assistente:
+
+```
+.opencode/skills/create-standalone-module/SKILL.md
+```
+
+Cobre: backend FastAPI + SQLAlchemy models, frontend vanilla JS, testes, migration Alembic e auto-registro.
 
 ---
 

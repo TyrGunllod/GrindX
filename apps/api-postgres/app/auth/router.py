@@ -175,11 +175,12 @@ def update_me(
     current_user: TokenPayload = Depends(get_current_user),
     auth_service: AuthService = Depends(get_auth_service),
 ):
-    """Atualiza email e/ou nome completo do próprio usuário autenticado."""
+    """Atualiza email, nome completo e/ou preferência de tema do próprio usuário."""
     result = auth_service.update_profile(
         int(current_user.sub),
         email=dados.email,
         nome_completo=dados.nome_completo,
+        theme_preference=dados.theme_preference,
     )
     logger.info(
         "perfil_atualizado_via_api",
