@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.22.8 (2026-06-10)
+
+### Bug Fixes
+
+- **profile**: Add hide-mobile to Salvar Alteracoes button
+  ([`73ca3ca`](https://github.com/TyrGunllod/GrindX/commit/73ca3cae678a3888e0a192e5468dac4a35374553))
+
+
 ## v1.22.7 (2026-06-10)
 
 ### Bug Fixes
