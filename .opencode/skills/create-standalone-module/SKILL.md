@@ -764,6 +764,25 @@ class TestService:
 - Atributos `data-*` para binding de eventos via delegated events
 - IDs únicos para binds, classes para estilização
 - Estrutura: `<div class="page-container">` → cabeçalho + grid + empty state + modais
+- **Botões de ação no header** seguem padrão `<i class="fas fa-..."></i> <span class="hide-mobile">Texto</span>` — no mobile/tablet aparece só o ícone, no desktop ícone + texto
+
+**Estrutura padrão do header com botões de ação:**
+```html
+<header class="page-header mb-8">
+    <div>
+        <h1>Título do Módulo</h1>
+        <p class="text-muted">Descrição do módulo.</p>
+    </div>
+    <div class="actions-group" style="margin-top: var(--space-4);">
+        <button class="btn btn-primary" id="btnNovo">
+            <i class="fas fa-plus"></i> <span class="hide-mobile">Novo</span>
+        </button>
+        <button class="btn btn-secondary" id="btnAcao">
+            <i class="fas fa-search"></i> <span class="hide-mobile">Ação</span>
+        </button>
+    </div>
+</header>
+```
 
 **Estrutura padrão do modal:**
 ```html
@@ -1446,6 +1465,7 @@ pytest tests/ -k {module_name} -v
 - [ ] `export.py`: `--grindx-root` aceita caminho customizado
 - [ ] `export.py`: comando `package` gera `.zip` com estrutura compatível com o importer
 - [ ] Herança de skins: style.css usa `var(--...)`, sem cores fixas
+- [ ] **Responsividade**: botões de ação seguem padrão ícone + `<span class="hide-mobile">` (só ícone no mobile/tablet)
 - [ ] **Responsividade**: spacing scale do `core.css` usada (não hardcoded `0.75rem`)
 - [ ] **Responsividade**: breakpoints unificados usados em media queries (não magic numbers)
 - [ ] **Responsividade**: touch targets com `min-height: 44px` em todos elementos interativos
