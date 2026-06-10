@@ -2,6 +2,154 @@
 
 <!-- version list -->
 
+## v1.20.0 (2026-06-10)
+
+### Bug Fixes
+
+- _updateLogos preserva dropdown, .logo-text escondido no collapsed
+  ([`02bf6cd`](https://github.com/TyrGunllod/GrindX/commit/02bf6cde62c651a8799cdc09cb93585911744f6b))
+
+- Sincronizar userUI ao salvar perfil, corrigir toggle tema e adicionar feedback de erro
+  ([`8dd2506`](https://github.com/TyrGunllod/GrindX/commit/8dd25067832ba7d797b4e6f82723d991d685b6d1))
+
+- SkinLoader nao destroi dropdown ao atualizar logo, usar event delegation no click
+  ([`b3a75d7`](https://github.com/TyrGunllod/GrindX/commit/b3a75d7543b2a98628525bfab95bfa492be5bbb0))
+
+- Usar endsWith para evitar falsos positivos no redirect 401
+  ([`a15a232`](https://github.com/TyrGunllod/GrindX/commit/a15a2322983cefe7569c9a4980fc54f144c7e081))
+
+- **auth**: Adicionar docstrings e logging em update_profile e update_me
+  ([`6563f70`](https://github.com/TyrGunllod/GrindX/commit/6563f705a0636322fd3a4930107e3a8c4a635d9a))
+
+- **dashboard**: Dropdown do logo usando > .user-dropdown, topbar igual ao sidebar
+  ([`3a68e22`](https://github.com/TyrGunllod/GrindX/commit/3a68e2216bf48e2443c4aa25babe51d6314ce4da))
+
+- **dashboard**: Fix topbar dropdown menu clipping
+  ([`3e96a55`](https://github.com/TyrGunllod/GrindX/commit/3e96a55b30dd4d1d2749e4b691ee660dc8e85d0c))
+
+- **dashboard**: Fix topbar layout direction
+  ([`15dd225`](https://github.com/TyrGunllod/GrindX/commit/15dd2255a771441a3ac24b98059b08c1e923d476))
+
+- **dashboard**: Truncate long module names in topbar dropdowns
+  ([`222bc97`](https://github.com/TyrGunllod/GrindX/commit/222bc97f8d78e7e2bedc8c74e07a3a82b43a0e3f))
+
+- **dashboard**: Truncate module and tab names to 16 chars
+  ([`5d91175`](https://github.com/TyrGunllod/GrindX/commit/5d91175f8c10d13da0823ebfd4f9848d751a0eb5))
+
+- **dashboard**: Use position fixed for topbar dropdowns
+  ([`1652530`](https://github.com/TyrGunllod/GrindX/commit/1652530b5209fc1fecd446f80c7a44cfc05c6fa7))
+
+- **migrations**: Make all migrations idempotent for fresh databases
+  ([`69a574b`](https://github.com/TyrGunllod/GrindX/commit/69a574bc3c774a06d3a90935e6a6e8a62b5538c8))
+
+- **profile**: Carregar dados do parent como fallback, adicionar config.js, corrigir 401 redirect no
+  iframe
+  ([`7998d98`](https://github.com/TyrGunllod/GrindX/commit/7998d98049544faeb9f000c4c799d551cf3ef5ae))
+
+- **skin**: Invalidate cache when theme is updated
+  ([`8f08e01`](https://github.com/TyrGunllod/GrindX/commit/8f08e01fd30827c444c0f452b23d64620392a7e9))
+
+- **skinloader**: Atualizar tambem topbar-logo no _updateBranding
+  ([`a0b7139`](https://github.com/TyrGunllod/GrindX/commit/a0b7139267b86d92ef7ee03e96f453272a06201f))
+
+- **skins**: Mover importar fontes para baixo do seletor de fonte
+  ([`b0bca0d`](https://github.com/TyrGunllod/GrindX/commit/b0bca0d7eee14d2c267a8d4618048156aba876a5))
+
+- **skins**: Padronizar botoes de importar/usar template para btn-primary
+  ([`52225a8`](https://github.com/TyrGunllod/GrindX/commit/52225a8c2fd4a2415fd2ee00595a0e7956a81e7a))
+
+- **skins**: Uniformizar largura dos inputs no editor de skin
+  ([`7a71128`](https://github.com/TyrGunllod/GrindX/commit/7a71128ca96c011b04bf96289fe32573e9e41c1d))
+
+- **skins,structure**: Remover estilos duplicados de botoes
+  ([`1f4c99d`](https://github.com/TyrGunllod/GrindX/commit/1f4c99d9772aec4130964bb96fdc1dd53530fd2e))
+
+- **theme**: Incluir layout_mode no template creation
+  ([`4213d0a`](https://github.com/TyrGunllod/GrindX/commit/4213d0a150b7efc10dbaed7d4542f665053140f8))
+
+### Chores
+
+- Corrigir importacoes nao utilizadas em migracoes alembic
+  ([`a1df2c8`](https://github.com/TyrGunllod/GrindX/commit/a1df2c85795591c11d945616f382351b16df57bc))
+
+### Code Style
+
+- Aplicar ruff format em arquivos python
+  ([`e637b6e`](https://github.com/TyrGunllod/GrindX/commit/e637b6e2d2806a6cb8b6b99054bbbca203660864))
+
+- Format update_profile signature
+  ([`8227709`](https://github.com/TyrGunllod/GrindX/commit/8227709f8584df597737e5be81ead84d9ac4cfb4))
+
+### Documentation
+
+- Adicionar spec e plano para redesign do dashboard e perfil
+  ([`4c0e4ca`](https://github.com/TyrGunllod/GrindX/commit/4c0e4ca8cbb78dce012fccd6ecdd107e6e123594))
+
+- Update documentation for dual layout feature
+  ([`a707d66`](https://github.com/TyrGunllod/GrindX/commit/a707d66b90475c804cf39f8894d03bac0458da47))
+
+### Features
+
+- **admin-skins**: Add layout mode selector to skin editor
+  ([`74d5a36`](https://github.com/TyrGunllod/GrindX/commit/74d5a365a549d0b671c3a3e81df3de2d70992049))
+
+- **api**: Redirecionar para login ao receber 401 em chamadas autenticadas
+  ([`f0ce646`](https://github.com/TyrGunllod/GrindX/commit/f0ce646ceb06cbb43bc859b7c396bb392e90e6b2))
+
+- **auth**: Adicionar endpoint PUT /v1/auth/me para autoatualizacao de perfil
+  ([`f90193b`](https://github.com/TyrGunllod/GrindX/commit/f90193bea7b0bfcda8de81fa0b949aa580973389))
+
+- **dashboard**: Estilos para logo-clicavel e ajustes pos-remocao user-pill
+  ([`01d8c70`](https://github.com/TyrGunllod/GrindX/commit/01d8c7096698a97ded388883cc0c0be740d2bca4))
+
+- **dashboard**: Eventos de click no logo, loadProfileModule, remover metodos de tema e senha
+  ([`7c2f59f`](https://github.com/TyrGunllod/GrindX/commit/7c2f59ff444e63156e5d53e9e4a26c21c1e51d1b))
+
+- **dashboard**: Logos clicaveis, remover user-pill sidebar, theme toggles e modal senha
+  ([`c34c617`](https://github.com/TyrGunllod/GrindX/commit/c34c617a3aa96d4edcc72e0697c9ca6ac970a8a1))
+
+- **dashboard**: Suporte dual layout sidebar e topbar
+  ([`ce8bf0b`](https://github.com/TyrGunllod/GrindX/commit/ce8bf0b304422b5de04cdb05128d4b7704be2d61))
+
+- **frontend**: Add topbar header structure to dashboard HTML
+  ([`61e5459`](https://github.com/TyrGunllod/GrindX/commit/61e545994d52cbf6973b0ed242daff02e0b06bcf))
+
+- **layout**: Add topbar CSS styles and layout switching rules
+  ([`5452acf`](https://github.com/TyrGunllod/GrindX/commit/5452acf7b09bad034edb1f6b8064f86bcd48eccf))
+
+- **migration**: Adicionar coluna layout_mode em company_themes
+  ([`395d264`](https://github.com/TyrGunllod/GrindX/commit/395d264ae2f28b19ed11f75c7b837bb003b5a361))
+
+- **org**: Add layout_mode column to CompanyTheme model
+  ([`226dc40`](https://github.com/TyrGunllod/GrindX/commit/226dc409ba36c8163a658fb4ac13b96c69c4364b))
+
+- **profile**: Criar modulo de perfil com email, senha e preferencia de tema
+  ([`f4bed46`](https://github.com/TyrGunllod/GrindX/commit/f4bed466420b1ddc01b925720093333df0360791))
+
+- **skinLoader**: Adicionar layout_mode no fluxo de skin
+  ([`98a2c64`](https://github.com/TyrGunllod/GrindX/commit/98a2c640a3ef59f59ce1609a077e2e5074a9afc4))
+
+- **skins**: Remover botao refresh e adicionar importar skin
+  ([`a193d6d`](https://github.com/TyrGunllod/GrindX/commit/a193d6db82750a9177a2d4e17cb7d8008b9af59d))
+
+- **theme**: Add layout_mode to Pydantic schemas
+  ([`885b201`](https://github.com/TyrGunllod/GrindX/commit/885b201b2fa8a7212f349dd7581bfbf3215c34af))
+
+- **theme**: Incluir layout_mode na logica do ThemeService
+  ([`0de07ba`](https://github.com/TyrGunllod/GrindX/commit/0de07baf9e709abf81f051417d497ba80210c6b1))
+
+- **ui**: Padronizar botoes e ajustar hover/icone do logo
+  ([`61f3d70`](https://github.com/TyrGunllod/GrindX/commit/61f3d70af392f0f60ae622f98cd12f45159a3d49))
+
+### Testing
+
+- **theme**: Add layout_mode unit tests
+  ([`b509736`](https://github.com/TyrGunllod/GrindX/commit/b509736eb441e1b419b19cbab450252d0be4c65b))
+
+- **themes**: Add layout_mode integration tests
+  ([`06ba12e`](https://github.com/TyrGunllod/GrindX/commit/06ba12e533a520957e0a40d8539700fbb88848f2))
+
+
 ## v1.19.2 (2026-06-09)
 
 ### Bug Fixes
