@@ -27,9 +27,9 @@ class ImporterController extends window.grindx.controllers.BaseController {
                     render: function(v, row) {
                         var slug = (row.slug || '').replace(/[&<>"']/g, '');
                         if (row.ja_importado) {
-                            return '<button class="btn btn-sm btn-danger" data-action="remove" data-slug="' + slug + '">Remover</button>';
+                            return '<button class="btn btn-sm btn-danger" data-action="remove" data-slug="' + slug + '"><i class="fas fa-trash"></i> <span class="hide-mobile">Remover</span></button>';
                         }
-                        return '<button class="btn btn-sm btn-primary" data-action="import" data-slug="' + slug + '">Importar</button>';
+                        return '<button class="btn btn-sm btn-primary" data-action="import" data-slug="' + slug + '"><i class="fas fa-download"></i> <span class="hide-mobile">Importar</span></button>';
                     }
                 }
             ],
