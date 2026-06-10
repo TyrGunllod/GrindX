@@ -12,8 +12,9 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.currentLogoUrl = null;
         this.pendingLogoFile = null;
         this.advancedMode = false;
-        this._darkPreview = false;
         this.customFonts = [];
+        this._currentSnapshot = null;
+        this._originalSnapshot = null;
         this.apiBase = window.grindx.config.API_BASE_URL;
 
         this.init();
@@ -40,12 +41,11 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             e.preventDefault();
             this.saveSkin();
         });
-        document.getElementById('btnPreviewSkin')?.addEventListener('click', () => this.previewSkin());
-        document.getElementById('btnResetSkin')?.addEventListener('click', () => this.resetPreview());
+        document.getElementById('btnResetSkin')?.addEventListener('click', () => {
+            this.resetPreview();
+            this._updateResetButton();
+        });
         document.getElementById('btnAutoDarkMode')?.addEventListener('click', () => this.generateDarkMode());
-
-        // Preview dark/light toggle
-        document.getElementById('previewThemeToggle')?.addEventListener('click', () => this.togglePreviewTheme());
 
         // Advanced mode toggle
         document.getElementById('advancedModeToggle')?.addEventListener('change', (e) => {
@@ -135,6 +135,130 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 }
                 this.previewSkin();
             });
+        }
+    }
+
+    _updateSectionPreviews() {
+        const g = (id) => document.getElementById(id);
+
+        // Basic Colors preview
+        const basicInner = g('previewBasic')?.querySelector('.section-preview-inner');
+        if (basicInner) {
+            const bgMain = g('colorBgMainText')?.value || '#f8fafc';
+            const bgCard = g('colorBgCardText')?.value || '#ffffff';
+            const primary = g('colorPrimaryText')?.value || '#00c2e0';
+            const success = g('colorSuccessText')?.value || '#10b981';
+            const danger = g('colorDangerText')?.value || '#ef4444';
+            const warning = g('colorWarningText')?.value || '#f59e0b';
+            basicInner.style.background = bgMain;
+            basicInner.style.color = g('colorTextMainText')?.value || '#1e293b';
+            if (g('pbBtn')) { g('pbBtn').style.background = primary; g('pbBtn').style.color = '#fff'; }
+            if (g('pbSuccess')) { g('pbSuccess').style.background = success; g('pbSuccess').style.color = '#fff'; }
+            if (g('pbDanger')) { g('pbDanger').style.background = danger; g('pbDanger').style.color = '#fff'; }
+            if (g('pbWarning')) { g('pbWarning').style.background = warning; g('pbWarning').style.color = '#fff'; }
+            if (g('pbCard')) {
+                g('pbCard').style.background = bgCard;
+                g('pbCard').style.borderColor = g('colorBorderColorText')?.value || '#e2e8f0';
+                g('pbCard').style.color = g('colorTextMainText')?.value || '#1e293b';
+            }
+        }
+
+        // Advanced Colors preview
+        const advInner = g('previewAdvanced')?.querySelector('.section-preview-inner');
+        if (advInner) {
+            advInner.style.background = g('colorBgMainText')?.value || '#f8fafc';
+            const primaryHover = g('colorPrimaryHoverText')?.value || '#00a8c4';
+            const textMain = g('colorTextMainText')?.value || '#1e293b';
+            const textMuted = g('colorTextMutedText')?.value || '#64748b';
+            const borderColor = g('colorBorderColorText')?.value || '#e2e8f0';
+            const focusRing = g('colorFocusRingText')?.value || 'rgba(0,194,224,0.35)';
+            if (g('paBtn')) { g('paBtn').style.background = primaryHover; g('paBtn').style.color = '#fff'; }
+            if (g('paTextMain')) g('paTextMain').style.color = textMain;
+            if (g('paTextMuted')) g('paTextMuted').style.color = textMuted;
+            if (g('paBorder')) {
+                g('paBorder').style.borderColor = borderColor;
+                g('paBorder').style.background = g('colorBgCardText')?.value || '#ffffff';
+                g('paBorder').style.color = textMain;
+            }
+            if (g('paFocus')) {
+                g('paFocus').style.borderColor = borderColor;
+                g('paFocus').style.boxShadow = `0 0 0 2px ${focusRing}`;
+                g('paFocus').style.background = g('colorBgCardText')?.value || '#ffffff';
+                g('paFocus').style.color = textMain;
+            }
+        }
+
+        // Dark Mode preview
+        const darkInner = g('previewDark')?.querySelector('.section-preview-inner');
+        if (darkInner) {
+            const bgMainDark = g('colorBgMainDarkText')?.value || '#0f172a';
+            const bgCardDark = g('colorBgCardDarkText')?.value || '#1e293b';
+            const textMainDark = g('colorTextMainDarkText')?.value || '#f8fafc';
+            const textMutedDark = g('colorTextMutedDarkText')?.value || '#94a3b8';
+            const borderColorDark = g('colorBorderColorDarkText')?.value || 'rgba(255,255,255,0.05)';
+            darkInner.style.background = bgMainDark;
+            darkInner.style.color = textMainDark;
+            if (g('pdBtn')) { g('pdBtn').style.background = textMainDark; g('pdBtn').style.color = bgMainDark; }
+            if (g('pdSuccess')) { g('pdSuccess').style.background = textMainDark; g('pdSuccess').style.color = bgMainDark; }
+            if (g('pdDanger')) { g('pdDanger').style.background = textMutedDark; g('pdDanger').style.color = bgMainDark; }
+            if (g('pdCard')) {
+                g('pdCard').style.background = bgCardDark;
+                g('pdCard').style.borderColor = borderColorDark;
+                g('pdCard').style.color = textMainDark;
+            }
+        }
+
+        // Fonts preview
+        if (g('pfHeading')) g('pfHeading').style.fontFamily = g('fontHeading')?.value || 'Barlow Condensed';
+        if (g('pfBody')) g('pfBody').style.fontFamily = g('fontBody')?.value || 'DM Sans';
+
+        // Tokens Extras preview
+        if (g('previewTokens')) {
+            const bgCard = g('colorBgCardText')?.value || '#ffffff';
+            const borderColor = g('colorBorderColorText')?.value || '#e2e8f0';
+            const textMain = g('colorTextMainText')?.value || '#1e293b';
+            const radiusSm = g('radiusSm')?.value || '0.25rem';
+            const radiusMd = g('radiusMd')?.value || '0.5rem';
+            const radiusLg = g('radiusLg')?.value || '0.75rem';
+            const radiusXl = g('radiusXl')?.value || '1.5rem';
+            const shadowCard = g('shadowCard')?.value || '0 10px 25px rgba(0,0,0,0.1)';
+            const shadowModal = g('shadowModal')?.value || '0 20px 25px -5px rgba(0,0,0,0.2)';
+            if (g('ptRadiusSm')) {
+                g('ptRadiusSm').style.borderRadius = radiusSm;
+                g('ptRadiusSm').style.background = bgCard;
+                g('ptRadiusSm').style.borderColor = borderColor;
+                g('ptRadiusSm').style.color = textMain;
+            }
+            if (g('ptRadiusMd')) {
+                g('ptRadiusMd').style.borderRadius = radiusMd;
+                g('ptRadiusMd').style.background = bgCard;
+                g('ptRadiusMd').style.borderColor = borderColor;
+                g('ptRadiusMd').style.color = textMain;
+            }
+            if (g('ptRadiusLg')) {
+                g('ptRadiusLg').style.borderRadius = radiusLg;
+                g('ptRadiusLg').style.background = bgCard;
+                g('ptRadiusLg').style.borderColor = borderColor;
+                g('ptRadiusLg').style.color = textMain;
+            }
+            if (g('ptRadiusXl')) {
+                g('ptRadiusXl').style.borderRadius = radiusXl;
+                g('ptRadiusXl').style.background = bgCard;
+                g('ptRadiusXl').style.borderColor = borderColor;
+                g('ptRadiusXl').style.color = textMain;
+            }
+            if (g('ptShadowCard')) {
+                g('ptShadowCard').style.boxShadow = shadowCard;
+                g('ptShadowCard').style.background = bgCard;
+                g('ptShadowCard').style.borderColor = borderColor;
+                g('ptShadowCard').style.color = textMain;
+            }
+            if (g('ptShadowModal')) {
+                g('ptShadowModal').style.boxShadow = shadowModal;
+                g('ptShadowModal').style.background = bgCard;
+                g('ptShadowModal').style.borderColor = borderColor;
+                g('ptShadowModal').style.color = textMain;
+            }
         }
     }
 
@@ -283,6 +407,9 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                     throw new Error(err.detail || 'Erro ao importar skin');
                 }
 
+                const importedSkin = await resp.json();
+                this._originalSnapshot = { ...importedSkin, customFonts: [] };
+
                 await this.loadSkins();
                 alert(`Skin "${skinData.name}" importada com sucesso!`);
             } catch (err) {
@@ -351,7 +478,49 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         document.getElementById('shadowCard').value = tokens['--skin-shadow-card'] || '0 10px 25px rgba(0,0,0,0.1)';
         document.getElementById('shadowModal').value = tokens['--skin-shadow-modal'] || '0 20px 25px -5px rgba(0,0,0,0.2)';
 
+        this._currentSnapshot = { ...skin, customFonts: [...this.customFonts] };
+        await this._loadOriginalSnapshot(id);
+        this.previewSkin();
+        this._updateResetButton();
         this.openModal();
+    }
+
+    async _loadOriginalSnapshot(id) {
+        // Try API endpoint first (most reliable)
+        try {
+            const resp = await fetch(`${this.apiBase}/themes/${id}/original-snapshot`, {
+                headers: { Authorization: `Bearer ${this.token}` },
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                this._originalSnapshot = { ...data, customFonts: [] };
+                return;
+            }
+        } catch (_) {}
+
+        // Fallback: try JSON file by ID, then by name
+        const tryFetch = async (url) => {
+            try {
+                const resp = await fetch(url);
+                if (resp.ok) return resp.json();
+            } catch (_) {}
+            return null;
+        };
+
+        let data = await tryFetch(`../../skins/${id}.json`);
+        if (!data && this._currentSnapshot) {
+            const slug = this._currentSnapshot.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            data = await tryFetch(`../../skins/${slug}.json`);
+        }
+
+        if (data) {
+            this._originalSnapshot = { ...data, customFonts: [] };
+        } else {
+            this._originalSnapshot = this._currentSnapshot ? { ...this._currentSnapshot } : null;
+        }
     }
 
     setColor(colorId, textId, value) {
@@ -562,6 +731,9 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 await this.uploadLogo(this.pendingLogoFile, savedSkin.id);
             }
 
+            this._currentSnapshot = { ...savedSkin, customFonts: [...this.customFonts] };
+            this.editingSkinId = savedSkin.id;
+
             this.closeModal();
             await this.loadSkins();
             this.toastSuccess('Skin salva com sucesso.');
@@ -680,65 +852,128 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             window.skinLoader._applyFonts(fonts);
         }
 
-        // Reset toggle state whenever preview is applied
-        this._darkPreview = false;
+        this._updateSectionPreviews();
+        this._updateResetButton();
     }
 
-    _updatePreviewIconsFromLibrary(library) {
-    }
+    _applySnapshot(snap) {
+        const c = snap.colors || {};
+        const f = snap.fonts || {};
+        const t = snap.tokens || {};
 
-    togglePreviewTheme() {
-        this._darkPreview = !this._darkPreview;
-        const preview = document.querySelector('.preview-dashboard');
-        if (!preview) return;
+        document.getElementById('skinName').value = snap.name || '';
+        document.getElementById('companyName').value = snap.company_name || '';
+        document.getElementById('copyrightText').value = snap.copyright_text || '';
+        document.getElementById('layoutMode').value = snap.layout_mode || 'topbar';
 
-        // Update toggle icon
-        const toggle = document.getElementById('previewThemeToggle');
-        if (toggle) toggle.className = this._darkPreview ? 'fas fa-sun' : 'fas fa-moon';
-
-        if (this._darkPreview) {
-            [['--bg-main', 'colorBgMainDarkText'],
-             ['--bg-card', 'colorBgCardDarkText'],
-             ['--text-main', 'colorTextMainDarkText'],
-             ['--text-muted', 'colorTextMutedDarkText'],
-             ['--border-color', 'colorBorderColorDarkText'],
-            ].forEach(([prop, elId]) => {
-                preview.style.setProperty(prop, document.getElementById(elId).value);
-            });
-        } else {
-            [['--bg-main', 'colorBgMainText'],
-             ['--bg-card', 'colorBgCardText'],
-             ['--text-main', 'colorTextMainText'],
-             ['--text-muted', 'colorTextMutedText'],
-             ['--border-color', 'colorBorderColorText'],
-            ].forEach(([prop, elId]) => {
-                preview.style.setProperty(prop, document.getElementById(elId).value);
-            });
+        this.currentLogoUrl = snap.logo_url || null;
+        this.pendingLogoFile = null;
+        const logoPreview = document.getElementById('logoPreview');
+        if (logoPreview) {
+            if (snap.logo_url) this._setPreviewImage(logoPreview, snap.logo_url);
+            else this._resetPreviewDefault(logoPreview);
         }
-    }
 
-    resetPreview() {
+        this.setColor('colorPrimary', 'colorPrimaryText', c['--skin-primary'] || '#00c2e0');
+        this.setColor('colorDanger', 'colorDangerText', c['--skin-danger'] || '#ef4444');
+        this.setColor('colorSuccess', 'colorSuccessText', c['--skin-success'] || '#10b981');
+        this.setColor('colorWarning', 'colorWarningText', c['--skin-warning'] || '#f59e0b');
+        this.setColor('colorBgMain', 'colorBgMainText', c['--skin-bg-main'] || '#f8fafc');
+        this.setColor('colorBgCard', 'colorBgCardText', c['--skin-bg-card'] || '#ffffff');
+        this.setColor('colorPrimaryHover', 'colorPrimaryHoverText', c['--skin-primary-hover'] || '#00a8c4');
+        this.setColor('colorTextMain', 'colorTextMainText', c['--skin-text-main'] || '#1e293b');
+        this.setColor('colorTextMuted', 'colorTextMutedText', c['--skin-text-muted'] || '#64748b');
+        this.setColor('colorBorderColor', 'colorBorderColorText', c['--skin-border-color'] || '#e2e8f0');
+        this.setColor('colorFocusRing', 'colorFocusRingText', c['--skin-focus-ring'] || 'rgba(0, 194, 224, 0.35)');
+        this.setColor('colorBgMainDark', 'colorBgMainDarkText', c['--skin-bg-main-dark'] || '#0f172a');
+        this.setColor('colorBgCardDark', 'colorBgCardDarkText', c['--skin-bg-card-dark'] || '#1e293b');
+        this.setColor('colorTextMainDark', 'colorTextMainDarkText', c['--skin-text-main-dark'] || '#f8fafc');
+        this.setColor('colorTextMutedDark', 'colorTextMutedDarkText', c['--skin-text-muted-dark'] || '#94a3b8');
+        this.setColor('colorBorderColorDark', 'colorBorderColorDarkText', c['--skin-border-color-dark'] || 'rgba(255, 255, 255, 0.05)');
+
+        document.getElementById('fontHeading').value = f.heading || 'Barlow Condensed';
+        document.getElementById('fontBody').value = f.body || 'DM Sans';
+        this.customFonts = snap.customFonts || (f.custom || []).map(fo => ({ name: fo.name, url: fo.url, format: fo.format }));
+        this._populateFontDropdowns();
+
+        document.getElementById('radiusMd').value = t['--skin-radius-md'] || '0.5rem';
+        document.getElementById('radiusLg').value = t['--skin-radius-lg'] || '0.75rem';
+        document.getElementById('radiusSm').value = t['--skin-radius-sm'] || '0.25rem';
+        document.getElementById('radiusXl').value = t['--skin-radius-xl'] || '1.5rem';
+        document.getElementById('shadowCard').value = t['--skin-shadow-card'] || '0 10px 25px rgba(0,0,0,0.1)';
+        document.getElementById('shadowModal').value = t['--skin-shadow-modal'] || '0 20px 25px -5px rgba(0,0,0,0.2)';
+
         if (window.skinLoader) {
             window.skinLoader.resetToDefaults();
         }
-        this.setColor('colorPrimary', 'colorPrimaryText', '#00c2e0');
-        this.setColor('colorDanger', 'colorDangerText', '#ef4444');
-        this.setColor('colorSuccess', 'colorSuccessText', '#10b981');
-        this.setColor('colorWarning', 'colorWarningText', '#f59e0b');
-        this.setColor('colorBgMain', 'colorBgMainText', '#f8fafc');
-        this.setColor('colorBgCard', 'colorBgCardText', '#ffffff');
-        this.setColor('colorPrimaryHover', 'colorPrimaryHoverText', '#00a8c4');
-        this.setColor('colorTextMain', 'colorTextMainText', '#1e293b');
-        this.setColor('colorTextMuted', 'colorTextMutedText', '#64748b');
-        this.setColor('colorBorderColor', 'colorBorderColorText', '#e2e8f0');
-        this.setColor('colorFocusRing', 'colorFocusRingText', '#00c2e0');
-        document.getElementById('colorFocusRingText').value = 'rgba(0, 194, 224, 0.35)';
-        this.setColor('colorBgMainDark', 'colorBgMainDarkText', '#0f172a');
-        this.setColor('colorBgCardDark', 'colorBgCardDarkText', '#1e293b');
-        this.setColor('colorTextMainDark', 'colorTextMainDarkText', '#f8fafc');
-        this.setColor('colorTextMutedDark', 'colorTextMutedDarkText', '#94a3b8');
-        this.setColor('colorBorderColorDark', 'colorBorderColorDarkText', '#ffffff');
-        document.getElementById('colorBorderColorDarkText').value = 'rgba(255, 255, 255, 0.05)';
+        this.previewSkin();
+    }
+
+    _hasFormChanges() {
+        const snap = this._originalSnapshot || this._currentSnapshot;
+        if (!snap) return false;
+        const s = snap;
+        const c = s.colors || {};
+        const f = s.fonts || {};
+        const t = s.tokens || {};
+        const val = (id, fallback = '') => document.getElementById(id)?.value ?? fallback;
+
+        return (
+            val('skinName') !== (s.name || '') ||
+            val('companyName') !== (s.company_name || '') ||
+            val('copyrightText') !== (s.copyright_text || '') ||
+            val('layoutMode') !== (s.layout_mode || 'topbar') ||
+            val('colorPrimaryText') !== (c['--skin-primary'] || '#00c2e0') ||
+            val('colorDangerText') !== (c['--skin-danger'] || '#ef4444') ||
+            val('colorSuccessText') !== (c['--skin-success'] || '#10b981') ||
+            val('colorWarningText') !== (c['--skin-warning'] || '#f59e0b') ||
+            val('colorBgMainText') !== (c['--skin-bg-main'] || '#f8fafc') ||
+            val('colorBgCardText') !== (c['--skin-bg-card'] || '#ffffff') ||
+            val('colorPrimaryHoverText') !== (c['--skin-primary-hover'] || '#00a8c4') ||
+            val('colorTextMainText') !== (c['--skin-text-main'] || '#1e293b') ||
+            val('colorTextMutedText') !== (c['--skin-text-muted'] || '#64748b') ||
+            val('colorBorderColorText') !== (c['--skin-border-color'] || '#e2e8f0') ||
+            val('colorFocusRingText') !== (c['--skin-focus-ring'] || 'rgba(0, 194, 224, 0.35)') ||
+            val('colorBgMainDarkText') !== (c['--skin-bg-main-dark'] || '#0f172a') ||
+            val('colorBgCardDarkText') !== (c['--skin-bg-card-dark'] || '#1e293b') ||
+            val('colorTextMainDarkText') !== (c['--skin-text-main-dark'] || '#f8fafc') ||
+            val('colorTextMutedDarkText') !== (c['--skin-text-muted-dark'] || '#94a3b8') ||
+            val('colorBorderColorDarkText') !== (c['--skin-border-color-dark'] || 'rgba(255, 255, 255, 0.05)') ||
+            val('fontHeading') !== (f.heading || 'Barlow Condensed') ||
+            val('fontBody') !== (f.body || 'DM Sans') ||
+            val('radiusMd') !== (t['--skin-radius-md'] || '0.5rem') ||
+            val('radiusLg') !== (t['--skin-radius-lg'] || '0.75rem') ||
+            val('radiusSm') !== (t['--skin-radius-sm'] || '0.25rem') ||
+            val('radiusXl') !== (t['--skin-radius-xl'] || '1.5rem') ||
+            val('shadowCard') !== (t['--skin-shadow-card'] || '0 10px 25px rgba(0,0,0,0.1)') ||
+            val('shadowModal') !== (t['--skin-shadow-modal'] || '0 20px 25px -5px rgba(0,0,0,0.2)')
+        );
+    }
+
+    _updateResetButton() {
+        const btn = document.getElementById('btnResetSkin');
+        if (!btn) return;
+        const snap = this._originalSnapshot || this._currentSnapshot;
+        btn.style.display = snap && this._hasFormChanges() ? '' : 'none';
+    }
+
+    resetPreview() {
+        const snap = this._originalSnapshot || this._currentSnapshot;
+        if (snap) {
+            this._applySnapshot(snap);
+        } else {
+            this._applySnapshot({
+                name: '',
+                company_name: '',
+                copyright_text: '',
+                layout_mode: 'topbar',
+                logo_url: null,
+                colors: {},
+                fonts: { heading: 'Barlow Condensed', body: 'DM Sans', custom: [] },
+                tokens: {},
+                customFonts: [],
+            });
+        }
     }
 
     generateDarkMode() {
@@ -922,50 +1157,25 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
     }
 
     toggleAdvancedMode() {
-        const advancedColors = document.querySelector('.advanced-colors');
-        const darkModeTokens = document.querySelector('.dark-mode-tokens');
         const advancedOnly = document.querySelectorAll('.advanced-only');
         const autoDarkBtn = document.getElementById('btnAutoDarkMode');
 
         if (this.advancedMode) {
-            if (advancedColors) advancedColors.style.display = 'block';
-            if (darkModeTokens) darkModeTokens.style.display = 'block';
-            advancedOnly.forEach(el => el.style.display = 'flex');
+            advancedOnly.forEach(el => el.style.display = 'block');
             if (autoDarkBtn) autoDarkBtn.style.display = 'inline-flex';
         } else {
-            if (advancedColors) advancedColors.style.display = 'none';
-            if (darkModeTokens) darkModeTokens.style.display = 'none';
             advancedOnly.forEach(el => el.style.display = 'none');
             if (autoDarkBtn) autoDarkBtn.style.display = 'none';
         }
     }
 
     resetForm() {
+        this._currentSnapshot = null;
+        this._originalSnapshot = null;
         this.currentLogoUrl = null;
         this.pendingLogoFile = null;
         this.customFonts = [];
-        document.getElementById('skinName').value = '';
-        document.getElementById('companyName').value = '';
-        document.getElementById('copyrightText').value = '';
-        document.getElementById('layoutMode').value = 'topbar';
         this.resetPreview();
-        document.getElementById('fontHeading').value = 'Barlow Condensed';
-        document.getElementById('fontBody').value = 'DM Sans';
-        document.getElementById('radiusSm').value = '0.25rem';
-        document.getElementById('radiusMd').value = '0.5rem';
-        document.getElementById('radiusLg').value = '0.75rem';
-        document.getElementById('radiusXl').value = '1.5rem';
-        document.getElementById('shadowCard').value = '0 10px 25px rgba(0,0,0,0.1)';
-        document.getElementById('shadowModal').value = '0 20px 25px -5px rgba(0,0,0,0.2)';
-
-        // Reset logo preview
-        const logoPreview = document.getElementById('logoPreview');
-        if (logoPreview) {
-            this._resetPreviewDefault(logoPreview);
-        }
-
-        // Reset imported fonts
-        this.customFonts = [];
         this._populateFontDropdowns();
         document.getElementById('customFontFile').value = '';
         const fontPreview = document.getElementById('fontUploadPreview');

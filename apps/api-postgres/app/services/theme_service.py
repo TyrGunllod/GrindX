@@ -4,8 +4,13 @@ Service para CompanyTheme.
 Business logic para gestão de skins/temas de empresas.
 """
 
+import json
+import os
+
 import structlog
 from shared.exceptions.base import NotFoundError
+
+from app.core.config import settings
 
 from app.models.theme import CompanyTheme
 from app.models.theme_history import ThemeHistory
@@ -77,6 +82,8 @@ class ThemeService:
             action="created",
             theme_snapshot=self._to_dict(theme),
         )
+
+        self._save_snapshot_file(theme.id, self._to_dict(theme))
 
         logger.info("Tema criado", theme_id=theme.id, company_id=company_id)
         return self._to_dict(theme)
@@ -183,6 +190,20 @@ class ThemeService:
             if theme.atualizado_em
             else None,
         }
+
+    def _save_snapshot_file(self, theme_id: int, data: dict) -> None:
+        """Salva snapshot do tema como JSON na pasta de skins."""
+        skins_dir = settings.skins_dir_path
+        if not skins_dir:
+            return
+        try:
+            os.makedirs(skins_dir, exist_ok=True)
+            filepath = os.path.join(skins_dir, f"{theme_id}.json")
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False, default=str)
+            logger.info("Snapshot salvo", theme_id=theme_id, path=filepath)
+        except Exception as e:
+            logger.error("Erro ao salvar snapshot", theme_id=theme_id, error=str(e))
 
     def _log_history(
         self,

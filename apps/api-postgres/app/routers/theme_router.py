@@ -345,6 +345,32 @@ def delete_theme(
 
 
 @router.get(
+    "/{theme_id}/original-snapshot",
+    summary="Snapshot original do tema",
+    description="Retorna o snapshot do tema no momento da criação. Requer role admin.",
+    responses={404: {"model": ErrorResponse, "description": "Snapshot original não encontrado"}},
+)
+def get_original_theme_snapshot(
+    theme_id: int,
+    current_user=Depends(require_role("admin")),
+    service: ThemeService = Depends(_get_theme_service),
+) -> dict:
+    """Retorna o snapshot original (primeira criação) do tema."""
+    if not current_user.company_id:
+        raise HTTPException(status_code=404, detail="Tema não encontrado")
+    theme = service.get_theme_by_id(theme_id)
+    if theme is None or theme["company_id"] != current_user.company_id:
+        raise HTTPException(status_code=404, detail="Tema não encontrado")
+
+    history = service.get_theme_history(theme_id, current_user.company_id)
+    # History is ordered by criado_em DESC; find the "created" entry
+    created = next((h for h in history if h.get("action") == "created"), None)
+    if created and created.get("theme_snapshot"):
+        return created["theme_snapshot"]
+    raise HTTPException(status_code=404, detail="Snapshot original não encontrado")
+
+
+@router.get(
     "/{theme_id}/history",
     response_model=list[ThemeHistoryResponse],
     summary="Histórico do tema",

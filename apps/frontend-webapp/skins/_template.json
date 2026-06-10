@@ -22,7 +22,9 @@
     "--skin-radius-sm": "0.25rem",
     "--skin-radius-md": "0.5rem",
     "--skin-radius-lg": "0.75rem",
-    "--skin-radius-xl": "1.5rem"
+    "--skin-radius-xl": "1.5rem",
+    "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.1)",
+    "--skin-shadow-modal": "0 20px 25px -5px rgba(0,0,0,0.2)"
   },
   "company_name": "Nome da Empresa",
   "copyright_text": "© 2026 Nome da Empresa. Todos os direitos reservados.",

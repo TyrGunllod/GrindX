@@ -70,6 +70,9 @@ class Settings(BaseSettings):
     # --- Import de Módulos ---
     IMPORT_DIR: str = ""
 
+    # --- Skins Snapshot Directory ---
+    SKINS_DIR: str = ""
+
     @property
     def import_dir_path(self) -> str:
         """Resolved import directory path."""
@@ -77,6 +80,16 @@ class Settings(BaseSettings):
             return self.IMPORT_DIR
         return str(
             Path(__file__).resolve().parent.parent.parent.parent.parent / "import"
+        )
+
+    @property
+    def skins_dir_path(self) -> str:
+        """Resolved skins snapshot directory path."""
+        if self.SKINS_DIR:
+            return self.SKINS_DIR
+        return str(
+            Path(__file__).resolve().parent.parent.parent.parent.parent
+            / "apps" / "frontend-webapp" / "skins"
         )
 
     # --- Rate Limiting ---

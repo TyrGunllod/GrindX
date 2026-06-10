@@ -38,7 +38,7 @@
                         <label class="advanced-mode-switch">
                             <input type="checkbox" id="advancedModeToggle">
                             <span class="slider"></span>
-                            Modo Avançado
+                            Tokens Extras
                         </label>
                     </div>
                 </div>
@@ -132,10 +132,23 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="section-preview" id="previewBasic">
+                            <div class="section-preview-inner">
+                                <div class="section-preview-row">
+                                    <span class="section-preview-btn" id="pbBtn">Botão</span>
+                                    <span class="section-preview-badge" id="pbSuccess">Sucesso</span>
+                                    <span class="section-preview-badge" id="pbDanger">Erro</span>
+                                    <span class="section-preview-badge" id="pbWarning">Atenção</span>
+                                </div>
+                                <div class="section-preview-row">
+                                    <span class="section-preview-box" id="pbCard">Card com fundo</span>
+                                </div>
+                            </div>
+                        </div>
                     </fieldset>
 
-                    <!-- Cores Avançadas (visíveis apenas no modo avançado) -->
-                    <fieldset class="form-section advanced-colors" style="display: none;">
+                    <!-- Cores Avançadas -->
+                    <fieldset class="form-section advanced-colors">
                         <legend>Cores Avançadas</legend>
                         <div class="color-grid">
                             <!-- Primary Hover -->
@@ -179,11 +192,24 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="section-preview" id="previewAdvanced">
+                            <div class="section-preview-inner">
+                                <div class="section-preview-row">
+                                    <span class="section-preview-btn" id="paBtn">Hover</span>
+                                    <span class="section-preview-text" id="paTextMain">Texto principal</span>
+                                    <span class="section-preview-text" id="paTextMuted" style="font-size:0.65rem">Legenda</span>
+                                </div>
+                                <div class="section-preview-row">
+                                    <span class="section-preview-box" id="paBorder">Borda</span>
+                                    <input class="section-preview-input-mock" id="paFocus" value="Input focado" readonly>
+                                </div>
+                            </div>
+                        </div>
                     </fieldset>
 
-                    <!-- Dark Mode Tokens (visíveis apenas no modo avançado) -->
-                    <fieldset class="form-section dark-mode-tokens" style="display: none;">
-                        <legend>Dark Mode Tokens</legend>
+                    <!-- Dark Mode -->
+                    <fieldset class="form-section dark-mode-tokens">
+                        <legend>Dark Mode</legend>
                         <div class="color-grid">
                             <!-- Background Main Dark -->
                             <div class="color-input-group">
@@ -226,10 +252,22 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="section-preview" id="previewDark">
+                            <div class="section-preview-inner">
+                                <div class="section-preview-row">
+                                    <span class="section-preview-btn" id="pdBtn">Botão</span>
+                                    <span class="section-preview-badge" id="pdSuccess">Sucesso</span>
+                                    <span class="section-preview-badge" id="pdDanger">Erro</span>
+                                </div>
+                                <div class="section-preview-row">
+                                    <span class="section-preview-box" id="pdCard">Card Dark</span>
+                                </div>
+                            </div>
+                        </div>
                     </fieldset>
 
                     <!-- Tokens Extras -->
-                    <fieldset class="form-section">
+                    <fieldset class="form-section advanced-only" style="display: none;">
                         <legend>Tokens Extras</legend>
                         <div class="form-row">
                             <label for="radiusMd">Border Radius (md)</label>
@@ -239,11 +277,11 @@
                             <label for="radiusLg">Border Radius (lg)</label>
                             <input type="text" id="radiusLg" placeholder="0.75rem" value="0.75rem">
                         </div>
-                        <div class="form-row advanced-only" style="display: none;">
+                        <div class="form-row">
                             <label for="radiusSm">Border Radius (sm)</label>
                             <input type="text" id="radiusSm" placeholder="0.25rem" value="0.25rem">
                         </div>
-                        <div class="form-row advanced-only" style="display: none;">
+                        <div class="form-row">
                             <label for="radiusXl">Border Radius (xl)</label>
                             <input type="text" id="radiusXl" placeholder="1.5rem" value="1.5rem">
                         </div>
@@ -251,9 +289,23 @@
                             <label for="shadowCard">Shadow Card</label>
                             <input type="text" id="shadowCard" placeholder="0 10px 25px rgba(0,0,0,0.1)" value="0 10px 25px rgba(0,0,0,0.1)">
                         </div>
-                        <div class="form-row advanced-only" style="display: none;">
+                        <div class="form-row">
                             <label for="shadowModal">Shadow Modal</label>
                             <input type="text" id="shadowModal" placeholder="0 20px 25px -5px rgba(0,0,0,0.2)" value="0 20px 25px -5px rgba(0,0,0,0.2)">
+                        </div>
+                        <div class="section-preview" id="previewTokens">
+                            <div class="section-preview-inner">
+                                <div class="section-preview-row">
+                                    <span class="section-preview-box" id="ptRadiusSm">sm</span>
+                                    <span class="section-preview-box" id="ptRadiusMd">md</span>
+                                    <span class="section-preview-box" id="ptRadiusLg">lg</span>
+                                    <span class="section-preview-box" id="ptRadiusXl">xl</span>
+                                </div>
+                                <div class="section-preview-row">
+                                    <span class="section-preview-box" id="ptShadowCard">Card Shadow</span>
+                                    <span class="section-preview-box" id="ptShadowModal">Modal Shadow</span>
+                                </div>
+                            </div>
                         </div>
                     </fieldset>
 
@@ -292,6 +344,12 @@
                                  <option value="Source Sans Pro">Source Sans Pro</option>
                              </select>
                          </div>
+                         <div class="section-preview" id="previewFonts">
+                             <div class="section-preview-inner">
+                                 <div class="section-preview-heading" id="pfHeading">Título Exemplo</div>
+                                 <div class="section-preview-body" id="pfBody">Texto corpo com a fonte selecionada para demonstração.</div>
+                             </div>
+                         </div>
                       </fieldset>
 
                   </div><!-- /.form-section-row -->
@@ -320,88 +378,12 @@
 
                 </form>
 
-                <!-- Preview Expandido -->
-                <div class="preview-section">
-                    <h3>Preview Expandido</h3>
-                    <div class="preview-dashboard">
-                        <!-- Top Bar -->
-                        <div class="preview-topbar">
-                            <div class="preview-logo">
-                                G<span class="logo-full-preview">RIND</span><span style="color: var(--skin-primary);">X</span>
-                            </div>
-                            <div class="preview-theme-toggle">
-                                <i class="fas fa-moon" id="previewThemeToggle"></i>
-                            </div>
-                        </div>
-                        
-                        <!-- Main Content -->
-                        <div class="preview-main">
-                            <!-- Stats -->
-                            <div class="preview-stats">
-                                <div class="preview-stat">
-                                    <div class="preview-stat-value" id="statValue1">1,234</div>
-                                    <div class="preview-stat-label">Vendas</div>
-                                </div>
-                                <div class="preview-stat">
-                                    <div class="preview-stat-value" id="statValue2">567</div>
-                                    <div class="preview-stat-label">Estoque</div>
-                                </div>
-                            </div>
-                            
-                            <!-- Menu -->
-                            <div class="preview-menu">
-                                <div class="preview-menu-item">
-                                    <i class="fas fa-list"></i>
-                                    <span>Menu Principal</span>
-                                </div>
-                                <div class="preview-menu-item">
-                                    <i class="fas fa-tachometer-alt"></i>
-                                    <span>Dashboard</span>
-                                </div>
-                                <div class="preview-menu-item">
-                                    <i class="fas fa-users-cog"></i>
-                                    <span>Usuários</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Mini Table -->
-                            <div class="preview-table">
-                                <div class="preview-table-header">
-                                    <span>Nome</span>
-                                    <span>Status</span>
-                                    <span>Valor</span>
-                                </div>
-                                <div class="preview-table-row">
-                                    <span>Item A</span>
-                                    <span class="preview-status active">Ativo</span>
-                                    <span>R$100</span>
-                                </div>
-                                <div class="preview-table-row">
-                                    <span>Item B</span>
-                                    <span class="preview-status pending">Pendente</span>
-                                    <span>R$200</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Buttons and Input -->
-                            <div class="preview-controls">
-                                <button class="preview-btn preview-btn-primary">Primary</button>
-                                <button class="preview-btn preview-btn-danger">Danger</button>
-                                <input type="text" class="preview-input" placeholder="Digite algo...">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="modal-footer">
                     <button class="btn" id="btnResetSkin" type="button">
                         <i class="fas fa-undo"></i> Reset
                     </button>
                     <button class="btn" id="btnAutoDarkMode" type="button" style="display: none;">
                         <i class="fas fa-adjust"></i> Gerar Dark Mode
-                    </button>
-                    <button class="btn" id="btnPreviewSkin" type="button">
-                        <i class="fas fa-eye"></i> Preview
                     </button>
 <button class="btn btn-secondary" id="btnCloseModal" type="button">
     <i class="fas fa-times"></i> Cancelar
