@@ -120,30 +120,6 @@
     padding-top: 8px;
 }
 
-.btn-primary {
-    padding: 10px 28px;
-    background: var(--primary, #00c2e0);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-md, 0.5rem);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-primary:hover {
-    background: var(--primary-hover, #00a8c4);
-}
-
-.btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 @media (max-width: 600px) {
     .module-page {
         padding: 16px;

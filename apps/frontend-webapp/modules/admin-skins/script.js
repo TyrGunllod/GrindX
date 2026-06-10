@@ -197,10 +197,10 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                             : `<button class="btn btn-primary" onclick="window.adminSkins.activateSkin(${skin.id})">Ativar</button>`
                         }
                         <button class="btn" onclick="window.adminSkins.editSkin(${skin.id})">Editar</button>
-                        <button class="btn btn-test" onclick="window.adminSkins.testSkin(${skin.id})" title="Testar">
+                        <button class="btn" onclick="window.adminSkins.testSkin(${skin.id})" title="Testar">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn" style="background: var(--skin-danger); color: white;" onclick="window.adminSkins.deleteSkin(${skin.id})">Excluir</button>
+                        <button class="btn btn-danger" onclick="window.adminSkins.deleteSkin(${skin.id})">Excluir</button>
                     </div>
                 </div>
             `;

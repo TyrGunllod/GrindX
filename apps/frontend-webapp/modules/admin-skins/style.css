@@ -70,11 +70,6 @@
     min-width: 0;
 }
 
-.skin-card-actions .btn-test {
-    flex: 0;
-    padding: 0.4rem 0.6rem;
-}
-
 /* Modal */
 .skin-modal {
     max-width: 900px;

@@ -88,9 +88,35 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 if (logo) {
                     e.stopPropagation();
                     logo.classList.toggle('open');
+                    logo.classList.remove('hover');
                 } else {
                     document.querySelectorAll('.logo-clickable.open').forEach(el => {
                         el.classList.remove('open');
+                    });
+                }
+            });
+
+            // Logo hover handlers with timer to bridge gap to dropdown
+            let logoHoverTimeout;
+            document.querySelectorAll('.logo-clickable').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    clearTimeout(logoHoverTimeout);
+                    if (!el.classList.contains('open')) {
+                        el.classList.add('hover');
+                    }
+                });
+                el.addEventListener('mouseleave', () => {
+                    logoHoverTimeout = setTimeout(() => {
+                        el.classList.remove('hover');
+                    }, 150);
+                });
+                const dd = el.querySelector('.user-dropdown');
+                if (dd) {
+                    dd.addEventListener('mouseenter', () => clearTimeout(logoHoverTimeout));
+                    dd.addEventListener('mouseleave', () => {
+                        logoHoverTimeout = setTimeout(() => {
+                            el.classList.remove('hover');
+                        }, 150);
                     });
                 }
             });

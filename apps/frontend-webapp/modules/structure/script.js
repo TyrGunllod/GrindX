@@ -482,7 +482,7 @@ class StructureController extends window.grindx.controllers.BaseController {
                 </header>
                 <div id="pickerList" class="picker-list"></div>
                 <footer class="modal-footer flex justify-end gap-2 mt-4">
-                    <button class="btn" id="btnCancelPicker">Cancelar</button>
+                    <button class="btn btn-secondary" id="btnCancelPicker">Cancelar</button>
                 </footer>
             </div>
         `;

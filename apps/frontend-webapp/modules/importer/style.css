@@ -51,11 +51,3 @@ td {
     background: rgba(0, 194, 224, 0.02);
 }
 
-.btn-danger {
-    background: var(--danger);
-    color: white;
-}
-
-.btn-danger:hover {
-    opacity: 0.9;
-}
