@@ -509,17 +509,6 @@ td {
     font-size: 0.875rem;
 }
 
-/* Responsive hide */
-.hide-mobile {
-    display: none;
-}
-
-@media (min-width: 768px) {
-    .hide-mobile {
-        display: table-cell;
-    }
-}
-
 /* Avatar */
 .avatar-mini {
     width: 32px;
