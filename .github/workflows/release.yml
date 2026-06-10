@@ -176,7 +176,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
 
       - name: Python 3.12
         uses: actions/setup-python@v5
@@ -193,16 +192,3 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           semantic-release version
-
-      - name: Gerar version.json
-        run: python scripts/update_frontend_version.py
-
-      - name: Commit version.json
-        run: |
-          git add apps/frontend-webapp/version.json
-          git commit -m "chore(release): update version.json" || true
-
-      - name: Publish GitHub release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release publish
