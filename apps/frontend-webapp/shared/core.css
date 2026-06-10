@@ -185,8 +185,9 @@ input, select, textarea, button, a, .nav-link, .nav-dropdown-item,
 .picker-item, .theme-option, .template-card {
   min-height: 44px;
 }
-.btn-icon, .btn-sm {
-  min-height: 32px;
+/* Content area base */
+.content-area {
+  padding: var(--space-2);
 }
 
 /* Font Display Utility */
@@ -285,7 +286,7 @@ input, select, textarea, button, a, .nav-link, .nav-dropdown-item,
 /* Mobile alias: hide in < 768px */
 .hide-mobile { display: none !important; }
 @media (min-width: 768px) {
-  .hide-mobile { display: revert !important; }
+  .hide-mobile { display: revert; }
 }
 /* Modal Styling (Shared) */
 .modal-overlay {
