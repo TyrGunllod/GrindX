@@ -99,7 +99,7 @@
 }*/
 
 .aba-card[style*="margin-left"] {
-    background: var(--bg-main);
+    background: var(--bg-card);
     border-radius: 0.75rem;
     padding: var(--space-4);
 }
