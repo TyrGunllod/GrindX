@@ -2,6 +2,20 @@
 
 <!-- version list -->
 
+## v1.22.10 (2026-06-10)
+
+### Bug Fixes
+
+- **css**: Hide-mobile un-hide needs !important to override default
+  ([`a614d5b`](https://github.com/TyrGunllod/GrindX/commit/a614d5b14a2380a98dee6465362dfc9bed38626b))
+
+- **login**: Reduce spacing and padding
+  ([`f3ada09`](https://github.com/TyrGunllod/GrindX/commit/f3ada0939c46862be783945c60f8b2bfeda65de5))
+
+- **release**: Remove template_dir to fix changelog generation
+  ([`38f07db`](https://github.com/TyrGunllod/GrindX/commit/38f07db90ab7786a78c2c40f6dc2a363ac352acc))
+
+
 ## v1.22.9 (2026-06-10)
 
 ### Bug Fixes
