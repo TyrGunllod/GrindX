@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.22.6 (2026-06-10)
+
+### Bug Fixes
+
+- **importer**: Add icon+hide-mobile pattern to action buttons
+  ([`64d9af6`](https://github.com/TyrGunllod/GrindX/commit/64d9af66e1abbf9fa9366d1f32d7a406a60c349e))
+
+
 ## v1.22.5 (2026-06-10)
 
 ### Bug Fixes
