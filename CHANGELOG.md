@@ -2,6 +2,52 @@
 
 <!-- version list -->
 
+## v1.22.0 (2026-06-10)
+
+### Bug Fixes
+
+- **admin-skins**: Responsive max-width constraints and color-grid
+  ([`a78c8b3`](https://github.com/TyrGunllod/GrindX/commit/a78c8b38ee167ee28101745dc799e6257914f9ca))
+
+- **css**: Address code review issues for responsive utilities
+  ([`0768d2e`](https://github.com/TyrGunllod/GrindX/commit/0768d2e2271d399e7507396ee4d5339afa1fce5c))
+
+- **css**: Rename space-0.5 and space-1.5 to space-050 and space-150 to avoid fragile CSS escaped
+  dots
+  ([`4f69c75`](https://github.com/TyrGunllod/GrindX/commit/4f69c7530045a4026a4731911185be7114280d4f))
+
+- **dashboard**: Address code review - overlay class, resize debounce, inline styles
+  ([`c500aff`](https://github.com/TyrGunllod/GrindX/commit/c500aff915a743c5094b0d6682775ba7506b238d))
+
+- **modules**: Add touch targets to structure and profile
+  ([`8c6feb3`](https://github.com/TyrGunllod/GrindX/commit/8c6feb387fb7a258f3107cd882f5dc21e54cafcc))
+
+- **users**: Remove duplicate hide-mobile from preview CSS
+  ([`1177cd6`](https://github.com/TyrGunllod/GrindX/commit/1177cd61a2471e0055889d1b036b79a58503814f))
+
+### Documentation
+
+- Add frontend responsividade spec, plan and update create-standalone-module skill
+  ([`cb5cfbb`](https://github.com/TyrGunllod/GrindX/commit/cb5cfbb8a2ead126d0f17c31d99d7789648ffec8))
+
+### Features
+
+- **css**: Add breakpoint tokens and spacing scale to core.css
+  ([`60800ec`](https://github.com/TyrGunllod/GrindX/commit/60800ec11ad373a82a9e1007421847a6ca7cfd3a))
+
+- **css**: Add responsive utilities, touch targets and grid extensions
+  ([`4b2eeda`](https://github.com/TyrGunllod/GrindX/commit/4b2eeda53e46a939de217459986824f1948e50b0))
+
+- **dashboard**: Implement 3-breakpoint responsive sidebar shell
+  ([`96edd23`](https://github.com/TyrGunllod/GrindX/commit/96edd23318deed016db29afbd6b23c4003148447))
+
+- **importer**: Implement table-to-card responsive pattern
+  ([`44ef609`](https://github.com/TyrGunllod/GrindX/commit/44ef609dcaacda59ee26a8319fc6739e23ef7e25))
+
+- **users**: Implement table-to-card responsive pattern with data-label
+  ([`1ed69c0`](https://github.com/TyrGunllod/GrindX/commit/1ed69c0119f66665fc12fb2eaf3063074680b5ee))
+
+
 ## v1.21.0 (2026-06-10)
 
 ### Bug Fixes
