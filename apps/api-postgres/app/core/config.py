@@ -128,16 +128,18 @@ class Settings(BaseSettings):
         )
         parsed = [origin.strip() for origin in clean_value.split(",") if origin.strip()]
 
-        # Em dev com CORS_ORIGINS vazio, retorna localhost defaults
-        if not self.is_production and not parsed:
-            origins = [
+        # Em dev, garante que origins de desenvolvimento estejam sempre presentes
+        if not self.is_production:
+            dev_origins = [
                 "http://localhost:3000",
                 "http://localhost:5500",
                 "http://127.0.0.1:5500",
             ]
             if self.DEV_NETWORK_IP:
-                origins.append(f"http://{self.DEV_NETWORK_IP}:5500")
-            return origins
+                dev_origins.append(f"http://{self.DEV_NETWORK_IP}:5500")
+            # Mescla com o que veio do CORS_ORIGINS (evita duplicatas)
+            merged = list(dict.fromkeys(parsed + dev_origins))
+            return merged
 
         return parsed
 
