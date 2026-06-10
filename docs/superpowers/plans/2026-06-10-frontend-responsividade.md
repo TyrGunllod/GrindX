@@ -29,9 +29,9 @@ Insert after existing `:root` block (line 52), before typography section:
 
   /* Spacing Scale (completa) */
   --space-0: 0;
-  --space-0\.5: 0.125rem;
+  --space-050: 0.125rem;
   --space-1: 0.25rem;
-  --space-1\.5: 0.375rem;
+  --space-150: 0.375rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
