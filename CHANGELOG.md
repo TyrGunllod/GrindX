@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.22.9 (2026-06-10)
+
+### Bug Fixes
+
+- **login**: Reduce card max-width to 360px
+  ([`0f3a80e`](https://github.com/TyrGunllod/GrindX/commit/0f3a80ea77e331463dec9a40dd4402de3d591d75))
+
+
 ## v1.22.8 (2026-06-10)
 
 ### Bug Fixes
