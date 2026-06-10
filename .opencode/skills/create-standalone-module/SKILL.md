@@ -659,7 +659,7 @@ class TestService:
     align-items: center;
     justify-content: center;
     padding: var(--space-2) var(--space-4);
-    border-radius: 0.5rem;
+    border-radius: var(--space-1);
     font-family: inherit;
     font-weight: 600;
     cursor: pointer;
@@ -677,13 +677,13 @@ class TestService:
 .btn-danger:hover {{ filter: brightness(0.9); transform: translateY(-1px); }}
 .btn-outline {{ border: 1px solid var(--border-color); background: transparent; color: var(--text-main); }}
 .btn-outline:hover {{ background: var(--accent); }}
-.btn-sm {{ padding: var(--space-1) var(--space-2); min-height: 32px; font-size: 0.8rem; }}
+.btn-sm {{ padding: var(--space-1) var(--space-2); min-height: 32px; font-size: var(--space-3); }}
 .btn:disabled {{ cursor: not-allowed; opacity: 0.65; transform: none; }}
 .btn-icon {{
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 1.25rem;
+    font-size: var(--space-5);
     color: var(--text-muted);
     transition: color 0.2s;
     display: flex;
@@ -691,7 +691,7 @@ class TestService:
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: 0.25rem;
+    border-radius: var(--space-1);
 }}
 .btn-icon:hover {{ color: var(--text-main); background: rgba(0,0,0,0.05); }}
 
@@ -710,18 +710,19 @@ class TestService:
 .modal-card {{
     background: var(--bg-card);
     width: 100%;
-    max-width: 600px;
-    border-radius: 0.5rem;
-    padding: var(--space-8);
+    max-width: min(600px, calc(100vw - var(--space-8)));
+    border-radius: var(--space-2);
+    padding: var(--space-4);
     box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
 }}
-.modal-card--sm {{ max-width: 400px; }}
+@media (min-width: 768px) { .modal-card {{ padding: var(--space-8); }} }
+.modal-card--sm {{ max-width: min(400px, calc(100vw - var(--space-8))); }}
 .modal-header {{
     margin-bottom: var(--space-4);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: var(--space-2);
 }}
-.modal-header h2 {{ margin: 0; font-size: var(--font-size-xl); }}
+.modal-header h2 {{ margin: 0; font-size: var(--space-5); }}
 .modal-body {{ display: flex; flex-direction: column; gap: var(--space-4); }}
 .modal-footer {{
     margin-top: var(--space-4);
@@ -730,6 +731,7 @@ class TestService:
     display: flex;
     justify-content: flex-end;
     gap: var(--space-2);
+    flex-wrap: wrap;
 }}
 .hidden {{ display: none !important; }}
 ```
@@ -741,6 +743,14 @@ class TestService:
 - Testar visualmente com pelo menos 2 skins antes de exportar
 - Botões e modais seguem o padrão canonical do `core.css` do GrindX
 - Modal usa `modal-overlay` + `modal-card` (NÃO `<dialog>` nativo)
+
+**Regras de responsividade (Design System Fase 4):**
+- **Usar a spacing scale completa** (`--space-0` a `--space-16` em `core.css`) — jamais hardcodar valores como `0.75rem` ou `24px` para padding/margin/gap
+- **Usar breakpoints unificados** para qualquer media query customizada: `--bp-sm: 480px`, `--bp-md: 768px`, `--bp-lg: 1024px`, `--bp-xl: 1280px`. Preferir as utilities do `core.css` (`.hide-sm`, `.show-lg`, `.grid-md-2`, etc.)
+- **Touch targets**: todos elementos interativos (botões, links, inputs, selects, dropdown items) devem ter `min-height: 44px` para acessibilidade mobile
+- **Table-to-card**: se o módulo usa `<table>`, implementar o padrão table-to-card com `data-label` nas `<td>` para mobile (ver Seção 3.3)
+- **Nunca usar `max-width` fixos** em containers que podem quebrar em mobile (ex: `max-width: 450px` em forms de modal). Usar `max-width: min(Xpx, 100%)` ou deixar o modal responsivo
+- **Testar visualmente** em pelo menos 3 breakpoints: mobile (<480px), tablet (768px), desktop (>1024px) antes de exportar
 
 ### 3.2 `index.html` e `script.js` (Padrão GrindX — HTML puro + CSS puro + Vanilla JS)
 
@@ -877,6 +887,60 @@ function downloadFromUrl(url, filename) {
 - **Standalone**: usa `X-API-Key` header
 - Para PDFs standalone, usa `?api_key=` query param (pois downloads não suportam headers custom)
 - **NÃO usar `window.grindx.api`** — ele aponta para api-postgres (porta 8002), não api-sqlserver
+
+### 3.3 Table-to-Card Pattern (Módulos com `<table>`)
+
+Se o módulo possui dados tabulares, implementar o padrão table-to-card para mobile em vez de apenas esconder colunas:
+
+**`index.html`** — Adicionar `data-label` em cada `<td>`:
+```html
+<td data-label="Nome">{item.nome}</td>
+<td data-label="Status">{item.status}</td>
+<td data-label="Ações">
+  <button data-action="edit" data-id="{item.id}">Editar</button>
+</td>
+```
+
+**`style.css`** — CSS responsivo para transformar tabela em cards:
+```css
+/* Mobile: tabela vira cards empilhados */
+@media (max-width: 767px) {
+  .table-responsive thead { display: none; }
+  .table-responsive tr {
+    display: block;
+    border: 1px solid var(--border-color);
+    border-radius: var(--space-3);
+    padding: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .table-responsive td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) 0;
+    border-bottom: none;
+  }
+  .table-responsive td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: var(--space-3);
+    text-transform: uppercase;
+  }
+  /* Ações no final com botões lado a lado */
+  .table-responsive td:last-child {
+    border-top: 1px solid var(--border-color);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+  }
+}
+```
+
+Usar classes de visibility responsivas do `core.css` para colunas opcionais:
+```html
+<th scope="col" class="hide-sm">E-mail</th>
+<td data-label="E-mail" class="hide-sm">{item.email}</td>
+```
 
 ## 4. Migration
 
@@ -1382,5 +1446,11 @@ pytest tests/ -k {module_name} -v
 - [ ] `export.py`: `--grindx-root` aceita caminho customizado
 - [ ] `export.py`: comando `package` gera `.zip` com estrutura compatível com o importer
 - [ ] Herança de skins: style.css usa `var(--...)`, sem cores fixas
+- [ ] **Responsividade**: spacing scale do `core.css` usada (não hardcoded `0.75rem`)
+- [ ] **Responsividade**: breakpoints unificados usados em media queries (não magic numbers)
+- [ ] **Responsividade**: touch targets com `min-height: 44px` em todos elementos interativos
+- [ ] **Responsividade**: se módulo tem `<table>`, implementar table-to-card com `data-label` (Seção 3.3)
+- [ ] **Responsividade**: modais usam `max-width: min(Xpx, calc(100vw - ...))` (não `max-width` fixo que quebra em mobile)
+- [ ] **Responsividade**: testar visualmente em 3 breakpoints: mobile (<480px), tablet (768px), desktop (>1024px)
 - [ ] Zip verificado: `module.json` na raiz, `app/modules/{name}/` na raiz, `frontend/` na raiz (sem `modules/` extra)
 - [ ] **Pós-importação**: Associar abas manualmente no Portal → Estrutura
