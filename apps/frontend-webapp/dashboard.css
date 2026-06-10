@@ -249,10 +249,7 @@
 }
 @media (min-width: 1024px) {
   .top-bar {
-    height: 0px;
-    min-height: 0;
-    padding: 0;
-    overflow: visible;
+    display: none;
   }
 }
 
