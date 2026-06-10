@@ -20,6 +20,7 @@ class UsersController extends window.grindx.controllers.BaseController {
         this.modalTitle = document.getElementById('modalTitle');
         this.userTable = new window.grindx.components.DataTable(this.tableBody, [
             {
+                dataLabel: 'Usuário',
                 render: user => `
                     <div class="flex items-center gap-2">
                         <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo)}&background=4f46e5&color=fff&bold=true" class="avatar-mini" alt="">
@@ -27,10 +28,11 @@ class UsersController extends window.grindx.controllers.BaseController {
                     </div>
                 `
             },
-            { className: 'hide-mobile', render: user => user.email },
-            { render: user => `<span class="badge role-${user.role}">${user.role.toUpperCase()}</span>` },
-            { render: user => `<span class="badge ${user.ativo ? 'badge-success' : 'badge-muted'}">${user.ativo ? 'Ativo' : 'Inativo'}</span>` },
+            { className: 'hide-mobile', dataLabel: 'E-mail', render: user => user.email },
+            { dataLabel: 'Perfil', render: user => `<span class="badge role-${user.role}">${user.role.toUpperCase()}</span>` },
+            { dataLabel: 'Status', render: user => `<span class="badge ${user.ativo ? 'badge-success' : 'badge-muted'}">${user.ativo ? 'Ativo' : 'Inativo'}</span>` },
             {
+                dataLabel: 'Ações',
                 className: 'text-right',
                 render: user => `
                     <div class="actions-group justify-end">

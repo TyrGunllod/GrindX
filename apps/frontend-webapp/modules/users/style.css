@@ -44,16 +44,6 @@ td {
     font-size: 0.875rem;
 }
 
-.hide-mobile {
-    display: none;
-}
-
-@media (min-width: 768px) {
-    .hide-mobile {
-        display: table-cell;
-    }
-}
-
 /* Modal Styling is now in shared/core.css */
 
 /* Filters */
@@ -126,4 +116,50 @@ td strong {
 .btn-icon.text-muted:hover {
     background: rgba(100, 116, 139, 0.1);
     color: var(--text-muted);
+}
+
+/* Responsive: table to cards (mobile) */
+@media (max-width: 767px) {
+  .table-responsive table,
+  .table-responsive thead,
+  .table-responsive tbody,
+  .table-responsive tr,
+  .table-responsive th,
+  .table-responsive td {
+    display: block;
+  }
+  .table-responsive thead {
+    display: none;
+  }
+  .table-responsive tbody tr {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--space-3);
+    padding: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .table-responsive td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) 0;
+    border-bottom: none;
+    font-size: 0.85rem;
+    text-align: left;
+  }
+  .table-responsive td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+    margin-right: var(--space-2);
+  }
+  .table-responsive td:last-child {
+    border-top: 1px solid var(--border-color);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+  }
 }

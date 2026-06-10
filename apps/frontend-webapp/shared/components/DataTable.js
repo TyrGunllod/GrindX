@@ -34,7 +34,7 @@
                         ${this.columns.map(column => {
                             const value = column.key ? item[column.key] : item;
                             const content = column.render ? column.render(value, item) : value;
-                            return `<td class="${column.className || ''}">${content}</td>`;
+                            return `<td class="${column.className || ''}"${column.dataLabel ? ` data-label="${column.dataLabel}"` : ''}>${content}</td>`;
                         }).join('')}
                     </tr>
                 `;
