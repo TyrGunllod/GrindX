@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v1.24.0 (2026-06-16)
+
+### Bug Fixes
+
+- Ajuste de containers e makefile para linux
+  ([`5f9ea5b`](https://github.com/TyrGunllod/GrindX/commit/5f9ea5b592229be5d0abbaf729dac6c1de137e24))
+
+- **migrations**: Tornar migrations idempotentes e corrigir schemas
+  ([`f78528d`](https://github.com/TyrGunllod/GrindX/commit/f78528db7dc807d3a0f3e75e2979219120ad3b24))
+
+### Features
+
+- **migrations**: Criar banco automaticamente se nao existir
+  ([`22fd819`](https://github.com/TyrGunllod/GrindX/commit/22fd81969f61d9c43e87530072cd2076a9382a9b))
+
+
 ## v1.23.0 (2026-06-10)
 
 ### Documentation
