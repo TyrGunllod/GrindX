@@ -6,8 +6,6 @@ Create Date: 2026-05-20 23:00:00.000000
 
 """
 
-import sqlalchemy as sa
-
 from alembic import op
 
 revision = "004_add_theme_history"
@@ -17,41 +15,31 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.create_table(
-        "theme_history",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("theme_id", sa.Integer(), nullable=False),
-        sa.Column("company_id", sa.Integer(), nullable=False),
-        sa.Column("action", sa.String(50), nullable=False),
-        sa.Column(
-            "performed_by",
-            sa.Integer(),
-            nullable=True,
-            comment="ID do usuário que executou a ação",
-        ),
-        sa.Column(
-            "theme_snapshot",
-            sa.JSON(),
-            nullable=True,
-            comment="Snapshot completo do tema após a ação",
-        ),
-        sa.Column("changes", sa.JSON(), nullable=True, comment="Diff das alterações"),
-        sa.Column(
-            "criado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.ForeignKeyConstraint(
-            ["theme_id"], ["company_themes.id"], ondelete="CASCADE"
-        ),
-        sa.PrimaryKeyConstraint("id"),
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS org.theme_history (
+            id SERIAL NOT NULL,
+            theme_id INTEGER NOT NULL,
+            company_id INTEGER NOT NULL,
+            action VARCHAR(50) NOT NULL,
+            performed_by INTEGER,
+            theme_snapshot JSON,
+            changes JSON,
+            criado_em TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+            PRIMARY KEY (id),
+            FOREIGN KEY (theme_id) REFERENCES org.company_themes(id) ON DELETE CASCADE
+        )
+    """)
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_theme_history_theme_id ON org.theme_history (theme_id)"
     )
-    op.create_index("ix_theme_history_theme_id", "theme_history", ["theme_id"])
-    op.create_index("ix_theme_history_company_id", "theme_history", ["company_id"])
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_theme_history_company_id ON org.theme_history (company_id)"
+    )
 
 
 def downgrade() -> None:
-    op.drop_index("ix_theme_history_company_id", table_name="theme_history")
-    op.drop_index("ix_theme_history_theme_id", table_name="theme_history")
-    op.drop_table("theme_history")
+    op.drop_index(
+        "ix_theme_history_company_id", table_name="theme_history", schema="org"
+    )
+    op.drop_index("ix_theme_history_theme_id", table_name="theme_history", schema="org")
+    op.drop_table("theme_history", schema="org")

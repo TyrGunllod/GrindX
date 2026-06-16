@@ -8,8 +8,6 @@ Create Date: 2026-06-09
 
 from typing import Sequence, Union
 
-import sqlalchemy as sa
-
 from alembic import op
 
 revision: str = "d4e5f6a7b8c9"
@@ -19,14 +17,20 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    """Add layout_mode column with topbar default; existing themes get sidebar."""
-    op.add_column(
-        "company_themes",
-        sa.Column(
-            "layout_mode", sa.String(20), nullable=False, server_default="topbar"
-        ),
-        schema="org",
-    )
+    """Add layout_mode column with topbar default; existing themes get sidebar (idempotente)."""
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_schema = 'org' AND table_name = 'company_themes'
+                AND column_name = 'layout_mode'
+            ) THEN
+                ALTER TABLE org.company_themes
+                    ADD COLUMN layout_mode VARCHAR(20) NOT NULL DEFAULT 'topbar';
+            END IF;
+        END $$;
+    """)
     op.execute(
         "UPDATE org.company_themes SET layout_mode = 'sidebar' WHERE layout_mode = 'topbar'"
     )

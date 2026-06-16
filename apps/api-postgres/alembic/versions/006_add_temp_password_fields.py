@@ -18,32 +18,33 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    """Add temp_password_hash and expires_at columns to usuarios table."""
+    """Add temp_password_hash and expires_at columns to usuarios (schema-agnostico)."""
     op.execute("""
         DO $$
+        DECLARE
+            sch TEXT;
         BEGIN
+            SELECT table_schema INTO sch
+            FROM information_schema.tables
+            WHERE table_name = 'usuarios' LIMIT 1;
+            IF sch IS NULL THEN RETURN; END IF;
+
             IF NOT EXISTS (
                 SELECT 1 FROM information_schema.columns
-                WHERE table_schema = 'iam' AND table_name = 'usuarios'
+                WHERE table_schema = sch AND table_name = 'usuarios'
                 AND column_name = 'temp_password_hash'
             ) THEN
-                ALTER TABLE iam.usuarios ADD COLUMN temp_password_hash VARCHAR(255) NULL;
-                COMMENT ON COLUMN iam.usuarios.temp_password_hash
-                    IS 'Hash bcrypt da senha temporaria';
+                EXECUTE format('ALTER TABLE %I.usuarios ADD COLUMN temp_password_hash VARCHAR(255) NULL', sch);
+                EXECUTE format('COMMENT ON COLUMN %I.usuarios.temp_password_hash IS ''Hash bcrypt da senha temporaria''', sch);
             END IF;
-        END $$;
-    """)
-    op.execute("""
-        DO $$
-        BEGIN
+
             IF NOT EXISTS (
                 SELECT 1 FROM information_schema.columns
-                WHERE table_schema = 'iam' AND table_name = 'usuarios'
+                WHERE table_schema = sch AND table_name = 'usuarios'
                 AND column_name = 'expires_at'
             ) THEN
-                ALTER TABLE iam.usuarios ADD COLUMN expires_at TIMESTAMP WITH TIME ZONE NULL;
-                COMMENT ON COLUMN iam.usuarios.expires_at
-                    IS 'Expiracao da senha temporaria';
+                EXECUTE format('ALTER TABLE %I.usuarios ADD COLUMN expires_at TIMESTAMP WITH TIME ZONE NULL', sch);
+                EXECUTE format('COMMENT ON COLUMN %I.usuarios.expires_at IS ''Expiracao da senha temporaria''', sch);
             END IF;
         END $$;
     """)

@@ -8,8 +8,6 @@ Create Date: 2026-06-10
 
 from typing import Sequence, Union
 
-import sqlalchemy as sa
-
 from alembic import op
 
 revision: str = "e5f6a7b8c9d0"
@@ -19,12 +17,26 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    """Add theme_preference column to iam.usuarios."""
-    op.add_column(
-        "usuarios",
-        sa.Column("theme_preference", sa.String(10), nullable=True),
-        schema="iam",
-    )
+    """Add theme_preference column to usuarios (schema-agnostico)."""
+    op.execute("""
+        DO $$
+        DECLARE
+            sch TEXT;
+        BEGIN
+            SELECT table_schema INTO sch
+            FROM information_schema.tables
+            WHERE table_name = 'usuarios' LIMIT 1;
+            IF sch IS NULL THEN RETURN; END IF;
+
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_schema = sch AND table_name = 'usuarios'
+                AND column_name = 'theme_preference'
+            ) THEN
+                EXECUTE format('ALTER TABLE %I.usuarios ADD COLUMN theme_preference VARCHAR(10)', sch);
+            END IF;
+        END $$;
+    """)
 
 
 def downgrade() -> None:

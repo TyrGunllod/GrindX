@@ -6,8 +6,6 @@ Create Date: 2026-05-20 12:00:00.000000
 
 """
 
-import sqlalchemy as sa
-
 from alembic import op
 
 revision = "003_add_empresa_and_theme"
@@ -17,90 +15,93 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Criar tabela empresas
-    op.create_table(
-        "empresas",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("nome", sa.String(100), nullable=False),
-        sa.Column("dominio", sa.String(255), nullable=True),
-        sa.Column("ativo", sa.Boolean(), nullable=False, server_default=sa.true()),
-        sa.Column(
-            "criado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.Column(
-            "atualizado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            onupdate=sa.func.now(),
-            nullable=False,
-        ),
-        sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("dominio"),
-    )
+    op.execute("CREATE SCHEMA IF NOT EXISTS org")
 
-    # Adicionar empresa_id em usuarios
-    op.add_column(
-        "usuarios",
-        sa.Column(
-            "empresa_id", sa.Integer(), nullable=True, comment="Empresa do usuário"
-        ),
-    )
-    op.create_foreign_key(
-        "fk_usuarios_empresa_id",
-        "usuarios",
-        "empresas",
-        ["empresa_id"],
-        ["id"],
-        ondelete="SET NULL",
-    )
-    op.create_index("ix_usuarios_empresa_id", "usuarios", ["empresa_id"])
+    # Criar tabela empresas no schema org (idempotente)
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS org.empresas (
+            id SERIAL NOT NULL,
+            nome VARCHAR(100) NOT NULL,
+            dominio VARCHAR(255),
+            ativo BOOLEAN NOT NULL DEFAULT true,
+            criado_em TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+            atualizado_em TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+            PRIMARY KEY (id),
+            UNIQUE (dominio)
+        )
+    """)
 
-    # Criar tabela company_themes
-    op.create_table(
-        "company_themes",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("company_id", sa.Integer(), nullable=False),
-        sa.Column("name", sa.String(100), nullable=False),
-        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.false()),
-        sa.Column("colors", sa.JSON(), nullable=True),
-        sa.Column("fonts", sa.JSON(), nullable=True),
-        sa.Column(
-            "icon_library",
-            sa.String(50),
-            nullable=False,
-            server_default=sa.text("'fontawesome'"),
-        ),
-        sa.Column("tokens", sa.JSON(), nullable=True),
-        sa.Column("logo_url", sa.String(500), nullable=True),
-        sa.Column("logo_short_url", sa.String(500), nullable=True),
-        sa.Column("company_name", sa.String(100), nullable=True),
-        sa.Column("copyright_text", sa.String(200), nullable=True),
-        sa.Column(
-            "criado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            nullable=False,
-        ),
-        sa.Column(
-            "atualizado_em",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-            onupdate=sa.func.now(),
-            nullable=False,
-        ),
-        sa.ForeignKeyConstraint(["company_id"], ["empresas.id"], ondelete="CASCADE"),
-        sa.PrimaryKeyConstraint("id"),
+    # Adicionar empresa_id e FK em usuarios (idempotente, schema-agnostico)
+    op.execute("""
+        DO $$
+        DECLARE
+            sch TEXT;
+        BEGIN
+            SELECT table_schema INTO sch
+            FROM information_schema.tables
+            WHERE table_name = 'usuarios' LIMIT 1;
+            IF sch IS NULL THEN RETURN; END IF;
+
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_schema = sch AND table_name = 'usuarios'
+                AND column_name = 'empresa_id'
+            ) THEN
+                EXECUTE format('ALTER TABLE %I.usuarios ADD COLUMN empresa_id INTEGER', sch);
+                EXECUTE format('COMMENT ON COLUMN %I.usuarios.empresa_id IS ''Empresa do usuário''', sch);
+            END IF;
+
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_constraint WHERE conname = 'fk_usuarios_empresa_id'
+            ) THEN
+                EXECUTE format(
+                    'ALTER TABLE %I.usuarios ADD CONSTRAINT fk_usuarios_empresa_id '
+                    'FOREIGN KEY (empresa_id) REFERENCES org.empresas(id) ON DELETE SET NULL',
+                    sch
+                );
+            END IF;
+
+            EXECUTE format(
+                'CREATE INDEX IF NOT EXISTS ix_usuarios_empresa_id ON %I.usuarios (empresa_id)',
+                sch
+            );
+        END $$;
+    """)
+
+    # Criar tabela company_themes no schema org (idempotente)
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS org.company_themes (
+            id SERIAL NOT NULL,
+            company_id INTEGER NOT NULL,
+            name VARCHAR(100) NOT NULL,
+            is_active BOOLEAN NOT NULL DEFAULT false,
+            colors JSON,
+            fonts JSON,
+            icon_library VARCHAR(50) NOT NULL DEFAULT 'fontawesome',
+            tokens JSON,
+            logo_url VARCHAR(500),
+            logo_short_url VARCHAR(500),
+            company_name VARCHAR(100),
+            copyright_text VARCHAR(200),
+            criado_em TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+            atualizado_em TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+            PRIMARY KEY (id),
+            FOREIGN KEY (company_id) REFERENCES org.empresas(id) ON DELETE CASCADE
+        )
+    """)
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_company_themes_company_id ON org.company_themes (company_id)"
     )
-    op.create_index("ix_company_themes_company_id", "company_themes", ["company_id"])
 
 
 def downgrade() -> None:
-    op.drop_index("ix_company_themes_company_id", table_name="company_themes")
-    op.drop_table("company_themes")
-    op.drop_index("ix_usuarios_empresa_id", table_name="usuarios")
-    op.drop_constraint("fk_usuarios_empresa_id", "usuarios", type_="foreignkey")
-    op.drop_column("usuarios", "empresa_id")
-    op.drop_table("empresas")
+    op.drop_index(
+        "ix_company_themes_company_id", table_name="company_themes", schema="org"
+    )
+    op.drop_table("company_themes", schema="org")
+    op.drop_index("ix_usuarios_empresa_id", table_name="usuarios", schema="iam")
+    op.drop_constraint(
+        "fk_usuarios_empresa_id", "usuarios", type_="foreignkey", schema="iam"
+    )
+    op.drop_column("usuarios", "empresa_id", schema="iam")
+    op.drop_table("empresas", schema="org")

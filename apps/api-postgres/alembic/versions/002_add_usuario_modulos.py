@@ -67,23 +67,23 @@ def upgrade() -> None:
         ON portal.portal_modulos (aba_id)
     """)
 
-    # Criar tabela usuario_modulos (idempotente)
+    # Criar tabela usuario_modulos no schema iam (idempotente)
     op.execute("""
-        CREATE TABLE IF NOT EXISTS usuario_modulos (
+        CREATE TABLE IF NOT EXISTS iam.usuario_modulos (
             usuario_id INTEGER NOT NULL,
             modulo_id INTEGER NOT NULL,
             concedido_em TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
             concedido_por_id INTEGER,
             PRIMARY KEY (usuario_id, modulo_id),
-            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+            FOREIGN KEY (usuario_id) REFERENCES iam.usuarios(id) ON DELETE CASCADE,
             FOREIGN KEY (modulo_id) REFERENCES portal.portal_modulos(id) ON DELETE CASCADE,
-            FOREIGN KEY (concedido_por_id) REFERENCES usuarios(id) ON DELETE SET NULL
+            FOREIGN KEY (concedido_por_id) REFERENCES iam.usuarios(id) ON DELETE SET NULL
         )
     """)
 
 
 def downgrade() -> None:
-    op.drop_table("usuario_modulos")
+    op.drop_table("usuario_modulos", schema="iam")
     op.drop_index(
         "ix_portal_modulos_aba_id", table_name="portal_modulos", schema="portal"
     )
