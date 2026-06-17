@@ -53,9 +53,12 @@ class ThemeUpdate(BaseModel):
 
 
 class ThemeFontResponse(BaseModel):
-    """Schema de resposta para upload de fonte."""
+    """Schema de resposta para upload de fonte ou ícone."""
 
-    url: str = Field(..., description="URL do arquivo de fonte")
+    url: str = Field(..., description="URL do arquivo")
+    type_: str = Field(
+        default="font", alias="type", description="Tipo do arquivo: font ou icon"
+    )
 
 
 class ThemeResponse(BaseModel):

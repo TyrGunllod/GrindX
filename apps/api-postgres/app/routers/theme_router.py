@@ -397,20 +397,27 @@ def get_theme_history(
 
 
 @router.post(
-    "/fonts/upload",
+    "/fonts-icons/upload",
     response_model=ThemeFontResponse,
-    summary="Upload de fonte",
-    description="Faz upload de um arquivo de fonte. Retorna a URL pública.",
+    summary="Upload de fonte ou ícone",
+    description="Faz upload de arquivo de fonte ou ícone. type=font para fontes, type=icon para ícones.",
     responses={
         400: {"model": ErrorResponse, "description": "Arquivo inválido"},
         413: {"model": ErrorResponse, "description": "Arquivo muito grande"},
     },
 )
-async def upload_font(
+async def upload_font_or_icon(
     file: UploadFile = File(...),
+    type: str = "font",
     current_user=Depends(require_role("admin")),
 ) -> dict:
-    """Faz upload de um arquivo de fonte e retorna a URL pública."""
+    """Faz upload de um arquivo de fonte ou ícone e retorna a URL pública."""
+
+    if type not in ("font", "icon"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Tipo inválido. Use 'font' ou 'icon'.",
+        )
 
     # Validate file extension
     allowed_exts = {".ttf", ".otf", ".woff", ".woff2"}
@@ -443,22 +450,23 @@ async def upload_font(
 
     unique_filename = f"{uuid.uuid4()}{ext}"
 
-    # Ensure fonts directory exists
+    # Ensure destination directory exists
     uploads_dir = os.path.join(
         os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads"
     )
-    fonts_dir = os.path.join(uploads_dir, "fonts")
-    os.makedirs(fonts_dir, exist_ok=True)
+    sub_dir = "fonts" if type == "font" else "icons"
+    dest_dir = os.path.join(uploads_dir, sub_dir)
+    os.makedirs(dest_dir, exist_ok=True)
 
     # Save file
-    file_path = os.path.join(fonts_dir, unique_filename)
+    file_path = os.path.join(dest_dir, unique_filename)
     with open(file_path, "wb") as buffer:
         buffer.write(content)
 
-    font_url = f"/uploads/fonts/{unique_filename}"
+    file_url = f"/uploads/{sub_dir}/{unique_filename}"
 
-    logger.info("Font uploaded", filename=unique_filename, size=len(content))
-    return {"url": font_url}
+    logger.info("Font/Icon uploaded", type=type, filename=unique_filename, size=len(content))
+    return {"url": file_url, "type": type}
 
 
 @router.post(

@@ -111,7 +111,11 @@ register_exception_handlers(app)
 # Create uploads directory if it doesn't exist
 uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
 logos_dir = os.path.join(uploads_dir, "logos")
+fonts_dir = os.path.join(uploads_dir, "fonts")
+icons_dir = os.path.join(uploads_dir, "icons")
 os.makedirs(logos_dir, exist_ok=True)
+os.makedirs(fonts_dir, exist_ok=True)
+os.makedirs(icons_dir, exist_ok=True)
 
 # Mount static files for serving uploaded logos
 app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
