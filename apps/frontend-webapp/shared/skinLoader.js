@@ -186,6 +186,11 @@ class SkinLoader {
         this._applyColors(skin.colors);
         this._applyTokens(skin.tokens);
         this._applyFonts(skin.fonts);
+        if (skin.fonts?.icons) {
+            this._applyIconFont(skin.fonts.icons);
+        } else {
+            this._removeIconFont();
+        }
         this._updateBranding(skin.company_name, skin.copyright_text);
         this._updateLogos(skin.logo_url, skin.logo_short_url);
         if (skin.layout_mode) {
@@ -270,6 +275,27 @@ class SkinLoader {
         if (fonts.body) {
             root.style.setProperty('--skin-font-body', `'${fonts.body}', system-ui, -apple-system, sans-serif`);
         }
+    }
+
+    _applyIconFont(iconFont) {
+        if (!iconFont || !iconFont.url) return;
+
+        const existing = document.getElementById('skin-icon-font');
+        if (existing) existing.remove();
+
+        const style = document.createElement('style');
+        style.id = 'skin-icon-font';
+        const format = iconFont.format || 'woff2';
+        style.textContent = `@font-face { font-family: '${iconFont.name}'; src: url('${iconFont.url}') format('${format}'); font-display: swap; }`;
+        document.head.appendChild(style);
+
+        document.documentElement.style.setProperty('--skin-font-icons', `'${iconFont.name}'`);
+    }
+
+    _removeIconFont() {
+        const existing = document.getElementById('skin-icon-font');
+        if (existing) existing.remove();
+        document.documentElement.style.removeProperty('--skin-font-icons');
     }
 
     _updateBranding(companyName, copyrightText) {
