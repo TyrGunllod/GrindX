@@ -8,7 +8,7 @@ import os
 
 import filetype
 import structlog
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from pydantic import BaseModel
 from shared.exceptions.base import ConflictError, NotFoundError
 from shared.schemas.base import ErrorResponse
@@ -408,7 +408,7 @@ def get_theme_history(
 )
 async def upload_font_or_icon(
     file: UploadFile = File(...),
-    type: str = "font",
+    type: str = Form("font"),
     current_user=Depends(require_role("admin")),
 ) -> dict:
     """Faz upload de um arquivo de fonte ou ícone e retorna a URL pública."""
