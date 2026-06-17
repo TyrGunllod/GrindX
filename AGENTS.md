@@ -2,7 +2,7 @@
 
 - `apps/api-postgres/` — FastAPI principal (porta 8002), JWT + RBAC, PostgreSQL via Alembic
 - `apps/api-sqlserver/` — FastAPI somente leitura (porta 8001), valida tokens do api-postgres
-- `apps/frontend-webapp/` — Portal vanilla JS (porta 5500), módulos via iframe, zero frameworks
+- `apps/frontend-webapp/` — Portal vanilla JS (porta 8101), módulos via iframe, zero frameworks
 - `packages/shared/` — Pacote Python compartilhado (security, schemas, exceptions, error codes)
 - `tests/` — Testes de integração do monorepo (raiz)
 - `.opencode/skills/` — Skills customizadas (ex: `create-standalone-module`)
@@ -13,7 +13,7 @@
 # APIs (cada uma tem seu .venv próprio em apps/<api>/.venv)
 make dev-postgres      # uvicorn porta 8002
 make dev-sqlserver     # uvicorn porta 8001
-make dev-frontend      # http.server porta 5500
+make dev-frontend      # http.server porta 8101
 make dev-all           # todos (abre terminais separados via pwsh)
 
 # Banco

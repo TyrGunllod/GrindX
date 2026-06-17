@@ -109,11 +109,11 @@ make dev-postgres
 # Terminal 2 — api-sqlserver (porta 8001, opcional)
 make dev-sqlserver
 
-# Terminal 3 — frontend (porta 5500)
-python -m http.server 5500 --directory apps/frontend-webapp
+# Terminal 3 — frontend (porta 8101)
+python -m http.server 8101 --directory apps/frontend-webapp
 ```
 
-Acessar: `http://localhost:5500`
+Acessar: `http://localhost:8101`
 
 ---
 

@@ -18,15 +18,15 @@ dev-sqlserver:
 	cd apps/api-sqlserver && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
 
 dev-frontend:
-	@echo "Iniciando Frontend na porta 5500 (acessivel na rede)..."
-	python -m http.server 5500 --directory apps/frontend-webapp --bind 0.0.0.0
+	@echo "Iniciando Frontend na porta 8101 (acessivel na rede)..."
+	python -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0
 
 dev-all:
 	@echo "Subindo todos os servicos GrindX..."
 	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/api-postgres; $$env:PYTHONPATH=(Get-Item ..\..\packages).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002'"
 	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/api-sqlserver; $$env:PYTHONPATH=(Get-Item ..\..\packages).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001'"
-	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'python -m http.server 5500 --directory apps/frontend-webapp --bind 0.0.0.0'"
-	@echo Acesse: http://localhost:5500
+	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'python -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0'"
+	@echo Acesse: http://localhost:8101
 
 # ==========================================
 # Banco de Dados & Dados Iniciais

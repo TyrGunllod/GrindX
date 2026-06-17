@@ -12,8 +12,8 @@
 
 window.GRINDX_CONFIG = {
   // URL base da API — usa variavel injetada (window.__GRINDX_API_URL)
-  // Em dev (localhost:5500) usa porta 8002; em producao (nginx) usa /v1 (same-origin)
-  API_BASE_URL: window.__GRINDX_API_URL || (window.location.port === '5500' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  // Em dev (localhost:8101) usa porta 8002; em producao (nginx) usa /v1 (same-origin)
+  API_BASE_URL: window.__GRINDX_API_URL || (window.location.port === '8101' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? `http://${window.location.hostname}:8002/v1`
     : `/v1`),
 };

@@ -655,7 +655,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 // Fetch the specific theme for preview
                 const token = window.grindx?.session?.getToken();
                 const headers = token ? { Authorization: `Bearer ${token}` } : {};
-                const isDev = window.location.port === '5500' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const isDev = window.location.port === '8101' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 const baseUrl = window.grindx?.config?.API_BASE_URL || (isDev ? `http://${window.location.hostname}:8002/v1` : `/v1`);
                 
                 fetch(`${baseUrl}/themes/${skinPreviewId}`, { headers })

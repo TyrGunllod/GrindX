@@ -86,8 +86,8 @@ class TestCorsConfiguration:
         )
         origins = settings.allowed_origins_list
         assert "http://localhost:3000" in origins
-        assert "http://localhost:5500" in origins
-        assert "http://127.0.0.1:5500" in origins
+        assert "http://localhost:8101" in origins
+        assert "http://127.0.0.1:8101" in origins
 
     def test_cors_dev_network_ip(self):
         """DEV_NETWORK_IP deve adicionar origem extra."""
@@ -100,4 +100,4 @@ class TestCorsConfiguration:
             DEV_NETWORK_IP="192.168.0.62",
         )
         origins = settings.allowed_origins_list
-        assert "http://192.168.0.62:5500" in origins
+        assert "http://192.168.0.62:8101" in origins

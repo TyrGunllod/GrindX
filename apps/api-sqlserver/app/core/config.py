@@ -100,11 +100,11 @@ class Settings(BaseSettings):
         if not self.is_production and not parsed:
             origins = [
                 "http://localhost:3000",
-                "http://localhost:5500",
-                "http://127.0.0.1:5500",
+                "http://localhost:8101",
+                "http://127.0.0.1:8101",
             ]
             if self.DEV_NETWORK_IP:
-                origins.append(f"http://{self.DEV_NETWORK_IP}:5500")
+                origins.append(f"http://{self.DEV_NETWORK_IP}:8101")
             return origins
 
         return parsed

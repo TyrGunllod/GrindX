@@ -33,12 +33,12 @@ cd D:\_Projetos\GrindX
 
 make dev-postgres    # API Postgres — porta 8002
 make dev-sqlserver   # API SQL Server — porta 8001
-python -m http.server 5500 --directory apps/frontend-webapp
+python -m http.server 8101 --directory apps/frontend-webapp
 ```
 
 | Serviço | URL |
 |---------|-----|
-| Frontend | `http://localhost:5500` |
+| Frontend | `http://localhost:8101` |
 | Swagger | `http://localhost:8002/v1/docs` |
 
 ### Credenciais

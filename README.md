@@ -24,7 +24,7 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 
 ### Frontend
 
-- **Portal Modular (porta 5500):** Shell que gerencia navegação e carrega módulos via iframe isolado.
+- **Portal Modular (porta 8101):** Shell que gerencia navegação e carrega módulos via iframe isolado.
 - **Módulos:** `home`, `users`, `structure`, `admin-skins`, `importer`, `profile` — cada um é standalone e testável independentemente.
 - **Design System:** Glassmorphism + tokens CSS + `UIFactory` para consistência absoluta.
 
@@ -63,10 +63,10 @@ make dev-postgres    # porta 8002
 make dev-sqlserver   # porta 8001
 
 # 6. Rodar frontend
-python -m http.server 5500 --directory apps/frontend-webapp
+python -m http.server 8101 --directory apps/frontend-webapp
 ```
 
-Acesse em `http://localhost:5500`.
+Acesse em `http://localhost:8101`.
 
 ### Credenciais de Teste
 

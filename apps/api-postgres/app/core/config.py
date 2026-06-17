@@ -135,11 +135,11 @@ class Settings(BaseSettings):
         if not self.is_production:
             dev_origins = [
                 "http://localhost:3000",
-                "http://localhost:5500",
-                "http://127.0.0.1:5500",
+                "http://localhost:8101",
+                "http://127.0.0.1:8101",
             ]
             if self.DEV_NETWORK_IP:
-                dev_origins.append(f"http://{self.DEV_NETWORK_IP}:5500")
+                dev_origins.append(f"http://{self.DEV_NETWORK_IP}:8101")
             # Mescla com o que veio do CORS_ORIGINS (evita duplicatas)
             merged = list(dict.fromkeys(parsed + dev_origins))
             return merged
