@@ -15,7 +15,8 @@
             return resolveUrl(window.grindx.config.API_BASE_URL);
         }
         const hostname = window.location.hostname;
-        return `http://${hostname}:8002/v1`;
+        const isDev = window.location.port === '5500' || hostname === 'localhost' || hostname === '127.0.0.1';
+        return isDev ? `http://${hostname}:8002/v1` : `/v1`;
     };
 
     function buildApiUrl(endpoint, params = {}) {
