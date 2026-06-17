@@ -516,6 +516,18 @@ class DashboardController extends window.grindx.controllers.BaseController {
             }).join('\n');
             doc.head.appendChild(style);
         }
+
+        // Inject @font-face for icon font
+        if (fonts.icons && fonts.icons.url) {
+            const existingIcon = doc.getElementById('skin-icon-font-iframe');
+            if (existingIcon) existingIcon.remove();
+
+            const iconStyle = doc.createElement('style');
+            iconStyle.id = 'skin-icon-font-iframe';
+            const fmt = fonts.icons.format || 'woff2';
+            iconStyle.textContent = `@font-face{font-family:'${fonts.icons.name}';src:url('${fonts.icons.url}')format('${fmt}');font-display:swap}`;
+            doc.head.appendChild(iconStyle);
+        }
     }
 
     toggleSidebar(isOpen) {
