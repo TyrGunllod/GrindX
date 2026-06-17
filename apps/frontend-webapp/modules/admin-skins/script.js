@@ -13,6 +13,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.pendingLogoFile = null;
         this.advancedMode = false;
         this.customFonts = [];
+        this.iconFont = null;
         this._currentSnapshot = null;
         this._originalSnapshot = null;
         this.apiBase = window.grindx.config.API_BASE_URL;
@@ -86,6 +87,15 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             fontUploadArea.addEventListener('click', () => fontFileInput.click());
             fontFileInput.addEventListener('change', (e) => this.processFontZip(e));
         }
+
+        // Icon font upload
+        const iconUploadArea = document.getElementById('iconUploadArea');
+        const iconFileInput = document.getElementById('iconFontFile');
+        if (iconUploadArea && iconFileInput) {
+            iconUploadArea.addEventListener('click', () => iconFileInput.click());
+            iconFileInput.addEventListener('change', (e) => this.processIconFont(e));
+        }
+        document.getElementById('btnRemoveIconFont')?.addEventListener('click', () => this.removeIconFont());
 
         // Auto-generate copyright from company name
             const companyNameInput = document.getElementById('companyName');
@@ -470,6 +480,14 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.customFonts = (fonts.custom || []).map(f => ({ name: f.name, data: f.data, format: f.format }));
         this._populateFontDropdowns();
 
+        const icons = fonts.icons || {};
+        this.iconFont = icons.url ? { name: icons.name, url: icons.url, format: icons.format } : null;
+        document.getElementById('iconFontName').value = icons.name || '';
+        if (this.iconFont) {
+            document.getElementById('btnRemoveIconFont').style.display = '';
+            document.getElementById('iconUploadPreview').innerHTML = `<i class="fas fa-check-circle" style="color:var(--skin-success, #22c55e)"></i> <span>${icons.name || 'Fonte carregada'}</span>`;
+        }
+
         const tokens = skin.tokens || {};
         document.getElementById('radiusMd').value = tokens['--skin-radius-md'] || '0.5rem';
         document.getElementById('radiusLg').value = tokens['--skin-radius-lg'] || '0.75rem';
@@ -657,6 +675,65 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         e.target.value = '';
     }
 
+    async processIconFont(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const allowedExts = ['.woff2', '.woff', '.ttf', '.otf'];
+        const ext = '.' + file.name.split('.').pop().toLowerCase();
+        if (!allowedExts.includes(ext)) {
+            alert('Formato nao suportado. Use .woff2, .woff, .ttf ou .otf.');
+            return;
+        }
+
+        const name = document.getElementById('iconFontName').value.trim() || file.name.replace(/\.[^.]+$/, '');
+        const statusEl = document.getElementById('iconImportStatus');
+        const preview = document.getElementById('iconUploadPreview');
+
+        statusEl.textContent = 'Enviando...';
+        statusEl.className = 'font-import-status';
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'icon');
+
+            const resp = await fetch(`${this.apiBase}/themes/fonts-icons/upload`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${this.token}` },
+                body: formData,
+            });
+
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.detail || 'Erro no upload');
+            }
+
+            const data = await resp.json();
+            this.iconFont = { name, url: data.url, format: ext.replace('.', '') };
+
+            statusEl.textContent = `Fonte de icones "${name}" importada com sucesso.`;
+            statusEl.className = 'font-import-status success';
+            preview.innerHTML = `<i class="fas fa-check-circle" style="color:var(--skin-success, #22c55e)"></i> <span>${name}</span>`;
+            document.getElementById('btnRemoveIconFont').style.display = '';
+            this.previewSkin();
+        } catch (err) {
+            statusEl.textContent = err.message;
+            statusEl.className = 'font-import-status error';
+        }
+    }
+
+    removeIconFont() {
+        this.iconFont = null;
+        document.getElementById('iconFontName').value = '';
+        document.getElementById('iconFontFile').value = '';
+        document.getElementById('iconImportStatus').textContent = '';
+        document.getElementById('iconImportStatus').className = 'font-import-status';
+        document.getElementById('iconUploadPreview').innerHTML = '<i class="fas fa-icons"></i> <span>Clique para selecionar um arquivo de fonte</span>';
+        document.getElementById('btnRemoveIconFont').style.display = 'none';
+        this.previewSkin();
+    }
+
     async saveSkin() {
         const name = document.getElementById('skinName').value.trim();
         if (!name) {
@@ -691,6 +768,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 heading: document.getElementById('fontHeading').value,
                 body: document.getElementById('fontBody').value,
                 custom: this.customFonts,
+                icons: this.iconFont || null,
             },
             icon_library: 'fontawesome',
             layout_mode: document.getElementById('layoutMode').value || 'topbar',
@@ -849,6 +927,12 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         if (window.skinLoader) {
             window.skinLoader.applyPreviewColors(colors);
             window.skinLoader._applyFonts(fonts);
+        }
+
+        if (this.iconFont) {
+            window.skinLoader._applyIconFont(this.iconFont);
+        } else {
+            window.skinLoader._removeIconFont();
         }
 
         this._updateSectionPreviews();

@@ -374,9 +374,32 @@
                               Baixe fontes gratuitas no Font Squirrel
                           </a>
                       </div>
-                  </fieldset>
+                   </fieldset>
 
-                </form>
+                   <!-- Importar Fonte de Icones -->
+                   <fieldset class="form-section">
+                       <legend>Importar Fonte de Icones</legend>
+                       <div class="form-row">
+                           <label for="iconFontName">Nome da Fonte de Icones</label>
+                           <input type="text" id="iconFontName" placeholder="Ex: Material Icons">
+                       </div>
+                       <div class="form-row">
+                           <label for="iconFontFile">Arquivo de fonte (.woff2, .ttf, .woff, .otf)</label>
+                           <div class="upload-area" id="iconUploadArea">
+                               <input type="file" id="iconFontFile" accept=".woff2,.ttf,.woff,.otf">
+                               <div class="upload-preview" id="iconUploadPreview">
+                                   <i class="fas fa-icons"></i>
+                                   <span>Clique para selecionar um arquivo de fonte</span>
+                               </div>
+                           </div>
+                       </div>
+                       <div class="font-import-status" id="iconImportStatus"></div>
+                       <button class="btn btn-sm btn-danger" id="btnRemoveIconFont" type="button" style="display:none;">
+                           <i class="fas fa-trash"></i> Remover fonte de icones
+                       </button>
+                   </fieldset>
+
+                 </form>
 
                 <div class="modal-footer">
                     <button class="btn" id="btnResetSkin" type="button">
