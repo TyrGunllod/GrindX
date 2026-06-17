@@ -1,4 +1,4 @@
-<!-- title: GrindX — Resumo Executivo | updated: 2026-05-25 -->
+<!-- title: GrindX — Resumo Executivo | updated: 2026-06-17 -->
 
 # GrindX — Resumo Executivo
 

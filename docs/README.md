@@ -1,4 +1,4 @@
-<!-- title: Documentação GrindX | updated: 2026-06-10 -->
+<!-- title: Documentação GrindX | updated: 2026-06-17 -->
 
 # GrindX — Documentação
 
@@ -8,7 +8,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 
 ## Status do Projeto
 
-**Em desenvolvimento ativo.** Backend, frontend, testes (178), CI/CD com semantic release, assets visuais e sistema de skins implementados.
+**Em desenvolvimento ativo.** Backend, frontend, testes (179+), CI/CD com semantic release, assets visuais, sistema de skins e reverse proxy prontos.
 
 ---
 

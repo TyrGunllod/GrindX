@@ -1,4 +1,4 @@
-<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-06-10 -->
+<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-06-17 -->
 
 # GrindX — Sistema de Gestão Integrado (Monorepo)
 
@@ -8,7 +8,7 @@ O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado e
 
 ## Status do Projeto
 
-Projeto em desenvolvimento ativo. Funcionalidades principais implementadas e funcionais (autenticação JWT + RBAC, CRUD de usuários, portal modular com shell, skin system com dual layout, importação de módulos). CI/CD, testes automatizados (178) e documentação acompanham o desenvolvimento.
+Projeto em desenvolvimento ativo. Funcionalidades principais implementadas e funcionais (autenticação JWT + RBAC, CRUD de usuários, portal modular com shell, skin system com dual layout, importação de módulos). CI/CD, testes automatizados (179) e documentação acompanham o desenvolvimento.
 
 ---
 
@@ -24,7 +24,7 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 
 ### Frontend
 
-- **Portal Modular (porta 8101):** Shell que gerencia navegação e carrega módulos via iframe isolado.
+- **Portal Modular (porta 8101):** Shell que gerencia navegação e carrega módulos via iframe isolado. Preparado para reverse proxy (nginx) com same-origin API e CSP estático.
 - **Módulos:** `home`, `users`, `structure`, `admin-skins`, `importer`, `profile` — cada um é standalone e testável independentemente.
 - **Design System:** Glassmorphism + tokens CSS + `UIFactory` para consistência absoluta.
 
@@ -78,14 +78,14 @@ Acesse em `http://localhost:8101`.
 
 ## Testes
 
-Suite com 178 testes cobrindo unitários, integração e validação do monorepo.
+Suite com 179+ testes cobrindo unitários, integração e validação do monorepo.
 
 | Pacote | Testes | Cobertura |
 |--------|--------|-----------|
-| `api-postgres` | 178 | Auth, RBAC, temas, usuários, portal, segurança, cache, importação |
+| `api-postgres` | 179 | Auth, RBAC, temas, usuários, portal, segurança, cache, importação |
 | `api-sqlserver` | 8+ | Cliente SQL Server |
 | `shared` | 26 | Permissões RBAC |
-| `tests/` (raiz) | 21 | Validação de pacotes |
+| `tests/` (raiz) | 24 | Validação de pacotes |
 
 ```powershell
 make test-postgres    # somente api-postgres
@@ -101,7 +101,7 @@ make test-all         # todos os pacotes
 
 Workflow único em `.github/workflows/release.yml`:
 
-- **`test-api-postgres`** — 178 testes com SQLite in-memory, cobertura mínima 70%
+- **`test-api-postgres`** — 179 testes com SQLite in-memory, cobertura mínima 70%
 - **`test-api-sqlserver`** — testes de integração com SQL Server
 - **`test-root`** — testes do monorepo (depende dos dois anteriores)
 - **`lint`** — `ruff check` + `ruff format --check` em `packages/` e `apps/`

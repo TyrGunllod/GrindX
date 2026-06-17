@@ -1,4 +1,4 @@
-<!-- title: Deploy — GrindX | updated: 2026-06-10 -->
+<!-- title: Deploy — GrindX | updated: 2026-06-17 -->
 
 # Deploy — GrindX
 
@@ -157,7 +157,9 @@ Configurado via `pyproject.toml` (raiz) — `python-semantic-release` com parser
 
 ## Reverse Proxy (Nginx)
 
-O GrindX deve rodar atrás de um reverse proxy para terminação SSL.
+O nginx.conf do frontend já está configurado para servir estáticos e fazer proxy reverso da API. Um nginx wrapper (ex: nginx:alpine) deve usar `apps/frontend-webapp/nginx.conf`.
+
+Para ambientes que exigem SSL, adicione um nginx externo apontando para o container:
 
 ```nginx
 server {
@@ -167,27 +169,17 @@ server {
     ssl_certificate /etc/ssl/certs/seu-dominio.crt;
     ssl_certificate_key /etc/ssl/private/seu-dominio.key;
 
-    # Frontend
     location / {
-        root /var/www/grindx/frontend-webapp;
-        try_files $uri $uri/ /index.html;
-    }
-
-    # API Postgres
-    location /api/postgres/ {
-        proxy_pass http://localhost:8002/;
+        proxy_pass http://frontend:80;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    # API SQL Server
-    location /api/sqlserver/ {
-        proxy_pass http://localhost:8001/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
 ```
+
+O frontend já aplica CSP, security headers e cache de assets. A API é acessada via same-origin (`/v1/`), eliminando CORS em produção.
 
 ---
 

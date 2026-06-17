@@ -1,4 +1,4 @@
-<!-- title: Segurança — GrindX | updated: 2026-05-25 -->
+<!-- title: Segurança — GrindX | updated: 2026-06-17 -->
 
 # Segurança — GrindX
 
