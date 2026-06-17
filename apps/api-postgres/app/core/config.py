@@ -61,6 +61,9 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     LOG_LEVEL: str = "INFO"
 
+    # --- Proxy ---
+    PROXY_MODE: bool = False
+
     # --- SMTP / Email ---
     SMTP_HOST: str = "127.0.0.1"
     SMTP_PORT: int = 2525
@@ -146,6 +149,8 @@ class Settings(BaseSettings):
     @property
     def csp_connect_srcs(self) -> list[str]:
         """URLs permitidas no CSP connect-src."""
+        if self.PROXY_MODE:
+            return ["'self'"]
         srcs = ["'self'", "http://localhost:8001", "http://localhost:8002"]
         if self.DEV_NETWORK_IP:
             srcs.append(f"http://{self.DEV_NETWORK_IP}:8001")

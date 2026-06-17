@@ -13,5 +13,5 @@
 window.GRINDX_CONFIG = {
   // URL base da API — usa variavel injetada (window.__GRINDX_API_URL)
   // ou detecta automaticamente o host atual (funciona com IP da rede)
-  API_BASE_URL: window.__GRINDX_API_URL || `http://${window.location.hostname}:8002/v1`,
+  API_BASE_URL: window.__GRINDX_API_URL || `/v1`,
 };
