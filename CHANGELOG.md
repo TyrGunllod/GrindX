@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.25.1 (2026-06-18)
+
+### Bug Fixes
+
+- Version.json agora atualizado via version_variable do semantic-release
+  ([`9175e6d`](https://github.com/TyrGunllod/GrindX/commit/9175e6d3b40ba66a5afc45ea98740b67bd50bfe0))
+
+
 ## v1.25.0 (2026-06-18)
 
 ### Bug Fixes
