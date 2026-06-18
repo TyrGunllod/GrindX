@@ -91,3 +91,4 @@ apps/frontend-webapp/modules/*
 # Containers
 # =========================
 *.tar
+compose.yaml.old
