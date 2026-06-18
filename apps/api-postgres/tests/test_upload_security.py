@@ -129,8 +129,9 @@ class TestUploadMagicBytes:
         empty_file.name = "empty.ttf"
 
         response = client.post(
-            "/v1/themes/fonts/upload",
+            "/v1/themes/fonts-icons/upload",
             files={"file": ("empty.ttf", empty_file, "font/sfnt")},
+            data={"type": "font"},
             headers=auth_headers_with_company,
         )
 
@@ -150,8 +151,9 @@ class TestUploadMagicBytes:
         fake_font.name = "fake.ttf"
 
         response = client.post(
-            "/v1/themes/fonts/upload",
+            "/v1/themes/fonts-icons/upload",
             files={"file": ("fake.ttf", fake_font, "font/sfnt")},
+            data={"type": "font"},
             headers=auth_headers_with_company,
         )
 
