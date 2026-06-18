@@ -26,6 +26,8 @@ env/
 .env.production
 .env.prod
 *.prod.env
+.env.sqlserver
+.env.postgres
 
 # =========================
 # IDE / Editor
