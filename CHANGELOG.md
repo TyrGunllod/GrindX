@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.26.0 (2026-06-18)
+
+### Features
+
+- **infra**: Criar Dockerfiles para frontend, api-sqlserver e api-postgres
+  ([`21d5376`](https://github.com/TyrGunllod/GrindX/commit/21d53767a3b1f424bcc7eea378960e20dec52d25))
+
+### Refactoring
+
+- **infra**: Otimizar compose.yaml com build local e realocar .env
+  ([`8c74c60`](https://github.com/TyrGunllod/GrindX/commit/8c74c601f48ec3f94fb2a9a68db287b84198d495))
+
+
 ## v1.25.2 (2026-06-18)
 
 ### Bug Fixes
