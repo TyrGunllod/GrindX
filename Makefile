@@ -1,69 +1,111 @@
 # ==========================================
-# GrindX — Sistema de Gestão Integrado
-# Makefile para Windows (PowerShell/GnuMake)
+# GrindX — Makefile Unificado (Win/Linux)
 # ==========================================
 
-.PHONY: build up down logs test-postgres test-sqlserver test-all dev-postgres dev-sqlserver dev-frontend dev-all seed migrate clean
+.PHONY: build up down logs \
+        dev-postgres dev-sqlserver dev-frontend dev-all \
+        migrate seed \
+        test-postgres test-sqlserver test-shared test-root test-all \
+        lint format clean
 
 # ==========================================
-# Desenvolvimento & Execução
+# Detecção de plataforma
+# ==========================================
+ifeq ($(OS),Windows_NT)
+    PY = python
+    VENV_PY = .venv\Scripts\python
+    SEP = ;
+    PP_APP = set PYTHONPATH=../../packages&&
+    PP_ROOT = set PYTHONPATH=apps/api-postgres$(SEP)apps/api-sqlserver$(SEP)packages&&
+    PP_SHARED = set PYTHONPATH=..&&
+else
+    PY = python3
+    VENV_PY = .venv/bin/python
+    SEP = :
+    PP_APP = PYTHONPATH=../../packages
+    PP_ROOT = PYTHONPATH=apps/api-postgres:apps/api-sqlserver:packages
+    PP_SHARED = PYTHONPATH=..
+endif
+
+# ==========================================
+# Desenvolvimento
 # ==========================================
 
 dev-postgres:
 	@echo "Iniciando API Postgres na porta 8002..."
-	cd apps/api-postgres && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002
+	cd apps/api-postgres && $(PP_APP) $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002
 
 dev-sqlserver:
 	@echo "Iniciando API SQL Server na porta 8001..."
-	cd apps/api-sqlserver && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
+	cd apps/api-sqlserver && $(PP_APP) $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
 
 dev-frontend:
-	@echo "Iniciando Frontend na porta 8101 (acessivel na rede)..."
-	python -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0
+	@echo "Iniciando Frontend na porta 8101..."
+	$(PY) -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0
 
 dev-all:
+ifeq ($(OS),Windows_NT)
 	@echo "Subindo todos os servicos GrindX..."
 	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/api-postgres; $$env:PYTHONPATH=(Get-Item ..\..\packages).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002'"
 	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/api-sqlserver; $$env:PYTHONPATH=(Get-Item ..\..\packages).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001'"
-	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'python -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0'"
-	@echo Acesse: http://localhost:8101
+	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd $(CURDIR); $(PY) -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0'"
+	@echo "Acesse: http://localhost:8101"
+else
+	@echo "Subindo todos os servicos GrindX..."
+	@echo "Abra terminais separados para cada servico:"
+	@echo "  make dev-postgres"
+	@echo "  make dev-sqlserver"
+	@echo "  make dev-frontend"
+	@echo "Acesse: http://localhost:8101"
+endif
 
 # ==========================================
-# Banco de Dados & Dados Iniciais
+# Banco de Dados
 # ==========================================
 
 migrate:
-	@echo "Rodando migracoses no PostgreSQL..."
-	cd apps/api-postgres && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python manage_db.py upgrade head
+	@echo "Rodando migracoes no PostgreSQL..."
+	cd apps/api-postgres && $(PP_APP) $(VENV_PY) manage_db.py upgrade head
 
 seed:
 	@echo "Populando banco de dados inicial..."
-	cd apps/api-postgres && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python seed.py
+	cd apps/api-postgres && $(PP_APP) $(VENV_PY) seed.py
 
 # ==========================================
-# Testes Automatizados
+# Testes
 # ==========================================
 
 test-postgres:
 	@echo "Executando testes da API Postgres..."
-	cd apps/api-postgres && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+	cd apps/api-postgres && $(PP_APP) $(VENV_PY) -m pytest tests/ -v --tb=short
 
 test-sqlserver:
 	@echo "Executando testes da API SQL Server..."
-	cd apps/api-sqlserver && set PYTHONPATH=..\..\packages&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+	cd apps/api-sqlserver && $(PP_APP) $(VENV_PY) -m pytest tests/ -v --tb=short
 
 test-shared:
 	@echo "Executando testes do pacote shared..."
-	cd packages/shared && set PYTHONPATH=..&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+	cd packages/shared && $(PP_SHARED) $(VENV_PY) -m pytest tests/ -v --tb=short
 
 test-root:
 	@echo "Executando testes da raiz do monorepo..."
-	set PYTHONPATH=apps\\api-postgres;apps\\api-sqlserver;packages&& .\\.venv\\Scripts\\python -m pytest tests/ -v --tb=short
+	$(PP_ROOT) $(VENV_PY) -m pytest tests/ -v --tb=short
 
 test-all: test-postgres test-sqlserver test-shared test-root
 
 # ==========================================
-# Infraestrutura (Containers)
+# Lint e Formatação
+# ==========================================
+
+format:
+	ruff format packages/ apps/
+
+lint:
+	ruff check --fix .
+	ruff check .
+
+# ==========================================
+# Containers
 # ==========================================
 
 build:
@@ -79,10 +121,17 @@ logs:
 	podman-compose logs -f
 
 # ==========================================
-# Utilitários
+# Limpeza
 # ==========================================
 
 clean:
+ifeq ($(OS),Windows_NT)
 	@echo "Limpando arquivos temporarios..."
 	if exist .pytest_cache (rmdir /s /q .pytest_cache)
 	for /d /r . %%d in (__pycache__) do @if exist "%%d" rmdir /s /q "%%d"
+else
+	@echo "Limpando arquivos temporarios..."
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
+	rm -rf .pytest_cache 2>/dev/null || true
+endif
