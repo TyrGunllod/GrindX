@@ -1,9 +1,7 @@
 [tool.semantic_release]
 version_toml = []
-version_variable = [
-    "apps/api-postgres/app/core/config.py:APP_VERSION",
-    "apps/api-sqlserver/app/core/config.py:APP_VERSION",
-    "apps/frontend-webapp/version.json:version:tf",
+version_variables = [
+    "apps/api-postgres/app/core/config.py:APP_VERSION:nf",
 ]
 branch = "main"
 changelog_file = "CHANGELOG.md"

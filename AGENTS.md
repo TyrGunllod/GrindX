@@ -74,10 +74,13 @@ Config Ruff (`apps/api-postgres/ruff.toml`): select E, F, I — ignore E501 — 
 
 ## Semantic Release
 
-- Config em `pyproject.toml` (python-semantic-release, parser angular)
-- Versão definida em `apps/api-postgres/app/core/config.py` e `apps/api-sqlserver/app/core/config.py` (variável `APP_VERSION`)
-- `version_variable` no `pyproject.toml` atualiza `apps/frontend-webapp/version.json` com formato tag (`vX.Y.Z`)
+- Config em `pyproject.toml` (python-semantic-release v10, parser angular)
+- **Fonte canônica**: `apps/api-postgres/app/core/config.py:APP_VERSION` — único arquivo gerenciado via `version_variables`
+- `build_command` (`scripts/update_frontend_version.py`) sincroniza os derivados:
+  - `apps/api-sqlserver/app/core/config.py:APP_VERSION`
+  - `apps/frontend-webapp/version.json` (formato `vX.Y.Z`)
 - CI: único workflow `release.yml` (push para `main`) — testa lint + todos os testes + semantic release
+- PSR pinado `>=10,<11` no CI; `version_variable` (singular) foi removido na v10
 - CI usa SQLite in-memory (sem PostgreSQL real)
 
 ## Arquitetura — Detalhes Não Óbvios

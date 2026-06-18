@@ -183,7 +183,7 @@ jobs:
           python-version: "3.12"
 
       - name: Instalar python-semantic-release
-        run: pip install python-semantic-release
+        run: pip install "python-semantic-release>=10,<11"
 
       - name: Run semantic release
         env:

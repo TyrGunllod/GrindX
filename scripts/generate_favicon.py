@@ -1,5 +1,6 @@
 # scripts/generate_favicon.py
 """Generate favicon PNG/ICO files from SVG source."""
+
 import os
 import struct
 import subprocess
@@ -32,6 +33,7 @@ check_and_install_dependencies()
 
 try:
     import cairosvg
+
     HAS_CAIRO = True
 except ImportError:
     HAS_CAIRO = False
@@ -49,7 +51,12 @@ SVG_CONTENT = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" wid
 def svg_to_png_cairo(svg_content, output_path, size):
     """Convert SVG to PNG using cairosvg."""
     scaled_svg = svg_content.format(size=size)
-    cairosvg.svg2png(bytestring=scaled_svg.encode(), write_to=output_path, output_width=size, output_height=size)
+    cairosvg.svg2png(
+        bytestring=scaled_svg.encode(),
+        write_to=output_path,
+        output_width=size,
+        output_height=size,
+    )
 
 
 def create_png_with_pillow(output_path, size):
@@ -65,7 +72,11 @@ def create_png_with_pillow(output_path, size):
 
     # Rounded rect approximation (draw rect)
     margin = 2
-    draw.rounded_rectangle([margin, margin, size - margin, size - margin], radius=size * 0.19, fill=(15, 23, 42, 255))
+    draw.rounded_rectangle(
+        [margin, margin, size - margin, size - margin],
+        radius=size * 0.19,
+        fill=(15, 23, 42, 255),
+    )
 
     # Diamond shape
     cx, cy = size // 2, size // 2
@@ -105,15 +116,16 @@ def create_ico(png_16_path, png_32_path, output_path):
     current_offset = 6 + 16 * 2  # header + 2 directory entries
 
     for _i, (data, w, h) in enumerate([(data16, 16, 16), (data32, 32, 32)]):
-        entries += struct.pack("<BBBBHHII",
+        entries += struct.pack(
+            "<BBBBHHII",
             w if w < 256 else 0,
             h if h < 256 else 0,
             0,  # color palette
             0,  # reserved
             1,  # color planes
-            32, # bits per pixel
+            32,  # bits per pixel
             len(data),
-            current_offset
+            current_offset,
         )
         offsets.append(data)
         current_offset += len(data)
