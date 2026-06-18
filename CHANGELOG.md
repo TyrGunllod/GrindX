@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.26.3 (2026-06-18)
+
+### Bug Fixes
+
+- **infra**: Mover todos os arquivos de versao para version_variables
+  ([`aef4ddc`](https://github.com/TyrGunllod/GrindX/commit/aef4ddc8052413c18e1e5584d3e30538737e5a9c))
+
+
 ## v1.26.2 (2026-06-18)
 
 ### Bug Fixes
