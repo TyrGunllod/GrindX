@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.25.2 (2026-06-18)
+
+### Bug Fixes
+
+- Restaurar build_command como fallback para version.json
+  ([`d2966f7`](https://github.com/TyrGunllod/GrindX/commit/d2966f77a444632d0c95555b708476964c74b5f3))
+
+### Documentation
+
+- Spec e plan de importacao de icones no modulo skins
+  ([`8b55d5d`](https://github.com/TyrGunllod/GrindX/commit/8b55d5da2984f809d4c987222e05a8ff04656694))
+
+
 ## v1.25.1 (2026-06-18)
 
 ### Bug Fixes
