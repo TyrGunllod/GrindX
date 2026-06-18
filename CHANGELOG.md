@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v1.26.1 (2026-06-18)
+
+### Bug Fixes
+
+- **infra**: Corrigir versionamento quebrado pelo PSR v10
+  ([`1108672`](https://github.com/TyrGunllod/GrindX/commit/110867205268cbb04cee440aa6df2fd519bc43f0))
+
+### Chores
+
+- **infra**: Adicionar compose.yaml.old ao gitignore
+  ([`a04b7ce`](https://github.com/TyrGunllod/GrindX/commit/a04b7ce6c4732196cc9842e9efc5d431c5131250))
+
+### Refactoring
+
+- **infra**: Unificar Makefile para Windows e Linux
+  ([`d474e61`](https://github.com/TyrGunllod/GrindX/commit/d474e61bb725d088f0f4a6137bce9333ce829d32))
+
+
 ## v1.26.0 (2026-06-18)
 
 ### Features
