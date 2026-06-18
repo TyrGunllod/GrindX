@@ -2,6 +2,52 @@
 
 <!-- version list -->
 
+## v1.25.0 (2026-06-18)
+
+### Bug Fixes
+
+- Atualizar URL do endpoint de upload nos testes
+  ([`f628225`](https://github.com/TyrGunllod/GrindX/commit/f628225108b3add35d8a56ef7df613dbb6983a30))
+
+- Type param deve ser Form() nao query
+  ([`0c9c4b9`](https://github.com/TyrGunllod/GrindX/commit/0c9c4b95718d4ac90d5f64091eb0cb453c60e290))
+
+- **proxy**: Dev auto-detection para nao quebrar dev local
+  ([`61d5dd8`](https://github.com/TyrGunllod/GrindX/commit/61d5dd82f131ee5d3396968d5a2cf471d7bc3c4d))
+
+### Chores
+
+- Alterar porta do frontend de 5500 para 8101
+  ([`a1b9a5f`](https://github.com/TyrGunllod/GrindX/commit/a1b9a5f625dd072755bb07cab8bcee92fa4bff3f))
+
+### Code Style
+
+- Format theme_router.py com ruff
+  ([`339655d`](https://github.com/TyrGunllod/GrindX/commit/339655df6385245c9a0c36273dfe9ae5b4ca7abf))
+
+### Documentation
+
+- Atualizar contagem de testes, datas e secao de reverse proxy
+  ([`4d0410d`](https://github.com/TyrGunllod/GrindX/commit/4d0410de00e077b7a226ac075c14ad32f3a7a80f))
+
+### Features
+
+- **proxy**: Preparar frontend e nginx para reverse proxy
+  ([`3ca9668`](https://github.com/TyrGunllod/GrindX/commit/3ca9668c701744489b2d2a454251d766751bd374))
+
+- **skins**: Aplicar fonte de icones via @font-face no skinLoader
+  ([`8338ca7`](https://github.com/TyrGunllod/GrindX/commit/8338ca77a4cb0adc556b532c6ae0c8775cfab5f0))
+
+- **skins**: Endpoint unificado POST /v1/themes/fonts-icons/upload
+  ([`aa29244`](https://github.com/TyrGunllod/GrindX/commit/aa292446119d246d90efcf77d83bc7f493da8e76))
+
+- **skins**: Injetar fonte de icones nos iframes dos modulos
+  ([`aa1b2af`](https://github.com/TyrGunllod/GrindX/commit/aa1b2afb1538425ef91476e484d50fb706ee332c))
+
+- **skins**: UI de importacao de fonte de icones no admin-skins
+  ([`5574478`](https://github.com/TyrGunllod/GrindX/commit/55744786660e4af43f7ccd35ad359c136fb93c19))
+
+
 ## v1.24.0 (2026-06-16)
 
 ### Bug Fixes
