@@ -465,7 +465,9 @@ async def upload_font_or_icon(
 
     file_url = f"/uploads/{sub_dir}/{unique_filename}"
 
-    logger.info("Font/Icon uploaded", type=type, filename=unique_filename, size=len(content))
+    logger.info(
+        "Font/Icon uploaded", type=type, filename=unique_filename, size=len(content)
+    )
     return {"url": file_url, "type": type}
 
 
