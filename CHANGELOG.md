@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.26.2 (2026-06-18)
+
+### Bug Fixes
+
+- **infra**: Corrigir volumes .env trocados no compose.yaml
+  ([`81cc416`](https://github.com/TyrGunllod/GrindX/commit/81cc41695c86b54e94cd69eae4fac3bc82c8eb5e))
+
+### Chores
+
+- **infra**: Remover compose.yaml.old do tracking
+  ([`a935479`](https://github.com/TyrGunllod/GrindX/commit/a9354793b19b27834d9fe89a336213a7446b7092))
+
+
 ## v1.26.1 (2026-06-18)
 
 ### Bug Fixes
