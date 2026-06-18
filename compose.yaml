@@ -34,7 +34,7 @@ services:
       - PYTHONPATH=/app:/app/packages
     volumes:
       - ./packages:/app/packages:z
-      - ./.env.postgres:/app/.env:z
+      - ./.env.sqlserver:/app/.env:z
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
       interval: 30s
@@ -54,7 +54,7 @@ services:
       - PYTHONPATH=/app:/app/packages
     volumes:
       - ./packages:/app/packages:z
-      - ./.env.sqlserver:/app/.env:z
+      - ./.env.postgres:/app/.env:z
       - ${HOME}/Containers/volumes/api_uploads:/app/static/uploads:z
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
