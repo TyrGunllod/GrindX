@@ -5,7 +5,7 @@ networks:
 services:
   frontend:
     build:
-      context: ./frontend
+      context: ./apps/frontend-webapp
     container_name: grindx-frontend
     ports:
       - "8101:80"
