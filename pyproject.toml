@@ -3,10 +3,10 @@ version_toml = []
 version_variable = [
     "apps/api-postgres/app/core/config.py:APP_VERSION",
     "apps/api-sqlserver/app/core/config.py:APP_VERSION",
+    "apps/frontend-webapp/version.json:version:tf",
 ]
 branch = "main"
 changelog_file = "CHANGELOG.md"
-build_command = "python scripts/update_frontend_version.py"
 upload_to_vcs_release = true
 commit_parser = "angular"
 major_on_zero = true
