@@ -199,6 +199,8 @@ deploy:
 	cp compose.yaml "$(DEST)/GrindX/"
 	cp .env.postgres "$(DEST)/GrindX/"
 	cp .env.sqlserver "$(DEST)/GrindX/"
+	cp apps/api-postgres/.env.example "$(DEST)/GrindX/.env.postgres.example"
+	cp apps/api-sqlserver/.env.example "$(DEST)/GrindX/.env.sqlserver.example"
 	cp apps/frontend-webapp/nginx.conf "$(DEST)/GrindX/Containers/volumes/grindx/frontend/nginx.conf"
 	cp -r packages "$(DEST)/GrindX/packages"
 	@echo "Configs exportadas para $(DEST)/GrindX/"
