@@ -24,6 +24,7 @@ Args:
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -38,10 +39,30 @@ BACKUP_DIRNAME = ".backup"
 
 
 def _get_monorepo_root() -> Path:
+    env_root = os.environ.get("MONOREPO_ROOT")
+    if env_root:
+        return Path(env_root).resolve()
     return Path(__file__).resolve().parent.parent.parent.parent
 
 
+def _get_api_dir() -> Path:
+    env = os.environ.get("GRINDX_API_DIR")
+    if env:
+        return Path(env).resolve()
+    return _get_api_dir()
+
+
+def _get_frontend_dir() -> Path:
+    env = os.environ.get("GRINDX_FRONTEND_DIR")
+    if env:
+        return Path(env).resolve()
+    return _get_frontend_dir()
+
+
 def _get_import_dir() -> Path:
+    env = os.environ.get("IMPORT_DIR")
+    if env:
+        return Path(env).resolve()
     return _get_monorepo_root() / "import"
 
 
@@ -73,7 +94,7 @@ def validate_manifest(import_dir: Path) -> dict:
 
 
 def backup_existing(manifest: dict) -> Path | None:
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+    api_dir = _get_api_dir()
     backup_root = _get_import_dir() / BACKUP_DIRNAME
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     backup_dir = backup_root / f"{manifest['module_name']}_{timestamp}"
@@ -96,7 +117,7 @@ def copy_backend(import_dir: Path, module_name: str, force: bool) -> None:
     import tempfile
 
     src = import_dir / "app" / "modules" / module_name
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+    api_dir = _get_api_dir()
     dest = api_dir / "app" / "modules" / module_name
 
     if not src.exists():
@@ -133,7 +154,7 @@ def copy_backend(import_dir: Path, module_name: str, force: bool) -> None:
 
 def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
     src = import_dir / "frontend"
-    frontend_dir = _get_monorepo_root() / "apps" / "frontend-webapp"
+    frontend_dir = _get_frontend_dir()
     dest_base = frontend_dir / "modules"
 
     if not src.exists():
@@ -160,7 +181,7 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
 
 def copy_migration(import_dir: Path) -> None:
     src_dir = import_dir / "migration"
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+    api_dir = _get_api_dir()
     dest_dir = api_dir / "alembic" / "versions"
 
     if not src_dir.exists():
@@ -179,7 +200,7 @@ def copy_migration(import_dir: Path) -> None:
 
 def register_router(manifest: dict, force: bool, main_py: Path | None = None) -> None:
     module_name = manifest["module_name"]
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+    api_dir = _get_api_dir()
     if main_py is None:
         main_py = api_dir / "app" / "main.py"
 
@@ -243,7 +264,7 @@ def register_dependency(
     manifest: dict, force: bool, deps_py: Path | None = None
 ) -> None:
     module_name = manifest["module_name"]
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+    api_dir = _get_api_dir()
     if deps_py is None:
         deps_py = api_dir / "app" / "auth" / "dependencies.py"
 
@@ -309,7 +330,7 @@ def register_alembic_import(
     manifest: dict, force: bool, env_py: Path | None = None
 ) -> None:
     module_name = manifest["module_name"]
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+    api_dir = _get_api_dir()
     if env_py is None:
         env_py = api_dir / "alembic" / "env.py"
 
@@ -345,26 +366,17 @@ def register_alembic_import(
 
 def _get_venv_python() -> str:
     """Retorna o caminho do Python do venv do GrindX, se existir."""
-    venv_python = (
-        _get_monorepo_root()
-        / "apps"
-        / "api-postgres"
-        / ".venv"
-        / "Scripts"
-        / "python.exe"
-    )
+    venv_python = _get_api_dir() / ".venv" / "Scripts" / "python.exe"
     if venv_python.exists():
         return str(venv_python)
-    venv_python = (
-        _get_monorepo_root() / "apps" / "api-postgres" / ".venv" / "bin" / "python"
-    )
+    venv_python = _get_api_dir() / ".venv" / "bin" / "python"
     if venv_python.exists():
         return str(venv_python)
     return sys.executable
 
 
 def run_migrations() -> None:
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+    api_dir = _get_api_dir()
     python_exe = _get_venv_python()
     logger.info("Usando Python: %s", python_exe)
     try:
@@ -411,7 +423,7 @@ def rollback(backup_dir: Path | None) -> None:
         logger.warning("Nada para restaurar")
         return
 
-    api_dir = _get_monorepo_root() / "apps" / "api-postgres"
+    api_dir = _get_api_dir()
     restored = 0
     for f in backup_dir.iterdir():
         if f.name == "main.py":
