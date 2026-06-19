@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.1 (2026-06-19)
+
+### Bug Fixes
+
+- **infra**: Tornar copia de .env.postgres/.sqlserver opcional no deploy
+  ([`9e9f65f`](https://github.com/TyrGunllod/GrindX/commit/9e9f65f84789cf24e1328197676d5f7ac3fa4a14))
+
+
 ## v1.32.0 (2026-06-19)
 
 ### Features
