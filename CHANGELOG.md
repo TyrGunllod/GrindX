@@ -2,6 +2,27 @@
 
 <!-- version list -->
 
+## v1.27.0 (2026-06-19)
+
+### Bug Fixes
+
+- **infra**: Corrigir upstream api-postgres para localhost no nginx.conf
+  ([`deb9cf9`](https://github.com/TyrGunllod/GrindX/commit/deb9cf9a9ad670d0031bd36881c85a89848ab542))
+
+- **scripts**: Corrigir recursao infinita em _get_api_dir e _get_frontend_dir
+  ([`c7b962b`](https://github.com/TyrGunllod/GrindX/commit/c7b962b3e9b64ce41a9909331e5b08098edf6b4e))
+
+### Features
+
+- **infra**: Suporte a importacao de modulos no container
+  ([`9f17fed`](https://github.com/TyrGunllod/GrindX/commit/9f17fed0bd24943c335bb158508e150a6e2654c8))
+
+### Refactoring
+
+- **infra**: Centralizar volumes em Containers/volumes/grindx
+  ([`eb93cf0`](https://github.com/TyrGunllod/GrindX/commit/eb93cf0fa14801c8c75cd1e81a713a0a0ce0d55f))
+
+
 ## v1.26.3 (2026-06-18)
 
 ### Bug Fixes
