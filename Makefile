@@ -148,11 +148,19 @@ volumes:
 ifeq ($(OS),Windows_NT)
 	if not exist "$(VOLUMES_DIR)\grindx\frontend" mkdir "$(VOLUMES_DIR)\grindx\frontend"
 	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads"
+	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads\logos" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads\logos"
+	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads\fonts" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads\fonts"
+	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads\icons" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads\icons"
 	copy /y "apps\frontend-webapp\nginx.conf" "$(VOLUMES_DIR)\grindx\frontend\nginx.conf" >nul
+	if exist "apps\api-postgres\uploads\logos" xcopy /s /e /y "apps\api-postgres\uploads\logos\*" "$(VOLUMES_DIR)\grindx\api-postgres\uploads\logos\" >nul
 else
 	mkdir -p "$(VOLUMES_DIR)/grindx/frontend"
 	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads"
+	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads/logos"
+	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads/fonts"
+	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads/icons"
 	cp apps/frontend-webapp/nginx.conf "$(VOLUMES_DIR)/grindx/frontend/nginx.conf"
+	cp -r apps/api-postgres/uploads/logos/* "$(VOLUMES_DIR)/grindx/api-postgres/uploads/logos/" 2>/dev/null || true
 endif
 	@echo "Volumes prontos em $(VOLUMES_DIR)."
 
