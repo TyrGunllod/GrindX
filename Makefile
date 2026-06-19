@@ -6,7 +6,7 @@
         dev-postgres dev-sqlserver dev-frontend dev-all \
         migrate seed \
         test-postgres test-sqlserver test-shared test-root test-all \
-        lint format clean
+        lint format clean volumes
 
 # ==========================================
 # Detecção de plataforma
@@ -119,6 +119,27 @@ down:
 
 logs:
 	podman-compose logs -f
+
+# ==========================================
+# Volumes (runtime)
+# ==========================================
+
+volumes:
+ifeq ($(OS),Windows_NT)
+	@echo "Criando diretorios de volumes..."
+	if not exist "Containers\volumes\grindx\frontend" mkdir "Containers\volumes\grindx\frontend"
+	if not exist "Containers\volumes\grindx\api-postgres\uploads" mkdir "Containers\volumes\grindx\api-postgres\uploads"
+	@echo "Copiando nginx.conf para o volume..."
+	copy /y "apps\frontend-webapp\nginx.conf" "Containers\volumes\grindx\frontend\nginx.conf" >nul
+	@echo "Volumes prontos."
+else
+	@echo "Criando diretorios de volumes..."
+	mkdir -p Containers/volumes/grindx/frontend
+	mkdir -p Containers/volumes/grindx/api-postgres/uploads
+	@echo "Copiando nginx.conf para o volume..."
+	cp apps/frontend-webapp/nginx.conf Containers/volumes/grindx/frontend/nginx.conf
+	@echo "Volumes prontos."
+endif
 
 # ==========================================
 # Limpeza

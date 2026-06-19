@@ -92,3 +92,8 @@ apps/frontend-webapp/modules/*
 # =========================
 *.tar
 compose.yaml.old
+
+# =========================
+# Runtime Volumes
+# =========================
+Containers/
