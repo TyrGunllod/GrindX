@@ -19,6 +19,7 @@ ifeq ($(OS),Windows_NT)
     PP_ROOT = set PYTHONPATH=apps/api-postgres$(SEP)apps/api-sqlserver$(SEP)packages&&
     PP_SHARED = set PYTHONPATH=..&&
     IMG_DIR = $(USERPROFILE)/Containers/images
+    VOLUMES_DIR = $(USERPROFILE)/Containers/volumes
 else
     PY = python3
     VENV_PY = .venv/bin/python
@@ -27,6 +28,7 @@ else
     PP_ROOT = PYTHONPATH=apps/api-postgres:apps/api-sqlserver:packages
     PP_SHARED = PYTHONPATH=..
     IMG_DIR = $(HOME)/Containers/images
+    VOLUMES_DIR = $(HOME)/Containers/volumes
 endif
 
 # ==========================================
@@ -142,21 +144,17 @@ logs:
 # ==========================================
 
 volumes:
+	@echo "Criando diretorios de volumes em $(VOLUMES_DIR)..."
 ifeq ($(OS),Windows_NT)
-	@echo "Criando diretorios de volumes..."
-	if not exist "Containers\volumes\grindx\frontend" mkdir "Containers\volumes\grindx\frontend"
-	if not exist "Containers\volumes\grindx\api-postgres\uploads" mkdir "Containers\volumes\grindx\api-postgres\uploads"
-	@echo "Copiando nginx.conf para o volume..."
-	copy /y "apps\frontend-webapp\nginx.conf" "Containers\volumes\grindx\frontend\nginx.conf" >nul
-	@echo "Volumes prontos."
+	if not exist "$(VOLUMES_DIR)\grindx\frontend" mkdir "$(VOLUMES_DIR)\grindx\frontend"
+	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads"
+	copy /y "apps\frontend-webapp\nginx.conf" "$(VOLUMES_DIR)\grindx\frontend\nginx.conf" >nul
 else
-	@echo "Criando diretorios de volumes..."
-	mkdir -p Containers/volumes/grindx/frontend
-	mkdir -p Containers/volumes/grindx/api-postgres/uploads
-	@echo "Copiando nginx.conf para o volume..."
-	cp apps/frontend-webapp/nginx.conf Containers/volumes/grindx/frontend/nginx.conf
-	@echo "Volumes prontos."
+	mkdir -p "$(VOLUMES_DIR)/grindx/frontend"
+	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads"
+	cp apps/frontend-webapp/nginx.conf "$(VOLUMES_DIR)/grindx/frontend/nginx.conf"
 endif
+	@echo "Volumes prontos em $(VOLUMES_DIR)."
 
 # ==========================================
 # Imagens (build com versão)

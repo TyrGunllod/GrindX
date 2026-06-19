@@ -12,7 +12,7 @@ services:
       - "8001:8001"
       - "8002:8002"
     volumes:
-      - ./Containers/volumes/grindx/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro,z
+      - ${HOME:-./Containers}/volumes/grindx/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro,z
       - ./apps/frontend-webapp/modules:/usr/share/nginx/html/modules:z
     networks:
       - nest
@@ -59,7 +59,7 @@ services:
     volumes:
       - ./packages:/app/packages:z
       - ./.env.postgres:/app/.env:z
-      - ./Containers/volumes/grindx/api-postgres/uploads:/app/static/uploads:z
+      - ${HOME:-./Containers}/volumes/grindx/api-postgres/uploads:/app/static/uploads:z
       - ./import:/app/import:z
       - ./apps/frontend-webapp/modules:/app/apps/frontend-webapp/modules:z
     healthcheck:
