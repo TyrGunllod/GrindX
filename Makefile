@@ -18,6 +18,7 @@ ifeq ($(OS),Windows_NT)
     PP_APP = set PYTHONPATH=../../packages&&
     PP_ROOT = set PYTHONPATH=apps/api-postgres$(SEP)apps/api-sqlserver$(SEP)packages&&
     PP_SHARED = set PYTHONPATH=..&&
+    IMG_DIR = $(USERPROFILE)/Containers/images
 else
     PY = python3
     VENV_PY = .venv/bin/python
@@ -25,6 +26,7 @@ else
     PP_APP = PYTHONPATH=../../packages
     PP_ROOT = PYTHONPATH=apps/api-postgres:apps/api-sqlserver:packages
     PP_SHARED = PYTHONPATH=..
+    IMG_DIR = $(HOME)/Containers/images
 endif
 
 # ==========================================
@@ -161,8 +163,7 @@ endif
 # ==========================================
 
 images:
-	$(eval V := $(shell python scripts/get_version.py))
-	$(eval IMG_DIR := Containers/images)
+	$(eval V := $(shell $(PY) scripts/get_version.py))
 	@echo "Construindo imagens versao $(V)..."
 	podman build -t grindx-frontend:$(V) -f apps/frontend-webapp/Dockerfile apps/frontend-webapp
 	podman build -t grindx-api-sqlserver:$(V) -f apps/api-sqlserver/Dockerfile apps/api-sqlserver

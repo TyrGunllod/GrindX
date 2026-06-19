@@ -5,158 +5,98 @@
 - `apps/frontend-webapp/` — Portal vanilla JS (porta 8101), módulos via iframe, zero frameworks
 - `packages/shared/` — Pacote Python compartilhado (security, schemas, exceptions, error codes)
 - `tests/` — Testes de integração do monorepo (raiz)
-- `.opencode/skills/` — Skills customizadas (ex: `create-standalone-module`)
+- `.opencode/skills/create-standalone-module/` — Skill para criar novos módulos
 
 ## Developer Commands
 
 ```powershell
-# Ambiente virtual
 make venv              # cria .venv e instala requirements das duas APIs
-
-# APIs (cada uma tem seu .venv próprio em apps/<api>/.venv)
 make dev-postgres      # uvicorn porta 8002
 make dev-sqlserver     # uvicorn porta 8001
 make dev-frontend      # http.server porta 8101
-make dev-all           # todos (abre terminais separados via pwsh)
-
-# Banco
+make dev-all           # todos (terminais separados via pwsh no Windows)
 make migrate           # alembic upgrade head
 make seed              # popula dados iniciais
-
-# Testes
-make test-postgres     # pytest apps/api-postgres/tests/
-make test-sqlserver    # pytest apps/api-sqlserver/tests/
-make test-shared       # pytest packages/shared/tests/
-make test-root         # pytest tests/ (raiz)
-make test-all          # todos acima
-
-# Containers
+make test-all          # pytest de todas as APIs + shared + raiz
+make lint              # ruff check --fix . && ruff check .
+make format            # ruff format packages/ apps/
 make build             # podman-compose build
-make up                # podman-compose up -d
-make down              # podman-compose down
+make up / down / logs  # podman-compose
+make images            # podman build + exporta .tar para Containers/images/
+make volumes           # cria Containers/volumes/ para runtime
+make clean             # remove __pycache__ e .pytest_cache
+make deploy DEST=...   # copia configs para diretório externo
 ```
 
 ## PYTHONPATH — Crítico
 
-O módulo `shared` não está instalado via pip. Todos os comandos de dev e teste precisam de PYTHONPATH apontando para `packages/`:
+`shared` não é instalado via pip. Todos os comandos precisam de PYTHONPATH apontando para `packages/`:
+- **Makefile** já configura automaticamente (`PP_APP`, `PP_ROOT`, `PP_SHARED`)
+- **CI** usa `PYTHONPATH=${{ github.workspace }}/packages`
+- **Manual (Windows):** `set PYTHONPATH=..\..\packages && python -m pytest tests/ -v`
+
+## Pre-commit
 
 ```powershell
-# Exemplo manual (Windows)
-set PYTHONPATH=..\..\packages && python -m pytest tests/ -v
-
-# No Makefile já está configurado automaticamente
-# No CI: PYTHONPATH=${{ github.workspace }}/packages
+ruff format packages/ apps/
+ruff check --fix .
+ruff check .                   # sem erros
 ```
 
-## Pre-commit Checklist
+Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 — alembic/versions ignora I001.
 
-```powershell
-ruff format packages/ apps/    # formata
-ruff check --fix .             # corrige lint
-ruff check .                   # verifica (sem erros)
-```
+## Testing
 
-Config Ruff (`apps/api-postgres/ruff.toml`): select E, F, I — ignore E501 — alembic/versions ignora I001.
+- pytest com markers `unit`, `integration`, `slow` (definidos em `pytest.ini` raiz)
+- Testes de integração usam SQLite in-memory com `schema_translate_map` para simular schemas PostgreSQL
+- **api-sqlserver** usa `DB_URL_OVERRIDE=sqlite:///:memory:` nos testes (CI usa SQLite)
+- Cobertura mínima: 70% (enforced no CI via `--cov-fail-under=70`)
+- Testes raiz (`make test-root`) precisam de PYTHONPATH com todos os pacotes
 
-## Commit Convention
+## Commit & Release
 
-- Formato: [conventional commits](https://www.conventionalcommits.org/)
-- Título: inglês (apenas o prefixo `tipo(escopo):`)
-- Descrição: português (BR)
-- Exemplo:
-  ```
-  feat(auth): adicionar validacao de login
+- Formato: [conventional commits](https://www.conventionalcommits.org/) (parser angular)
+- Título em inglês, descrição em português
+- `feat` → minor, `fix`/`perf` → patch
+- CI em `.github/workflows/release.yml`: push para `main` → lint + testes + semantic-release
+- `python-semantic-release` v10 gerenciado via `version_variables` em `pyproject.toml`
+- **Fonte canônica**: `apps/api-postgres/app/core/config.py:APP_VERSION`
+- `version_variables` sincroniza 3 arquivos: ambos `config.py` + `apps/frontend-webapp/version.json`
+- CI usa SQLite (sem PostgreSQL real) — env vars como `DATABASE_URL: "sqlite:///:memory:"`
 
-  Adiciona validação de campos obrigatórios no formulário de login.
-  ```
+## Architecture — Non-obvious
 
-## Push Policy
-
-- **Commit:** sempre após concluir uma alteração (automático)
-- **Push:** somente quando o usuário solicitar explicitamente (ex: "push", "subir", "enviar")
-
-## Semantic Release
-
-- Config em `pyproject.toml` (python-semantic-release v10, parser angular)
-- **Fonte canônica**: `apps/api-postgres/app/core/config.py:APP_VERSION` — único arquivo gerenciado via `version_variables`
-- `version_variables` gerencia todos os 3 arquivos:
-  - `apps/api-postgres/app/core/config.py:APP_VERSION:nf`
-  - `apps/api-sqlserver/app/core/config.py:APP_VERSION:nf`
-  - `apps/frontend-webapp/version.json:"version":tf`
-- `scripts/update_frontend_version.py` é um utilitário manual para sync pós-release
-- CI: único workflow `release.yml` (push para `main`) — testa lint + todos os testes + semantic release
-- PSR pinado `>=10,<11` no CI; `version_variable` (singular) foi removido na v10; `build_command` não tem output commitado pelo PSR v10
-- CI usa SQLite in-memory (sem PostgreSQL real)
-
-## Arquitetura — Detalhes Não Óbvios
-
-- **api-postgres** schemas de banco: `iam`, `portal`, `catalogo`, `org` — módulos em `app/modules/`
-- **api-sqlserver** é read-only; nunca emite JWT, apenas valida tokens do api-postgres
-- **Frontend** usa `shared/core.css` (tokens CSS), `shared/app.js` (`UIFactory`), `skinLoader.js` para temas
-- **Módulos frontend** são standalone: cada um tem `index.html`, `script.js`, `style.css` próprio
-- **Design system**: Glassmorphism, `var(--...)` para tudo, nunca cores/fontes fixas no CSS dos módulos
-- **Containerização**: Podman (não Docker), `podman-compose.yml`
-
-## Segurança (implementada)
-
-- **SECRET_KEY**: Validação de entropia Shannon (mínimo 3.5 bits/caractere) via Pydantic field_validator
-- **Senhas temporárias**: 16 caracteres alfanuméricos via `secrets` module, expiração de 15 minutos
-- **Rate limiting**: SlowAPI com chaves duplas (IP para não-autenticados, user_id para autenticados)
-- **File upload**: Validação de magic bytes via `filetype` library
-- **CORS**: Modo strict em produção (nunca `*`), configuração via env var `CORS_ORIGINS`
-- **DEV_NETWORK_IP**: IP da rede local para acesso externo em dev (ex: `192.168.0.62`). Adiciona automaticamente a origem no CORS dev fallback e as URLs no CSP `connect-src`. Definir no `.env` de cada API.
-- **Health checks**: Verificação profunda de conectividade + schema validation
-
-## Performance (implementada)
-
-- **Cache**: cachetools TTLCache (15 min TTL) para temas, usuários e portal
-- **Índices**: 5 índices B-tree via migração Alembic (company_themes composite, usuarios role/ativo/empresa_id, portal_modulos aba_id)
-- **Health checks**: Verificação de conectividade + schema validation para PostgreSQL e SQL Server
-
-## Infraestrutura (implementada)
-
-- **pytest-cov**: Threshold mínimo de 70%, enforcement no CI
-- **Migrações**: Cadeia linear com único head (consolidação de migrações órfãs)
-- **Schema validation**: Testes que verificam `_SCHEMA_TRANSLATE` cobre todos os schemas
-
-## API Versioning
-
-- Todas as rotas usam prefixo `/v1/` padronizado
-- Arquivo `apps/api-postgres/app/core/versioning.py` documenta a estratégia
-- Para nova versão: criar rotas com `/v2/`, manter `/v1/` por 6 meses
+- **api-sqlserver** é read-only (`allow_methods=["GET"]` no CORS); só tem `health_router` e `cliente_router`
+- **Schemas PostgreSQL**: `iam`, `portal`, `org` — definidos em testes/seed. Módulos implementados: `iam`, `org`, `portal` (em `app/modules/`)
+- **Frontend**: `shared/core.css` (tokens CSS), `shared/app.js` (UIFactory), `shared/skinLoader.js` (temas); módulos standalone em `modules/` com `index.html`, `script.js`, `style.css`
+- **Design system**: Glassmorphism, `var(--...)` para tudo, nunca cores/fontes fixas
+- **compose.yaml**: ambas as APIs usam `network_mode: "container:grindx-frontend"` (compartilham rede do nginx)
+- **Containerização**: Podman (não Docker), `podman-compose.yml` — no Windows requer `podman machine` com conexão rootful
 
 ## Error Codes
 
-- Registro centralizado em `packages/shared/exceptions/codes.py`
-- Use `ErrorCode.CONSTANT` em vez de hardcoding de strings
-- Exemplo: `from shared.exceptions.codes import ErrorCode; raise CredenciaisInvalidasError()`
+Registro centralizado em `packages/shared/exceptions/codes.py`. Use `ErrorCode.CONSTANT` em vez de strings:
+```python
+from shared.exceptions.codes import ErrorCode
+raise CredenciaisInvalidasError()
+```
 
-## Criando Novos Módulos
+## Security Gotchas
 
-Usar a skill `.opencode/skills/create-standalone-module/SKILL.md` — cobre backend FastAPI + frontend vanilla JS + testes + migration + export.py. Seguir o checklist de registro ao final da skill.
+- **SECRET_KEY**: validada com entropia Shannon (mín. 3.5 bits/caractere) via Pydantic
+- **CORS**: modo strict em produção (nunca `*`); `CORS_ORIGINS` lida como string JSON
+- **DEV_NETWORK_IP**: adiciona IP local ao CORS dev e CSP `connect-src`
+- **Rate limiting**: SlowAPI com chaves duplas (IP anônimo / user_id autenticado)
 
-## Testes
+## Performance Gotchas
 
-- pytest com markers: `unit`, `integration`, `slow` (definidos no `pytest.ini` raiz)
-- Cada API tem seu próprio `tests/` com `conftest.py` e fixtures
-- Testes de integração usam SQLite in-memory com `schema_translate_map` para simular schemas PostgreSQL
-- `test-root` precisa de PYTHONPATH com todos os pacotes: `apps/api-postgres;apps/api-sqlserver;packages`
-- Fixtures globais em `tests/conftest.py` adicionam `packages/` ao sys.path
+- **Cache**: cachetools TTLCache (15 min TTL) para temas, usuários e portal
+- **Índices**: 5 B-tree via migração Alembic (company_themes composite, usuarios role/ativo/empresa_id, portal_modulos aba_id)
 
-## Documentação
+## New Modules
 
-- **Manter `README.md`, `docs/API.md`, `docs/DATABASE.md`, `docs/SETUP.md` e `docs/README.md` sempre atualizados** após qualquer alteração no código.
-- Atualizar contagem de testes, novos endpoints, campos em schemas, migrations e mudanças de fluxo.
-- O `AGENTS.md` também deve ser mantido atualizado (comandos, estrutura, políticas).
-- **Regra geral:** qualquer PR, commit ou alteração relevante DEVE incluir a atualização dos documentos afetados. Sempre verificar quais docs precisam de sync antes de concluir o trabalho.
+Usar `.opencode/skills/create-standalone-module/SKILL.md` — cobre backend + frontend + testes + migration + export.
 
-## Arquivos de Config Importantes
+## Docs Sync
 
-- `pyproject.toml` — semantic release config
-- `pytest.ini` — config pytest (raiz) com `--cov=app --cov-fail-under=70`
-- `apps/api-postgres/ruff.toml` — rules do ruff
-- `podman-compose.yml` — orquestração de containers
-- `Makefile` — automação de tasks (Windows/PowerShell)
-- `apps/api-postgres/app/core/versioning.py` — estratégia de versionamento de API
-- `packages/shared/exceptions/codes.py` — registro centralizado de error codes
-- `apps/api-postgres/.env.dev` / `apps/api-sqlserver/.env.dev` — exemplos com `DEV_NETWORK_IP` para acesso em rede local
+Sempre atualizar `README.md`, `docs/API.md`, `docs/DATABASE.md`, `docs/SETUP.md`, `docs/README.md` e este `AGENTS.md` ao alterar código relevante.
