@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.31.0 (2026-06-19)
+
+### Features
+
+- **infra**: Adicionar subdiretorios uploads/logos, fonts, icons ao make volumes
+  ([`f494d59`](https://github.com/TyrGunllod/GrindX/commit/f494d597047eece18b2c3c9736cf3184e39619d1))
+
+
 ## v1.30.0 (2026-06-19)
 
 ### Documentation
