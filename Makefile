@@ -2,7 +2,7 @@
 # GrindX — Makefile Unificado (Win/Linux)
 # ==========================================
 
-.PHONY: build up down logs images \
+.PHONY: venv build up down logs images \
         dev-postgres dev-sqlserver dev-frontend dev-all \
         migrate seed \
         test-postgres test-sqlserver test-shared test-root test-all \
@@ -58,6 +58,21 @@ else
 	@echo "  make dev-frontend"
 	@echo "Acesse: http://localhost:8101"
 endif
+
+# ==========================================
+# Ambiente Virtual
+# ==========================================
+
+venv:
+	@echo "=== Criando venv para api-postgres ==="
+	cd apps/api-postgres && $(PY) -m venv .venv
+	cd apps/api-postgres && $(VENV_PY) -m pip install --upgrade pip
+	cd apps/api-postgres && $(VENV_PY) -m pip install -r requirements.txt
+	@echo "=== Criando venv para api-sqlserver ==="
+	cd apps/api-sqlserver && $(PY) -m venv .venv
+	cd apps/api-sqlserver && $(VENV_PY) -m pip install --upgrade pip
+	cd apps/api-sqlserver && $(VENV_PY) -m pip install -r requirements.txt
+	@echo "Venus criados com sucesso!"
 
 # ==========================================
 # Banco de Dados
@@ -147,11 +162,22 @@ endif
 
 images:
 	$(eval V := $(shell python scripts/get_version.py))
+	$(eval IMG_DIR := Containers/images)
 	@echo "Construindo imagens versao $(V)..."
 	podman build -t grindx-frontend:$(V) -f apps/frontend-webapp/Dockerfile apps/frontend-webapp
 	podman build -t grindx-api-sqlserver:$(V) -f apps/api-sqlserver/Dockerfile apps/api-sqlserver
 	podman build -t grindx-api-postgres:$(V) -f apps/api-postgres/Dockerfile apps/api-postgres
 	@echo "Imagens criadas: grindx-*:$(V)"
+	@echo "Exportando para $(IMG_DIR)..."
+ifeq ($(OS),Windows_NT)
+	if not exist "$(IMG_DIR)" mkdir "$(IMG_DIR)"
+else
+	mkdir -p "$(IMG_DIR)"
+endif
+	podman save -o "$(IMG_DIR)/grindx-frontend-$(V).tar" localhost/grindx-frontend:$(V)
+	podman save -o "$(IMG_DIR)/grindx-api-sqlserver-$(V).tar" localhost/grindx-api-sqlserver:$(V)
+	podman save -o "$(IMG_DIR)/grindx-api-postgres-$(V).tar" localhost/grindx-api-postgres:$(V)
+	@echo "Exportacao concluida: $(IMG_DIR)/grindx-*-$(V).tar"
 
 # ==========================================
 # Deploy (exportar configs para diretório)

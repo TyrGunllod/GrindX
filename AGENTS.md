@@ -10,6 +10,9 @@
 ## Developer Commands
 
 ```powershell
+# Ambiente virtual
+make venv              # cria .venv e instala requirements das duas APIs
+
 # APIs (cada uma tem seu .venv próprio em apps/<api>/.venv)
 make dev-postgres      # uvicorn porta 8002
 make dev-sqlserver     # uvicorn porta 8001
@@ -142,9 +145,10 @@ Usar a skill `.opencode/skills/create-standalone-module/SKILL.md` — cobre back
 
 ## Documentação
 
-- Manter `README.md`, `docs/API.md`, `docs/DATABASE.md`, `docs/SETUP.md` e `docs/README.md` **sempre atualizados** após qualquer alteração no código.
+- **Manter `README.md`, `docs/API.md`, `docs/DATABASE.md`, `docs/SETUP.md` e `docs/README.md` sempre atualizados** após qualquer alteração no código.
 - Atualizar contagem de testes, novos endpoints, campos em schemas, migrations e mudanças de fluxo.
 - O `AGENTS.md` também deve ser mantido atualizado (comandos, estrutura, políticas).
+- **Regra geral:** qualquer PR, commit ou alteração relevante DEVE incluir a atualização dos documentos afetados. Sempre verificar quais docs precisam de sync antes de concluir o trabalho.
 
 ## Arquivos de Config Importantes
 
