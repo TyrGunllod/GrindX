@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.0 (2026-06-19)
+
+### Features
+
+- **infra**: Incluir .env.example renomeados no make deploy
+  ([`6647e35`](https://github.com/TyrGunllod/GrindX/commit/6647e3540352120a5331359ddc6e4dda9551ac2d))
+
+
 ## v1.31.0 (2026-06-19)
 
 ### Features
