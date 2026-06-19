@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.28.0 (2026-06-19)
+
+### Features
+
+- **infra**: Adicionar make images e make deploy
+  ([`f6bc57c`](https://github.com/TyrGunllod/GrindX/commit/f6bc57c546245d21c99b08ebc4414d6987cc2a6d))
+
+
 ## v1.27.0 (2026-06-19)
 
 ### Bug Fixes
