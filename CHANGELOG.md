@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.28.1 (2026-06-19)
+
+### Bug Fixes
+
+- **infra**: Extrair versao via script para compatibilidade Windows
+  ([`33ea0d1`](https://github.com/TyrGunllod/GrindX/commit/33ea0d16255bbd0e736255fd5db547c3a17cb7f9))
+
+
 ## v1.28.0 (2026-06-19)
 
 ### Features
