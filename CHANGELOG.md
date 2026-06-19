@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.29.0 (2026-06-19)
+
+### Features
+
+- **infra**: Adicionar make venv e exportacao de imagens tar
+  ([`cc52813`](https://github.com/TyrGunllod/GrindX/commit/cc528136d51c85b36fbd6dfe3740e255c5e88040))
+
+
 ## v1.28.1 (2026-06-19)
 
 ### Bug Fixes
