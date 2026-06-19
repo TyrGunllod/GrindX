@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.2 (2026-06-19)
+
+### Bug Fixes
+
+- **infra**: Adicionar image tags ao compose.yaml e tag latest ao make images
+  ([`8fb0bd1`](https://github.com/TyrGunllod/GrindX/commit/8fb0bd19deb61db6439a2a614f82372228aba69b))
+
+
 ## v1.32.1 (2026-06-19)
 
 ### Bug Fixes
