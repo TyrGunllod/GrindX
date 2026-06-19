@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.30.0 (2026-06-19)
+
+### Documentation
+
+- Revisar AGENTS.md e corrigir path de exportacao
+  ([`848cdb2`](https://github.com/TyrGunllod/GrindX/commit/848cdb2b93810532809b372e5e6059368ca09839))
+
+### Features
+
+- **infra**: Unificar paths de volumes e imagens fora do projeto
+  ([`f9cdb4a`](https://github.com/TyrGunllod/GrindX/commit/f9cdb4afbfada617008d5699ab710c21802c6c8e))
+
+
 ## v1.29.0 (2026-06-19)
 
 ### Features
