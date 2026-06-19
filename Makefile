@@ -2,11 +2,11 @@
 # GrindX — Makefile Unificado (Win/Linux)
 # ==========================================
 
-.PHONY: build up down logs \
+.PHONY: build up down logs images \
         dev-postgres dev-sqlserver dev-frontend dev-all \
         migrate seed \
         test-postgres test-sqlserver test-shared test-root test-all \
-        lint format clean volumes
+        lint format clean volumes deploy
 
 # ==========================================
 # Detecção de plataforma
@@ -140,6 +140,39 @@ else
 	cp apps/frontend-webapp/nginx.conf Containers/volumes/grindx/frontend/nginx.conf
 	@echo "Volumes prontos."
 endif
+
+# ==========================================
+# Imagens (build com versão)
+# ==========================================
+
+images:
+	@VERSION=$$(python -c "import re; m=re.search(r'APP_VERSION\s*=\s*\"([^\"]+)\"', open('apps/api-postgres/app/core/config.py').read()); print(m.group(1))") && \
+	echo "Construindo imagens versao $$VERSION..." && \
+	podman build -t grindx-frontend:$$VERSION -f apps/frontend-webapp/Dockerfile apps/frontend-webapp && \
+	podman build -t grindx-api-sqlserver:$$VERSION -f apps/api-sqlserver/Dockerfile apps/api-sqlserver && \
+	podman build -t grindx-api-postgres:$$VERSION -f apps/api-postgres/Dockerfile apps/api-postgres && \
+	echo "Imagens criadas: grindx-*:$$VERSION"
+
+# ==========================================
+# Deploy (exportar configs para diretório)
+# ==========================================
+
+deploy:
+	@if [ "$(DEST)" = "" ]; then echo "Uso: make deploy DEST=/caminho/para/deploy"; exit 1; fi
+	@echo "Exportando configs para $(DEST)/GrindX/..."
+	mkdir -p "$(DEST)/GrindX/Containers/volumes/grindx/frontend"
+	mkdir -p "$(DEST)/GrindX/Containers/volumes/grindx/api-postgres/uploads"
+	mkdir -p "$(DEST)/GrindX/import"
+	cp compose.yaml "$(DEST)/GrindX/"
+	cp .env.postgres "$(DEST)/GrindX/"
+	cp .env.sqlserver "$(DEST)/GrindX/"
+	cp apps/frontend-webapp/nginx.conf "$(DEST)/GrindX/Containers/volumes/grindx/frontend/nginx.conf"
+	cp -r packages "$(DEST)/GrindX/packages"
+	@echo "Configs exportadas para $(DEST)/GrindX/"
+	@echo "Proximo passo:"
+	@echo "  cd $(DEST)/GrindX"
+	@echo "  make volumes  (cria diretorios de volumes)"
+	@echo "  podman-compose up -d"
 
 # ==========================================
 # Limpeza
