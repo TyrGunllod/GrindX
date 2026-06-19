@@ -49,14 +49,14 @@ def _get_api_dir() -> Path:
     env = os.environ.get("GRINDX_API_DIR")
     if env:
         return Path(env).resolve()
-    return _get_api_dir()
+    return _get_monorepo_root() / "apps" / "api-postgres"
 
 
 def _get_frontend_dir() -> Path:
     env = os.environ.get("GRINDX_FRONTEND_DIR")
     if env:
         return Path(env).resolve()
-    return _get_frontend_dir()
+    return _get_monorepo_root() / "apps" / "frontend-webapp"
 
 
 def _get_import_dir() -> Path:
