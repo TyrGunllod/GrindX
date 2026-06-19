@@ -146,12 +146,12 @@ endif
 # ==========================================
 
 images:
-	@VERSION=$$(python -c "import re; m=re.search(r'APP_VERSION\s*=\s*\"([^\"]+)\"', open('apps/api-postgres/app/core/config.py').read()); print(m.group(1))") && \
-	echo "Construindo imagens versao $$VERSION..." && \
-	podman build -t grindx-frontend:$$VERSION -f apps/frontend-webapp/Dockerfile apps/frontend-webapp && \
-	podman build -t grindx-api-sqlserver:$$VERSION -f apps/api-sqlserver/Dockerfile apps/api-sqlserver && \
-	podman build -t grindx-api-postgres:$$VERSION -f apps/api-postgres/Dockerfile apps/api-postgres && \
-	echo "Imagens criadas: grindx-*:$$VERSION"
+	$(eval V := $(shell python scripts/get_version.py))
+	@echo "Construindo imagens versao $(V)..."
+	podman build -t grindx-frontend:$(V) -f apps/frontend-webapp/Dockerfile apps/frontend-webapp
+	podman build -t grindx-api-sqlserver:$(V) -f apps/api-sqlserver/Dockerfile apps/api-sqlserver
+	podman build -t grindx-api-postgres:$(V) -f apps/api-postgres/Dockerfile apps/api-postgres
+	@echo "Imagens criadas: grindx-*:$(V)"
 
 # ==========================================
 # Deploy (exportar configs para diretório)
