@@ -171,10 +171,10 @@ endif
 images:
 	$(eval V := $(shell $(PY) scripts/get_version.py))
 	@echo "Construindo imagens versao $(V)..."
-	podman build -t grindx-frontend:$(V) -f apps/frontend-webapp/Dockerfile apps/frontend-webapp
-	podman build -t grindx-api-sqlserver:$(V) -f apps/api-sqlserver/Dockerfile apps/api-sqlserver
-	podman build -t grindx-api-postgres:$(V) -f apps/api-postgres/Dockerfile apps/api-postgres
-	@echo "Imagens criadas: grindx-*:$(V)"
+	podman build -t grindx-frontend:$(V) -t grindx-frontend:latest -f apps/frontend-webapp/Dockerfile apps/frontend-webapp
+	podman build -t grindx-api-sqlserver:$(V) -t grindx-api-sqlserver:latest -f apps/api-sqlserver/Dockerfile apps/api-sqlserver
+	podman build -t grindx-api-postgres:$(V) -t grindx-api-postgres:latest -f apps/api-postgres/Dockerfile apps/api-postgres
+	@echo "Imagens criadas: grindx-*:$(V) e grindx-*:latest"
 	@echo "Exportando para $(IMG_DIR)..."
 ifeq ($(OS),Windows_NT)
 	if not exist "$(IMG_DIR)" mkdir "$(IMG_DIR)"
@@ -207,6 +207,10 @@ deploy:
 	@echo "Proximo passo:"
 	@echo "  cd $(DEST)/GrindX"
 	@echo "  make volumes  (cria diretorios de volumes)"
+	@echo "  # Carregar as imagens (geradas por 'make images' na origem):"
+	@echo "  podman load -i ~/Containers/images/grindx-frontend-*.tar"
+	@echo "  podman load -i ~/Containers/images/grindx-api-sqlserver-*.tar"
+	@echo "  podman load -i ~/Containers/images/grindx-api-postgres-*.tar"
 	@echo "  podman-compose up -d"
 
 # ==========================================
