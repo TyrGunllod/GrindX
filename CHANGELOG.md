@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.7 (2026-06-22)
+
+### Bug Fixes
+
+- **infra**: Corrigir template de path dos volumes no compose
+  ([`719661e`](https://github.com/TyrGunllod/GrindX/commit/719661e35484138f700bec2df2d66054bb3487d3))
+
+
 ## v1.32.6 (2026-06-22)
 
 ### Bug Fixes
