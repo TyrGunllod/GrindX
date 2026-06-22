@@ -5,8 +5,6 @@ networks:
 services:
   frontend:
     image: localhost/grindx-frontend:latest
-    build:
-      context: ./apps/frontend-webapp
     container_name: grindx-frontend
     ports:
       - "8101:80"
@@ -27,8 +25,6 @@ services:
 
   api-sqlserver:
     image: localhost/grindx-api-sqlserver:latest
-    build:
-      context: ./apps/api-sqlserver
     container_name: grindx-api-sqlserver
     user: "1001:1001"
     network_mode: "container:grindx-frontend"
@@ -48,8 +44,6 @@ services:
 
   api-postgres:
     image: localhost/grindx-api-postgres:latest
-    build:
-      context: ./apps/api-postgres
     container_name: grindx-api-postgres
     user: "1001:1001"
     network_mode: "container:grindx-frontend"

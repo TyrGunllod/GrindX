@@ -201,8 +201,6 @@ deploy:
 	cp apps/api-sqlserver/.env.example "$(DEST)/GrindX/.env.sqlserver.example"
 	test -f .env.postgres && cp .env.postgres "$(DEST)/GrindX/" || true
 	test -f .env.sqlserver && cp .env.sqlserver "$(DEST)/GrindX/" || true
-	# nginx.conf para o make volumes copiar ao criar os volumes
-	mkdir -p "$(DEST)/GrindX/apps/frontend-webapp"
 	cp apps/frontend-webapp/nginx.conf "$(DEST)/GrindX/apps/frontend-webapp/nginx.conf"
 	cp -r packages "$(DEST)/GrindX/packages"
 	@echo "Configs exportadas para $(DEST)/GrindX/"
