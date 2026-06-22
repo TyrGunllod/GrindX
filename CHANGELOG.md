@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v1.32.3 (2026-06-22)
+
+### Bug Fixes
+
+- **infra**: Criar diretorios de source no deploy
+  ([`29115e3`](https://github.com/TyrGunllod/GrindX/commit/29115e3d50094508fb0dcd5ba339bb167f523ba9))
+
+- **infra**: Remover volumes do deploy, copiar nginx.conf para source
+  ([`c1c34e5`](https://github.com/TyrGunllod/GrindX/commit/c1c34e55b7672fc4d194136e19f8475c6118bb49))
+
+
 ## v1.32.2 (2026-06-19)
 
 ### Bug Fixes
