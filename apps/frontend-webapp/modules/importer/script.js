@@ -9,7 +9,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
     }
 
     async init() {
-        if (!this.requireAuth()) return;
+        if (!this.requireAuth('../../index.html')) return;
         this.importModal = new window.grindx.components.ReusableModal(document.getElementById('importModal'));
         this.dataTable = new window.grindx.components.DataTable('dataTableContainer', {
             columns: [
