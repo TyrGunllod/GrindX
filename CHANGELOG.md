@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.8 (2026-06-22)
+
+### Bug Fixes
+
+- Corrige CSP, requireAuth no importer e inclui config.js nos modulos
+  ([`8e50e57`](https://github.com/TyrGunllod/GrindX/commit/8e50e57de79e360ce380810ab5b10c8c9f34414a))
+
+
 ## v1.32.7 (2026-06-22)
 
 ### Bug Fixes
