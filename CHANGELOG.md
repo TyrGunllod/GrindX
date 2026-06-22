@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.5 (2026-06-22)
+
+### Bug Fixes
+
+- **infra**: Remover prefixo localhost/ das image tags no compose
+  ([`ad79fd7`](https://github.com/TyrGunllod/GrindX/commit/ad79fd786d922f2fbcb0ec99c3685feffcc211b0))
+
+
 ## v1.32.4 (2026-06-22)
 
 ### Bug Fixes
