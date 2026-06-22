@@ -151,7 +151,7 @@ ifeq ($(OS),Windows_NT)
 	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads\logos" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads\logos"
 	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads\fonts" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads\fonts"
 	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads\icons" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads\icons"
-	copy /y "apps\frontend-webapp\nginx.conf" "$(VOLUMES_DIR)\grindx\frontend\nginx.conf" >nul
+	if exist "apps\frontend-webapp\nginx.conf" copy /y "apps\frontend-webapp\nginx.conf" "$(VOLUMES_DIR)\grindx\frontend\nginx.conf" >nul
 	if exist "apps\api-postgres\uploads\logos" xcopy /s /e /y "apps\api-postgres\uploads\logos\*" "$(VOLUMES_DIR)\grindx\api-postgres\uploads\logos\" >nul
 else
 	mkdir -p "$(VOLUMES_DIR)/grindx/frontend"
@@ -159,7 +159,7 @@ else
 	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads/logos"
 	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads/fonts"
 	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads/icons"
-	cp apps/frontend-webapp/nginx.conf "$(VOLUMES_DIR)/grindx/frontend/nginx.conf"
+	test -f apps/frontend-webapp/nginx.conf && cp apps/frontend-webapp/nginx.conf "$(VOLUMES_DIR)/grindx/frontend/nginx.conf" || true
 	cp -r apps/api-postgres/uploads/logos/* "$(VOLUMES_DIR)/grindx/api-postgres/uploads/logos/" 2>/dev/null || true
 endif
 	@echo "Volumes prontos em $(VOLUMES_DIR)."
@@ -193,15 +193,15 @@ endif
 deploy:
 	@if [ "$(DEST)" = "" ]; then echo "Uso: make deploy DEST=/caminho/para/deploy"; exit 1; fi
 	@echo "Exportando configs para $(DEST)/GrindX/..."
-	mkdir -p "$(DEST)/GrindX/Containers/volumes/grindx/frontend"
-	mkdir -p "$(DEST)/GrindX/Containers/volumes/grindx/api-postgres/uploads"
 	mkdir -p "$(DEST)/GrindX/import"
 	cp compose.yaml "$(DEST)/GrindX/"
 	cp apps/api-postgres/.env.example "$(DEST)/GrindX/.env.postgres.example"
 	cp apps/api-sqlserver/.env.example "$(DEST)/GrindX/.env.sqlserver.example"
 	test -f .env.postgres && cp .env.postgres "$(DEST)/GrindX/" || true
 	test -f .env.sqlserver && cp .env.sqlserver "$(DEST)/GrindX/" || true
-	cp apps/frontend-webapp/nginx.conf "$(DEST)/GrindX/Containers/volumes/grindx/frontend/nginx.conf"
+	# nginx.conf para o make volumes copiar ao criar os volumes
+	mkdir -p "$(DEST)/GrindX/apps/frontend-webapp"
+	cp apps/frontend-webapp/nginx.conf "$(DEST)/GrindX/apps/frontend-webapp/nginx.conf"
 	cp -r packages "$(DEST)/GrindX/packages"
 	@echo "Configs exportadas para $(DEST)/GrindX/"
 	@echo "Proximo passo:"
