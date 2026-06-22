@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.6 (2026-06-22)
+
+### Bug Fixes
+
+- **infra**: Restaurar prefixo localhost/ nas image tags do compose
+  ([`c99543c`](https://github.com/TyrGunllod/GrindX/commit/c99543c38efe789573735ad305749d18f7f083a9))
+
+
 ## v1.32.5 (2026-06-22)
 
 ### Bug Fixes
