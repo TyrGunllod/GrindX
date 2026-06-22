@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.4 (2026-06-22)
+
+### Bug Fixes
+
+- **infra**: Remover build contexts do compose, manter apenas image tags
+  ([`dd8f326`](https://github.com/TyrGunllod/GrindX/commit/dd8f3260f9ccda519d8717ed2a18fda12582c18c))
+
+
 ## v1.32.3 (2026-06-22)
 
 ### Bug Fixes
