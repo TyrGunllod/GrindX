@@ -193,6 +193,8 @@ endif
 deploy:
 	@if [ "$(DEST)" = "" ]; then echo "Uso: make deploy DEST=/caminho/para/deploy"; exit 1; fi
 	@echo "Exportando configs para $(DEST)/GrindX/..."
+	mkdir -p "$(DEST)/GrindX/apps/frontend-webapp"
+	mkdir -p "$(DEST)/GrindX/apps/api-postgres/uploads"
 	mkdir -p "$(DEST)/GrindX/import"
 	cp compose.yaml "$(DEST)/GrindX/"
 	cp apps/api-postgres/.env.example "$(DEST)/GrindX/.env.postgres.example"
