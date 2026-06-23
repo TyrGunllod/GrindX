@@ -208,6 +208,11 @@ deploy:
 	test -f .env.sqlserver && cp .env.sqlserver ~/Apps/GrindX/ || true
 	cp apps/frontend-webapp/nginx.conf ~/Apps/GrindX/apps/frontend-webapp/nginx.conf
 	cp -r packages ~/Apps/GrindX/packages
+	# api-sqlserver code for dev volume mount
+	sudo rm -rf ~/Apps/GrindX/apps/api-sqlserver
+	mkdir -p ~/Apps/GrindX/apps/api-sqlserver
+	cp -r apps/api-sqlserver/app ~/Apps/GrindX/apps/api-sqlserver/app
+	cp apps/api-sqlserver/requirements.txt ~/Apps/GrindX/apps/api-sqlserver/requirements.txt
 	@echo "Configs exportadas para ~/Apps/GrindX/"
 	@echo "Proximo passo:"
 	@echo "  cd ~/Apps/GrindX"

@@ -338,8 +338,16 @@ def remove_module(
     steps = []
 
     # MONOREPO_ROOT resolve o path correto dentro do container WSL
-    monorepo_root = Path(os.environ.get("MONOREPO_ROOT", "")).resolve() if os.environ.get("MONOREPO_ROOT") else None
-    api_dir = monorepo_root if monorepo_root else Path(__file__).resolve().parent.parent.parent
+    monorepo_root = (
+        Path(os.environ.get("MONOREPO_ROOT", "")).resolve()
+        if os.environ.get("MONOREPO_ROOT")
+        else None
+    )
+    api_dir = (
+        monorepo_root
+        if monorepo_root
+        else Path(__file__).resolve().parent.parent.parent
+    )
 
     main_py = api_dir / "app" / "main.py"
     if main_py.exists():
