@@ -66,6 +66,13 @@ def _get_import_dir() -> Path:
     return _get_monorepo_root() / "import"
 
 
+def _get_sqlserver_api_dir() -> Path:
+    env = os.environ.get("GRINDX_SQLSERVER_API_DIR")
+    if env:
+        return Path(env).resolve()
+    return _get_monorepo_root() / "apps" / "api-sqlserver"
+
+
 def validate_manifest(import_dir: Path) -> dict:
     manifest_path = import_dir / "module.json"
     if not manifest_path.exists():
