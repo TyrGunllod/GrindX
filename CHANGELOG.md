@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.33.6 (2026-06-23)
+
+### Bug Fixes
+
+- **compose**: Revert api-postgres to user 1001:1001
+  ([`cc8328d`](https://github.com/TyrGunllod/GrindX/commit/cc8328d4a1230ef5e476d0e6a16748919b54ff84))
+
+
 ## v1.33.5 (2026-06-23)
 
 ### Bug Fixes
