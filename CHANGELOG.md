@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.10 (2026-06-23)
+
+### Bug Fixes
+
+- Make deploy copia modules e compose usa PWD portatil
+  ([`0f71354`](https://github.com/TyrGunllod/GrindX/commit/0f71354634f0985b1902afa962149d8e46121653))
+
+
 ## v1.32.9 (2026-06-23)
 
 ### Bug Fixes
