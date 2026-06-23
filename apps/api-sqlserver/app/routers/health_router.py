@@ -3,12 +3,11 @@ Router de health check para a api-sqlserver.
 """
 
 from datetime import datetime, timezone
-from typing import Any
 
 import structlog
 from fastapi import APIRouter, Depends
 from shared.schemas.base import HealthCheckResponse
-from sqlalchemy import inspect, text
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 
@@ -20,29 +19,15 @@ logger = structlog.get_logger(__name__)
 router = APIRouter(tags=["Health"])
 
 
-def check_database_health(db: Session) -> dict[str, Any]:
-    """Verifica conectividade com o SQL Server e integridade do schema.
+def check_database_health(db: Session) -> dict:
+    """Verifica conectividade com o SQL Server.
 
     Returns:
-        dict com 'status' ('connected', 'disconnected' ou 'degraded'),
-        'missing_tables' (lista de tabelas ausentes) e 'error' (mensagem de erro).
+        dict com 'status' ('connected' ou 'disconnected') e 'error'.
     """
     try:
-        # Testa conectividade básica
         db.execute(text("SELECT 1"))
-
-        # Verifica tabelas existentes via inspector
-        inspector = inspect(db.bind)
-        existing_tables = inspector.get_table_names()
-
-        # Tabelas críticas do SQL Server (baseado nos routers existentes)
-        # Se não houver tabelas mapeadas, apenas valida conectividade
-        if not existing_tables:
-            logger.warning("Nenhuma tabela encontrada no SQL Server")
-            return {"status": "degraded", "missing_tables": ["*"]}
-
-        return {"status": "connected", "missing_tables": []}
-
+        return {"status": "connected"}
     except Exception as exc:
         logger.error("Falha na verificação do SQL Server", error=str(exc))
         return {"status": "disconnected", "error": str(exc)}
@@ -55,10 +40,9 @@ def check_database_health(db: Session) -> dict[str, Any]:
     description="Verifica a saúde do serviço e a conectividade com o SQL Server.",
 )
 def health_check(db: Session = Depends(get_db)):
-    """Retorna o status de saúde do serviço."""
     db_result = check_database_health(db)
 
-    if db_result["status"] == "connected" and not db_result.get("missing_tables"):
+    if db_result["status"] == "connected":
         logger.info("Health check: healthy")
         return HealthCheckResponse(
             status="healthy",
@@ -68,13 +52,7 @@ def health_check(db: Session = Depends(get_db)):
             timestamp=datetime.now(timezone.utc),
         )
 
-    # Status degradado — retorna 503
-    logger.warning(
-        "Health check: degraded",
-        db_status=db_result["status"],
-        missing_tables=db_result.get("missing_tables"),
-        error=db_result.get("error"),
-    )
+    logger.warning("Health check: degraded", error=db_result.get("error"))
     return JSONResponse(
         status_code=503,
         content=HealthCheckResponse(
@@ -83,9 +61,6 @@ def health_check(db: Session = Depends(get_db)):
             version=settings.APP_VERSION,
             database={"sqlserver": db_result["status"]},
             timestamp=datetime.now(timezone.utc),
-            details={
-                "missing_tables": db_result.get("missing_tables", []),
-                "error": db_result.get("error"),
-            },
+            details={"error": db_result.get("error")},
         ).model_dump(mode="json"),
     )

@@ -6,7 +6,6 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import Response
 
-
 EXCLUDED_PATHS: set[str] = {"/v1/docs", "/v1/redoc", "/v1/openapi.json"}
 
 
