@@ -4,7 +4,9 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict
+from shared.exceptions import ConflictError
 from shared.schemas.auth import TokenPayload
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user, require_role
@@ -204,9 +206,18 @@ def criar_modulo(
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
-    novo_mod = Modulo(aba_id=aba_id, nome=nome, slug=slug, url=url, icone=icone)
-    db.add(novo_mod)
-    db.commit()
+    try:
+        novo_mod = Modulo(aba_id=aba_id, nome=nome, slug=slug, url=url, icone=icone)
+        db.add(novo_mod)
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        err_msg = str(e.orig).lower() if e.orig else ""
+        if "unique" in err_msg or "duplicate" in err_msg:
+            raise ConflictError(f"Slug '{slug}' já existe. Use um slug diferente.")
+        if "foreign" in err_msg:
+            raise ConflictError(f"Aba {aba_id} não encontrada. Verifique o aba_id.")
+        raise ConflictError("Erro de integridade ao criar módulo.")
     db.refresh(novo_mod)
     return novo_mod
 
