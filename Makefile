@@ -199,6 +199,7 @@ deploy:
 	mkdir -p "$(DEST)/GrindX/apps/api-postgres/uploads"
 	mkdir -p "$(DEST)/GrindX/import"
 	cp compose.yaml "$(DEST)/GrindX/"
+	cp Makefile "$(DEST)/GrindX/"
 	cp apps/api-postgres/.env.example "$(DEST)/GrindX/.env.postgres.example"
 	cp apps/api-sqlserver/.env.example "$(DEST)/GrindX/.env.sqlserver.example"
 	test -f .env.postgres && cp .env.postgres "$(DEST)/GrindX/" || true
