@@ -2,6 +2,31 @@
 
 <!-- version list -->
 
+## v1.34.0 (2026-06-23)
+
+### Documentation
+
+- Document sqlserver module import with target_api
+  ([`1f4b4e9`](https://github.com/TyrGunllod/GrindX/commit/1f4b4e9c8f52571b9d60d2cbcd87071496e573c1))
+
+- **spec**: Cria especificacao para import de modulos no api-sqlserver
+  ([`6dabcc6`](https://github.com/TyrGunllod/GrindX/commit/6dabcc67aa54cc9a2b02ef80647fc40487e74c5a))
+
+### Features
+
+- **import**: Add --target-api CLI and conditional flow for api-sqlserver
+  ([`865d655`](https://github.com/TyrGunllod/GrindX/commit/865d65536adcf0ca37df4e5832b7e28859cda92f))
+
+- **import**: Add _get_sqlserver_api_dir() and target_api manifest field
+  ([`2e14115`](https://github.com/TyrGunllod/GrindX/commit/2e1411563544dd0752c341b4bde9456ddd29a573))
+
+- **import**: Add register_router_sqlserver() for api-sqlserver main.py
+  ([`0cc3495`](https://github.com/TyrGunllod/GrindX/commit/0cc3495c3c0a5f035c13394c151f351f43f1febf))
+
+- **import**: Pass target_api from module.json to import subprocess
+  ([`00c13c1`](https://github.com/TyrGunllod/GrindX/commit/00c13c18047ea947305420027e233e5507bc92e0))
+
+
 ## v1.33.7 (2026-06-23)
 
 ### Bug Fixes
