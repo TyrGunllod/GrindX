@@ -22,6 +22,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
     }
 
     async init() {
+        if (!this.requireAuth('../../index.html')) return;
         this.setupEvents();
         await this.loadSkins();
         await this.loadTemplates();
@@ -305,6 +306,11 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
     renderSkins() {
         const grid = document.getElementById('skinsGrid');
         if (!grid) return;
+
+        if (this.skins.length === 0) {
+            grid.innerHTML = '<div class="text-center text-muted" style="padding: 2rem;">Nenhuma skin encontrada. Verifique o console (F12) para erros de API.</div>';
+            return;
+        }
 
         const cards = this.skins.map(skin => {
             const colors = skin.colors || {};
@@ -639,7 +645,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 const fontFile = new File([blob], ff.name, { type: 'application/octet-stream' });
                 formData.append('file', fontFile);
 
-                const resp = await fetch(`${this.apiBase}/themes/fonts/upload`, {
+                const resp = await fetch(`${this.apiBase}/themes/fonts-icons/upload`, {
                     method: 'POST',
                     headers: { Authorization: `Bearer ${this.token}` },
                     body: formData,
