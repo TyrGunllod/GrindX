@@ -12,7 +12,7 @@ services:
       - "8002:8002"
     volumes:
       - ${HOME:-.}/Containers/volumes/grindx/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro,z
-      - ./apps/frontend-webapp/modules:/usr/share/nginx/html/modules:z
+      - ${HOME}/_Projects/GrindX/apps/frontend-webapp/modules:/usr/share/nginx/html/modules
     networks:
       - nest
     healthcheck:
@@ -58,7 +58,7 @@ services:
       - ./.env.postgres:/app/.env:z
       - ${HOME:-.}/Containers/volumes/grindx/api-postgres/uploads:/app/static/uploads:z
       - ./import:/app/import:z
-      - ./apps/frontend-webapp/modules:/app/apps/frontend-webapp/modules:z
+      - ${HOME}/_Projects/GrindX/apps/frontend-webapp/modules:/app/apps/frontend-webapp/modules
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
       interval: 30s
