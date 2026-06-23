@@ -44,6 +44,7 @@ def _get_engine():
 
 class Base(DeclarativeBase):
     """Classe base para modelos SQLAlchemy do SQL Server (read-only)."""
+
     pass
 
 
