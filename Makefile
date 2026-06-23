@@ -194,10 +194,11 @@ deploy:
 	@if [ "$(DEST)" = "" ]; then echo "Uso: make deploy DEST=/caminho/para/deploy"; exit 1; fi
 	@echo "Exportando configs para $(DEST)/GrindX/..."
 	mkdir -p "$(DEST)/GrindX/apps/frontend-webapp"
-	rm -rf "$(DEST)/GrindX/apps/frontend-webapp/modules"
+	sudo rm -rf "$(DEST)/GrindX/apps/frontend-webapp/modules"
 	cp -r apps/frontend-webapp/modules "$(DEST)/GrindX/apps/frontend-webapp/modules"
-	mkdir -p "$(DEST)/GrindX/apps/api-postgres/uploads"
+	sudo rm -rf "$(DEST)/GrindX/import"
 	mkdir -p "$(DEST)/GrindX/import"
+	mkdir -p "$(DEST)/GrindX/apps/api-postgres/uploads"
 	cp compose.yaml "$(DEST)/GrindX/"
 	cp Makefile "$(DEST)/GrindX/"
 	cp apps/api-postgres/.env.example "$(DEST)/GrindX/.env.postgres.example"
@@ -205,7 +206,6 @@ deploy:
 	test -f .env.postgres && cp .env.postgres "$(DEST)/GrindX/" || true
 	test -f .env.sqlserver && cp .env.sqlserver "$(DEST)/GrindX/" || true
 	cp apps/frontend-webapp/nginx.conf "$(DEST)/GrindX/apps/frontend-webapp/nginx.conf"
-	cp -r apps/frontend-webapp/modules "$(DEST)/GrindX/apps/frontend-webapp/modules"
 	cp -r packages "$(DEST)/GrindX/packages"
 	@echo "Configs exportadas para $(DEST)/GrindX/"
 	@echo "Proximo passo:"
