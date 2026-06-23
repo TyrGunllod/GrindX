@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.34.1 (2026-06-23)
+
+### Bug Fixes
+
+- **api-postgres**: Handle IntegrityError on POST /v1/portal/modulos
+  ([`49b9b5b`](https://github.com/TyrGunllod/GrindX/commit/49b9b5b35896f9a0c56c15db2fafd2231cfa2b56))
+
+### Documentation
+
+- **skill**: Add sqlserver support to create-standalone-module
+  ([`666ccc2`](https://github.com/TyrGunllod/GrindX/commit/666ccc24510add681950cf35e6840337eb7b666c))
+
+
 ## v1.34.0 (2026-06-23)
 
 ### Documentation
