@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.33.0 (2026-06-23)
+
+### Features
+
+- **docker**: Enable uvicorn --reload in sqlserver container
+  ([`803cbb3`](https://github.com/TyrGunllod/GrindX/commit/803cbb3835d533f4594060761516db88c1520ddf))
+
+
 ## v1.32.13 (2026-06-23)
 
 ### Bug Fixes
