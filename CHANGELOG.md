@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.33.2 (2026-06-23)
+
+### Bug Fixes
+
+- **import**: Add 60s timeout and timing logs to diagnose hang
+  ([`db71752`](https://github.com/TyrGunllod/GrindX/commit/db7175205f15df7d89a6351eea48d6697bb01564))
+
+
 ## v1.33.1 (2026-06-23)
 
 ### Bug Fixes
