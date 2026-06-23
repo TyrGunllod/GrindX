@@ -2,6 +2,28 @@
 
 <!-- version list -->
 
+## v1.34.5 (2026-06-23)
+
+### Bug Fixes
+
+- **deploy**: Copy api-sqlserver code for dev volume mount
+  ([`a4cc42b`](https://github.com/TyrGunllod/GrindX/commit/a4cc42bee05e225c0fd1373808d40a3fd29aed85))
+
+- **deploy**: Mount api-sqlserver code for import write access
+  ([`4a271dc`](https://github.com/TyrGunllod/GrindX/commit/4a271dca9c85669d366b57a8ccf381e2530ed2bd))
+
+- **import**: Correct frontend_dir path in remove_module for container
+  ([`eed26ce`](https://github.com/TyrGunllod/GrindX/commit/eed26ce8f59b2b7f3e49b225b483fd72c291061c))
+
+- **portal**: Invalidate cache on module CRUD
+  ([`78fab8a`](https://github.com/TyrGunllod/GrindX/commit/78fab8a903ace7bced6556eae95f52ae272b052c))
+
+### Chores
+
+- **deploy**: Hardcode DEST=~/Apps
+  ([`0906a8d`](https://github.com/TyrGunllod/GrindX/commit/0906a8dda5cc70816c16aecf947fcb2accf81b4d))
+
+
 ## v1.34.4 (2026-06-23)
 
 ### Bug Fixes
