@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.34.3 (2026-06-23)
+
+### Bug Fixes
+
+- **deploy**: Replace chown 1001:1001 with chmod 777 for rootless podman
+  ([`1e271d5`](https://github.com/TyrGunllod/GrindX/commit/1e271d5159d3e1dbda0d13dde49679f53409abdc))
+
+
 ## v1.34.2 (2026-06-23)
 
 ### Bug Fixes
