@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.33.5 (2026-06-23)
+
+### Bug Fixes
+
+- **compose**: Run api-postgres as root (0:0) to write bind mounts on WSL
+  ([`b214d6e`](https://github.com/TyrGunllod/GrindX/commit/b214d6ec3e7afbf1477f88cb62695070ac420793))
+
+
 ## v1.33.4 (2026-06-23)
 
 ### Bug Fixes
