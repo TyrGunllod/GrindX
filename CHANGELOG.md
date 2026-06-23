@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.33.3 (2026-06-23)
+
+### Bug Fixes
+
+- **import**: Stream subprocess output in real-time to diagnose hang
+  ([`0ab3794`](https://github.com/TyrGunllod/GrindX/commit/0ab37944c21315332308fea29c139a85c090e58f))
+
+
 ## v1.33.2 (2026-06-23)
 
 ### Bug Fixes
