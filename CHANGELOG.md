@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.33.7 (2026-06-23)
+
+### Bug Fixes
+
+- **makefile**: Use sudo rm -rf no deploy para arquivos de UIDs diferentes
+  ([`9c76b98`](https://github.com/TyrGunllod/GrindX/commit/9c76b98b505a3d3fbfa27da436cf427b4a757c0c))
+
+
 ## v1.33.6 (2026-06-23)
 
 ### Bug Fixes
