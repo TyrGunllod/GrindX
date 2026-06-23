@@ -191,27 +191,26 @@ endif
 # ==========================================
 
 deploy:
-	@if [ "$(DEST)" = "" ]; then echo "Uso: make deploy DEST=/caminho/para/deploy"; exit 1; fi
-	@echo "Exportando configs para $(DEST)/GrindX/..."
-	mkdir -p "$(DEST)/GrindX/apps/frontend-webapp"
-	sudo rm -rf "$(DEST)/GrindX/apps/frontend-webapp/modules"
-	cp -r apps/frontend-webapp/modules "$(DEST)/GrindX/apps/frontend-webapp/modules"
-	chmod -R 777 "$(DEST)/GrindX/apps/frontend-webapp/modules"
-	sudo rm -rf "$(DEST)/GrindX/import"
-	mkdir -p "$(DEST)/GrindX/import"
-	chmod 777 "$(DEST)/GrindX/import"
-	mkdir -p "$(DEST)/GrindX/apps/api-postgres/uploads"
-	cp compose.yaml "$(DEST)/GrindX/"
-	cp Makefile "$(DEST)/GrindX/"
-	cp apps/api-postgres/.env.example "$(DEST)/GrindX/.env.postgres.example"
-	cp apps/api-sqlserver/.env.example "$(DEST)/GrindX/.env.sqlserver.example"
-	test -f .env.postgres && cp .env.postgres "$(DEST)/GrindX/" || true
-	test -f .env.sqlserver && cp .env.sqlserver "$(DEST)/GrindX/" || true
-	cp apps/frontend-webapp/nginx.conf "$(DEST)/GrindX/apps/frontend-webapp/nginx.conf"
-	cp -r packages "$(DEST)/GrindX/packages"
-	@echo "Configs exportadas para $(DEST)/GrindX/"
+	@echo "Exportando configs para ~/Apps/GrindX/..."
+	mkdir -p ~/Apps/GrindX/apps/frontend-webapp
+	sudo rm -rf ~/Apps/GrindX/apps/frontend-webapp/modules
+	cp -r apps/frontend-webapp/modules ~/Apps/GrindX/apps/frontend-webapp/modules
+	chmod -R 777 ~/Apps/GrindX/apps/frontend-webapp/modules
+	sudo rm -rf ~/Apps/GrindX/import
+	mkdir -p ~/Apps/GrindX/import
+	chmod 777 ~/Apps/GrindX/import
+	mkdir -p ~/Apps/GrindX/apps/api-postgres/uploads
+	cp compose.yaml ~/Apps/GrindX/
+	cp Makefile ~/Apps/GrindX/
+	cp apps/api-postgres/.env.example ~/Apps/GrindX/.env.postgres.example
+	cp apps/api-sqlserver/.env.example ~/Apps/GrindX/.env.sqlserver.example
+	test -f .env.postgres && cp .env.postgres ~/Apps/GrindX/ || true
+	test -f .env.sqlserver && cp .env.sqlserver ~/Apps/GrindX/ || true
+	cp apps/frontend-webapp/nginx.conf ~/Apps/GrindX/apps/frontend-webapp/nginx.conf
+	cp -r packages ~/Apps/GrindX/packages
+	@echo "Configs exportadas para ~/Apps/GrindX/"
 	@echo "Proximo passo:"
-	@echo "  cd $(DEST)/GrindX"
+	@echo "  cd ~/Apps/GrindX"
 	@echo "  make volumes  (cria diretorios de volumes)"
 	@echo "  # Carregar as imagens (geradas por 'make images' na origem):"
 	@echo "  podman load -i ~/Containers/images/grindx-frontend-*.tar"
