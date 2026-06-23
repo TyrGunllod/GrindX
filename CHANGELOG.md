@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.33.4 (2026-06-23)
+
+### Bug Fixes
+
+- **import**: Handle PermissionError on bind-mount backup and frontend dirs
+  ([`4bd0caf`](https://github.com/TyrGunllod/GrindX/commit/4bd0caf469d6d4d4f949b52a9ea670a88740237e))
+
+
 ## v1.33.3 (2026-06-23)
 
 ### Bug Fixes
