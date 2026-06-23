@@ -208,13 +208,27 @@ def import_module(
         creationflags = 0
         if sys.platform == "win32":
             creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            check=False,
-            creationflags=creationflags,
-        )
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                check=False,
+                creationflags=creationflags,
+                timeout=60,
+            )
+        except subprocess.TimeoutExpired:
+            logger.error(
+                "Subprocesso excedeu 60s ao importar '%s'. "
+                "Verifique logs do container.",
+                module_name,
+            )
+            return ImportResult(
+                success=False,
+                message="Falha na importação: subprocesso excedeu timeout de 60s",
+                steps=["Subprocesso não completou em 60s"],
+                error="Timeout do subprocesso. Verifique os logs do container.",
+            )
 
         try:
             result_data = json.loads(result.stdout.strip())
@@ -239,6 +253,7 @@ def import_module(
                 daemon=True,
             ).start()
             result_data["steps"].append("Migrações agendadas em segundo plano")
+            logger.info("Import de '%s' concluído em <60s", module_name)
 
         return ImportResult(
             success=result_data.get("success", False),

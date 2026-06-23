@@ -441,6 +441,13 @@ def rollback(backup_dir: Path | None) -> None:
     logger.info("Rollback concluído: %d arquivos restaurados", restored)
 
 
+def _log_step(step_name: str, start: float) -> float:
+    """Loga duração de um passo e retorna o novo timestamp."""
+    elapsed = time.time() - start
+    logger.info("Passo '%s' completado em %.2fs", step_name, elapsed)
+    return time.time()
+
+
 def import_module(
     module_name: str,
     import_dir: Path,
@@ -451,41 +458,51 @@ def import_module(
     steps = []
     backup_path = None
 
+    _tick = time.time()
     try:
         manifest = validate_manifest(import_dir)
         steps.append("Manifesto validado")
+        _tick = _log_step("validate_manifest", _tick)
 
         if not dry_run:
             backup_path = backup_existing(manifest)
         steps.append("Backup concluído")
+        _tick = _log_step("backup_existing", _tick)
 
         if not dry_run:
             copy_backend(import_dir, module_name, force)
         steps.append("Backend copiado")
+        _tick = _log_step("copy_backend", _tick)
 
         if not dry_run:
             copy_frontend(import_dir, module_name, force)
         steps.append("Frontend copiado")
+        _tick = _log_step("copy_frontend", _tick)
 
         if not dry_run:
             copy_migration(import_dir)
         steps.append("Migration copiada")
+        _tick = _log_step("copy_migration", _tick)
 
         if not dry_run:
             register_router(manifest, force)
         steps.append("Router registrado")
+        _tick = _log_step("register_router", _tick)
 
         if not dry_run:
             register_dependency(manifest, force)
         steps.append("Dependency registrado em dependencies.py")
+        _tick = _log_step("register_dependency", _tick)
 
         if not dry_run:
             register_alembic_import(manifest, force)
         steps.append("Import do model registrado no alembic/env.py")
+        _tick = _log_step("register_alembic_import", _tick)
 
         if not dry_run:
             register_menu(manifest)
         steps.append("Menu registrado")
+        _tick = _log_step("register_menu", _tick)
 
         if skip_migrations:
             steps.append("Migração adiada (executada em segundo plano)")
