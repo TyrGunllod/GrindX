@@ -194,6 +194,8 @@ deploy:
 	@if [ "$(DEST)" = "" ]; then echo "Uso: make deploy DEST=/caminho/para/deploy"; exit 1; fi
 	@echo "Exportando configs para $(DEST)/GrindX/..."
 	mkdir -p "$(DEST)/GrindX/apps/frontend-webapp"
+	rm -rf "$(DEST)/GrindX/apps/frontend-webapp/modules"
+	cp -r apps/frontend-webapp/modules "$(DEST)/GrindX/apps/frontend-webapp/modules"
 	mkdir -p "$(DEST)/GrindX/apps/api-postgres/uploads"
 	mkdir -p "$(DEST)/GrindX/import"
 	cp compose.yaml "$(DEST)/GrindX/"
