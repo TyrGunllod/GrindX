@@ -2,6 +2,28 @@
 
 <!-- version list -->
 
+## v1.32.13 (2026-06-23)
+
+### Bug Fixes
+
+- **docker**: Install msodbcsql17 instead of msodbcsql18
+  ([`8b50b1a`](https://github.com/TyrGunllod/GrindX/commit/8b50b1ad712ba8ba1ed76176639fa9d249e71284))
+
+- **sqlserver**: Simplify health check and fix import order
+  ([`a77fab2`](https://github.com/TyrGunllod/GrindX/commit/a77fab246a76986d942689ddcd4ace4b1cea4586))
+
+- **swagger**: Exclude docs paths from CSP to enable Swagger UI rendering
+  ([`57b9e62`](https://github.com/TyrGunllod/GrindX/commit/57b9e624666c4768f3f0a9fab91c58f0c2ba6ba4))
+
+- **tests**: Recreate tests/unit dir for api-sqlserver
+  ([`97525c0`](https://github.com/TyrGunllod/GrindX/commit/97525c09319ffe5c489b0ae07010b04da9a3ab79))
+
+### Refactoring
+
+- **sqlserver**: Remove all endpoints except healthcheck
+  ([`2b27e86`](https://github.com/TyrGunllod/GrindX/commit/2b27e862638b28830c0cec7be61243d676816d19))
+
+
 ## v1.32.12 (2026-06-23)
 
 ### Bug Fixes
