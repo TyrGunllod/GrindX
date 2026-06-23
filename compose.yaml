@@ -34,6 +34,7 @@ services:
     volumes:
       - ./packages:/app/packages:z
       - ./.env.sqlserver:/app/.env:z
+      - ${PWD}/apps/api-sqlserver:/app:z
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
       interval: 30s
@@ -53,12 +54,14 @@ services:
       - MONOREPO_ROOT=/app
       - IMPORT_DIR=/app/import
       - GRINDX_API_DIR=/app
+      - GRINDX_SQLSERVER_API_DIR=/app/apps/api-sqlserver
     volumes:
       - ./packages:/app/packages:z
       - ./.env.postgres:/app/.env:z
       - ${HOME:-.}/Containers/volumes/grindx/api-postgres/uploads:/app/static/uploads:z
       - ./import:/app/import:z
       - ${PWD}/apps/frontend-webapp/modules:/app/apps/frontend-webapp/modules:z
+      - ${PWD}/apps/api-sqlserver:/app/apps/api-sqlserver:z
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
       interval: 30s
