@@ -2,6 +2,33 @@
 
 <!-- version list -->
 
+## v1.33.1 (2026-06-23)
+
+### Bug Fixes
+
+- **a11y**: Add autocomplete attribute to forgotUsername field
+  ([`66c0571`](https://github.com/TyrGunllod/GrindX/commit/66c057107b320f747782b71faf270d34e1e9e60b))
+
+- **import**: Add 25s timeout to import endpoint to prevent browser timeout
+  ([`d048827`](https://github.com/TyrGunllod/GrindX/commit/d048827b37eb43dae992b119ebebad2fe1bd4a7a))
+
+- **import**: Run migrations as background thread to prevent HTTP timeout
+  ([`4c92087`](https://github.com/TyrGunllod/GrindX/commit/4c92087a1bd80797ac48e101c05f3dee6471bcbd))
+
+- **sqlserver**: Lazy engine creation to prevent import timeout
+  ([`cd36d63`](https://github.com/TyrGunllod/GrindX/commit/cd36d636497d47c2c8afc87486c53d2439cd354d))
+
+### Code Style
+
+- Ruff format database.py
+  ([`5fe28ac`](https://github.com/TyrGunllod/GrindX/commit/5fe28ace061c8ca21ce1c732e53babcd5b97acc1))
+
+### Documentation
+
+- Add ruff format to pre-push checklist in AGENTS.md
+  ([`099a700`](https://github.com/TyrGunllod/GrindX/commit/099a7004510d6487a172477cf9b093d602f34d13))
+
+
 ## v1.33.0 (2026-06-23)
 
 ### Features
