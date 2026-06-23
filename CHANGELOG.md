@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.32.12 (2026-06-23)
+
+### Bug Fixes
+
+- **admin-skins**: Corrige endpoint font upload, adiciona requireAuth e apiService
+  ([`f3fb07f`](https://github.com/TyrGunllod/GrindX/commit/f3fb07ff6665ef2782eecc535546bfb7ebbb4309))
+
+### Documentation
+
+- Atualiza documentacao com WSL, CSP, volumes PWD e deploy
+  ([`25d31e7`](https://github.com/TyrGunllod/GrindX/commit/25d31e7308b519de1371c1e14e0e95bebcd54e38))
+
+
 ## v1.32.11 (2026-06-23)
 
 ### Bug Fixes
