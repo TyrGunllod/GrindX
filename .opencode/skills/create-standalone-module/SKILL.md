@@ -59,18 +59,20 @@ Use `question` tool calls para perguntar. Pode perguntar múltiplos parâmetros 
 
 ## Directory Structure
 
+### Padrão PostgreSQL (opção A)
+
 ```
-Project_Management/modulo-{module_name}/        # Standalone root
+Project_Management/modulo-{module_name}/
 ├── module.json                                 # Manifest for import system
-├── app/modules/{module_name}/                  # Full module (backend)
+├── app/modules/{module_name}/
 │   ├── __init__.py
-│   ├── base.py                                 # {entity_name}Base (shared metadata)
-│   ├── models/
+│   ├── base.py                                 # {entity_name}Base (SQLAlchemy metadata)
+│   ├── models/                                 # SQLAlchemy models
 │   │   ├── __init__.py
-│   │   └── {module_name}.py                    # SQLAlchemy model
-│   ├── schemas/
+│   │   └── {module_name}.py
+│   ├── schemas/                                # Pydantic schemas
 │   │   ├── __init__.py
-│   │   └── {module_name}.py                    # Pydantic schemas
+│   │   └── {module_name}.py
 │   ├── repositories/
 │   │   ├── __init__.py
 │   │   └── {module_name}_repository.py
@@ -82,29 +84,62 @@ Project_Management/modulo-{module_name}/        # Standalone root
 │   │   └── {module_name}_router.py
 │   ├── tests/
 │   │   ├── __init__.py
-│   │   ├── conftest.py                         # SQLite + GRINDX_PACKAGES
+│   │   ├── conftest.py
 │   │   ├── test_{module_name}_unit.py
 │   │   └── test_{module_name}_integration.py
-│   ├── export.py                               # Self-registration script
+│   ├── export.py
 │   └── README.md
-├── frontend/                                    # Vanilla JS frontend (sub-modules)
-│   ├── {frontend_prefix}_{tab1}/               # Ex: gp_dashboard/
-│   │   ├── index.html
-│   │   ├── script.js
-│   │   └── style.css
-│   ├── {frontend_prefix}_{tab2}/               # Ex: gp_projeto/
-│   │   ├── index.html
-│   │   ├── script.js
-│   │   └── style.css
-│   └── shared/                                  # CSS compartilhado (opcional)
+├── frontend/
+│   ├── {frontend_prefix}_{tab1}/
+│   │   ├── index.html, script.js, style.css
+│   ├── {frontend_prefix}_{tab2}/
+│   │   ├── index.html, script.js, style.css
+│   └── shared/
 │       └── core.css
 ├── migration/
-│   └── {revision}_{table_name}.py              # Alembic migration
-├── Makefile                                    # Comandos: test, package, import, clean
-├── requirements.txt                             # Dependencies
-├── pytest.ini
-└── run_tests.{ps1|sh}                           # Test runner script
+│   └── {revision}_{table_name}.py
+├── Makefile, requirements.txt, pytest.ini, run_tests.{ps1|sh}
 ```
+
+### Padrão SQL Server (opção A2) — Diferenças
+
+```
+Project_Management/modulo-{module_name}/
+├── module.json                                 # target_api: "sqlserver" adicionado
+├── app/modules/{module_name}/
+│   ├── __init__.py
+│   ├── exceptions.py                           ← ADICIONADO (exceções específicas)
+│   ├── schemas/
+│   ├── repositories/                           ← SQL raw via text(), sem ORM
+│   ├── services/
+│   ├── routers/                                ← Factory inline no router
+│   ├── tests/
+│   ├── export.py                               ← Aponta para api-sqlserver
+│   └── README.md
+├── frontend/
+│   └── ... (igual postgres)
+├── Makefile, requirements.txt, pytest.ini, run_tests.{ps1|sh}
+```
+
+**O que NÃO existe no sqlserver:**
+- ❌ `base.py` — sem SQLAlchemy declarative base
+- ❌ `models/` — sem ORM, consultas raw SQL
+- ❌ `migration/` — sem schema para gerenciar
+- ❌ `conftest.py` — não usa SQLite+IamBase (usa mock do Protheus)
+- ❌ `test_integration.py` — sem banco local para testar (opcional)
+
+**O que DIFERE no sqlserver:**
+- ✏️ `module.json` — adiciona `target_api: "sqlserver"`
+- ✏️ `export.py` — aponta para `apps/api-sqlserver/`, pula migration/dependency/alembic
+- ✏️ `routers/{module_name}_router.py` — factory inline (já é o padrão atual)
+- ✏️ `repositories/` — usa `text()` da SQLAlchemy, não models
+- 🆕 `exceptions.py` — exceções específicas do domínio
+
+### Parâmetro extra: `{target_api}`
+
+Baseado na escolha do Tech Stack:
+- (A) → `target_api = "postgres"`, `api_dir = "api-postgres"`
+- (A2) → `target_api = "sqlserver"`, `api_dir = "api-sqlserver"`
 
 **Nota sobre frontend:** Cada aba/taba do módulo tem seu próprio diretório com prefixo abreviado. Exemplo: módulo `gestao_projetos` com prefixo `gp` → `gp_dashboard/`, `gp_projeto/`, `gp_tarefas/`.
 
@@ -126,6 +161,8 @@ Replace these placeholders:
 - `{frontend_tabs}` — array de abas do frontend
 
 ## 1. Backend — Criar Todos os Arquivos
+
+> **Se `target_api == "sqlserver"`: PULE os itens 1.1 (base.py) e 1.2 (Model). Módulos sqlserver são read-only, sem ORM. Crie `exceptions.py` (item 1.8) em vez disso.
 
 ### 1.1 base.py
 
@@ -659,7 +696,7 @@ class TestService:
     align-items: center;
     justify-content: center;
     padding: var(--space-2) var(--space-4);
-    border-radius: var(--space-1);
+    border-radius: 0.5rem;
     font-family: inherit;
     font-weight: 600;
     cursor: pointer;
@@ -677,13 +714,13 @@ class TestService:
 .btn-danger:hover {{ filter: brightness(0.9); transform: translateY(-1px); }}
 .btn-outline {{ border: 1px solid var(--border-color); background: transparent; color: var(--text-main); }}
 .btn-outline:hover {{ background: var(--accent); }}
-.btn-sm {{ padding: var(--space-1) var(--space-2); min-height: 32px; font-size: var(--space-3); }}
+.btn-sm {{ padding: var(--space-1) var(--space-2); min-height: 32px; font-size: 0.8rem; }}
 .btn:disabled {{ cursor: not-allowed; opacity: 0.65; transform: none; }}
 .btn-icon {{
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: var(--space-5);
+    font-size: 1.25rem;
     color: var(--text-muted);
     transition: color 0.2s;
     display: flex;
@@ -691,7 +728,7 @@ class TestService:
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: var(--space-1);
+    border-radius: 0.25rem;
 }}
 .btn-icon:hover {{ color: var(--text-main); background: rgba(0,0,0,0.05); }}
 
@@ -710,19 +747,18 @@ class TestService:
 .modal-card {{
     background: var(--bg-card);
     width: 100%;
-    max-width: min(600px, calc(100vw - var(--space-8)));
-    border-radius: var(--space-2);
-    padding: var(--space-4);
+    max-width: 600px;
+    border-radius: 0.5rem;
+    padding: var(--space-8);
     box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
 }}
-@media (min-width: 768px) { .modal-card {{ padding: var(--space-8); }} }
-.modal-card--sm {{ max-width: min(400px, calc(100vw - var(--space-8))); }}
+.modal-card--sm {{ max-width: 400px; }}
 .modal-header {{
     margin-bottom: var(--space-4);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: var(--space-2);
 }}
-.modal-header h2 {{ margin: 0; font-size: var(--space-5); }}
+.modal-header h2 {{ margin: 0; font-size: var(--font-size-xl); }}
 .modal-body {{ display: flex; flex-direction: column; gap: var(--space-4); }}
 .modal-footer {{
     margin-top: var(--space-4);
@@ -731,7 +767,6 @@ class TestService:
     display: flex;
     justify-content: flex-end;
     gap: var(--space-2);
-    flex-wrap: wrap;
 }}
 .hidden {{ display: none !important; }}
 ```
@@ -743,14 +778,6 @@ class TestService:
 - Testar visualmente com pelo menos 2 skins antes de exportar
 - Botões e modais seguem o padrão canonical do `core.css` do GrindX
 - Modal usa `modal-overlay` + `modal-card` (NÃO `<dialog>` nativo)
-
-**Regras de responsividade (Design System Fase 4):**
-- **Usar a spacing scale completa** (`--space-0` a `--space-16` em `core.css`) — jamais hardcodar valores como `0.75rem` ou `24px` para padding/margin/gap
-- **Usar breakpoints unificados** para qualquer media query customizada: `--bp-sm: 480px`, `--bp-md: 768px`, `--bp-lg: 1024px`, `--bp-xl: 1280px`. Preferir as utilities do `core.css` (`.hide-sm`, `.show-lg`, `.grid-md-2`, etc.)
-- **Touch targets**: todos elementos interativos (botões, links, inputs, selects, dropdown items) devem ter `min-height: 44px` para acessibilidade mobile
-- **Table-to-card**: se o módulo usa `<table>`, implementar o padrão table-to-card com `data-label` nas `<td>` para mobile (ver Seção 3.3)
-- **Nunca usar `max-width` fixos** em containers que podem quebrar em mobile (ex: `max-width: 450px` em forms de modal). Usar `max-width: min(Xpx, 100%)` ou deixar o modal responsivo
-- **Testar visualmente** em pelo menos 3 breakpoints: mobile (<480px), tablet (768px), desktop (>1024px) antes de exportar
 
 ### 3.2 `index.html` e `script.js` (Padrão GrindX — HTML puro + CSS puro + Vanilla JS)
 
@@ -764,25 +791,6 @@ class TestService:
 - Atributos `data-*` para binding de eventos via delegated events
 - IDs únicos para binds, classes para estilização
 - Estrutura: `<div class="page-container">` → cabeçalho + grid + empty state + modais
-- **Botões de ação no header** seguem padrão `<i class="fas fa-..."></i> <span class="hide-mobile">Texto</span>` — no mobile/tablet aparece só o ícone, no desktop ícone + texto
-
-**Estrutura padrão do header com botões de ação:**
-```html
-<header class="page-header mb-8">
-    <div>
-        <h1>Título do Módulo</h1>
-        <p class="text-muted">Descrição do módulo.</p>
-    </div>
-    <div class="actions-group" style="margin-top: var(--space-4);">
-        <button class="btn btn-primary" id="btnNovo">
-            <i class="fas fa-plus"></i> <span class="hide-mobile">Novo</span>
-        </button>
-        <button class="btn btn-secondary" id="btnAcao">
-            <i class="fas fa-search"></i> <span class="hide-mobile">Ação</span>
-        </button>
-    </div>
-</header>
-```
 
 **Estrutura padrão do modal:**
 ```html
@@ -907,61 +915,9 @@ function downloadFromUrl(url, filename) {
 - Para PDFs standalone, usa `?api_key=` query param (pois downloads não suportam headers custom)
 - **NÃO usar `window.grindx.api`** — ele aponta para api-postgres (porta 8002), não api-sqlserver
 
-### 3.3 Table-to-Card Pattern (Módulos com `<table>`)
-
-Se o módulo possui dados tabulares, implementar o padrão table-to-card para mobile em vez de apenas esconder colunas:
-
-**`index.html`** — Adicionar `data-label` em cada `<td>`:
-```html
-<td data-label="Nome">{item.nome}</td>
-<td data-label="Status">{item.status}</td>
-<td data-label="Ações">
-  <button data-action="edit" data-id="{item.id}">Editar</button>
-</td>
-```
-
-**`style.css`** — CSS responsivo para transformar tabela em cards:
-```css
-/* Mobile: tabela vira cards empilhados */
-@media (max-width: 767px) {
-  .table-responsive thead { display: none; }
-  .table-responsive tr {
-    display: block;
-    border: 1px solid var(--border-color);
-    border-radius: var(--space-3);
-    padding: var(--space-3);
-    margin-bottom: var(--space-3);
-  }
-  .table-responsive td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-2) 0;
-    border-bottom: none;
-  }
-  .table-responsive td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: var(--text-muted);
-    font-size: var(--space-3);
-    text-transform: uppercase;
-  }
-  /* Ações no final com botões lado a lado */
-  .table-responsive td:last-child {
-    border-top: 1px solid var(--border-color);
-    margin-top: var(--space-2);
-    padding-top: var(--space-2);
-  }
-}
-```
-
-Usar classes de visibility responsivas do `core.css` para colunas opcionais:
-```html
-<th scope="col" class="hide-sm">E-mail</th>
-<td data-label="E-mail" class="hide-sm">{item.email}</td>
-```
-
 ## 4. Migration
+
+> **Se `target_api == "sqlserver"`: PULE esta seção inteira. Módulos sqlserver não têm migration (consultam tabelas existentes do ERP).
 
 ```python
 """criar tabela {table_name}
@@ -1122,6 +1078,7 @@ help:
 
 Criar `module.json` na raiz do standalone com os metadados do módulo. Este arquivo é usado pelo sistema de importação do GrindX.
 
+**Se `target_api == "postgres"`:**
 ```json
 {
   "module_name": "{module_name}",
@@ -1146,6 +1103,32 @@ Criar `module.json` na raiz do standalone com os metadados do módulo. Este arqu
 }
 ```
 
+**Se `target_api == "sqlserver"`:**
+```json
+{
+  "module_name": "{module_name}",
+  "entity_name": "{entity_name}",
+  "version": "1.0.0",
+  "target_api": "sqlserver",
+  "schema_name": "{schema_name}",
+  "tables": ["{table_name}"],
+  "route_prefix": "{route_prefix}",
+  "route_tag": "{route_tag}",
+  "frontend_tabs": [
+    {
+      "name": "Nome da Aba",
+      "url": "modules/{frontend_prefix}_{aba}/index.html",
+      "menu_icone": "icon-name",
+      "order": 1
+    }
+  ],
+  "menu_label": "{menu_label}",
+  "menu_icone": "folder",
+  "role_minima": "leitura",
+  "dependencies": []
+}
+```
+
 **Campos do `frontend_tabs`:**
 - `name`: Nome da aba exibido no menu
 - `url`: Caminho relativo ao `frontend-webapp/modules/`
@@ -1160,7 +1143,25 @@ Para o procedimento completo de importação via zip, veja `docs/IMPORTACAO.md`.
 
 ## 7. export.py
 
-Criar `app/modules/{module_name}/export.py`:
+Criar `app/modules/{module_name}/export.py`.
+
+### Adaptação para target_api
+
+| Configuração | `postgres` (padrão) | `sqlserver` |
+|---|---|---|
+| `GRINDX_API` | `apps/api-postgres` | `apps/api-sqlserver` |
+| `GRINDX_FRONTEND` | `packages/frontend-webapp` | `packages/frontend-webapp` (igual) |
+| `ROUTER_IMPORT` | `from app.modules...` | `from app.modules...` (mesmo caminho) |
+| Chamar `register_dependency()`? | Sim | **Não** — api-sqlserver não tem `auth/dependencies.py` |
+| Chamar `register_alembic_import()`? | Sim | **Não** — sem Alembic no api-sqlserver |
+| Chamar `copy_migration()`? | Sim | **Não** — sem migration |
+| Chamar `run_migrations()`? | Sim | **Não** — sem migration |
+| Chamar `register_routes()`? | Sim | Sim (mas edita `api-sqlserver/app/main.py`) |
+| Método `package()` | Inclui `migration/` | **Não** inclui `migration/` |
+
+No template abaixo, altere:
+- `GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"` → `GRINDX_ROOT / "apps" / "api-sqlserver"` (sqlserver)
+- A seção de main() controlando quais funções executar com condicionais
 
 ```python
 """
@@ -1190,8 +1191,7 @@ MODULE_NAME = "{entity_name}"
 MODULE_SRC = Path(__file__).parent
 STANDALONE_ROOT = MODULE_SRC.parent.parent.parent  # raiz do modulo-{module_name}/
 GRINDX_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent.parent.parent / "GrindX"
-# Alterar para "api-sqlserver" se o módulo usa SQL Server (Protheus)
-# Backend fica em apps/, frontend em packages/
+# postgres: "api-postgres" | sqlserver: "api-sqlserver"
 GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
 GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
 FRONTEND_SRC = STANDALONE_ROOT / "frontend"
@@ -1357,6 +1357,7 @@ def package(dry_run: bool = False):
                     arcname = str(Path("frontend") / Path(*parts))
                     zf.write(file, arcname)
 
+        # Incluir migration/ se existir (postgres apenas)
         if migration_dir.exists():
             for file in migration_dir.glob("*.py"):
                 zf.write(file, f"migration/{file.name}")
@@ -1365,14 +1366,22 @@ def package(dry_run: bool = False):
 
 
 def export(dry_run: bool = False):
+    """Exporta módulo para o GrindX.
+
+    Se GRINDX_API aponta para api-sqlserver (módulos read-only de ERP),
+    pula migration, dependency factory e alembic import.
+    """
     logger.info("Exportando módulo %%s", MODULE_NAME, dry_run=dry_run)
     copy_backend(dry_run)
     copy_frontend(dry_run)
-    copy_migration(dry_run)
+    is_sqlserver = "sqlserver" in str(GRINDX_API).lower()
+    if not is_sqlserver:
+        copy_migration(dry_run)
     register_routes(dry_run)
-    register_dependency(dry_run)
-    register_alembic_import(dry_run)
-    run_migrations(dry_run)
+    if not is_sqlserver:
+        register_dependency(dry_run)
+        register_alembic_import(dry_run)
+        run_migrations(dry_run)
     logger.info("Módulo exportado com sucesso")
 
 
@@ -1404,73 +1413,82 @@ if __name__ == "__main__":
 
 ## 8. Execution / Test Workflow
 
+### PostgreSQL (opção A)
+
 ```powershell
 # 1. Criar estrutura do módulo
 # (seguir os templates acima manualmente ou com subagent)
 
 # 2. Rodar testes (independente, fora do GrindX)
 make test                                          # via Makefile
-# ou manualmente:
 $env:GRINDX_PACKAGES = "D:\\_Projetos\\GrindX\\packages"
 python -m pytest app/modules/{module_name}/tests/ -v
 # Esperado: 10+ testes PASS
 
-# 3. Gerar pacote .zip (após testes verdes)
-make package                                       # via Makefile
-# ou manualmente:
+# 3. Gerar pacote .zip
+make package
 python -m app.modules.{module_name}.export package
 
 # 4. Verificar estrutura do zip
-# (o make package já exibe a estrutura)
-# ou manualmente:
 python -c "import zipfile; [print(f) for f in zipfile.ZipFile('dist/modulo-{module_name}.zip').namelist()]"
 
 # 5. Importar no GrindX
-make import                                        # gera zip + copia para import/
-# ou manualmente:
-Copy-Item dist\modulo-{module_name}.zip D:\_Projetos\GrindX\import\
+make import
+# ou: Copy-Item dist\modulo-{module_name}.zip D:\_Projetos\GrindX\import\
 # Via API: POST /v1/import/{module_name}
 # Via frontend: Gestão → Importar Módulos
-# Veja docs/IMPORTACAO.md para procedimento completo e ordem de importação
+```
 
-# 6. Exportar para o GrindX (via CLI, alternativa ao .zip)
-make export                                        # via Makefile
-# ou manualmente:
-python -m app.modules.{module_name}.export
+### SQL Server (opção A2)
 
-# 7. Verificar no GrindX
-cd D:\\_Projetos\\GrindX\\packages\\api-postgres
+```powershell
+# Steps 1-4: idênticos (criar arquivos, rodar testes, gerar zip)
+
+# 5. Importar no GrindX (especificar target_api)
+Copy-Item dist\modulo-{module_name}.zip D:\_Projetos\GrindX\import\
+# Via CLI com --target-api:
+python D:\_Projetos\GrindX\apps\api-postgres\scripts\import_module.py {module_name} --target-api=sqlserver --import-dir=D:\_Projetos\GrindX\import
+
+# 6. Verificar no api-sqlserver
+cd D:\\_Projetos\\GrindX\\packages\\api-sqlserver
 pytest tests/ -k {module_name} -v
 ```
 
 ## Registration Checklist
 
-- [ ] **Tech Stack definido**: Padrão GrindX (HTML puro + CSS puro + Vanilla JS + PostgreSQL) ou padrão alternativo especificado
-- [ ] **Frontend prefix definido**: Prefixo abreviado para sub-módulos (ex: `gp` para gestao_projetos)
+### PostgreSQL (opção A)
+
+- [ ] **Tech Stack definido**: Padrão GrindX (HTML puro + CSS puro + Vanilla JS + PostgreSQL)
+- [ ] **Frontend prefix definido**: Prefixo abreviado para sub-módulos (ex: `gp`)
 - [ ] **Frontend tabs definido**: Array de abas com name, url, menu_icone, order
 - [ ] Backend: base, model, schemas, repository, service, router + __init__.py
 - [ ] **Router dual-context**: try/except para `get_db`/`get_current_user` (GrindX) vs `get_db_protheus`/`verify_api_key` (standalone)
 - [ ] **Frontend dual-context**: `_fetch()` e `downloadFromUrl()` com detecção `window.grindx.session` + `index.html` inclui `app.js`
-- [ ] **PDF opcional**: se módulo gera PDF, instalar `xhtml2pdf` no venv do GrindX (`pip install xhtml2pdf`)
-- [ ] Tests: conftest.py (com padrão `importlib.util`), unit tests (mocked repo), integration tests (SQLite)
-- [ ] Migration: Alembic migration file (PostgreSQL) — ou diretório vazio para módulos read-only
-- [ ] Frontend: sub-módulos com prefixo (ex: `gp_dashboard/`, `gp_projeto/`), cada um com index.html, script.js, style.css
-- [ ] Modal: padrão `modal-overlay` + `modal-card` com `style.display`, `role="dialog"`, `aria-modal`, `aria-labelledby`
+- [ ] **PDF opcional**: se módulo gera PDF, instalar `xhtml2pdf` no venv do GrindX
+- [ ] Tests: conftest.py, unit tests (mocked repo), integration tests (SQLite)
+- [ ] Migration: Alembic migration file (PostgreSQL)
 - [ ] Support: requirements.txt, pytest.ini, run_tests.ps1, Makefile
 - [ ] Testes passam: `pytest app/modules/{module_name}/tests/ -v`
 - [ ] `module.json` criado na raiz do standalone com `frontend_tabs` array
 - [ ] `export.py`: usa `STANDALONE_ROOT` para paths de frontend, migration e dist
 - [ ] `export.py`: `copy_frontend` copia sub-módulos para `modules/` (raiz)
 - [ ] `export.py`: `--dry-run` simula sem alterar GrindX
+
+### SQL Server (opção A2) — Diferenças
+
+- [ ] **Sem** `base.py`, `models/`, `migration/`
+- [ ] **Adicionar** `exceptions.py` com exceções específicas do domínio
+- [ ] **`module.json`**: incluir `"target_api": "sqlserver"` e `"role_minima": "leitura"`
+- [ ] **`export.py`**: `GRINDX_API` aponta para `apps/api-sqlserver`; pula migration/dependency/alembic
+- [ ] **Router**: factory inline (já é o padrão); não usa `auth/dependencies.py`
+- [ ] **Repository**: SQL raw via `text()`, sem models SQLAlchemy
+- [ ] **Tests**: sem `conftest.py` (mock do Protheus em vez de SQLite); sem `test_integration.py`
 - [ ] `export.py`: `--grindx-root` aceita caminho customizado
 - [ ] `export.py`: comando `package` gera `.zip` com estrutura compatível com o importer
 - [ ] Herança de skins: style.css usa `var(--...)`, sem cores fixas
-- [ ] **Responsividade**: botões de ação seguem padrão ícone + `<span class="hide-mobile">` (só ícone no mobile/tablet)
-- [ ] **Responsividade**: spacing scale do `core.css` usada (não hardcoded `0.75rem`)
-- [ ] **Responsividade**: breakpoints unificados usados em media queries (não magic numbers)
-- [ ] **Responsividade**: touch targets com `min-height: 44px` em todos elementos interativos
-- [ ] **Responsividade**: se módulo tem `<table>`, implementar table-to-card com `data-label` (Seção 3.3)
-- [ ] **Responsividade**: modais usam `max-width: min(Xpx, calc(100vw - ...))` (não `max-width` fixo que quebra em mobile)
-- [ ] **Responsividade**: testar visualmente em 3 breakpoints: mobile (<480px), tablet (768px), desktop (>1024px)
 - [ ] Zip verificado: `module.json` na raiz, `app/modules/{name}/` na raiz, `frontend/` na raiz (sem `modules/` extra)
 - [ ] **Pós-importação**: Associar abas manualmente no Portal → Estrutura
+
+---
+
+> **Nota de manutenção:** Esta skill tem ~1500 linhas. Se crescer além disso, refatore extraindo os templates Python/JSON para `templates/{postgres,sqlserver}/` e mantenha apenas o workflow + lógica condicional no `SKILL.md` (~300-400 linhas). Consulte esta seção ao fazer a refatoração para referência dos critérios de split.
