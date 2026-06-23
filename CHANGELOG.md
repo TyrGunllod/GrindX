@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.34.2 (2026-06-23)
+
+### Bug Fixes
+
+- Copy frontend PermissionError now raises; deploy chown 1001:1001
+  ([`0d42d03`](https://github.com/TyrGunllod/GrindX/commit/0d42d03700165175ea3daeee9047e0e51a0eeba0))
+
+
 ## v1.34.1 (2026-06-23)
 
 ### Bug Fixes
