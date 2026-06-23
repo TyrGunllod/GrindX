@@ -444,7 +444,7 @@ def rollback(backup_dir: Path | None) -> None:
 def _log_step(step_name: str, start: float) -> float:
     """Loga duração de um passo e retorna o novo timestamp."""
     elapsed = time.time() - start
-    logger.info("Passo '%s' completado em %.2fs", step_name, elapsed)
+    print(f"[TIMING] Passo '{step_name}' completado em {elapsed:.2f}s", flush=True)
     return time.time()
 
 
@@ -527,6 +527,15 @@ def import_module(
 
 
 def main():
+    import logging
+
+    logging.basicConfig(stream=sys.stderr, level=logging.INFO, format="%(message)s")
+    structlog.configure(
+        processors=[structlog.dev.ConsoleRenderer()],
+        logger_factory=structlog.PrintLoggerFactory(sys.stderr),
+        cache_logger_on_first_use=True,
+    )
+
     parser = argparse.ArgumentParser(description="Importa um módulo .zip para o GrindX")
     parser.add_argument("module_name", help="Nome do módulo (snake_case)")
     parser.add_argument(

@@ -205,44 +205,79 @@ def import_module(
             cmd.append("--force")
 
         logger.info("Executando subprocesso: %s", " ".join(cmd))
-        creationflags = 0
-        if sys.platform == "win32":
-            creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
+
+        stdout_lines: list[str] = []
+        stderr_lines: list[str] = []
         try:
-            result = subprocess.run(
+            proc = subprocess.Popen(
                 cmd,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
-                check=False,
-                creationflags=creationflags,
-                timeout=60,
+                creationflags=(
+                    subprocess.CREATE_NEW_PROCESS_GROUP
+                    if sys.platform == "win32"
+                    else 0
+                ),
             )
-        except subprocess.TimeoutExpired:
-            logger.error(
-                "Subprocesso excedeu 60s ao importar '%s'. "
-                "Verifique logs do container.",
-                module_name,
-            )
+            try:
+                stdout, stderr = proc.communicate(timeout=60)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                stdout, stderr = proc.communicate()
+                if stdout:
+                    stdout_lines.append(stdout.strip())
+                if stderr:
+                    for line in stderr.strip().split("\n"):
+                        line = line.strip()
+                        if line:
+                            logger.warning("[import:stderr] %s", line)
+                            stderr_lines.append(line)
+                logger.error(
+                    "Subprocesso excedeu 60s ao importar '%s'. stdout: %s",
+                    module_name,
+                    "\n".join(stdout_lines) or "(vazio)",
+                )
+                return ImportResult(
+                    success=False,
+                    message="Falha na importação: subprocesso excedeu timeout de 60s",
+                    steps=stdout_lines + stderr_lines,
+                    error="Timeout do subprocesso.",
+                )
+
+            if stdout:
+                for line in stdout.strip().split("\n"):
+                    line = line.strip()
+                    if line:
+                        if line.startswith("[TIMING]"):
+                            logger.info("[import] %s", line)
+                        stdout_lines.append(line)
+
+            if stderr:
+                for line in stderr.strip().split("\n"):
+                    line = line.strip()
+                    if line:
+                        logger.info("[import] %s", line)
+                        stderr_lines.append(line)
+
+        except FileNotFoundError:
+            logger.error("Script não encontrado: %s", script_path)
             return ImportResult(
                 success=False,
-                message="Falha na importação: subprocesso excedeu timeout de 60s",
-                steps=["Subprocesso não completou em 60s"],
-                error="Timeout do subprocesso. Verifique os logs do container.",
+                message="Falha na importação: script não encontrado",
+                steps=["Script não encontrado"],
+                error=f"Script não encontrado: {script_path}",
             )
 
+        stdout_data = "\n".join(stdout_lines)
         try:
-            result_data = json.loads(result.stdout.strip())
+            result_data = json.loads(stdout_data)
         except (json.JSONDecodeError, ValueError):
             result_data = {
                 "success": False,
                 "steps": [],
-                "error": result.stderr or result.stdout,
+                "error": stderr or stdout_data,
             }
-
-        if result.stderr:
-            for line in result.stderr.strip().split("\n"):
-                if line:
-                    logger.warning("[import subprocess] %s", line)
 
         if result_data.get("success"):
             zip_path.unlink(missing_ok=True)
