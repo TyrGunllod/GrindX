@@ -98,7 +98,13 @@ def backup_existing(manifest: dict) -> Path | None:
     backup_root = _get_import_dir() / BACKUP_DIRNAME
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     backup_dir = backup_root / f"{manifest['module_name']}_{timestamp}"
-    backup_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        backup_dir.mkdir(parents=True, exist_ok=True)
+    except PermissionError:
+        logger.warning(
+            "Sem permissão para criar backup em %s — continuando", backup_root
+        )
+        return None
 
     files_to_backup = [
         api_dir / "app" / "main.py",
@@ -107,8 +113,11 @@ def backup_existing(manifest: dict) -> Path | None:
     ]
     for f in files_to_backup:
         if f.exists():
-            shutil.copy2(f, backup_dir / f.name)
-            logger.info("Backup criado: %s -> %s", f, backup_dir / f.name)
+            try:
+                shutil.copy2(f, backup_dir / f.name)
+                logger.info("Backup criado: %s -> %s", f, backup_dir / f.name)
+            except PermissionError:
+                logger.warning("Sem permissão para copiar %s — continuando", f)
 
     return backup_dir
 
@@ -171,12 +180,23 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
                     )
                     continue
                 shutil.rmtree(dest)
-            shutil.copytree(item, dest)
-            logger.info("Frontend copiado: %s -> %s", item.name, dest)
+            try:
+                shutil.copytree(item, dest)
+                logger.info("Frontend copiado: %s -> %s", item.name, dest)
+            except PermissionError:
+                logger.warning(
+                    "Sem permissão para copiar frontend %s — ignorando. "
+                    "Copie manualmente para %s",
+                    item.name,
+                    dest,
+                )
         elif item.is_file():
             dest = dest_base / item.name
-            shutil.copy2(item, dest)
-            logger.info("Arquivo copiado: %s", item.name)
+            try:
+                shutil.copy2(item, dest)
+                logger.info("Arquivo copiado: %s", item.name)
+            except PermissionError:
+                logger.warning("Sem permissão para copiar %s — ignorando", item.name)
 
 
 def copy_migration(import_dir: Path) -> None:
@@ -465,7 +485,11 @@ def import_module(
         _tick = _log_step("validate_manifest", _tick)
 
         if not dry_run:
-            backup_path = backup_existing(manifest)
+            try:
+                backup_path = backup_existing(manifest)
+            except Exception as exc:
+                logger.warning("Backup ignorado: %s — continuando", exc)
+                backup_path = None
         steps.append("Backup concluído")
         _tick = _log_step("backup_existing", _tick)
 
