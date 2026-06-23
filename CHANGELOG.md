@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.11 (2026-06-23)
+
+### Bug Fixes
+
+- Deploy remove modules antes de copiar para evitar aninhamento
+  ([`c8ab56f`](https://github.com/TyrGunllod/GrindX/commit/c8ab56ff6019d66e00dcf6f9fa10ceffd66109e6))
+
+
 ## v1.32.10 (2026-06-23)
 
 ### Bug Fixes
