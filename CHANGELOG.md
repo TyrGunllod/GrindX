@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.34.4 (2026-06-23)
+
+### Bug Fixes
+
+- **import**: Frontend folder removal now uses startswith(module_name)
+  ([`c81dde5`](https://github.com/TyrGunllod/GrindX/commit/c81dde511afe02c15f3924dd3f4bc97e99558006))
+
+
 ## v1.34.3 (2026-06-23)
 
 ### Bug Fixes
