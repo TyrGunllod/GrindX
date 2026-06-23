@@ -410,11 +410,7 @@ def remove_module(
     frontend_dir = api_dir.parent / "frontend-webapp" / "modules"
     if frontend_dir.exists():
         for item in frontend_dir.iterdir():
-            if (
-                item.is_dir()
-                and item.name.startswith(f"{module_name}_")
-                or item.name.startswith(f"{module_name}-")
-            ):
+            if item.is_dir() and item.name.startswith(module_name):
                 shutil.rmtree(item)
                 steps.append(f"Frontend removido: {item}")
 
