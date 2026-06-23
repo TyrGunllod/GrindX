@@ -64,6 +64,7 @@ class ModuleInfo(BaseModel):
     version: str
     menu_label: str
     schema_name: str
+    target_api: str = "postgres"
     ja_importado: bool
 
 
@@ -135,6 +136,7 @@ def scan_imports(
                 version=manifest.get("version", "0.0.0"),
                 menu_label=manifest.get("menu_label", slug),
                 schema_name=manifest.get("schema_name", "org"),
+                target_api=manifest.get("target_api", "postgres"),
                 ja_importado=in_backend_fs or in_frontend_fs,
             )
         )
@@ -189,6 +191,10 @@ def import_module(
                 f"module.json não encontrado dentro do .zip: {zip_path.name}",
             )
 
+        with open(manifest_path, encoding="utf-8") as f:
+            manifest_data = json.load(f)
+        target_api = manifest_data.get("target_api", "postgres")
+
         script_path = (
             Path(__file__).resolve().parent.parent.parent
             / "scripts"
@@ -201,6 +207,8 @@ def import_module(
             f"--import-dir={tmp_dir}",
             "--skip-migrations",
         ]
+        if target_api == "sqlserver":
+            cmd.append("--target-api=sqlserver")
         if force:
             cmd.append("--force")
 
@@ -282,12 +290,17 @@ def import_module(
         if result_data.get("success"):
             zip_path.unlink(missing_ok=True)
             logger.info("Zip removido após importação: %s", zip_path.name)
-            threading.Thread(
-                target=_run_migrations_background,
-                args=(module_name,),
-                daemon=True,
-            ).start()
-            result_data["steps"].append("Migrações agendadas em segundo plano")
+            if target_api != "sqlserver":
+                threading.Thread(
+                    target=_run_migrations_background,
+                    args=(module_name,),
+                    daemon=True,
+                ).start()
+                result_data["steps"].append("Migrações agendadas em segundo plano")
+            else:
+                result_data["steps"].append(
+                    "Módulo sqlserver importado — sem migrações"
+                )
             logger.info("Import de '%s' concluído em <60s", module_name)
 
         return ImportResult(
