@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".")))
 
 try:
     from app.core.config import settings
-    from app.database import engine
+    from app.database import get_engine
     from sqlalchemy import text
 
     print("\n" + "=" * 50)
@@ -24,7 +24,7 @@ try:
     print("🔄 Tentando conectar...")
 
     # Tenta conectar e executar um comando simples
-    with engine.connect() as connection:
+    with get_engine().connect() as connection:
         # Definindo um timeout curto para o teste
         result = connection.execute(text("SELECT @@VERSION"))
         version = result.fetchone()[0]
