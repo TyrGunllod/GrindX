@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.32.9 (2026-06-23)
+
+### Bug Fixes
+
+- Corrige paths dos volumes para usar HOME no WSL
+  ([`69dc92b`](https://github.com/TyrGunllod/GrindX/commit/69dc92b1939eb687ebaedb71c2f4c7052106f2d6))
+
+
 ## v1.32.8 (2026-06-22)
 
 ### Bug Fixes
