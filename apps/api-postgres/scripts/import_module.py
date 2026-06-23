@@ -3,6 +3,7 @@ import_module.py — Importa um módulo empacotado em .zip para o GrindX.
 
 Uso:
     python scripts/import_module.py projetos --import-dir=C:/tmp/extracted --force
+    python scripts/import_module.py custo --import-dir=C:/tmp/extracted --force --target-api=sqlserver
 
 Processo:
     1. Valida module.json no diretório extraído
@@ -20,6 +21,7 @@ Args:
     --import-dir: Caminho do diretório extraído contendo module.json
     --force: Sobrescrever módulo existente sem perguntar
     --dry-run: Apenas simular
+    --target-api: API alvo: postgres (default) ou sqlserver
 """
 
 import argparse
@@ -129,11 +131,13 @@ def backup_existing(manifest: dict) -> Path | None:
     return backup_dir
 
 
-def copy_backend(import_dir: Path, module_name: str, force: bool) -> None:
+def copy_backend(
+    import_dir: Path, module_name: str, force: bool, target_api: str = "postgres"
+) -> None:
     import tempfile
 
     src = import_dir / "app" / "modules" / module_name
-    api_dir = _get_api_dir()
+    api_dir = _get_api_dir() if target_api == "postgres" else _get_sqlserver_api_dir()
     dest = api_dir / "app" / "modules" / module_name
 
     if not src.exists():
@@ -178,6 +182,9 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
         return
 
     for item in src.iterdir():
+        if item.name == "shared":
+            logger.info("Ignorando diretório shared/ — já existe no monorepo")
+            continue
         if item.is_dir():
             dest = dest_base / item.name
             if dest.exists():
@@ -547,6 +554,7 @@ def import_module(
     force: bool = False,
     dry_run: bool = False,
     skip_migrations: bool = False,
+    target_api: str = "postgres",
 ) -> dict:
     steps = []
     backup_path = None
@@ -554,6 +562,14 @@ def import_module(
     _tick = time.time()
     try:
         manifest = validate_manifest(import_dir)
+        if target_api == "postgres":
+            manifest_target = manifest.get("target_api", "postgres")
+            if manifest_target != "postgres":
+                logger.info(
+                    "Usando target_api='%s' do module.json (CLI não especificou)",
+                    manifest_target,
+                )
+            target_api = manifest_target
         steps.append("Manifesto validado")
         _tick = _log_step("validate_manifest", _tick)
 
@@ -567,7 +583,7 @@ def import_module(
         _tick = _log_step("backup_existing", _tick)
 
         if not dry_run:
-            copy_backend(import_dir, module_name, force)
+            copy_backend(import_dir, module_name, force, target_api=target_api)
         steps.append("Backend copiado")
         _tick = _log_step("copy_backend", _tick)
 
@@ -577,22 +593,28 @@ def import_module(
         _tick = _log_step("copy_frontend", _tick)
 
         if not dry_run:
-            copy_migration(import_dir)
+            if target_api != "sqlserver":
+                copy_migration(import_dir)
         steps.append("Migration copiada")
         _tick = _log_step("copy_migration", _tick)
 
         if not dry_run:
-            register_router(manifest, force)
+            if target_api == "sqlserver":
+                register_router_sqlserver(manifest, force)
+            else:
+                register_router(manifest, force)
         steps.append("Router registrado")
         _tick = _log_step("register_router", _tick)
 
         if not dry_run:
-            register_dependency(manifest, force)
+            if target_api != "sqlserver":
+                register_dependency(manifest, force)
         steps.append("Dependency registrado em dependencies.py")
         _tick = _log_step("register_dependency", _tick)
 
         if not dry_run:
-            register_alembic_import(manifest, force)
+            if target_api != "sqlserver":
+                register_alembic_import(manifest, force)
         steps.append("Import do model registrado no alembic/env.py")
         _tick = _log_step("register_alembic_import", _tick)
 
@@ -601,18 +623,21 @@ def import_module(
         steps.append("Menu registrado")
         _tick = _log_step("register_menu", _tick)
 
-        if skip_migrations:
-            steps.append("Migração adiada (executada em segundo plano)")
+        if target_api != "sqlserver":
+            if skip_migrations:
+                steps.append("Migração adiada (executada em segundo plano)")
+            else:
+                try:
+                    if not dry_run:
+                        run_migrations()
+                    steps.append("Migrations executadas")
+                except Exception as e:
+                    logger.warning(
+                        "Migration falhou (tabelas podem já existir): %s", str(e)
+                    )
+                    steps.append(f"Migration ignorada: {str(e)[:100]}")
         else:
-            try:
-                if not dry_run:
-                    run_migrations()
-                steps.append("Migrations executadas")
-            except Exception as e:
-                logger.warning(
-                    "Migration falhou (tabelas podem já existir): %s", str(e)
-                )
-                steps.append(f"Migration ignorada: {str(e)[:100]}")
+            steps.append("Módulo sqlserver — sem migrações necessárias")
 
         return {"success": True, "steps": steps}
 
@@ -647,6 +672,12 @@ def main():
         action="store_true",
         help="Pular migrações (executar em background depois)",
     )
+    parser.add_argument(
+        "--target-api",
+        default="postgres",
+        choices=["postgres", "sqlserver"],
+        help="API alvo: postgres (default) ou sqlserver",
+    )
     args = parser.parse_args()
 
     import_dir = Path(args.import_dir)
@@ -660,6 +691,7 @@ def main():
         force=args.force,
         dry_run=args.dry_run,
         skip_migrations=args.skip_migrations,
+        target_api=args.target_api,
     )
     print(json.dumps(result, indent=2, ensure_ascii=False))
     sys.exit(0 if result["success"] else 1)
