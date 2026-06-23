@@ -6,6 +6,7 @@ importar módulos completos (backend + frontend + migration + registro).
 """
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -336,7 +337,9 @@ def remove_module(
 ):
     steps = []
 
-    api_dir = Path(__file__).resolve().parent.parent.parent
+    # MONOREPO_ROOT resolve o path correto dentro do container WSL
+    monorepo_root = Path(os.environ.get("MONOREPO_ROOT", "")).resolve() if os.environ.get("MONOREPO_ROOT") else None
+    api_dir = monorepo_root if monorepo_root else Path(__file__).resolve().parent.parent.parent
 
     main_py = api_dir / "app" / "main.py"
     if main_py.exists():
@@ -407,7 +410,12 @@ def remove_module(
         shutil.rmtree(backend_dir)
         steps.append(f"Backend removido: {backend_dir}")
 
-    frontend_dir = api_dir.parent / "frontend-webapp" / "modules"
+    # Dentro do container (MONOREPO_ROOT=/app), frontend é /app/apps/frontend-webapp/modules
+    # No host (MONOREPO_ROOT vazio), frontend é ../frontend-webapp/modules relativo a api-postgres
+    if monorepo_root:
+        frontend_dir = api_dir / "apps" / "frontend-webapp" / "modules"
+    else:
+        frontend_dir = api_dir.parent / "frontend-webapp" / "modules"
     if frontend_dir.exists():
         for item in frontend_dir.iterdir():
             if item.is_dir() and item.name.startswith(module_name):
