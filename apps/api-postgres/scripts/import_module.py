@@ -200,7 +200,7 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
             except PermissionError:
                 logger.error(
                     "Sem permissão para copiar frontend %s para %s. "
-                    "Execute: sudo chown -R 1001:1001 apps/frontend-webapp/modules",
+                    "Execute: chmod -R 777 apps/frontend-webapp/modules (rootless podman)",
                     item.name,
                     dest,
                 )
@@ -213,7 +213,7 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
             except PermissionError:
                 logger.error(
                     "Sem permissão para copiar %s para %s. "
-                    "Execute: sudo chown -R 1001:1001 apps/frontend-webapp/modules",
+                    "Execute: chmod -R 777 apps/frontend-webapp/modules (rootless podman)",
                     item.name,
                     dest,
                 )
