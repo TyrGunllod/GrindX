@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
 import zipfile
 from pathlib import Path
 
@@ -25,6 +26,35 @@ from app.database import get_db
 logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/v1/import", tags=["Importação de Módulos"])
+
+
+def _run_migrations_background(module_name: str) -> None:
+    """Roda alembic upgrade head em background."""
+    api_dir = Path(__file__).resolve().parent.parent.parent
+    python_exe = sys.executable
+    cmd = [python_exe, "-m", "alembic", "upgrade", "head"]
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=str(api_dir),
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        if result.returncode == 0:
+            logger.info("Migrações de '%s' concluídas com sucesso", module_name)
+        else:
+            logger.warning(
+                "Migrações de '%s' falharam: %s",
+                module_name,
+                result.stderr.strip() or result.stdout.strip(),
+            )
+    except subprocess.TimeoutExpired:
+        logger.error(
+            "Migrações de '%s' excederam timeout de 120s. "
+            "Execute manualmente: make migrate",
+            module_name,
+        )
 
 
 class ModuleInfo(BaseModel):
@@ -169,6 +199,7 @@ def import_module(
             str(script_path),
             module_name,
             f"--import-dir={tmp_dir}",
+            "--skip-migrations",
         ]
         if force:
             cmd.append("--force")
@@ -177,28 +208,13 @@ def import_module(
         creationflags = 0
         if sys.platform == "win32":
             creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
-        try:
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                check=False,
-                creationflags=creationflags,
-                timeout=25,
-            )
-        except subprocess.TimeoutExpired:
-            logger.warning(
-                "Import subprocess timed out (25s). Migration will need manual run."
-            )
-            return ImportResult(
-                success=True,
-                message="Módulo copiado. Execute 'make migrate' para finalizar as migrações.",
-                steps=[
-                    "Arquivos copiados",
-                    "Rotas registradas",
-                    "Migração pendente (execute make migrate manualmente)",
-                ],
-            )
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            check=False,
+            creationflags=creationflags,
+        )
 
         try:
             result_data = json.loads(result.stdout.strip())
@@ -217,12 +233,20 @@ def import_module(
         if result_data.get("success"):
             zip_path.unlink(missing_ok=True)
             logger.info("Zip removido após importação: %s", zip_path.name)
+            threading.Thread(
+                target=_run_migrations_background,
+                args=(module_name,),
+                daemon=True,
+            ).start()
+            result_data["steps"].append("Migrações agendadas em segundo plano")
 
         return ImportResult(
             success=result_data.get("success", False),
-            message="Módulo importado com sucesso"
-            if result_data.get("success")
-            else "Falha na importação",
+            message=(
+                "Módulo importado com sucesso. Migrações rodando em segundo plano."
+                if result_data.get("success")
+                else "Falha na importação"
+            ),
             steps=result_data.get("steps", []),
             error=result_data.get("error"),
         )

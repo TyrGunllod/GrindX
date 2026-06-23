@@ -442,7 +442,11 @@ def rollback(backup_dir: Path | None) -> None:
 
 
 def import_module(
-    module_name: str, import_dir: Path, force: bool = False, dry_run: bool = False
+    module_name: str,
+    import_dir: Path,
+    force: bool = False,
+    dry_run: bool = False,
+    skip_migrations: bool = False,
 ) -> dict:
     steps = []
     backup_path = None
@@ -483,13 +487,18 @@ def import_module(
             register_menu(manifest)
         steps.append("Menu registrado")
 
-        try:
-            if not dry_run:
-                run_migrations()
-            steps.append("Migrations executadas")
-        except Exception as e:
-            logger.warning("Migration falhou (tabelas podem já existir): %s", str(e))
-            steps.append(f"Migration ignorada: {str(e)[:100]}")
+        if skip_migrations:
+            steps.append("Migração adiada (executada em segundo plano)")
+        else:
+            try:
+                if not dry_run:
+                    run_migrations()
+                steps.append("Migrations executadas")
+            except Exception as e:
+                logger.warning(
+                    "Migration falhou (tabelas podem já existir): %s", str(e)
+                )
+                steps.append(f"Migration ignorada: {str(e)[:100]}")
 
         return {"success": True, "steps": steps}
 
@@ -510,6 +519,11 @@ def main():
         "--force", action="store_true", help="Sobrescrever módulo existente"
     )
     parser.add_argument("--dry-run", action="store_true", help="Apenas simular")
+    parser.add_argument(
+        "--skip-migrations",
+        action="store_true",
+        help="Pular migrações (executar em background depois)",
+    )
     args = parser.parse_args()
 
     import_dir = Path(args.import_dir)
@@ -518,7 +532,11 @@ def main():
         sys.exit(1)
 
     result = import_module(
-        args.module_name, import_dir, force=args.force, dry_run=args.dry_run
+        args.module_name,
+        import_dir,
+        force=args.force,
+        dry_run=args.dry_run,
+        skip_migrations=args.skip_migrations,
     )
     print(json.dumps(result, indent=2, ensure_ascii=False))
     sys.exit(0 if result["success"] else 1)
