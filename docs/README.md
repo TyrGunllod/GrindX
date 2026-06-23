@@ -1,4 +1,4 @@
-<!-- title: Documentação GrindX | updated: 2026-06-17 -->
+<!-- title: Documentação GrindX | updated: 2026-06-22 -->
 
 # GrindX — Documentação
 

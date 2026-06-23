@@ -135,7 +135,7 @@ O `podman-compose.yml` define três serviços:
 
 | Serviço | Porta host | Imagem |
 |---------|-----------|--------|
-| `frontend` | 8080 | nginx:alpine (estático) |
+| `frontend` | 8101 (host) → 80 (container) | nginx:alpine (estático) |
 | `api-sqlserver` | 8001 | python:3.12-slim |
 | `api-postgres` | 8002 | python:3.12-slim |
 
@@ -157,7 +157,31 @@ Configurado via `pyproject.toml` (raiz) — `python-semantic-release` com parser
 
 ## Reverse Proxy (Nginx)
 
-O nginx.conf do frontend já está configurado para servir estáticos e fazer proxy reverso da API. Um nginx wrapper (ex: nginx:alpine) deve usar `apps/frontend-webapp/nginx.conf`.
+O `nginx.conf` do frontend serve estáticos e faz proxy reverso da API (`/v1/` → `localhost:8002`). Aplica security headers e CSP:
+
+```
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+  style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+  img-src 'self' data: blob: http://localhost:8002 https://ui-avatars.com;
+  connect-src 'self' http://localhost:8002 http://127.0.0.1:8002;
+  font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+```
+
+A API é acessada via same-origin (`/v1/`) em produção, eliminando CORS. Em desenvolvimento, o `config.js` detecta a porta `8101` e usa `http://localhost:8002/v1` diretamente.
+
+### Volumes no compose.yaml
+
+Os paths usam `${PWD}` (portátil entre WSL e Linux nativo):
+
+```yaml
+volumes:
+  - ${PWD}/apps/frontend-webapp/modules:/usr/share/nginx/html/modules
+  - ${HOME:-.}/Containers/volumes/grindx/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro,z
+```
+
+Para desenvolvimento (hot-reload nos módulos), mantenha o volume de `modules`. Para produção sem importador, pode remover o volume de módulos do frontend (os módulos já estão na imagem).
 
 Para ambientes que exigem SSL, adicione um nginx externo apontando para o container:
 

@@ -1,4 +1,4 @@
-<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-06-17 -->
+<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-06-22 -->
 
 # GrindX — Sistema de Gestão Integrado (Monorepo)
 

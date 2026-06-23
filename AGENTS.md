@@ -72,6 +72,9 @@ Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 —
 - **Design system**: Glassmorphism, `var(--...)` para tudo, nunca cores/fontes fixas
 - **compose.yaml**: ambas as APIs usam `network_mode: "container:grindx-frontend"` (compartilham rede do nginx)
 - **Containerização**: Podman (não Docker), `podman-compose.yml` — no Windows requer `podman machine` com conexão rootful
+- **Volumes no WSL**: `compose.yaml` usa `${PWD}` para paths de volume (não `./` relativo). Projeto deve estar clonado dentro do filesystem WSL (`~/...`), não em `/mnt/c/...`
+- **Ordem de scripts nos módulos**: `config.js` → `app.js` → `apiService.js` → `baseController.js` → `script.js`. `config.js` deve ser incluído em TODO `index.html` de módulo
+- **CSP no nginx**: `style-src` inclui `https://fonts.googleapis.com` (Google Fonts); `connect-src` inclui `http://localhost:8002 http://127.0.0.1:8002`
 
 ## Error Codes
 

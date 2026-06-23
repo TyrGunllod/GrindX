@@ -1,4 +1,4 @@
-<!-- title: Guia de Instalação — GrindX | updated: 2026-06-10 -->
+<!-- title: Guia de Instalação — GrindX | updated: 2026-06-22 -->
 
 # Guia de Instalação — GrindX
 
@@ -12,7 +12,18 @@
 | PostgreSQL | 14+ | Banco principal |
 | ODBC Driver 17 for SQL Server | — | Apenas para `api-sqlserver` |
 | Git | qualquer | Versionamento |
+| Podman | 4+ | Containers (substituto Docker) |
 | make (GnuMake) | qualquer | Automação de tasks |
+
+### Notas para WSL
+
+**Clone o repositório dentro do filesystem do WSL** (`~/`), não em `/mnt/c/`. Isso garante que os volumes do Podman funcionem corretamente (paths Windows não são acessíveis ao Podman).
+
+```bash
+cd ~
+git clone git@github.com:TyrGunllod/GrindX.git _Projects/GrindX
+cd _Projects/GrindX
+```
 
 ---
 
@@ -174,14 +185,49 @@ make seed
 
 ---
 
-## 8. Containers (Podman/Docker)
+## 8. Containers (Podman)
 
-```powershell
+### Desenvolvimento (hot-reload)
+
+```bash
 # Da raiz do projeto
 make build   # build das imagens
-make up      # subir todos os serviços
-make down    # parar os serviços
+make volumes # cria diretórios de volumes + copia nginx.conf
+make up      # sobe todos os serviços
+make down    # para os serviços
 make logs    # ver logs em tempo real
+
+# Primeira vez
+docker exec grindx-api-postgres alembic upgrade head
+docker exec grindx-api-postgres python seed.py
+```
+
+### Deploy para produção
+
+```bash
+# 1. Gerar imagens e exportar .tar
+make images
+
+# 2. Exportar configs para diretório de deploy
+make deploy DEST=~/Apps
+
+# 3. Copiar .tar e diretório de deploy para o servidor
+# 4. No servidor:
+cd ~/Apps/GrindX
+make volumes
+podman load -i grindx-frontend-*.tar
+podman load -i grindx-api-sqlserver-*.tar
+podman load -i grindx-api-postgres-*.tar
+podman-compose up -d
+```
+
+### Volumes no compose.yaml
+
+Os paths de volume usam `${PWD}` (diretório atual ao rodar o compose) para compatibilidade com WSL e Linux. Exemplo:
+
+```yaml
+volumes:
+  - ${PWD}/apps/frontend-webapp/modules:/usr/share/nginx/html/modules
 ```
 
 ---
@@ -194,9 +240,12 @@ make logs    # ver logs em tempo real
 
 ```html
 <link rel="stylesheet" href="../../shared/core.css">
+<script src="../../shared/config.js"></script>
 <script src="../../shared/app.js"></script>
 <script src="../../shared/apiService.js"></script>
 ```
+
+> A ordem dos scripts é obrigatória: `config.js` → `app.js` → `apiService.js` → `baseController.js` → `script.js`. O `config.js` define a URL base da API e deve vir antes do `app.js`.
 
 4. Cadastrar a URL do módulo no painel de **Módulos & Abas** dentro do portal
 
