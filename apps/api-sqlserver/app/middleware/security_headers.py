@@ -7,6 +7,9 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 
+EXCLUDED_PATHS: set[str] = {"/v1/docs", "/v1/redoc", "/v1/openapi.json"}
+
+
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Adiciona headers de segurança em todas as respostas."""
 
@@ -18,6 +21,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         response = await call_next(request)
+
+        if request.url.path in EXCLUDED_PATHS:
+            return response
+
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
