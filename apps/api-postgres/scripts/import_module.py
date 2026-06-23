@@ -287,6 +287,72 @@ def register_router(manifest: dict, force: bool, main_py: Path | None = None) ->
     logger.info("Routers registrados em main.py: %s", router_files)
 
 
+def register_router_sqlserver(
+    manifest: dict, force: bool, main_py: Path | None = None
+) -> None:
+    module_name = manifest["module_name"]
+    api_dir = _get_sqlserver_api_dir()
+    if main_py is None:
+        main_py = api_dir / "app" / "main.py"
+        router_base = api_dir
+    else:
+        router_base = main_py.parent
+
+    content = main_py.read_text(encoding="utf-8")
+
+    routers_dir = router_base / "app" / "modules" / module_name / "routers"
+    if not routers_dir.exists():
+        logger.warning("Diretório de routers não encontrado: %s", routers_dir)
+        return
+
+    router_files = [
+        f.stem for f in routers_dir.glob("*_router.py") if f.stem != "__init__"
+    ]
+    if not router_files:
+        logger.warning("Nenhum router encontrado em %s", routers_dir)
+        return
+
+    new_imports = []
+    new_includes = []
+    for router_file in sorted(router_files):
+        var_name = (
+            router_file if router_file.endswith("_router") else f"{router_file}_router"
+        )
+        import_line = f"from app.modules.{module_name}.routers.{router_file} import router as {var_name}"
+        include_line = f"app.include_router({var_name})"
+        if import_line not in content:
+            new_imports.append(import_line)
+        if include_line not in content:
+            new_includes.append(include_line)
+
+    if not new_imports and not new_includes:
+        logger.info("Routers ja registrados em sqlserver main.py")
+        return
+
+    lines = content.splitlines(keepends=True)
+    last_import_idx = None
+    last_include_idx = None
+
+    for i, line in enumerate(lines):
+        if "from app." in line and "import router as" in line:
+            last_import_idx = i
+        if "app.include_router(" in line:
+            last_include_idx = i
+
+    if last_import_idx is not None and new_imports:
+        for imp in reversed(new_imports):
+            lines.insert(last_import_idx + 1, imp + "\n")
+            if last_include_idx is not None and last_include_idx >= last_import_idx:
+                last_include_idx += 1
+
+    if last_include_idx is not None and new_includes:
+        for inc in reversed(new_includes):
+            lines.insert(last_include_idx + 1, inc + "\n")
+
+    main_py.write_text("".join(lines), encoding="utf-8")
+    logger.info("Routers registrados em sqlserver main.py: %s", router_files)
+
+
 def register_dependency(
     manifest: dict, force: bool, deps_py: Path | None = None
 ) -> None:
