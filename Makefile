@@ -202,6 +202,7 @@ deploy:
 	test -f .env.postgres && cp .env.postgres "$(DEST)/GrindX/" || true
 	test -f .env.sqlserver && cp .env.sqlserver "$(DEST)/GrindX/" || true
 	cp apps/frontend-webapp/nginx.conf "$(DEST)/GrindX/apps/frontend-webapp/nginx.conf"
+	cp -r apps/frontend-webapp/modules "$(DEST)/GrindX/apps/frontend-webapp/modules"
 	cp -r packages "$(DEST)/GrindX/packages"
 	@echo "Configs exportadas para $(DEST)/GrindX/"
 	@echo "Proximo passo:"
