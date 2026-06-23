@@ -198,19 +198,26 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
                 shutil.copytree(item, dest)
                 logger.info("Frontend copiado: %s -> %s", item.name, dest)
             except PermissionError:
-                logger.warning(
-                    "Sem permissão para copiar frontend %s — ignorando. "
-                    "Copie manualmente para %s",
+                logger.error(
+                    "Sem permissão para copiar frontend %s para %s. "
+                    "Execute: sudo chown -R 1001:1001 apps/frontend-webapp/modules",
                     item.name,
                     dest,
                 )
+                raise
         elif item.is_file():
             dest = dest_base / item.name
             try:
                 shutil.copy2(item, dest)
                 logger.info("Arquivo copiado: %s", item.name)
             except PermissionError:
-                logger.warning("Sem permissão para copiar %s — ignorando", item.name)
+                logger.error(
+                    "Sem permissão para copiar %s para %s. "
+                    "Execute: sudo chown -R 1001:1001 apps/frontend-webapp/modules",
+                    item.name,
+                    dest,
+                )
+                raise
 
 
 def copy_migration(import_dir: Path) -> None:
