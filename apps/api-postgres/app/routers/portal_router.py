@@ -219,6 +219,7 @@ def criar_modulo(
             raise ConflictError(f"Aba {aba_id} não encontrada. Verifique o aba_id.")
         raise ConflictError("Erro de integridade ao criar módulo.")
     db.refresh(novo_mod)
+    invalidate(_portal_cache, _portal_lock, "abas:active")
     return novo_mod
 
 
@@ -237,6 +238,7 @@ def atualizar_modulo(
     mod.aba_id = aba_id
     db.commit()
     db.refresh(mod)
+    invalidate(_portal_cache, _portal_lock, "abas:active")
     return mod
 
 
@@ -266,4 +268,5 @@ def deletar_modulo(
 
     db.delete(mod)
     db.commit()
+    invalidate(_portal_cache, _portal_lock, "abas:active")
     return None
