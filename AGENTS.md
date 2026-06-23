@@ -43,6 +43,12 @@ ruff check --fix .
 ruff check .                   # sem erros
 ```
 
+**Antes de todo `git push`, obrigatório:**
+
+```powershell
+ruff format packages/ apps/ && ruff check --fix . && ruff check .
+```
+
 Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 — alembic/versions ignora I001.
 
 ## Testing
