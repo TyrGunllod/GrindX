@@ -29,7 +29,9 @@ O GrindX possui um sistema de importação que aceita módulos compactados em `.
 2. **Copia** o `.zip` para a pasta `import/` do GrindX
 3. **Importa** via API (`POST /v1/import/{module_name}`) ou frontend (módulo Importer)
 
-O importador executa 9 steps automaticamente:
+O importador executa steps automaticamente. O fluxo depende do campo `target_api`:
+
+**Para módulos PostgreSQL (padrão):**
 1. Valida o `module.json`
 2. Faz backup dos arquivos que serão modificados
 3. Copia o backend para `app/modules/{module_name}/`
@@ -39,6 +41,12 @@ O importador executa 9 steps automaticamente:
 7. Registra a dependency factory em `auth/dependencies.py`
 8. Registra o import do model em `alembic/env.py`
 9. Executa `alembic upgrade head` e registra no menu
+
+**Para módulos SQL Server (`target_api: "sqlserver"`):**
+- Copia o backend para `apps/api-sqlserver/app/modules/{module_name}/`
+- Registra as rotas no `main.py` do api-sqlserver
+- **Pula** migration, dependency factory e alembic/env.py (não aplicável)
+- **Pula** `alembic upgrade head` (sem schema para gerenciar)
 
 ---
 
@@ -120,7 +128,7 @@ make dry-run
 
 ## Estrutura do Zip
 
-O zip deve ter esta estrutura na raiz:
+### Para módulos PostgreSQL (`target_api` omitido ou `"postgres"`)
 
 ```
 modulo-{nome}.zip
@@ -141,6 +149,31 @@ modulo-{nome}.zip
 └── migration/                     ← Migrations Alembic (opcional)
     └── 0001_...py
 ```
+
+### Para módulos SQL Server (`target_api: "sqlserver"`)
+
+```
+modulo-{nome}.zip
+├── module.json                    ← Manifesto (obrigatório)
+├── app/modules/{nome}/            ← Backend (sem models/ nem base.py)
+│   ├── __init__.py
+│   ├── exceptions.py
+│   ├── schemas/
+│   ├── repositories/
+│   ├── services/
+│   └── routers/
+├── frontend/                      ← Frontend
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+└── (migration/ é ignorado se presente)
+```
+
+**Diferenças importantes:**
+- **Sem `models/` e `base.py`** — consultas SQL raw via `text()` nas repositories
+- **Sem `migration/`** — sem schema para gerenciar (aponta para tabelas do Protheus)
+- **`frontend/shared/` é ignorado** pelo importador (já existe no monorepo)
+- **Apenas GET** — os módulos sqlserver são read-only por definição
 
 **Importante:** `module.json` deve estar na raiz do zip, não dentro de um subdiretório.
 
@@ -167,20 +200,43 @@ O manifesto `module.json` contém os metadados do módulo. Campos obrigatórios 
 }
 ```
 
+Para módulos SQL Server (read-only), adicione `target_api: "sqlserver"`:
+
+```json
+{
+  "module_name": "custo",
+  "entity_name": "CustoProduto",
+  "target_api": "sqlserver",
+  "schema_name": "custo",
+  "route_prefix": "/v1/produtos/custos",
+  "route_tag": "Custo Produto",
+  "frontend_tabs": [
+    {"name": "Custos", "url": "modules/custos/index.html", "menu_icone": "calculator", "order": 1}
+  ],
+  "menu_label": "Custo Produto",
+  "menu_icone": "calculator",
+  "role_minima": "leitura"
+}
+```
+
 | Campo | Obrigatório | Descrição |
 |-------|-------------|-----------|
 | `module_name` | Sim | Nome técnico em snake_case |
 | `entity_name` | Sim | Nome da entidade em PascalCase |
-| `schema_name` | Sim | Schema do banco (`org`, `catalogo`, `portal`) |
+| `schema_name` | Sim | Schema do banco (`org`, `catalogo`, `portal`, `custo`) |
 | `route_prefix` | Sim | Prefixo da URL da API |
-| `frontend_url` | Sim | Caminho do HTML no frontend |
+| `frontend_url` | Sim* | Caminho do HTML no frontend (ou `frontend_tabs`) |
+| `frontend_tabs` | Sim* | Lista de abas com `name`, `url`, `menu_icone`, `order` |
 | `menu_label` | Sim | Rótulo no menu lateral |
+| `target_api` | Não | API alvo: `"postgres"` (default) ou `"sqlserver"` |
 | `version` | Não | Versão do módulo (semver) |
 | `table_name` | Não | Nome da tabela (null para read-only) |
 | `route_tag` | Não | Tag no Swagger |
 | `menu_icone` | Não | Ícone do menu (default: `folder`) |
 | `role_minima` | Não | Role mínima (default: `operador`) |
 | `dependencies` | Não | Lista de módulos dependentes |
+
+> `*` Obrigatório: `frontend_url` OU `frontend_tabs`.
 
 ---
 
@@ -217,6 +273,17 @@ Resposta:
       "version": "1.0.0",
       "menu_label": "Projetos",
       "schema_name": "org",
+      "target_api": "postgres",
+      "ja_importado": false
+    },
+    {
+      "slug": "custo",
+      "module_name": "custo",
+      "entity_name": "CustoProduto",
+      "version": "1.0.0",
+      "menu_label": "Custo Produto",
+      "schema_name": "custo",
+      "target_api": "sqlserver",
       "ja_importado": false
     }
   ]
@@ -349,6 +416,10 @@ O zip não contém `module.json` na raiz. Regenere com `make package`.
 ### Zip com estrutura errada
 
 Se o zip contém `modulo-{nome}/app/modules/...` em vez de `app/modules/...`, regenere com `make package`.
+
+### Módulo SQL Server não aparece como importado
+
+Módulos sqlserver são copiados para `apps/api-sqlserver/app/modules/`, não para `apps/api-postgres/app/modules/`. O scan verifica ambos os diretórios. Se o módulo não aparece como importado, verifique se o diretório foi criado no api-sqlserver.
 
 ---
 

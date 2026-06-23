@@ -106,6 +106,18 @@ raise CredenciaisInvalidasError()
 
 Usar `.opencode/skills/create-standalone-module/SKILL.md` — cobre backend + frontend + testes + migration + export.
 
+### Import para api-sqlserver
+
+Módulos read-only (consultas a tabelas do Protheus) usam `target_api: "sqlserver"` no `module.json`:
+
+- Backend copiado para `apps/api-sqlserver/app/modules/{nome}/` (sem models, sem base.py)
+- Router registrado no `main.py` do api-sqlserver
+- Migration, dependency factory e alembic import são **pulados**
+- O campo `target_api` pode ser sobrescrito via CLI: `--target-api=sqlserver`
+- `--target-api` pode ser passado via CLI: `--target-api=sqlserver`
+- `frontend/shared/` é ignorado durante a cópia (já existe no monorepo)
+- `python scripts/import_module.py {nome} --import-dir={tmp} --target-api=sqlserver`
+
 ## Docs Sync
 
 Sempre atualizar `README.md`, `docs/API.md`, `docs/DATABASE.md`, `docs/SETUP.md`, `docs/README.md` e este `AGENTS.md` ao alterar código relevante.
