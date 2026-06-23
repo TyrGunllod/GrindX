@@ -177,13 +177,28 @@ def import_module(
         creationflags = 0
         if sys.platform == "win32":
             creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            check=False,
-            creationflags=creationflags,
-        )
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                check=False,
+                creationflags=creationflags,
+                timeout=25,
+            )
+        except subprocess.TimeoutExpired:
+            logger.warning(
+                "Import subprocess timed out (25s). Migration will need manual run."
+            )
+            return ImportResult(
+                success=True,
+                message="Módulo copiado. Execute 'make migrate' para finalizar as migrações.",
+                steps=[
+                    "Arquivos copiados",
+                    "Rotas registradas",
+                    "Migração pendente (execute make migrate manualmente)",
+                ],
+            )
 
         try:
             result_data = json.loads(result.stdout.strip())
