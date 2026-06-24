@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.34.6 (2026-06-24)
+
+### Bug Fixes
+
+- **dev**: Platform-specific Windows scripts for dev servers
+  ([`bf30c67`](https://github.com/TyrGunllod/GrindX/commit/bf30c67601729d50696fa72c9c54dc2c5a30cae9))
+
+
 ## v1.34.5 (2026-06-23)
 
 ### Bug Fixes
