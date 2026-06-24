@@ -472,7 +472,12 @@ def register_dependency(
                 "Repository %s não encontrado para Service %s", repo_cls, svc_cls
             )
             continue
-        factory_name = f"get_{module_name}_{svc_file.removesuffix('_service')}_service"
+        entity = svc_file.removesuffix("_service")
+        factory_name = (
+            f"get_{module_name}_{entity}_service"
+            if entity != module_name
+            else f"get_{module_name}_service"
+        )
         factory_sig = f"def {factory_name}(db: Session = Depends(get_db)) -> {svc_cls}:"
         if factory_sig not in content:
             new_factories.append(
@@ -765,9 +770,7 @@ def remove_module(module_name: str) -> dict:
         final_lines = []
         for line in new_lines:
             stripped = line.strip()
-            if any(
-                stripped == f"app.include_router({var})" for var in router_vars
-            ):
+            if any(stripped == f"app.include_router({var})" for var in router_vars):
                 continue
             final_lines.append(line)
 
@@ -779,8 +782,11 @@ def remove_module(module_name: str) -> dict:
     env_py = api_dir / "alembic" / "env.py"
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
-        lines = [line for line in content.splitlines(keepends=True)
-                 if not line.strip().startswith(f"from app.modules.{module_name}.")]
+        lines = [
+            line
+            for line in content.splitlines(keepends=True)
+            if not line.strip().startswith(f"from app.modules.{module_name}.")
+        ]
         env_py.write_text("".join(lines), encoding="utf-8")
         if len(lines) != len(content.splitlines(keepends=True)):
             steps.append("Imports removidos de alembic/env.py")

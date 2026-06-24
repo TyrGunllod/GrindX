@@ -7,6 +7,7 @@ import pytest
 
 import scripts.import_module as import_module
 from scripts.import_module import (
+    _snake_to_pascal,
     register_alembic_import,
     register_dependency,
     register_router,
@@ -97,16 +98,18 @@ def _mock_api_dir(
         repos_dir = module_dir / "repositories"
         repos_dir.mkdir(parents=True)
         for name in repo_files:
+            entity = name.replace("_repository", "")
             (repos_dir / f"{name}.py").write_text(
-                f"class {name.title()}Repository: pass", encoding="utf-8"
+                f"class {_snake_to_pascal(entity)}Repository: pass", encoding="utf-8"
             )
 
     if svc_files:
         svcs_dir = module_dir / "services"
         svcs_dir.mkdir(parents=True)
         for name in svc_files:
+            entity = name.replace("_service", "")
             (svcs_dir / f"{name}.py").write_text(
-                f"class {name.title()}Service: pass", encoding="utf-8"
+                f"class {_snake_to_pascal(entity)}Service: pass", encoding="utf-8"
             )
 
     if model_files:
@@ -114,7 +117,7 @@ def _mock_api_dir(
         models_dir.mkdir(parents=True)
         for name in model_files:
             (models_dir / f"{name}.py").write_text(
-                f"class {name.title()}: pass", encoding="utf-8"
+                f"class {_snake_to_pascal(name)}: pass", encoding="utf-8"
             )
 
     return api_dir
