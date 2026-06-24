@@ -1,0 +1,23 @@
+{
+  "module_name": "custo",
+  "entity_name": "CustoProduto",
+  "version": "1.0.0",
+  "target_api": "sqlserver",
+  "target_api": "sqlserver",
+  "schema_name": "custo",
+  "tables": ["SB1010", "SG1010"],
+  "route_prefix": "/v1/produtos/custos",
+  "route_tag": "Custo Produto",
+  "frontend_tabs": [
+    {
+      "name": "Custos",
+      "url": "modules/custos/index.html",
+      "menu_icone": "calculator",
+      "order": 1
+    }
+  ],
+  "menu_label": "Custo Produto",
+  "menu_icone": "calculator",
+  "role_minima": "leitura",
+  "dependencies": []
+}

@@ -163,9 +163,6 @@ def scan_imports(
             if not module_dir.is_dir():
                 continue
             slug = module_dir.name
-            if slug in seen_slugs:
-                continue
-            seen_slugs.add(slug)
 
             eh_padrao = slug in MODULOS_PADRAO
             manifest_path = module_dir / "module.json"
