@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v1.35.0 (2026-06-24)
+
+### Bug Fixes
+
+- **import**: Correct snake_case to PascalCase in import_module.py
+  ([`f00b0bf`](https://github.com/TyrGunllod/GrindX/commit/f00b0bffb32d22ffcef48260283da72c291f3a70))
+
+- **tests**: Update fixtures and factory name logic for class scanning
+  ([`0872a5c`](https://github.com/TyrGunllod/GrindX/commit/0872a5c89b436b33775bbb0b24f78a1a2fff4e7f))
+
+### Features
+
+- **import**: Auto-install deps, class scanning, and remove_module
+  ([`ed49d65`](https://github.com/TyrGunllod/GrindX/commit/ed49d65dc948e6753c7208120f0533dc5ab5dd5a))
+
+
 ## v1.34.6 (2026-06-24)
 
 ### Bug Fixes
