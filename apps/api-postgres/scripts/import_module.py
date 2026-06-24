@@ -772,19 +772,19 @@ def remove_module(module_name: str) -> dict:
     monorepo_root = _get_monorepo_root()
     steps = []
 
+    frontend_dirs = []
+    has_migrations = False
+
     # Tenta backend em api-postgres e api-sqlserver
     for sub_api in ["api-postgres", "api-sqlserver"]:
         api_dir = monorepo_root / "apps" / sub_api
         if not api_dir.exists():
             continue
 
-        # Backend dir
         backend_dir = api_dir / "app" / "modules" / module_name
         if backend_dir.exists():
-            # Lê module.json antes de deletar (para frontend e migration)
+            # Lê module.json antes de deletar
             manifest_path = backend_dir / "module.json"
-            frontend_dirs = []
-            has_migrations = False
             if manifest_path.exists():
                 try:
                     m = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -793,31 +793,43 @@ def remove_module(module_name: str) -> dict:
                         parts = url.split("/")
                         if len(parts) >= 2:
                             frontend_dirs.append(parts[1])
-                    has_migrations = bool(m.get("tables")) or bool(
-                        list((api_dir / "alembic" / "versions").glob(f"*{module_name}*"))
-                    )
+                    tables = m.get("tables", [])
+                    if tables or list((api_dir / "alembic" / "versions").glob(f"*{module_name}*")):
+                        has_migrations = True
                 except Exception:
                     pass
 
             shutil.rmtree(backend_dir)
             steps.append(f"Backend removido: apps/{sub_api}/app/modules/{module_name}/")
 
-            # Frontend dirs
-            for fd in frontend_dirs:
-                fd_path = _get_frontend_dir() / "modules" / fd
-                if fd_path.exists():
-                    shutil.rmtree(fd_path)
-                    steps.append(f"Frontend removido: modules/{fd}/")
-
-            # Migration
-            if has_migrations:
-                for f in sorted((api_dir / "alembic" / "versions").glob("*"), reverse=True):
-                    if module_name in f.name:
-                        f.unlink()
-                        steps.append(f"Migration removida: {f.name}")
-
-        # Clean main.py
+        # Clean main.py (roda mesmo se backend nao existir, pra limpar residuos)
         _clean_main_py(api_dir / "app" / "main.py", module_name, steps)
+
+    # Frontend dirs (independente do backend)
+    frontend_base = _get_frontend_dir() / "modules"
+    if frontend_base.exists():
+        for fd in sorted(set(frontend_dirs)):
+            fd_path = frontend_base / fd
+            if fd_path.exists():
+                shutil.rmtree(fd_path)
+                steps.append(f"Frontend removido: modules/{fd}/")
+        # Fallback: remove diretorios que comecam com module_name
+        for item in frontend_base.iterdir():
+            if item.is_dir() and item.name.startswith(module_name):
+                if item.name not in frontend_dirs:
+                    shutil.rmtree(item, ignore_errors=True)
+                    steps.append(f"Frontend removido (fallback): modules/{item.name}/")
+
+    # Migration
+    if has_migrations:
+        for sub_api in ["api-postgres", "api-sqlserver"]:
+            api_dir = monorepo_root / "apps" / sub_api
+            if not api_dir.exists():
+                continue
+            for f in sorted((api_dir / "alembic" / "versions").glob("*"), reverse=True):
+                if module_name in f.name:
+                    f.unlink()
+                    steps.append(f"Migration removida: {f.name}")
 
     # Clean dependencies.py (api-postgres only, non-blocking — não escreve arquivo)
     deps_py = monorepo_root / "apps" / "api-postgres" / "app" / "auth" / "dependencies.py"
