@@ -16,6 +16,10 @@ from sqlalchemy.orm import Session
 from app.auth.service import AuthService
 from app.core.config import settings
 from app.database import get_db
+from app.modules.custo.repositories.custo_produto_repository import (
+    CustoProdutoRepository,
+)
+from app.modules.custo.services.custo_produto_service import CustoProdutoService
 
 # Scheme que extrai o token do header Authorization: Bearer <token>
 _bearer_scheme = HTTPBearer(auto_error=False)
@@ -54,6 +58,11 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
         Instância do AuthService.
     """
     return AuthService(db)
+
+
+def get_custo_custo_produto_service(db: Session = Depends(get_db)) -> CustoProdutoService:
+    repository = CustoProdutoRepository(db)
+    return CustoProdutoService(repository)
 
 
 # --- Versões vinculadas das permissões ---

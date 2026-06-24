@@ -40,6 +40,10 @@ logger = structlog.get_logger(__name__)
 BACKUP_DIRNAME = ".backup"
 
 
+def _snake_to_pascal(name: str) -> str:
+    return name.replace("_", " ").title().replace(" ", "")
+
+
 def _get_monorepo_root() -> Path:
     env_root = os.environ.get("MONOREPO_ROOT")
     if env_root:
@@ -397,13 +401,13 @@ def register_dependency(
     new_factories = []
     for repo_file in sorted(repo_files):
         entity = repo_file.replace("_repository", "")
-        import_line = f"from app.modules.{module_name}.repositories.{repo_file} import {entity.title()}Repository"
+        import_line = f"from app.modules.{module_name}.repositories.{repo_file} import {_snake_to_pascal(entity)}Repository"
         if import_line not in content:
             new_imports.append(import_line)
 
     for svc_file in sorted(svc_files):
         entity = svc_file.replace("_service", "")
-        import_line = f"from app.modules.{module_name}.services.{svc_file} import {entity.title()}Service"
+        import_line = f"from app.modules.{module_name}.services.{svc_file} import {_snake_to_pascal(entity)}Service"
         if import_line not in content:
             new_imports.append(import_line)
 
@@ -414,13 +418,13 @@ def register_dependency(
             if entity != module_name
             else f"get_{module_name}_service"
         )
-        factory_sig = f"def {factory_name}(db: Session = Depends(get_db)) -> {entity.title()}Service:"
+        factory_sig = f"def {factory_name}(db: Session = Depends(get_db)) -> {_snake_to_pascal(entity)}Service:"
         if factory_sig not in content:
             new_factories.append(
                 f"{factory_sig}\n"
-                f'    """Factory para o {entity.title()}Service."""\n'
-                f"    repository = {entity.title()}Repository(db)\n"
-                f"    return {entity.title()}Service(repository)\n"
+                f'    """Factory para o {_snake_to_pascal(entity)}Service."""\n'
+                f"    repository = {_snake_to_pascal(entity)}Repository(db)\n"
+                f"    return {_snake_to_pascal(entity)}Service(repository)\n"
             )
 
     if not new_imports and not new_factories:
@@ -457,7 +461,7 @@ def register_alembic_import(
 
     new_imports = []
     for model_file in sorted(model_files):
-        entity = model_file.replace("_", " ").title().replace(" ", "")
+        entity = _snake_to_pascal(model_file)
         import_line = f"from app.modules.{module_name}.models.{model_file} import {entity}  # noqa: F401"
         if import_line not in content:
             new_imports.append(import_line)
