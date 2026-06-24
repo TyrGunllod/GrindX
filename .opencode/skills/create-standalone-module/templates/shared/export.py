@@ -9,11 +9,9 @@ Com --dry-run, apenas exibe o que seria feito.
 """
 
 import argparse
-import json
 import shutil
 import subprocess
 import sys
-import tempfile
 import zipfile
 from pathlib import Path
 

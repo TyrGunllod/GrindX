@@ -8,7 +8,6 @@ quando importados do nível do monorepo.
 import sys
 from pathlib import Path
 
-
 _packages_dir = str(Path(__file__).resolve().parent.parent.parent / "packages")
 if _packages_dir not in sys.path:
     sys.path.insert(0, _packages_dir)
@@ -19,7 +18,12 @@ class TestSharedSecurity:
 
     def test_import_jwt_functions(self):
         """Testa que funções JWT podem ser importadas."""
-        from shared.security.jwt import criar_jwt, verificar_jwt, gerar_hash_senha, verificar_senha
+        from shared.security.jwt import (
+            criar_jwt,
+            gerar_hash_senha,
+            verificar_jwt,
+            verificar_senha,
+        )
 
         assert callable(criar_jwt)
         assert callable(verificar_jwt)
@@ -28,7 +32,11 @@ class TestSharedSecurity:
 
     def test_import_permissions(self):
         """Testa que funções de permissão podem ser importadas."""
-        from shared.security.permissions import require_role, require_role_or_higher, Role
+        from shared.security.permissions import (
+            Role,
+            require_role,
+            require_role_or_higher,
+        )
 
         assert callable(require_role)
         assert callable(require_role_or_higher)
@@ -82,11 +90,11 @@ class TestSharedExceptions:
         """Testa que exceções base podem ser importadas."""
         from shared.exceptions.base import (
             AppException,
-            NotFoundError,
-            ConflictError,
             BusinessValidationError,
-            UnauthorizedError,
+            ConflictError,
             ForbiddenError,
+            NotFoundError,
+            UnauthorizedError,
         )
 
         assert issubclass(AppException, Exception)
@@ -128,9 +136,9 @@ class TestSharedExceptions:
     def test_domain_exceptions(self):
         """Testa exceções de domínio específicas."""
         from shared.exceptions.base import (
-            ProdutoNaoEncontradoError,
-            PrecoInvalidoError,
             ClienteNaoEncontradoError,
+            PrecoInvalidoError,
+            ProdutoNaoEncontradoError,
         )
 
         exc_produto = ProdutoNaoEncontradoError(produto_id=42)

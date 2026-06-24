@@ -8,7 +8,6 @@ corretamente para execução a partir da raiz do monorepo.
 import sys
 from pathlib import Path
 
-
 _root = Path(__file__).resolve().parent.parent.parent
 _packages_dir = str(_root / "packages")
 _apps_dir = str(_root / "apps")
@@ -84,8 +83,8 @@ class TestImportsPacotes:
         """Testa que o módulo shared.exceptions pode ser importado."""
         from shared.exceptions.base import (
             AppException,
-            NotFoundError,
             ForbiddenError,
+            NotFoundError,
             TokenExpiradoError,
         )
 
