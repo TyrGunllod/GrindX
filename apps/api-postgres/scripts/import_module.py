@@ -116,7 +116,10 @@ def validate_manifest(import_dir: Path) -> dict:
     return manifest
 
 
-def backup_existing(manifest: dict) -> Path | None:
+def backup_existing(manifest: dict, target_api: str = "postgres") -> Path | None:
+    if target_api == "sqlserver":
+        logger.info("SQL Server target — backup desnecessário")
+        return None
     api_dir = _get_api_dir()
     backup_root = _get_import_dir() / BACKUP_DIRNAME
     timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -234,7 +237,7 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
                 raise
 
 
-def merge_requirements(import_dir: Path) -> None:
+def merge_requirements(import_dir: Path, skip_install: bool = False) -> None:
     """Merge requirements do módulo no requirements.txt da API e instala."""
     req_src = import_dir / "requirements.txt"
     if not req_src.exists():
@@ -254,21 +257,30 @@ def merge_requirements(import_dir: Path) -> None:
             dest_content += f"\n# === Módulo {import_dir.name} ===\n{line}\n"
             added.append(pkg)
 
-    if added:
-        req_dest.write_text(dest_content, encoding="utf-8")
-        logger.info("Dependências mescladas em requirements.txt: %s", added)
-        # Instala automaticamente
-        python_exe = _get_venv_python()
-        logger.info("Instalando novas dependências...")
-        subprocess.run(
-            [python_exe, "-m", "pip", "install", *added],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+    if not added:
+        logger.info("Nenhuma nova dependência para adicionar")
+        return
+
+    req_dest.write_text(dest_content, encoding="utf-8")
+    logger.info("Dependências mescladas em requirements.txt: %s", added)
+
+    if skip_install:
+        logger.info("Instalação automática pulada. Execute: pip install -r requirements.txt")
+        return
+
+    python_exe = _get_venv_python()
+    logger.info("Instalando novas dependências...")
+    result = subprocess.run(
+        [python_exe, "-m", "pip", "install", *added],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=300,
+    )
+    if result.returncode == 0:
         logger.info("Dependências instaladas: %s", added)
     else:
-        logger.info("Nenhuma nova dependência para adicionar")
+        logger.warning("Instalação falhou: %s", result.stderr[-200:] if result.stderr else "?")
 
 
 def copy_migration(import_dir: Path) -> None:
@@ -625,6 +637,7 @@ def import_module(
     force: bool = False,
     dry_run: bool = False,
     skip_migrations: bool = False,
+    skip_install: bool = False,
     target_api: str = "postgres",
 ) -> dict:
     steps = []
@@ -646,7 +659,7 @@ def import_module(
 
         if not dry_run:
             try:
-                backup_path = backup_existing(manifest)
+                backup_path = backup_existing(manifest, target_api=target_api)
             except Exception as exc:
                 logger.warning("Backup ignorado: %s — continuando", exc)
                 backup_path = None
@@ -659,7 +672,7 @@ def import_module(
         _tick = _log_step("copy_backend", _tick)
 
         if not dry_run:
-            merge_requirements(import_dir)
+            merge_requirements(import_dir, skip_install=skip_install)
         steps.append("Requirements mesclados")
         _tick = _log_step("merge_requirements", _tick)
 
@@ -860,6 +873,11 @@ def main():
         action="store_true",
         help="Remove módulo (dispensa --import-dir)",
     )
+    parser.add_argument(
+        "--skip-install",
+        action="store_true",
+        help="Pular pip install das dependências",
+    )
     args = parser.parse_args()
 
     if args.remove:
@@ -886,9 +904,11 @@ def main():
         force=args.force,
         dry_run=args.dry_run,
         skip_migrations=args.skip_migrations,
+        skip_install=args.skip_install,
         target_api=args.target_api,
     )
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    print(json.dumps(result, indent=2, ensure_ascii=False), flush=True)
     sys.exit(0 if result["success"] else 1)
 
 

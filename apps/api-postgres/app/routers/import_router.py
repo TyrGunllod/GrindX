@@ -151,7 +151,7 @@ def scan_imports(
 @router.post("/{module_name}", response_model=ImportResult, summary="Importa um módulo")
 def import_module(
     module_name: str,
-    force: bool = Query(False, description="Sobrescrever módulo existente"),
+    force: bool = Query(True, description="Sobrescrever módulo existente"),
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
@@ -178,6 +178,8 @@ def import_module(
         zip_path = matches[0]
 
     tmp_dir = None
+    out_path = None
+    err_path = None
     try:
         tmp_dir = Path(tempfile.mkdtemp(prefix=f"grindx_import_{module_name}_"))
         with zipfile.ZipFile(zip_path, "r") as zf:
@@ -207,6 +209,7 @@ def import_module(
             module_name,
             f"--import-dir={tmp_dir}",
             "--skip-migrations",
+            "--skip-install",
         ]
         if target_api == "sqlserver":
             cmd.append("--target-api=sqlserver")
@@ -215,59 +218,57 @@ def import_module(
 
         logger.info("Executando subprocesso: %s", " ".join(cmd))
 
+        out_path = Path(tempfile.mktemp(suffix=".out"))
+        err_path = Path(tempfile.mktemp(suffix=".err"))
         stdout_lines: list[str] = []
         stderr_lines: list[str] = []
         try:
-            proc = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                creationflags=(
-                    subprocess.CREATE_NEW_PROCESS_GROUP
-                    if sys.platform == "win32"
-                    else 0
-                ),
-            )
-            try:
-                stdout, stderr = proc.communicate(timeout=60)
-            except subprocess.TimeoutExpired:
-                proc.kill()
-                stdout, stderr = proc.communicate()
-                if stdout:
-                    stdout_lines.append(stdout.strip())
-                if stderr:
-                    for line in stderr.strip().split("\n"):
-                        line = line.strip()
-                        if line:
-                            logger.warning("[import:stderr] %s", line)
-                            stderr_lines.append(line)
-                logger.error(
-                    "Subprocesso excedeu 60s ao importar '%s'. stdout: %s",
-                    module_name,
-                    "\n".join(stdout_lines) or "(vazio)",
+            with open(out_path, "w", encoding="utf-8") as outf, open(
+                err_path, "w", encoding="utf-8"
+            ) as errf:
+                proc = subprocess.Popen(
+                    cmd,
+                    stdout=outf,
+                    stderr=errf,
+                    text=True,
+                    creationflags=(
+                        subprocess.CREATE_NEW_PROCESS_GROUP
+                        if sys.platform == "win32"
+                        else 0
+                    ),
                 )
-                return ImportResult(
-                    success=False,
-                    message="Falha na importação: subprocesso excedeu timeout de 60s",
-                    steps=stdout_lines + stderr_lines,
-                    error="Timeout do subprocesso.",
-                )
+                try:
+                    proc.wait(timeout=300)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait()
+                    logger.error(
+                        "Subprocesso excedeu 300s ao importar '%s'",
+                        module_name,
+                    )
+                    return ImportResult(
+                        success=False,
+                        message="Falha na importação: subprocesso excedeu timeout de 300s",
+                        error="Timeout do subprocesso.",
+                    )
 
-            if stdout:
-                for line in stdout.strip().split("\n"):
-                    line = line.strip()
-                    if line:
-                        if line.startswith("[TIMING]"):
-                            logger.info("[import] %s", line)
-                        stdout_lines.append(line)
+            stdout = out_path.read_text(encoding="utf-8", errors="replace")
+            stderr = err_path.read_text(encoding="utf-8", errors="replace")
 
-            if stderr:
-                for line in stderr.strip().split("\n"):
-                    line = line.strip()
-                    if line:
-                        logger.info("[import] %s", line)
-                        stderr_lines.append(line)
+            for line in stdout.split("\n"):
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith("[TIMING]"):
+                    logger.info("[import] %s", line)
+                stdout_lines.append(line)
+
+            for line in stderr.split("\n"):
+                line = line.strip()
+                if not line:
+                    continue
+                logger.info("[import] %s", line)
+                stderr_lines.append(line)
 
         except FileNotFoundError:
             logger.error("Script não encontrado: %s", script_path)
@@ -302,7 +303,7 @@ def import_module(
                 result_data["steps"].append(
                     "Módulo sqlserver importado — sem migrações"
                 )
-            logger.info("Import de '%s' concluído em <60s", module_name)
+            logger.info("Import de '%s' concluído", module_name)
 
         return ImportResult(
             success=result_data.get("success", False),
@@ -325,6 +326,10 @@ def import_module(
     finally:
         if tmp_dir is not None and tmp_dir.exists():
             shutil.rmtree(tmp_dir, ignore_errors=True)
+        if out_path is not None and out_path.exists():
+            out_path.unlink(missing_ok=True)
+        if err_path is not None and err_path.exists():
+            err_path.unlink(missing_ok=True)
 
 
 @router.delete(
