@@ -193,7 +193,9 @@ def scan_imports(
                 continue
             seen_slugs.add(slug)
 
-            tem_backend = (postgres_backend / slug).exists() or (sqlserver_backend / slug).exists()
+            tem_backend = (postgres_backend / slug).exists() or (
+                sqlserver_backend / slug
+            ).exists()
 
             manifest = {}
             for base in [postgres_backend, sqlserver_backend]:
@@ -401,9 +403,11 @@ def remove_module(
     # Remove vinculo com aba no banco
     try:
         from app.models.portal import Modulo
+
         mod = db.query(Modulo).filter(Modulo.slug == module_name).first()
         if mod:
             from app.models.usuario import UsuarioModulo
+
             db.query(UsuarioModulo).filter(UsuarioModulo.modulo_id == mod.id).delete()
             db.delete(mod)
             db.commit()

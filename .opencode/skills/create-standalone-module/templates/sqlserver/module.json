@@ -1,0 +1,22 @@
+{
+  "module_name": "{module_name}",
+  "entity_name": "{entity_name}",
+  "version": "1.0.0",
+  "target_api": "sqlserver",
+  "schema_name": "{schema_name}",
+  "tables": ["{table_name}"],
+  "route_prefix": "{route_prefix}",
+  "route_tag": "{route_tag}",
+  "frontend_tabs": [
+    {
+      "name": "Nome da Aba",
+      "url": "modules/{frontend_prefix}_{aba}/index.html",
+      "menu_icone": "icon-name",
+      "order": 1
+    }
+  ],
+  "menu_label": "{menu_label}",
+  "menu_icone": "folder",
+  "role_minima": "leitura",
+  "dependencies": []
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{menu_label}</title>
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../shared/app.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="page-container" id="app">
+        <header class="page-header">
+            <h1>{menu_label}</h1>
+            <div class="flex gap-2">
+                <button class="btn btn-primary" id="btn-novo">Novo</button>
+            </div>
+        </header>
+
+        <div class="table-responsive" id="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th data-label="ID">#</th>
+                        <th data-label="Nome">Nome</th>
+                        <th data-label="Ações">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+            <div id="empty-state" class="hidden">Nenhum registro encontrado.</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-entity" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display: none;">
+        <div class="modal-card">
+            <header class="modal-header">
+                <h3 id="modal-title">Novo {entity_name}</h3>
+                <button class="btn-icon" id="btn-close-modal" aria-label="Fechar">&times;</button>
+            </header>
+            <form id="form-entity">
+                <div class="field">
+                    <label for="field-nome">Nome</label>
+                    <input type="text" id="field-nome" name="nome" required minlength="2" maxlength="100">
+                </div>
+            </form>
+            <footer class="modal-footer">
+                <button type="button" class="btn" id="btn-cancel">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-save">Salvar</button>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
