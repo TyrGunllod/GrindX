@@ -103,10 +103,8 @@ class TestImportSqlServer:
     def test_import_passes_target_api_to_subprocess(
         self, client, auth_headers, tmp_path, monkeypatch
     ):
-        """Quando module.json tem target_api='sqlserver', deve passar --target-api ao subprocesso."""
+        """Quando module.json tem target_api='sqlserver', deve importar com target sqlserver."""
         from unittest.mock import patch
-
-        import app.routers.import_router as import_router
 
         _criar_zip_manifest(
             tmp_path,
@@ -128,27 +126,21 @@ class TestImportSqlServer:
             "app.routers.import_router._get_import_dir", lambda: tmp_path
         )
 
-        with patch.object(import_router, "subprocess") as mock_subprocess:
-            mock_proc = mock_subprocess.Popen.return_value
-            mock_proc.communicate.return_value = (
-                '{"success": true, "steps": ["ok"]}',
-                "",
-            )
-            mock_proc.returncode = 0
-
+        with patch(
+            "scripts.import_module.import_module"
+        ) as mock_import:
+            mock_import.return_value = {"success": True, "steps": ["ok"]}
             response = client.post("/v1/import/custo?force=true", headers=auth_headers)
 
-        call_args = mock_subprocess.Popen.call_args[0][0]
         assert response.status_code == 200, response.text
-        assert "--target-api=sqlserver" in call_args
+        _, _, call_kwargs = mock_import.mock_calls[0]
+        assert call_kwargs["target_api"] == "sqlserver"
 
     def test_import_defaults_to_postgres(
         self, client, auth_headers, tmp_path, monkeypatch
     ):
-        """Quando module.json nao tem target_api, nao deve passar --target-api."""
+        """Quando module.json nao tem target_api, deve importar com target postgres."""
         from unittest.mock import patch
-
-        import app.routers.import_router as import_router
 
         _criar_zip_manifest(
             tmp_path,
@@ -169,19 +161,14 @@ class TestImportSqlServer:
             "app.routers.import_router._get_import_dir", lambda: tmp_path
         )
 
-        with patch.object(import_router, "subprocess") as mock_subprocess:
-            mock_proc = mock_subprocess.Popen.return_value
-            mock_proc.communicate.return_value = (
-                '{"success": true, "steps": ["ok"]}',
-                "",
-            )
-            mock_proc.returncode = 0
-
+        with patch(
+            "scripts.import_module.import_module"
+        ) as mock_import:
+            mock_import.return_value = {"success": True, "steps": ["ok"]}
             response = client.post(
                 "/v1/import/projetos?force=true", headers=auth_headers
             )
 
-        call_args = mock_subprocess.Popen.call_args[0][0]
         assert response.status_code == 200, response.text
-        assert "--target-api=sqlserver" not in call_args
-        assert "--target-api=postgres" not in call_args
+        _, _, call_kwargs = mock_import.mock_calls[0]
+        assert call_kwargs["target_api"] == "postgres"
