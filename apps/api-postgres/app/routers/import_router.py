@@ -160,7 +160,7 @@ def scan_imports(
         if not backend_base.exists():
             continue
         for module_dir in sorted(backend_base.iterdir()):
-            if not module_dir.is_dir():
+            if not module_dir.is_dir() or module_dir.name.startswith("_"):
                 continue
             slug = module_dir.name
 
