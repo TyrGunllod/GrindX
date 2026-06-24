@@ -2,6 +2,85 @@
 
 <!-- version list -->
 
+## v1.36.0 (2026-06-24)
+
+### Bug Fixes
+
+- **ci**: Format, update tests for in-process import, clean sqlserver main.py
+  ([`04e26cf`](https://github.com/TyrGunllod/GrindX/commit/04e26cfaf907da865bc6781241468f9771dcd830))
+
+- **import**: Copy module.json to backend for scan metadata
+  ([`3f5e06e`](https://github.com/TyrGunllod/GrindX/commit/3f5e06e090c5ac8a884339d0ccfd927712df1713))
+
+- **import**: Delete zip after import, match frontend-backend via module.json
+  ([`3966483`](https://github.com/TyrGunllod/GrindX/commit/39664837e83b0d29fba62276847df434eb49f0d7))
+
+- **import**: File-based I/O, skip postgres backup for sqlserver target
+  ([`afb47d7`](https://github.com/TyrGunllod/GrindX/commit/afb47d71e3c32cb7e6539244138ada7bd3ebfb38))
+
+- **import**: Run import in-process instead of subprocess
+  ([`aa10a6d`](https://github.com/TyrGunllod/GrindX/commit/aa10a6d257e7d23ad208406c1f170f16c7e8b31a))
+
+- **importer**: Rename button to Atualizar, auto-scan on page load
+  ([`da90ba7`](https://github.com/TyrGunllod/GrindX/commit/da90ba7fac748929144ed437bb730a65608c4f17))
+
+- **lint**: Exclude templates/ from ruff, guard module.json copy
+  ([`bdd89f8`](https://github.com/TyrGunllod/GrindX/commit/bdd89f89e00af75eecca3e524761a9538764b1ba))
+
+- **portal**: Only show frontend-capable modules in picker
+  ([`2ef8a81`](https://github.com/TyrGunllod/GrindX/commit/2ef8a81110b4223b70f51124dd6ee406e6f701bb))
+
+- **remove**: Delegate remove_module to import_module.py, handle sqlserver
+  ([`542e199`](https://github.com/TyrGunllod/GrindX/commit/542e199c4f21a7a6ab7d83f3a69e157eaf6a8eb4))
+
+- **remove**: Delete module-tab link from database on remove
+  ([`6fdd04b`](https://github.com/TyrGunllod/GrindX/commit/6fdd04bf0d82b68f4320bc52353f56a29e3684f1))
+
+- **remove**: Frontend removal independent of backend
+  ([`c6abe2e`](https://github.com/TyrGunllod/GrindX/commit/c6abe2eec9f0620d11f06f13b6b483083718cd2b))
+
+- **remove**: Non-blocking cleanup to avoid WatchFiles reload
+  ([`c649ba3`](https://github.com/TyrGunllod/GrindX/commit/c649ba3efdb86f3ecdefe89a7e5cdce7a9569b60))
+
+- **scan**: Block remove on system modules iam, org, portal
+  ([`4ed2d3e`](https://github.com/TyrGunllod/GrindX/commit/4ed2d3e31b911aee0dffcc56574ec4ab1a3c0fa3))
+
+- **scan**: Check sqlserver backend and fix frontend matching
+  ([`38855f0`](https://github.com/TyrGunllod/GrindX/commit/38855f045ced7e498358ba5ae1cf9933b2eae38e))
+
+- **scan**: Ignore __pycache__ and hidden dirs in installed modules
+  ([`3fc45ab`](https://github.com/TyrGunllod/GrindX/commit/3fc45abcd7a221edf8e0a24b2bdb2696e796a972))
+
+- **scan**: Installed modules scanned from frontend dirs, not backend
+  ([`c9166b4`](https://github.com/TyrGunllod/GrindX/commit/c9166b48557c06bee1fb56ec28e34178aa24cffb))
+
+- **scan**: Show installed modules in both tables even when zip exists
+  ([`d400541`](https://github.com/TyrGunllod/GrindX/commit/d400541879e62d4c8bd29daa18c9ea902f1d818a))
+
+### Code Style
+
+- Format test_import_router.py
+  ([`5b01f77`](https://github.com/TyrGunllod/GrindX/commit/5b01f7749eba9cc4f541a49e484c15b65e41b4c1))
+
+### Documentation
+
+- **skill**: Add mobile-first to create-standalone-module
+  ([`2811e3f`](https://github.com/TyrGunllod/GrindX/commit/2811e3f715d448596b9c512b2e3ceeb7ea9b191d))
+
+### Features
+
+- **import**: Scan returns installed modules, zip not deleted, UI with installed section
+  ([`34e894f`](https://github.com/TyrGunllod/GrindX/commit/34e894f69689a1032e1ec89483206e644df234e3))
+
+- **portal**: Show filesystem-installed modules in module picker
+  ([`5061fc8`](https://github.com/TyrGunllod/GrindX/commit/5061fc8a6f94bc29fafd4065d02965a71a008363))
+
+### Refactoring
+
+- **skill**: Extract templates to separate files, SKILL.md 1564->382 lines
+  ([`6b06623`](https://github.com/TyrGunllod/GrindX/commit/6b06623e77619606aec77b5839b969074ff0fee7))
+
+
 ## v1.35.0 (2026-06-24)
 
 ### Bug Fixes
