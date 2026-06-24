@@ -104,7 +104,8 @@ def scan_imports(
         return ScanResponse(modules=[])
 
     api_dir = Path(__file__).resolve().parent.parent.parent
-    backend_modules_dir = api_dir / "app" / "modules"
+    postgres_backend = api_dir / "app" / "modules"
+    sqlserver_backend = api_dir.parent / "api-sqlserver" / "app" / "modules"
     frontend_modules_dir = api_dir.parent / "frontend-webapp" / "modules"
 
     modules = []
@@ -117,10 +118,14 @@ def scan_imports(
             continue
 
         slug = manifest.get("module_name", zip_path.stem)
-        in_backend_fs = (backend_modules_dir / slug).exists()
+        in_backend_fs = (
+            (postgres_backend / slug).exists() or (sqlserver_backend / slug).exists()
+        )
         in_frontend_fs = (
             any(
-                item.name.startswith(f"{slug}_") or item.name.startswith(f"{slug}-")
+                item.name.startswith(slug) or (
+                    item.name.startswith(f"{slug}_") or item.name.startswith(f"{slug}-")
+                )
                 for item in frontend_modules_dir.iterdir()
                 if item.is_dir()
             )
