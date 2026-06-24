@@ -6,7 +6,6 @@ importar módulos completos (backend + frontend + migration + registro).
 """
 
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -284,101 +283,16 @@ def remove_module(
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
-    steps = []
+    from scripts.import_module import remove_module as run_remove
 
-    # MONOREPO_ROOT resolve o path correto dentro do container WSL
-    monorepo_root = (
-        Path(os.environ.get("MONOREPO_ROOT", "")).resolve()
-        if os.environ.get("MONOREPO_ROOT")
-        else None
-    )
-    api_dir = (
-        monorepo_root
-        if monorepo_root
-        else Path(__file__).resolve().parent.parent.parent
-    )
+    result = run_remove(module_name)
+    if not result.get("success"):
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"Erro ao remover módulo '{module_name}': {result.get('error', 'desconhecido')}",
+        )
 
-    main_py = api_dir / "app" / "main.py"
-    if main_py.exists():
-        content = main_py.read_text(encoding="utf-8")
-        lines = content.split("\n")
-        router_vars = set()
-        for line in lines:
-            if f"from app.modules.{module_name}" in line and "import router as" in line:
-                parts = line.split("import router as")
-                if len(parts) == 2:
-                    router_vars.add(parts[1].strip())
-        new_lines = []
-        for line in lines:
-            if f"from app.modules.{module_name}" in line:
-                continue
-            stripped = line.strip()
-            if any(stripped == f"app.include_router({v})" for v in router_vars):
-                continue
-            new_lines.append(line)
-        if len(new_lines) != len(lines):
-            main_py.write_text("\n".join(new_lines), encoding="utf-8")
-            steps.append("Router removido de main.py")
-
-    deps_py = api_dir / "app" / "auth" / "dependencies.py"
-    if deps_py.exists():
-        content = deps_py.read_text(encoding="utf-8")
-        marker = "# --- Versões vinculadas das permissões ---"
-        if marker in content:
-            lines = content.split("\n")
-            marker_idx = None
-            for i, line in enumerate(lines):
-                if marker in line:
-                    marker_idx = i
-                    break
-            if marker_idx is not None:
-                before_marker = lines[:marker_idx]
-                clean_lines = []
-                skip_until_def = False
-                for line in before_marker:
-                    if f"from app.modules.{module_name}" in line:
-                        continue
-                    if line.strip().startswith("def get_") and module_name in line:
-                        skip_until_def = True
-                        continue
-                    if skip_until_def:
-                        if line.strip() == "" or line.strip().startswith("return"):
-                            continue
-                        skip_until_def = False
-                    clean_lines.append(line)
-                clean_lines.append(marker)
-                clean_lines.extend(lines[marker_idx + 1 :])
-                deps_py.write_text("\n".join(clean_lines), encoding="utf-8")
-                steps.append("Dependency removida de dependencies.py")
-
-    env_py = api_dir / "alembic" / "env.py"
-    if env_py.exists():
-        content = env_py.read_text(encoding="utf-8")
-        lines = content.split("\n")
-        new_lines = [
-            line for line in lines if f"from app.modules.{module_name}" not in line
-        ]
-        if len(new_lines) != len(lines):
-            env_py.write_text("\n".join(new_lines), encoding="utf-8")
-            steps.append("Import removida de alembic/env.py")
-
-    backend_dir = api_dir / "app" / "modules" / module_name
-    if backend_dir.exists():
-        shutil.rmtree(backend_dir)
-        steps.append(f"Backend removido: {backend_dir}")
-
-    # Dentro do container (MONOREPO_ROOT=/app), frontend é /app/apps/frontend-webapp/modules
-    # No host (MONOREPO_ROOT vazio), frontend é ../frontend-webapp/modules relativo a api-postgres
-    if monorepo_root:
-        frontend_dir = api_dir / "apps" / "frontend-webapp" / "modules"
-    else:
-        frontend_dir = api_dir.parent / "frontend-webapp" / "modules"
-    if frontend_dir.exists():
-        for item in frontend_dir.iterdir():
-            if item.is_dir() and item.name.startswith(module_name):
-                shutil.rmtree(item)
-                steps.append(f"Frontend removido: {item}")
-
+    steps = result.get("steps", [])
     if not steps:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,

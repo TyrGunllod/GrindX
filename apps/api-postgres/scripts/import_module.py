@@ -737,101 +737,120 @@ def import_module(
         return {"success": False, "steps": steps, "error": str(e)}
 
 
+def _clean_main_py(main_py: Path, module_name: str, steps: list) -> None:
+    """Remove imports e include_router de um main.py."""
+    if not main_py.exists():
+        return
+    content = main_py.read_text(encoding="utf-8")
+    lines = content.splitlines(keepends=True)
+    router_vars = []
+    new_lines = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith(f"from app.modules.{module_name}.routers."):
+            var_name = None
+            if "import router as " in stripped:
+                var_name = stripped.split("import router as ")[-1].rstrip(",")
+            if var_name:
+                router_vars.append(var_name)
+            continue
+        new_lines.append(line)
+
+    final_lines = []
+    for line in new_lines:
+        stripped = line.strip()
+        if any(stripped == f"app.include_router({var})" for var in router_vars):
+            continue
+        final_lines.append(line)
+
+    main_py.write_text("".join(final_lines), encoding="utf-8")
+    if router_vars:
+        steps.append(f"Rotas removidas de {main_py.name}: {router_vars}")
+
+
 def remove_module(module_name: str) -> dict:
     """Remove um módulo importado, limpando todos os registros."""
-    api_dir = _get_api_dir()
+    monorepo_root = _get_monorepo_root()
     steps = []
 
-    # 1. Remover backend
-    backend_dir = api_dir / "app" / "modules" / module_name
-    if backend_dir.exists():
-        shutil.rmtree(backend_dir)
-        steps.append(f"Backend removido: app/modules/{module_name}/")
+    # Tenta backend em api-postgres e api-sqlserver
+    for sub_api in ["api-postgres", "api-sqlserver"]:
+        api_dir = monorepo_root / "apps" / sub_api
+        if not api_dir.exists():
+            continue
 
-    # 2. Remover frontend
-    frontend_dir = _get_frontend_dir() / "modules" / module_name
-    if frontend_dir.exists():
-        shutil.rmtree(frontend_dir)
-        steps.append(f"Frontend removido: modules/{module_name}/")
+        # Backend dir
+        backend_dir = api_dir / "app" / "modules" / module_name
+        if backend_dir.exists():
+            # Lê module.json antes de deletar (para frontend e migration)
+            manifest_path = backend_dir / "module.json"
+            frontend_dirs = []
+            has_migrations = False
+            if manifest_path.exists():
+                try:
+                    m = json.loads(manifest_path.read_text(encoding="utf-8"))
+                    for tab in m.get("frontend_tabs", []):
+                        url = tab.get("url", "")
+                        parts = url.split("/")
+                        if len(parts) >= 2:
+                            frontend_dirs.append(parts[1])
+                    has_migrations = bool(m.get("tables")) or bool(
+                        list((api_dir / "alembic" / "versions").glob(f"*{module_name}*"))
+                    )
+                except Exception:
+                    pass
 
-    # 3. Remover migrations
-    migrations_dir = api_dir / "alembic" / "versions"
-    for f in sorted(migrations_dir.glob("*"), reverse=True):
-        if module_name in f.name:
-            f.unlink()
-            steps.append(f"Migration removida: alembic/versions/{f.name}")
+            shutil.rmtree(backend_dir)
+            steps.append(f"Backend removido: apps/{sub_api}/app/modules/{module_name}/")
 
-    # 4. Limpar main.py (imports + include_router)
-    main_py = api_dir / "app" / "main.py"
-    if main_py.exists():
-        content = main_py.read_text(encoding="utf-8")
-        lines = content.splitlines(keepends=True)
-        router_vars = []
-        new_lines = []
-        for line in lines:
-            stripped = line.strip()
-            if stripped.startswith(f"from app.modules.{module_name}.routers."):
-                var_name = None
-                if "import router as " in stripped:
-                    var_name = stripped.split("import router as ")[-1].rstrip(",")
-                if var_name:
-                    router_vars.append(var_name)
-                continue  # pula o import
-            new_lines.append(line)
+            # Frontend dirs
+            for fd in frontend_dirs:
+                fd_path = _get_frontend_dir() / "modules" / fd
+                if fd_path.exists():
+                    shutil.rmtree(fd_path)
+                    steps.append(f"Frontend removido: modules/{fd}/")
 
-        # Remove include_router para cada var encontrado
-        final_lines = []
-        for line in new_lines:
-            stripped = line.strip()
-            if any(stripped == f"app.include_router({var})" for var in router_vars):
-                continue
-            final_lines.append(line)
+            # Migration
+            if has_migrations:
+                for f in sorted((api_dir / "alembic" / "versions").glob("*"), reverse=True):
+                    if module_name in f.name:
+                        f.unlink()
+                        steps.append(f"Migration removida: {f.name}")
 
-        main_py.write_text("".join(final_lines), encoding="utf-8")
-        if router_vars:
-            steps.append(f"Rotas removidas de main.py: {router_vars}")
+        # Clean main.py
+        _clean_main_py(api_dir / "app" / "main.py", module_name, steps)
 
-    # 5. Limpar alembic/env.py (model imports)
-    env_py = api_dir / "alembic" / "env.py"
+    # Clean dependencies.py (api-postgres only)
+    deps_py = monorepo_root / "apps" / "api-postgres" / "app" / "auth" / "dependencies.py"
+    if deps_py.exists():
+        content = deps_py.read_text(encoding="utf-8")
+        orig_len = len(content)
+        content = re.sub(
+            rf"^from app\.modules\.{re.escape(module_name)}\..*\n?", "", content, flags=re.MULTILINE
+        )
+        content = re.sub(
+            rf"^def get_{re.escape(module_name)}_.*?(?:\n(?:  |\t).*)*\n?", "", content, flags=re.MULTILINE
+        )
+        content = re.sub(r"\n{3,}", "\n\n", content)
+        deps_py.write_text(content, encoding="utf-8")
+        if len(content) != orig_len:
+            steps.append("Dependencies limpas em auth/dependencies.py")
+
+    # Clean alembic/env.py (api-postgres only)
+    env_py = monorepo_root / "apps" / "api-postgres" / "alembic" / "env.py"
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
         lines = [
-            line
-            for line in content.splitlines(keepends=True)
+            line for line in content.splitlines(keepends=True)
             if not line.strip().startswith(f"from app.modules.{module_name}.")
         ]
         env_py.write_text("".join(lines), encoding="utf-8")
         if len(lines) != len(content.splitlines(keepends=True)):
             steps.append("Imports removidos de alembic/env.py")
 
-    # 6. Limpar dependencies.py (imports + factory functions)
-    deps_py = api_dir / "app" / "auth" / "dependencies.py"
-    if deps_py.exists():
-        content = deps_py.read_text(encoding="utf-8")
-        orig_len = len(content)
-
-        # Remove imports do módulo
-        content = re.sub(
-            rf"^from app\.modules\.{re.escape(module_name)}\..*\n?",
-            "",
-            content,
-            flags=re.MULTILINE,
-        )
-
-        # Remove factory functions: def get_{module}_... até o fim do bloco
-        content = re.sub(
-            rf"^def get_{re.escape(module_name)}_.*?(?:\n(?:  |\t).*)*\n?",
-            "",
-            content,
-            flags=re.MULTILINE,
-        )
-
-        # Limpa linhas em branco excessivas deixadas pela remoção
-        content = re.sub(r"\n{3,}", "\n\n", content)
-
-        deps_py.write_text(content, encoding="utf-8")
-        if len(content) != orig_len:
-            steps.append("Dependencies limpas em auth/dependencies.py")
+    if not steps:
+        logger.warning("Nada encontrado para remover: %s", module_name)
+        return {"success": False, "steps": [], "error": f"Módulo '{module_name}' não encontrado"}
 
     logger.info("Módulo '%s' removido com sucesso", module_name)
     return {"success": True, "steps": steps}
