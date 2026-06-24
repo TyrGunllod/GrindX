@@ -126,9 +126,7 @@ class TestImportSqlServer:
             "app.routers.import_router._get_import_dir", lambda: tmp_path
         )
 
-        with patch(
-            "scripts.import_module.import_module"
-        ) as mock_import:
+        with patch("scripts.import_module.import_module") as mock_import:
             mock_import.return_value = {"success": True, "steps": ["ok"]}
             response = client.post("/v1/import/custo?force=true", headers=auth_headers)
 
@@ -161,9 +159,7 @@ class TestImportSqlServer:
             "app.routers.import_router._get_import_dir", lambda: tmp_path
         )
 
-        with patch(
-            "scripts.import_module.import_module"
-        ) as mock_import:
+        with patch("scripts.import_module.import_module") as mock_import:
             mock_import.return_value = {"success": True, "steps": ["ok"]}
             response = client.post(
                 "/v1/import/projetos?force=true", headers=auth_headers
