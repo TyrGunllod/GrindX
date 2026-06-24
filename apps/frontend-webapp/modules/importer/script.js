@@ -45,19 +45,19 @@ class ImporterController extends window.grindx.controllers.BaseController {
         document.getElementById('btnCancel').addEventListener('click', () => this.importModal.close());
         document.getElementById('btnModalClose').addEventListener('click', () => this.importModal.close());
 
-        document.getElementById('dataTableContainer').addEventListener('click', (e) => {
+        function handleActionClick(e) {
             var btn = e.target.closest('[data-action]');
-            if (btn) {
-                var slug = btn.dataset.slug;
-                var action = btn.dataset.action;
-                if (action === 'import') {
-                    this.abrirModalImportar(slug);
-                } else if (action === 'remove') {
-                    this.abrirModalRemover(slug);
-                }
-                return;
+            if (!btn) return;
+            var slug = btn.dataset.slug;
+            var action = btn.dataset.action;
+            if (action === 'import') {
+                this.abrirModalImportar(slug);
+            } else if (action === 'remove') {
+                this.abrirModalRemover(slug);
             }
-        });
+        }
+        document.getElementById('dataTableContainer').addEventListener('click', handleActionClick.bind(this));
+        document.getElementById('instaladosTableContainer').addEventListener('click', handleActionClick.bind(this));
     }
 
     async carregar() {
@@ -66,14 +66,44 @@ class ImporterController extends window.grindx.controllers.BaseController {
             window.grindx.components.LoadingSpinner.setContainerState(container, window.grindx.components.LoadingSpinner.create());
             var data = await window.grindx.api.get('/import/scan');
             this.modules = data.modules || [];
+            var instalados = data.instalados || [];
             if (this.modules.length === 0) {
-                this.dataTable.renderEmpty('Nenhum módulo encontrado. Coloque um .zip na pasta import/ do servidor.');
+                this.dataTable.renderEmpty('Nenhum módulo disponível. Coloque um .zip na pasta import/ do servidor.');
             } else {
                 this.dataTable.render(this.modules);
             }
+            this.renderInstalados(instalados);
         } catch (err) {
             this.toastError(err);
         }
+    }
+
+    renderInstalados(modules) {
+        var container = document.getElementById('instaladosTableContainer');
+        if (!modules || modules.length === 0) {
+            container.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding: 2rem;">Nenhum módulo instalado.</td></tr>';
+            return;
+        }
+        var html = '';
+        modules.forEach(function(m) {
+            var slug = (m.slug || '').replace(/[&<>"']/g, '');
+            var nome = (m.module_name || slug).replace(/[&<>"']/g, '');
+            var versao = (m.version || '-').replace(/[&<>"']/g, '');
+            var api = m.target_api === 'sqlserver' ? 'SQL Server' : 'PostgreSQL';
+            var acoes = '';
+            if (m.pode_remover) {
+                acoes = '<button class="btn btn-sm btn-danger" data-action="remove" data-slug="' + slug + '"><i class="fas fa-trash"></i> Remover</button>';
+            } else {
+                acoes = '<span class="badge badge-info">Padrão</span>';
+            }
+            html += '<tr>' +
+                '<td data-label="Módulo">' + nome + '</td>' +
+                '<td data-label="Versão">' + versao + '</td>' +
+                '<td data-label="API">' + api + '</td>' +
+                '<td data-label="Ações">' + acoes + '</td>' +
+            '</tr>';
+        });
+        container.innerHTML = html;
     }
 
     abrirModalImportar(slug) {

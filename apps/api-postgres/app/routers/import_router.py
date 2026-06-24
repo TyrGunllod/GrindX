@@ -66,10 +66,12 @@ class ModuleInfo(BaseModel):
     schema_name: str
     target_api: str = "postgres"
     ja_importado: bool
+    pode_remover: bool = False
 
 
 class ScanResponse(BaseModel):
     modules: list[ModuleInfo]
+    instalados: list[ModuleInfo]
 
 
 class ImportResult(BaseModel):
@@ -101,16 +103,21 @@ def scan_imports(
 ):
     import_dir = _get_import_dir()
     if not import_dir.exists():
-        return ScanResponse(modules=[])
+        return ScanResponse(modules=[], instalados=[])
 
     api_dir = Path(__file__).resolve().parent.parent.parent
     postgres_backend = api_dir / "app" / "modules"
     sqlserver_backend = api_dir.parent / "api-sqlserver" / "app" / "modules"
     frontend_modules_dir = api_dir.parent / "frontend-webapp" / "modules"
 
-    modules = []
-    skipped = 0
+    MODULOS_PADRAO = {"iam", "org", "portal"}
 
+    modules = []
+    instalados = []
+    skipped = 0
+    seen_slugs: set[str] = set()
+
+    # 1. Escaneia zips disponiveis
     for zip_path in sorted(import_dir.glob("*.zip")):
         manifest = _read_manifest_from_zip(zip_path)
         if not manifest:
@@ -118,6 +125,7 @@ def scan_imports(
             continue
 
         slug = manifest.get("module_name", zip_path.stem)
+        seen_slugs.add(slug)
         in_backend_fs = (
             (postgres_backend / slug).exists() or (sqlserver_backend / slug).exists()
         )
@@ -143,13 +151,49 @@ def scan_imports(
                 schema_name=manifest.get("schema_name", "org"),
                 target_api=manifest.get("target_api", "postgres"),
                 ja_importado=in_backend_fs or in_frontend_fs,
+                pode_remover=True,
             )
         )
+
+    # 2. Escaneia modulos instalados (backend directories)
+    for backend_base in [postgres_backend, sqlserver_backend]:
+        if not backend_base.exists():
+            continue
+        for module_dir in sorted(backend_base.iterdir()):
+            if not module_dir.is_dir():
+                continue
+            slug = module_dir.name
+            if slug in seen_slugs:
+                continue
+            seen_slugs.add(slug)
+
+            eh_padrao = slug in MODULOS_PADRAO
+            manifest_path = module_dir / "module.json"
+            manifest = {}
+            if manifest_path.exists():
+                try:
+                    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
+
+            instalados.append(
+                ModuleInfo(
+                    slug=slug,
+                    module_name=manifest.get("module_name", slug),
+                    entity_name=manifest.get("entity_name", ""),
+                    version=manifest.get("version", "0.0.0"),
+                    menu_label=manifest.get("menu_label", slug),
+                    schema_name=manifest.get("schema_name", "org"),
+                    target_api=manifest.get("target_api", "postgres"),
+                    ja_importado=True,
+                    pode_remover=not eh_padrao,
+                )
+            )
 
     if skipped:
         logger.warning("%d zip(s) skipped — manifest inválido ou ausente", skipped)
 
-    return ScanResponse(modules=modules)
+    return ScanResponse(modules=modules, instalados=instalados)
 
 
 @router.post("/{module_name}", response_model=ImportResult, summary="Importa um módulo")
@@ -239,8 +283,6 @@ def import_module(
             result_data = {"success": False, "steps": steps, "error": str(exc)}
 
         if result_data.get("success"):
-            zip_path.unlink(missing_ok=True)
-            logger.info("Zip removido após importação: %s", zip_path.name)
             steps = result_data.get("steps", [])
             if target_api != "sqlserver":
                 threading.Thread(
