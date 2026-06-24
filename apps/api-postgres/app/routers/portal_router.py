@@ -121,8 +121,11 @@ def listar_modulos_disponiveis(
             )
         )
 
-    # Adiciona modulos instalados no filesystem que nao estao vinculados
+    # Adiciona modulos com frontend (têm module.json com frontend_tabs ou diretorio em modules/)
     api_dir = Path(__file__).resolve().parent.parent.parent
+    frontend_base = api_dir.parent / "frontend-webapp" / "modules"
+    frontend_modules = {d.name for d in frontend_base.iterdir()} if frontend_base.exists() else set()
+
     for base_dir in [api_dir / "app" / "modules", api_dir.parent / "api-sqlserver" / "app" / "modules"]:
         if not base_dir.exists():
             continue
@@ -132,21 +135,19 @@ def listar_modulos_disponiveis(
             slug = module_dir.name
             if slug in modulos_vinculados:
                 continue
-            # Le module.json se existir para obter metadados
             manifest_path = module_dir / "module.json"
-            nome = slug
-            url = ""
-            if manifest_path.exists():
-                try:
-                    m = json.loads(manifest_path.read_text(encoding="utf-8"))
-                    nome = m.get("module_name", slug)
-                    frontend_tabs = m.get("frontend_tabs", [])
-                    if frontend_tabs:
-                        url = frontend_tabs[0].get("url", "")
-                    else:
-                        url = m.get("menu_label", "")
-                except Exception:
-                    pass
+            if not manifest_path.exists():
+                continue
+            try:
+                m = json.loads(manifest_path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            # So mostra se tiver frontend_tabs ou diretorio frontend correspondente
+            frontend_tabs = m.get("frontend_tabs", [])
+            if not frontend_tabs and slug not in frontend_modules:
+                continue
+            nome = m.get("module_name", slug)
+            url = frontend_tabs[0].get("url", "") if frontend_tabs else f"modules/{slug}/index.html"
             result.append(
                 AvailableModule(
                     slug=slug,
