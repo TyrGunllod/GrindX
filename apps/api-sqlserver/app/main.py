@@ -15,8 +15,6 @@ from app.core.logging import setup_logging
 from app.middleware.request_id import RequestIdMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.routers.health_router import router as health_router
-from app.modules.custo.routers.custo_produto_router import router as custo_router
-from app.modules.custo.routers.custo_produto_router import router as custo_produto_router
 
 logger = structlog.get_logger(__name__)
 
@@ -64,5 +62,3 @@ app.add_middleware(
 
 # Routers
 app.include_router(health_router)
-app.include_router(custo_router)
-app.include_router(custo_produto_router)

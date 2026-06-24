@@ -763,9 +763,8 @@ def _clean_main_py(main_py: Path, module_name: str, steps: list) -> None:
             continue
         final_lines.append(line)
 
-    main_py.write_text("".join(final_lines), encoding="utf-8")
     if router_vars:
-        steps.append(f"Rotas removidas de {main_py.name}: {router_vars}")
+        steps.append(f"Rotas removidas de {main_py.name}: {router_vars} (restart necessário)")
 
 
 def remove_module(module_name: str) -> dict:
@@ -820,23 +819,22 @@ def remove_module(module_name: str) -> dict:
         # Clean main.py
         _clean_main_py(api_dir / "app" / "main.py", module_name, steps)
 
-    # Clean dependencies.py (api-postgres only)
+    # Clean dependencies.py (api-postgres only, non-blocking — não escreve arquivo)
     deps_py = monorepo_root / "apps" / "api-postgres" / "app" / "auth" / "dependencies.py"
     if deps_py.exists():
         content = deps_py.read_text(encoding="utf-8")
         orig_len = len(content)
-        content = re.sub(
+        content_clean = re.sub(
             rf"^from app\.modules\.{re.escape(module_name)}\..*\n?", "", content, flags=re.MULTILINE
         )
-        content = re.sub(
-            rf"^def get_{re.escape(module_name)}_.*?(?:\n(?:  |\t).*)*\n?", "", content, flags=re.MULTILINE
+        content_clean = re.sub(
+            rf"^def get_{re.escape(module_name)}_.*?(?:\n(?:  |\t).*)*\n?", "", content_clean, flags=re.MULTILINE
         )
-        content = re.sub(r"\n{3,}", "\n\n", content)
-        deps_py.write_text(content, encoding="utf-8")
-        if len(content) != orig_len:
-            steps.append("Dependencies limpas em auth/dependencies.py")
+        content_clean = re.sub(r"\n{3,}", "\n\n", content_clean)
+        if len(content_clean) != orig_len:
+            steps.append("Dependencies limpas em auth/dependencies.py (restart necessário)")
 
-    # Clean alembic/env.py (api-postgres only)
+    # Clean alembic/env.py (api-postgres only, non-blocking)
     env_py = monorepo_root / "apps" / "api-postgres" / "alembic" / "env.py"
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
@@ -844,9 +842,8 @@ def remove_module(module_name: str) -> dict:
             line for line in content.splitlines(keepends=True)
             if not line.strip().startswith(f"from app.modules.{module_name}.")
         ]
-        env_py.write_text("".join(lines), encoding="utf-8")
         if len(lines) != len(content.splitlines(keepends=True)):
-            steps.append("Imports removidos de alembic/env.py")
+            steps.append("Imports removidos de alembic/env.py (restart necessário)")
 
     if not steps:
         logger.warning("Nada encontrado para remover: %s", module_name)
