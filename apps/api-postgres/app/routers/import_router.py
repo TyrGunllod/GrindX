@@ -154,12 +154,41 @@ def scan_imports(
             )
         )
 
-    # 2. Escaneia modulos instalados (frontend directories)
-    if frontend_modules_dir.exists():
-        for module_dir in sorted(frontend_modules_dir.iterdir()):
-            if not module_dir.is_dir() or module_dir.name.startswith("_"):
+    # 2. Mapeia frontend_dirs -> slug (do module.json dos backends)
+    frontend_map: dict[str, str] = {}  # frontend_dir_name -> slug
+    for base in [postgres_backend, sqlserver_backend]:
+        if not base.exists():
+            continue
+        for mod_dir in sorted(base.iterdir()):
+            if not mod_dir.is_dir() or mod_dir.name.startswith("_"):
                 continue
-            slug = module_dir.name
+            mf = mod_dir / "module.json"
+            if not mf.exists():
+                continue
+            try:
+                m = json.loads(mf.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            slug = m.get("module_name", mod_dir.name)
+            for tab in m.get("frontend_tabs", []):
+                url = tab.get("url", "")
+                parts = url.split("/")
+                if len(parts) >= 2:
+                    frontend_map[parts[1]] = slug
+            if not m.get("frontend_tabs"):
+                frontend_map[mod_dir.name] = slug
+
+    # 3. Escaneia modulos instalados (frontend directories + backends sem frontend previsto)
+    seen_frontend: set[str] = set()
+    if frontend_modules_dir.exists():
+        for fe_dir in sorted(frontend_modules_dir.iterdir()):
+            if not fe_dir.is_dir() or fe_dir.name.startswith("_"):
+                continue
+            fn = fe_dir.name
+            if fn in seen_frontend:
+                continue
+            seen_frontend.add(fn)
+            slug = frontend_map.get(fn, fn)
             if slug in seen_slugs:
                 continue
             seen_slugs.add(slug)
@@ -168,10 +197,10 @@ def scan_imports(
 
             manifest = {}
             for base in [postgres_backend, sqlserver_backend]:
-                manifest_path = base / slug / "module.json"
-                if manifest_path.exists():
+                mp = base / slug / "module.json"
+                if mp.exists():
                     try:
-                        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                        manifest = json.loads(mp.read_text(encoding="utf-8"))
                     except Exception:
                         pass
                     break
@@ -187,6 +216,38 @@ def scan_imports(
                     target_api=manifest.get("target_api", "postgres"),
                     ja_importado=True,
                     pode_remover=tem_backend,
+                )
+            )
+
+    # 4. Backends sem frontend correspondente (pode_remover = True)
+    for base in [postgres_backend, sqlserver_backend]:
+        if not base.exists():
+            continue
+        for mod_dir in sorted(base.iterdir()):
+            if not mod_dir.is_dir() or mod_dir.name.startswith("_"):
+                continue
+            slug = mod_dir.name
+            if slug in seen_slugs:
+                continue
+            seen_slugs.add(slug)
+            mf = mod_dir / "module.json"
+            manifest = {}
+            if mf.exists():
+                try:
+                    manifest = json.loads(mf.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
+            instalados.append(
+                ModuleInfo(
+                    slug=slug,
+                    module_name=manifest.get("module_name", slug),
+                    entity_name=manifest.get("entity_name", ""),
+                    version=manifest.get("version", "0.0.0"),
+                    menu_label=manifest.get("menu_label", slug),
+                    schema_name=manifest.get("schema_name", "org"),
+                    target_api=manifest.get("target_api", "postgres"),
+                    ja_importado=True,
+                    pode_remover=True,
                 )
             )
 
@@ -283,6 +344,8 @@ def import_module(
             result_data = {"success": False, "steps": steps, "error": str(exc)}
 
         if result_data.get("success"):
+            zip_path.unlink(missing_ok=True)
+            logger.info("Zip removido após importação: %s", zip_path.name)
             steps = result_data.get("steps", [])
             if target_api != "sqlserver":
                 threading.Thread(
