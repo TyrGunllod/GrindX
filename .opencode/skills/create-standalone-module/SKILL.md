@@ -676,13 +676,15 @@ class TestService:
 
 ## 3. Frontend
 
+> **Mobile-first:** Todos os módulos seguem abordagem mobile-first. O CSS base é para telas pequenas (celular), e `@media (min-width: 768px)` adiciona melhorias para desktop. Garanta que todo elemento interativo tenha no mínimo 44px de altura (touch-friendly).
+>
 > **Siga o padrão escolhido no Tech Stack Questionnaire (seção inicial).**
 >
 > Se o usuário escolheu **(A) Padrão GrindX** (HTML puro + CSS puro + Vanilla JS), use as seções 3.1–3.3 abaixo.
 >
 > Se escolheu **(B) Outro padrão**, adapte para o tech stack especificado. Neste caso, ignore seções 3.1–3.3 e crie o frontend conforme combinado, mas mantenha a estrutura de diretórios `frontend/index.html`, `frontend/script.js`, `frontend/style.css` (com o conteúdo adaptado para o framework/biblioteca escolhido).
 
-### 3.1 `style.css` — Apenas layout, herda skins
+### 3.1 `style.css` — Mobile-first, herda skins
 
 ```css
 @import url('../../shared/core.css');
@@ -768,27 +770,95 @@ class TestService:
     justify-content: flex-end;
     gap: var(--space-2);
 }}
+/* Responsive table — mobile-first: cards no celular, tabela no desktop */
+.table-responsive {{
+    width: 100%;
+    overflow-x: auto;
+    background: var(--bg-card);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+}}
+table {{ border-collapse: collapse; }}
+th {{
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+}}
+td {{
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    text-align: center;
+}}
+
+/* Mobile: table vira cards */
+@media (max-width: 767px) {{
+  .table-responsive table,
+  .table-responsive thead {{ display: block; }}
+  .table-responsive tbody tr {{
+    display: block;
+    border: 1px solid var(--border-color);
+    border-radius: var(--space-3);
+    padding: var(--space-3);
+    margin-bottom: var(--space-3);
+  }}
+  .table-responsive td {{
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: none;
+    text-align: left;
+  }}
+  .table-responsive td::before {{
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }}
+  .table-responsive td:last-child {{
+    border-top: 1px solid var(--border-color);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+  }}
+}}
+
+/* Desktop: layout extra para telas grandes */
+@media (min-width: 768px) {{
+  .hide-mobile {{ display: inline !important; }}
+  .page-container {{ padding: var(--space-8); }}
+}}
+
 .hidden {{ display: none !important; }}
 ```
 
-**Regras de herança de skins:**
+**Regras de herança de skins (mobile-first):**
 - Usar exclusivamente `var(--...)` para cores, fontes, espaçamentos
 - **Nunca** definir cores fixas, fontes ou breakpoints
 - Apenas regras de layout (grid, flex, widths, margins, padding)
-- Testar visualmente com pelo menos 2 skins antes de exportar
+- CSS base = mobile; use `@media (min-width: 768px)` para desktop
+- Elementos interativos: **mínimo 44px de altura** (touch-friendly)
+- Tabelas viram cards no mobile: use `data-label` nos `<td>` para o `::before`
 - Botões e modais seguem o padrão canonical do `core.css` do GrindX
 - Modal usa `modal-overlay` + `modal-card` (NÃO `<dialog>` nativo)
+- Testar visualmente com pelo menos 2 skins antes de exportar
 
 ### 3.2 `index.html` e `script.js` (Padrão GrindX — HTML puro + CSS puro + Vanilla JS)
 
 **`index.html`:**
 - HTML5 semântico, **zero dependências externas** (sem CDN, sem bibliotecas, sem frameworks)
+- `<meta name="viewport" content="width=device-width, initial-scale=1.0">` obrigatório no `<head>` para responsividade mobile
 - Modais usando `<div class="modal-overlay" style="display: none;">` + `<div class="modal-card">` com toggle via `style.display`
 - Atributos de acessibilidade: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`
 - Botão fechar com `btn-icon` e `&times;`
 - Footer com `modal-footer flex justify-end gap-2`
 - Templates de cards usando `<template>` ou template strings no JS
 - Atributos `data-*` para binding de eventos via delegated events
+- Atributo `data-label` em `<td>` para o CSS `::before` no mobile (ex: `<td data-label="Nome">`)
 - IDs únicos para binds, classes para estilização
 - Estrutura: `<div class="page-container">` → cabeçalho + grid + empty state + modais
 
