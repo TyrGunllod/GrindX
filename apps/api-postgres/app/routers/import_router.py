@@ -219,7 +219,8 @@ def scan_imports(
                 )
             )
 
-    # 4. Backends sem frontend correspondente (pode_remover = True)
+    # 4. Backends sem frontend correspondente
+    MODULOS_SISTEMA = {"iam", "org", "portal"}
     for base in [postgres_backend, sqlserver_backend]:
         if not base.exists():
             continue
@@ -247,7 +248,7 @@ def scan_imports(
                     schema_name=manifest.get("schema_name", "org"),
                     target_api=manifest.get("target_api", "postgres"),
                     ja_importado=True,
-                    pode_remover=True,
+                    pode_remover=slug not in MODULOS_SISTEMA,
                 )
             )
 
