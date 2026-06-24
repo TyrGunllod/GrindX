@@ -1,1 +1,0 @@
-{"module_name": "custo", "entity_name": "CustoProduto", "target_api": "sqlserver", "schema_name": "custo", "route_prefix": "/v1/produtos/custos", "menu_label": "Custos", "frontend_tabs": [{"name": "Custos", "url": "modules/custos/index.html"}]}
