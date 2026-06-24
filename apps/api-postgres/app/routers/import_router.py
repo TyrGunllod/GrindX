@@ -397,6 +397,22 @@ def remove_module(
     from scripts.import_module import remove_module as run_remove
 
     result = run_remove(module_name)
+
+    # Remove vinculo com aba no banco
+    try:
+        from app.models.portal import Modulo
+        mod = db.query(Modulo).filter(Modulo.slug == module_name).first()
+        if mod:
+            from app.models.usuario import UsuarioModulo
+            db.query(UsuarioModulo).filter(UsuarioModulo.modulo_id == mod.id).delete()
+            db.delete(mod)
+            db.commit()
+            if "steps" not in result:
+                result["steps"] = []
+            result["steps"].append("Vínculo com aba removido do banco")
+    except Exception as e:
+        logger.warning("Erro ao remover vinculo do modulo '%s': %s", module_name, e)
+
     if not result.get("success"):
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
