@@ -216,99 +216,43 @@ def import_module(
         if force:
             cmd.append("--force")
 
-        logger.info("Executando subprocesso: %s", " ".join(cmd))
+        logger.info("Executando import in-process: %s", module_name)
 
-        out_path = Path(tempfile.mktemp(suffix=".out"))
-        err_path = Path(tempfile.mktemp(suffix=".err"))
-        stdout_lines: list[str] = []
-        stderr_lines: list[str] = []
+        from scripts.import_module import import_module as run_import
+
+        steps: list[str] = []
         try:
-            with open(out_path, "w", encoding="utf-8") as outf, open(
-                err_path, "w", encoding="utf-8"
-            ) as errf:
-                proc = subprocess.Popen(
-                    cmd,
-                    stdout=outf,
-                    stderr=errf,
-                    text=True,
-                    creationflags=(
-                        subprocess.CREATE_NEW_PROCESS_GROUP
-                        if sys.platform == "win32"
-                        else 0
-                    ),
-                )
-                try:
-                    proc.wait(timeout=300)
-                except subprocess.TimeoutExpired:
-                    proc.kill()
-                    proc.wait()
-                    logger.error(
-                        "Subprocesso excedeu 300s ao importar '%s'",
-                        module_name,
-                    )
-                    return ImportResult(
-                        success=False,
-                        message="Falha na importação: subprocesso excedeu timeout de 300s",
-                        error="Timeout do subprocesso.",
-                    )
-
-            stdout = out_path.read_text(encoding="utf-8", errors="replace")
-            stderr = err_path.read_text(encoding="utf-8", errors="replace")
-
-            for line in stdout.split("\n"):
-                line = line.strip()
-                if not line:
-                    continue
-                if line.startswith("[TIMING]"):
-                    logger.info("[import] %s", line)
-                stdout_lines.append(line)
-
-            for line in stderr.split("\n"):
-                line = line.strip()
-                if not line:
-                    continue
-                logger.info("[import] %s", line)
-                stderr_lines.append(line)
-
-        except FileNotFoundError:
-            logger.error("Script não encontrado: %s", script_path)
-            return ImportResult(
-                success=False,
-                message="Falha na importação: script não encontrado",
-                steps=["Script não encontrado"],
-                error=f"Script não encontrado: {script_path}",
+            result_data = run_import(
+                module_name,
+                tmp_dir,
+                force=force,
+                skip_migrations=True,
+                skip_install=True,
+                target_api=target_api,
             )
-
-        stdout_data = "\n".join(stdout_lines)
-        try:
-            result_data = json.loads(stdout_data)
-        except (json.JSONDecodeError, ValueError):
-            result_data = {
-                "success": False,
-                "steps": [],
-                "error": stderr or stdout_data,
-            }
+        except Exception as exc:
+            logger.exception("Import falhou")
+            result_data = {"success": False, "steps": steps, "error": str(exc)}
 
         if result_data.get("success"):
             zip_path.unlink(missing_ok=True)
             logger.info("Zip removido após importação: %s", zip_path.name)
+            steps = result_data.get("steps", [])
             if target_api != "sqlserver":
                 threading.Thread(
                     target=_run_migrations_background,
                     args=(module_name,),
                     daemon=True,
                 ).start()
-                result_data["steps"].append("Migrações agendadas em segundo plano")
+                steps.append("Migrações agendadas em segundo plano")
             else:
-                result_data["steps"].append(
-                    "Módulo sqlserver importado — sem migrações"
-                )
+                steps.append("Módulo sqlserver importado — sem migrações")
             logger.info("Import de '%s' concluído", module_name)
 
         return ImportResult(
             success=result_data.get("success", False),
             message=(
-                "Módulo importado com sucesso. Migrações rodando em segundo plano."
+                "Módulo importado com sucesso."
                 if result_data.get("success")
                 else "Falha na importação"
             ),
