@@ -4,6 +4,7 @@ import_module.py — Importa um módulo empacotado em .zip para o GrindX.
 Uso:
     python scripts/import_module.py projetos --import-dir=C:/tmp/extracted --force
     python scripts/import_module.py custo --import-dir=C:/tmp/extracted --force --target-api=sqlserver
+    python scripts/import_module.py custo --remove
 
 Processo:
     1. Valida module.json no diretório extraído
@@ -27,6 +28,7 @@ Args:
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -42,6 +44,14 @@ BACKUP_DIRNAME = ".backup"
 
 def _snake_to_pascal(name: str) -> str:
     return name.replace("_", " ").title().replace(" ", "")
+
+
+def _get_class_names(filepath: Path) -> list[str]:
+    """Retorna nomes das classes definidas no arquivo Python."""
+    if not filepath.exists():
+        return []
+    text = filepath.read_text(encoding="utf-8")
+    return re.findall(r"^class (\w+)", text, re.MULTILINE)
 
 
 def _get_monorepo_root() -> Path:
@@ -224,6 +234,43 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
                 raise
 
 
+def merge_requirements(import_dir: Path) -> None:
+    """Merge requirements do módulo no requirements.txt da API e instala."""
+    req_src = import_dir / "requirements.txt"
+    if not req_src.exists():
+        logger.info("Nenhum requirements.txt no módulo — ignorando")
+        return
+
+    api_dir = _get_api_dir()
+    req_dest = api_dir / "requirements.txt"
+    dest_content = req_dest.read_text(encoding="utf-8")
+    added = []
+    for line in req_src.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        pkg = line.split("==")[0].split(">=")[0].split("<=")[0].split("~=")[0].strip()
+        if pkg not in dest_content:
+            dest_content += f"\n# === Módulo {import_dir.name} ===\n{line}\n"
+            added.append(pkg)
+
+    if added:
+        req_dest.write_text(dest_content, encoding="utf-8")
+        logger.info("Dependências mescladas em requirements.txt: %s", added)
+        # Instala automaticamente
+        python_exe = _get_venv_python()
+        logger.info("Instalando novas dependências...")
+        subprocess.run(
+            [python_exe, "-m", "pip", "install", *added],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        logger.info("Dependências instaladas: %s", added)
+    else:
+        logger.info("Nenhuma nova dependência para adicionar")
+
+
 def copy_migration(import_dir: Path) -> None:
     src_dir = import_dir / "migration"
     api_dir = _get_api_dir()
@@ -397,34 +444,42 @@ def register_dependency(
         logger.warning("Marker não encontrado em dependencies.py")
         return
 
+    # Coleta classes reais de todos os arquivos do módulo
+    repo_classes: dict[str, str] = {}  # class_name -> file_stem
+    svc_classes: dict[str, str] = {}
+    for repo_file in sorted(repo_files):
+        for cls in _get_class_names(repos_dir / f"{repo_file}.py"):
+            repo_classes[cls] = repo_file
+    for svc_file in sorted(svc_files):
+        for cls in _get_class_names(svcs_dir / f"{svc_file}.py"):
+            svc_classes[cls] = svc_file
+
     new_imports = []
     new_factories = []
-    for repo_file in sorted(repo_files):
-        entity = repo_file.replace("_repository", "")
-        import_line = f"from app.modules.{module_name}.repositories.{repo_file} import {_snake_to_pascal(entity)}Repository"
+
+    # Gera imports para cada classe encontrada
+    for cls, stem in {**repo_classes, **svc_classes}.items():
+        pkg = "repositories" if cls in repo_classes else "services"
+        import_line = f"from app.modules.{module_name}.{pkg}.{stem} import {cls}"
         if import_line not in content:
             new_imports.append(import_line)
 
-    for svc_file in sorted(svc_files):
-        entity = svc_file.replace("_service", "")
-        import_line = f"from app.modules.{module_name}.services.{svc_file} import {_snake_to_pascal(entity)}Service"
-        if import_line not in content:
-            new_imports.append(import_line)
-
-    for repo_file in sorted(repo_files):
-        entity = repo_file.replace("_repository", "")
-        factory_name = (
-            f"get_{module_name}_{entity}_service"
-            if entity != module_name
-            else f"get_{module_name}_service"
-        )
-        factory_sig = f"def {factory_name}(db: Session = Depends(get_db)) -> {_snake_to_pascal(entity)}Service:"
+    # Gera factory: para cada Service, busca Repository correspondente
+    for svc_cls, svc_file in sorted(svc_classes.items()):
+        repo_cls = svc_cls.removesuffix("Service") + "Repository"
+        if repo_cls not in repo_classes:
+            logger.warning(
+                "Repository %s não encontrado para Service %s", repo_cls, svc_cls
+            )
+            continue
+        factory_name = f"get_{module_name}_{svc_file.removesuffix('_service')}_service"
+        factory_sig = f"def {factory_name}(db: Session = Depends(get_db)) -> {svc_cls}:"
         if factory_sig not in content:
             new_factories.append(
                 f"{factory_sig}\n"
-                f'    """Factory para o {_snake_to_pascal(entity)}Service."""\n'
-                f"    repository = {_snake_to_pascal(entity)}Repository(db)\n"
-                f"    return {_snake_to_pascal(entity)}Service(repository)\n"
+                f'    """Factory para o {svc_cls}."""\n'
+                f"    repository = {repo_cls}(db)\n"
+                f"    return {svc_cls}(repository)\n"
             )
 
     if not new_imports and not new_factories:
@@ -599,6 +654,11 @@ def import_module(
         _tick = _log_step("copy_backend", _tick)
 
         if not dry_run:
+            merge_requirements(import_dir)
+        steps.append("Requirements mesclados")
+        _tick = _log_step("merge_requirements", _tick)
+
+        if not dry_run:
             copy_frontend(import_dir, module_name, force)
         steps.append("Frontend copiado")
         _tick = _log_step("copy_frontend", _tick)
@@ -659,6 +719,105 @@ def import_module(
         return {"success": False, "steps": steps, "error": str(e)}
 
 
+def remove_module(module_name: str) -> dict:
+    """Remove um módulo importado, limpando todos os registros."""
+    api_dir = _get_api_dir()
+    steps = []
+
+    # 1. Remover backend
+    backend_dir = api_dir / "app" / "modules" / module_name
+    if backend_dir.exists():
+        shutil.rmtree(backend_dir)
+        steps.append(f"Backend removido: app/modules/{module_name}/")
+
+    # 2. Remover frontend
+    frontend_dir = _get_frontend_dir() / "modules" / module_name
+    if frontend_dir.exists():
+        shutil.rmtree(frontend_dir)
+        steps.append(f"Frontend removido: modules/{module_name}/")
+
+    # 3. Remover migrations
+    migrations_dir = api_dir / "alembic" / "versions"
+    for f in sorted(migrations_dir.glob("*"), reverse=True):
+        if module_name in f.name:
+            f.unlink()
+            steps.append(f"Migration removida: alembic/versions/{f.name}")
+
+    # 4. Limpar main.py (imports + include_router)
+    main_py = api_dir / "app" / "main.py"
+    if main_py.exists():
+        content = main_py.read_text(encoding="utf-8")
+        lines = content.splitlines(keepends=True)
+        router_vars = []
+        new_lines = []
+        for line in lines:
+            stripped = line.strip()
+            if stripped.startswith(f"from app.modules.{module_name}.routers."):
+                var_name = None
+                if "import router as " in stripped:
+                    var_name = stripped.split("import router as ")[-1].rstrip(",")
+                if var_name:
+                    router_vars.append(var_name)
+                continue  # pula o import
+            new_lines.append(line)
+
+        # Remove include_router para cada var encontrado
+        final_lines = []
+        for line in new_lines:
+            stripped = line.strip()
+            if any(
+                stripped == f"app.include_router({var})" for var in router_vars
+            ):
+                continue
+            final_lines.append(line)
+
+        main_py.write_text("".join(final_lines), encoding="utf-8")
+        if router_vars:
+            steps.append(f"Rotas removidas de main.py: {router_vars}")
+
+    # 5. Limpar alembic/env.py (model imports)
+    env_py = api_dir / "alembic" / "env.py"
+    if env_py.exists():
+        content = env_py.read_text(encoding="utf-8")
+        lines = [line for line in content.splitlines(keepends=True)
+                 if not line.strip().startswith(f"from app.modules.{module_name}.")]
+        env_py.write_text("".join(lines), encoding="utf-8")
+        if len(lines) != len(content.splitlines(keepends=True)):
+            steps.append("Imports removidos de alembic/env.py")
+
+    # 6. Limpar dependencies.py (imports + factory functions)
+    deps_py = api_dir / "app" / "auth" / "dependencies.py"
+    if deps_py.exists():
+        content = deps_py.read_text(encoding="utf-8")
+        orig_len = len(content)
+
+        # Remove imports do módulo
+        content = re.sub(
+            rf"^from app\.modules\.{re.escape(module_name)}\..*\n?",
+            "",
+            content,
+            flags=re.MULTILINE,
+        )
+
+        # Remove factory functions: def get_{module}_... até o fim do bloco
+        content = re.sub(
+            rf"^def get_{re.escape(module_name)}_.*?(?:\n(?:  |\t).*)*\n?",
+            "",
+            content,
+            flags=re.MULTILINE,
+        )
+
+        # Limpa linhas em branco excessivas deixadas pela remoção
+        content = re.sub(r"\n{3,}", "\n\n", content)
+
+        deps_py.write_text(content, encoding="utf-8")
+        if len(content) != orig_len:
+            steps.append("Dependencies limpas em auth/dependencies.py")
+
+    logger.info("Módulo '%s' removido com sucesso", module_name)
+    return {"success": True, "steps": steps}
+
+
 def main():
     import logging
 
@@ -669,10 +828,11 @@ def main():
         cache_logger_on_first_use=True,
     )
 
-    parser = argparse.ArgumentParser(description="Importa um módulo .zip para o GrindX")
+    parser = argparse.ArgumentParser(description="Importa ou remove módulo do GrindX")
     parser.add_argument("module_name", help="Nome do módulo (snake_case)")
     parser.add_argument(
-        "--import-dir", required=True, help="Diretório com o conteúdo extraído do .zip"
+        "--import-dir",
+        help="Diretório com o conteúdo extraído do .zip (obrigatório na importação)",
     )
     parser.add_argument(
         "--force", action="store_true", help="Sobrescrever módulo existente"
@@ -689,7 +849,25 @@ def main():
         choices=["postgres", "sqlserver"],
         help="API alvo: postgres (default) ou sqlserver",
     )
+    parser.add_argument(
+        "--remove",
+        action="store_true",
+        help="Remove módulo (dispensa --import-dir)",
+    )
     args = parser.parse_args()
+
+    if args.remove:
+        if not args.dry_run:
+            result = remove_module(args.module_name)
+        else:
+            print(f"[DRY-RUN] Removeria módulo: {args.module_name}")
+            result = {"success": True, "steps": ["DRY-RUN"]}
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        sys.exit(0 if result["success"] else 1)
+
+    if not args.import_dir:
+        print("ERRO: --import-dir é obrigatório para importar um módulo")
+        sys.exit(1)
 
     import_dir = Path(args.import_dir)
     if not import_dir.exists():

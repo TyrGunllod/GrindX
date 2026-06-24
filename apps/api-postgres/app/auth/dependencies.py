@@ -16,14 +16,9 @@ from sqlalchemy.orm import Session
 from app.auth.service import AuthService
 from app.core.config import settings
 from app.database import get_db
-from app.modules.custo.repositories.custo_produto_repository import (
-    CustoProdutoRepository,
-)
-from app.modules.custo.services.custo_produto_service import CustoProdutoService
 
 # Scheme que extrai o token do header Authorization: Bearer <token>
 _bearer_scheme = HTTPBearer(auto_error=False)
-
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(_bearer_scheme),
@@ -47,7 +42,6 @@ def get_current_user(
 
     return verificar_jwt(credentials.credentials, settings.SECRET_KEY)
 
-
 def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
     """Factory para o AuthService com injeção da sessão do banco.
 
@@ -59,21 +53,13 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
     """
     return AuthService(db)
 
-
-def get_custo_custo_produto_service(db: Session = Depends(get_db)) -> CustoProdutoService:
-    repository = CustoProdutoRepository(db)
-    return CustoProdutoService(repository)
-
-
 # --- Versões vinculadas das permissões ---
-
 
 def require_role(*roles_permitidas: str | Role):
     """Atalho para shared.require_role vinculado ao get_current_user desta API."""
     from shared.security import permissions
 
     return permissions.require_role(*roles_permitidas, get_user=get_current_user)
-
 
 def require_role_or_higher(role_minimo: str | Role):
     """Atalho para shared.require_role_or_higher vinculado ao get_current_user desta API."""

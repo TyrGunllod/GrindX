@@ -171,19 +171,11 @@ volumes:
 ifeq ($(OS),Windows_NT)
 	if not exist "$(VOLUMES_DIR)\grindx\frontend" mkdir "$(VOLUMES_DIR)\grindx\frontend"
 	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads"
-	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads\logos" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads\logos"
-	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads\fonts" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads\fonts"
-	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads\icons" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads\icons"
 	if exist "apps\frontend-webapp\nginx.conf" copy /y "apps\frontend-webapp\nginx.conf" "$(VOLUMES_DIR)\grindx\frontend\nginx.conf" >nul
-	if exist "apps\api-postgres\uploads\logos" xcopy /s /e /y "apps\api-postgres\uploads\logos\*" "$(VOLUMES_DIR)\grindx\api-postgres\uploads\logos\" >nul
 else
 	mkdir -p "$(VOLUMES_DIR)/grindx/frontend"
 	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads"
-	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads/logos"
-	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads/fonts"
-	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads/icons"
 	test -f apps/frontend-webapp/nginx.conf && cp apps/frontend-webapp/nginx.conf "$(VOLUMES_DIR)/grindx/frontend/nginx.conf" || true
-	cp -r apps/api-postgres/uploads/logos/* "$(VOLUMES_DIR)/grindx/api-postgres/uploads/logos/" 2>/dev/null || true
 endif
 	@echo "Volumes prontos em $(VOLUMES_DIR)."
 
@@ -215,13 +207,6 @@ endif
 
 deploy:
 	@echo "Exportando configs para ~/Apps/GrindX/..."
-	mkdir -p ~/Apps/GrindX/apps/frontend-webapp
-	sudo rm -rf ~/Apps/GrindX/apps/frontend-webapp/modules
-	cp -r apps/frontend-webapp/modules ~/Apps/GrindX/apps/frontend-webapp/modules
-	chmod -R 777 ~/Apps/GrindX/apps/frontend-webapp/modules
-	sudo rm -rf ~/Apps/GrindX/import
-	mkdir -p ~/Apps/GrindX/import
-	chmod 777 ~/Apps/GrindX/import
 	mkdir -p ~/Apps/GrindX/apps/api-postgres/uploads
 	cp compose.yaml ~/Apps/GrindX/
 	cp Makefile ~/Apps/GrindX/
@@ -230,12 +215,6 @@ deploy:
 	test -f .env.postgres && cp .env.postgres ~/Apps/GrindX/ || true
 	test -f .env.sqlserver && cp .env.sqlserver ~/Apps/GrindX/ || true
 	cp apps/frontend-webapp/nginx.conf ~/Apps/GrindX/apps/frontend-webapp/nginx.conf
-	cp -r packages ~/Apps/GrindX/packages
-	# api-sqlserver code for dev volume mount
-	sudo rm -rf ~/Apps/GrindX/apps/api-sqlserver
-	mkdir -p ~/Apps/GrindX/apps/api-sqlserver
-	cp -r apps/api-sqlserver/app ~/Apps/GrindX/apps/api-sqlserver/app
-	cp apps/api-sqlserver/requirements.txt ~/Apps/GrindX/apps/api-sqlserver/requirements.txt
 	@echo "Configs exportadas para ~/Apps/GrindX/"
 	@echo "Proximo passo:"
 	@echo "  cd ~/Apps/GrindX"
