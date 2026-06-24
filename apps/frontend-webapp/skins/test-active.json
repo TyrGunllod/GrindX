@@ -1,0 +1,13 @@
+{
+  "name": "Test Active",
+  "colors": {
+    "--skin-primary": "#ff0000"
+  },
+  "fonts": null,
+  "icon_library": "fontawesome",
+  "tokens": null,
+  "company_name": null,
+  "copyright_text": null,
+  "logo_url": null,
+  "logo_short_url": null
+}

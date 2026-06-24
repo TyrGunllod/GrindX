@@ -265,7 +265,9 @@ def merge_requirements(import_dir: Path, skip_install: bool = False) -> None:
     logger.info("Dependências mescladas em requirements.txt: %s", added)
 
     if skip_install:
-        logger.info("Instalação automática pulada. Execute: pip install -r requirements.txt")
+        logger.info(
+            "Instalação automática pulada. Execute: pip install -r requirements.txt"
+        )
         return
 
     python_exe = _get_venv_python()
@@ -280,7 +282,9 @@ def merge_requirements(import_dir: Path, skip_install: bool = False) -> None:
     if result.returncode == 0:
         logger.info("Dependências instaladas: %s", added)
     else:
-        logger.warning("Instalação falhou: %s", result.stderr[-200:] if result.stderr else "?")
+        logger.warning(
+            "Instalação falhou: %s", result.stderr[-200:] if result.stderr else "?"
+        )
 
 
 def copy_migration(import_dir: Path) -> None:
@@ -669,7 +673,9 @@ def import_module(
         if not dry_run:
             copy_backend(import_dir, module_name, force, target_api=target_api)
             # Copia module.json para o backend (para scan/remover)
-            api_dir = _get_api_dir() if target_api == "postgres" else _get_sqlserver_api_dir()
+            api_dir = (
+                _get_api_dir() if target_api == "postgres" else _get_sqlserver_api_dir()
+            )
             manifest_dest = api_dir / "app" / "modules" / module_name / "module.json"
             shutil.copy2(import_dir / "module.json", manifest_dest)
         steps.append("Backend copiado")
@@ -768,7 +774,9 @@ def _clean_main_py(main_py: Path, module_name: str, steps: list) -> None:
         final_lines.append(line)
 
     if router_vars:
-        steps.append(f"Rotas removidas de {main_py.name}: {router_vars} (restart necessário)")
+        steps.append(
+            f"Rotas removidas de {main_py.name}: {router_vars} (restart necessário)"
+        )
 
 
 def remove_module(module_name: str) -> dict:
@@ -798,7 +806,9 @@ def remove_module(module_name: str) -> dict:
                         if len(parts) >= 2:
                             frontend_dirs.append(parts[1])
                     tables = m.get("tables", [])
-                    if tables or list((api_dir / "alembic" / "versions").glob(f"*{module_name}*")):
+                    if tables or list(
+                        (api_dir / "alembic" / "versions").glob(f"*{module_name}*")
+                    ):
                         has_migrations = True
                 except Exception:
                     pass
@@ -836,26 +846,37 @@ def remove_module(module_name: str) -> dict:
                     steps.append(f"Migration removida: {f.name}")
 
     # Clean dependencies.py (api-postgres only, non-blocking — não escreve arquivo)
-    deps_py = monorepo_root / "apps" / "api-postgres" / "app" / "auth" / "dependencies.py"
+    deps_py = (
+        monorepo_root / "apps" / "api-postgres" / "app" / "auth" / "dependencies.py"
+    )
     if deps_py.exists():
         content = deps_py.read_text(encoding="utf-8")
         orig_len = len(content)
         content_clean = re.sub(
-            rf"^from app\.modules\.{re.escape(module_name)}\..*\n?", "", content, flags=re.MULTILINE
+            rf"^from app\.modules\.{re.escape(module_name)}\..*\n?",
+            "",
+            content,
+            flags=re.MULTILINE,
         )
         content_clean = re.sub(
-            rf"^def get_{re.escape(module_name)}_.*?(?:\n(?:  |\t).*)*\n?", "", content_clean, flags=re.MULTILINE
+            rf"^def get_{re.escape(module_name)}_.*?(?:\n(?:  |\t).*)*\n?",
+            "",
+            content_clean,
+            flags=re.MULTILINE,
         )
         content_clean = re.sub(r"\n{3,}", "\n\n", content_clean)
         if len(content_clean) != orig_len:
-            steps.append("Dependencies limpas em auth/dependencies.py (restart necessário)")
+            steps.append(
+                "Dependencies limpas em auth/dependencies.py (restart necessário)"
+            )
 
     # Clean alembic/env.py (api-postgres only, non-blocking)
     env_py = monorepo_root / "apps" / "api-postgres" / "alembic" / "env.py"
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
         lines = [
-            line for line in content.splitlines(keepends=True)
+            line
+            for line in content.splitlines(keepends=True)
             if not line.strip().startswith(f"from app.modules.{module_name}.")
         ]
         if len(lines) != len(content.splitlines(keepends=True)):
@@ -863,7 +884,11 @@ def remove_module(module_name: str) -> dict:
 
     if not steps:
         logger.warning("Nada encontrado para remover: %s", module_name)
-        return {"success": False, "steps": [], "error": f"Módulo '{module_name}' não encontrado"}
+        return {
+            "success": False,
+            "steps": [],
+            "error": f"Módulo '{module_name}' não encontrado",
+        }
 
     logger.info("Módulo '%s' removido com sucesso", module_name)
     return {"success": True, "steps": steps}

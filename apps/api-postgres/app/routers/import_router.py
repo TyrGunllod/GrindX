@@ -110,8 +110,6 @@ def scan_imports(
     sqlserver_backend = api_dir.parent / "api-sqlserver" / "app" / "modules"
     frontend_modules_dir = api_dir.parent / "frontend-webapp" / "modules"
 
-    MODULOS_PADRAO = {"iam", "org", "portal"}
-
     modules = []
     instalados = []
     skipped = 0
@@ -126,12 +124,13 @@ def scan_imports(
 
         slug = manifest.get("module_name", zip_path.stem)
         seen_slugs.add(slug)
-        in_backend_fs = (
-            (postgres_backend / slug).exists() or (sqlserver_backend / slug).exists()
-        )
+        in_backend_fs = (postgres_backend / slug).exists() or (
+            sqlserver_backend / slug
+        ).exists()
         in_frontend_fs = (
             any(
-                item.name.startswith(slug) or (
+                item.name.startswith(slug)
+                or (
                     item.name.startswith(f"{slug}_") or item.name.startswith(f"{slug}-")
                 )
                 for item in frontend_modules_dir.iterdir()
@@ -155,35 +154,39 @@ def scan_imports(
             )
         )
 
-    # 2. Escaneia modulos instalados (backend directories)
-    for backend_base in [postgres_backend, sqlserver_backend]:
-        if not backend_base.exists():
-            continue
-        for module_dir in sorted(backend_base.iterdir()):
+    # 2. Escaneia modulos instalados (frontend directories)
+    if frontend_modules_dir.exists():
+        for module_dir in sorted(frontend_modules_dir.iterdir()):
             if not module_dir.is_dir() or module_dir.name.startswith("_"):
                 continue
             slug = module_dir.name
+            if slug in seen_slugs:
+                continue
+            seen_slugs.add(slug)
 
-            eh_padrao = slug in MODULOS_PADRAO
-            manifest_path = module_dir / "module.json"
+            tem_backend = (postgres_backend / slug).exists() or (sqlserver_backend / slug).exists()
+
             manifest = {}
-            if manifest_path.exists():
-                try:
-                    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-                except Exception:
-                    pass
+            for base in [postgres_backend, sqlserver_backend]:
+                manifest_path = base / slug / "module.json"
+                if manifest_path.exists():
+                    try:
+                        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                    except Exception:
+                        pass
+                    break
 
             instalados.append(
                 ModuleInfo(
                     slug=slug,
-                    module_name=manifest.get("module_name", slug),
+                    module_name=manifest.get("module_name", slug) if manifest else slug,
                     entity_name=manifest.get("entity_name", ""),
                     version=manifest.get("version", "0.0.0"),
-                    menu_label=manifest.get("menu_label", slug),
+                    menu_label=manifest.get("menu_label", slug) if manifest else slug,
                     schema_name=manifest.get("schema_name", "org"),
                     target_api=manifest.get("target_api", "postgres"),
                     ja_importado=True,
-                    pode_remover=not eh_padrao,
+                    pode_remover=tem_backend,
                 )
             )
 

@@ -1,0 +1,38 @@
+{
+  "name": "My Blue Theme",
+  "colors": {
+    "--skin-primary": "#2563eb",
+    "--skin-primary-hover": "#1d4ed8",
+    "--skin-danger": "#dc2626",
+    "--skin-success": "#16a34a",
+    "--skin-warning": "#ca8a04",
+    "--skin-bg-main": "#f8fafc",
+    "--skin-bg-card": "#ffffff",
+    "--skin-text-main": "#1e293b",
+    "--skin-text-muted": "#64748b",
+    "--skin-border-color": "#e2e8f0",
+    "--skin-focus-ring": "rgba(37, 99, 235, 0.35)",
+    "--skin-bg-main-dark": "#0f172a",
+    "--skin-bg-card-dark": "#1e293b",
+    "--skin-text-main-dark": "#f8fafc",
+    "--skin-text-muted-dark": "#94a3b8",
+    "--skin-border-color-dark": "rgba(255, 255, 255, 0.05)"
+  },
+  "fonts": {
+    "heading": "Barlow Condensed",
+    "body": "DM Sans"
+  },
+  "icon_library": "fontawesome",
+  "tokens": {
+    "--skin-radius-sm": "0.25rem",
+    "--skin-radius-md": "0.5rem",
+    "--skin-radius-lg": "0.75rem",
+    "--skin-radius-xl": "1.5rem",
+    "--skin-shadow-card": "0 10px 25px rgba(0,0,0,0.1)",
+    "--skin-shadow-modal": "0 20px 25px -5px rgba(0,0,0,0.2)"
+  },
+  "company_name": "GrindX",
+  "copyright_text": "© 2026 GrindX. Todos os direitos reservados.",
+  "logo_url": null,
+  "logo_short_url": null
+}

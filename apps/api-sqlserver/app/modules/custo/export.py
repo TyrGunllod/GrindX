@@ -8,7 +8,6 @@ Uso:
 
 import argparse
 import shutil
-import sys
 import zipfile
 from pathlib import Path
 
@@ -24,7 +23,9 @@ GRINDX_API = GRINDX_ROOT / "apps" / "api-sqlserver"
 GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
 FRONTEND_SRC = STANDALONE_ROOT / "frontend"
 
-ROUTER_IMPORT = "from app.modules.custo.routers.custo_produto_router import router as custo_router"
+ROUTER_IMPORT = (
+    "from app.modules.custo.routers.custo_produto_router import router as custo_router"
+)
 ROUTER_REGISTER = "app.include_router(custo_router)"
 
 
@@ -46,7 +47,9 @@ def copy_backend(dry_run: bool = False):
 def copy_frontend(dry_run: bool = False):
     dest_base = GRINDX_FRONTEND / "modules"
     if dry_run:
-        logger.info("[DRY-RUN] Copiaria sub-modulos de %s -> %s", FRONTEND_SRC, dest_base)
+        logger.info(
+            "[DRY-RUN] Copiaria sub-modulos de %s -> %s", FRONTEND_SRC, dest_base
+        )
     else:
         for sub in FRONTEND_SRC.iterdir():
             if sub.is_dir():
@@ -152,11 +155,16 @@ def export(dry_run: bool = False):
 def main():
     parser = argparse.ArgumentParser(description="Ferramentas do modulo Custo Produto")
     parser.add_argument(
-        "command", nargs="?", choices=["export", "package"], default="package",
+        "command",
+        nargs="?",
+        choices=["export", "package"],
+        default="package",
         help="Comando a executar (export|package)",
     )
     parser.add_argument("--dry-run", action="store_true", help="Apenas simula")
-    parser.add_argument("--grindx-root", type=str, default=None, help="Caminho para o GrindX")
+    parser.add_argument(
+        "--grindx-root", type=str, default=None, help="Caminho para o GrindX"
+    )
 
     args = parser.parse_args()
 

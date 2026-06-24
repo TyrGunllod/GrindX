@@ -1,7 +1,6 @@
 import locale
 from datetime import datetime
 from io import BytesIO
-from typing import Optional
 
 from xhtml2pdf import pisa
 
@@ -18,7 +17,9 @@ def _fmt_qty(n: float) -> str:
     return f"{n:,.4f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-def _build_html_range(inicial: str, final: str, produtos: list[CustoProdutoResponse]) -> str:
+def _build_html_range(
+    inicial: str, final: str, produtos: list[CustoProdutoResponse]
+) -> str:
     now = datetime.now().strftime("%d/%m/%Y %H:%M")
     rows = ""
     for p in produtos:
@@ -63,7 +64,8 @@ def _build_html(data: CustoProdutoResponse) -> str:
                 <td width="14%" valign="middle" style="padding:2px 4px;border:1px solid #999;font-size:10px;text-align:center">{_fmt(c.custo_total)}</td>
             </tr>"""
 
-    table = f"""<table style="width:100%;border-collapse:collapse;margin:14px auto 0" border="0" cellpadding="0" cellspacing="0">
+    table = (
+        f"""<table style="width:100%;border-collapse:collapse;margin:14px auto 0" border="0" cellpadding="0" cellspacing="0">
 <thead><tr style="background:#eaeaea">
 <th width="11%" valign="middle" style="padding:3px 4px;border:1px solid #999;font-size:10px;text-align:center">Código</th>
 <th width="49%" valign="middle" style="padding:3px 4px;border:1px solid #999;font-size:10px;text-align:center">Descrição</th>
@@ -71,7 +73,10 @@ def _build_html(data: CustoProdutoResponse) -> str:
 <th width="13%" valign="middle" style="padding:3px 4px;border:1px solid #999;font-size:10px;text-align:center">Valor</th>
 <th width="14%" valign="middle" style="padding:3px 4px;border:1px solid #999;font-size:10px;text-align:center">Valor Total</th>
 </tr></thead>
-<tbody>{rows}</tbody></table>""" if rows else ""
+<tbody>{rows}</tbody></table>"""
+        if rows
+        else ""
+    )
 
     return f"""<!DOCTYPE html>
 <html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;padding:20px 20px 0;color:#333;font-size:11px">
@@ -96,7 +101,9 @@ def gerar_pdf(data: CustoProdutoResponse) -> bytes:
     return buf.getvalue()
 
 
-def gerar_pdf_range(inicial: str, final: str, produtos: list[CustoProdutoResponse]) -> bytes:
+def gerar_pdf_range(
+    inicial: str, final: str, produtos: list[CustoProdutoResponse]
+) -> bytes:
     html = _build_html_range(inicial, final, produtos)
     buf = BytesIO()
     pisa.CreatePDF(html, dest=buf)

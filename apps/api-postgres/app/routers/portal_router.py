@@ -124,9 +124,14 @@ def listar_modulos_disponiveis(
     # Adiciona modulos com frontend (têm module.json com frontend_tabs ou diretorio em modules/)
     api_dir = Path(__file__).resolve().parent.parent.parent
     frontend_base = api_dir.parent / "frontend-webapp" / "modules"
-    frontend_modules = {d.name for d in frontend_base.iterdir()} if frontend_base.exists() else set()
+    frontend_modules = (
+        {d.name for d in frontend_base.iterdir()} if frontend_base.exists() else set()
+    )
 
-    for base_dir in [api_dir / "app" / "modules", api_dir.parent / "api-sqlserver" / "app" / "modules"]:
+    for base_dir in [
+        api_dir / "app" / "modules",
+        api_dir.parent / "api-sqlserver" / "app" / "modules",
+    ]:
         if not base_dir.exists():
             continue
         for module_dir in sorted(base_dir.iterdir()):
@@ -147,7 +152,11 @@ def listar_modulos_disponiveis(
             if not frontend_tabs and slug not in frontend_modules:
                 continue
             nome = m.get("module_name", slug)
-            url = frontend_tabs[0].get("url", "") if frontend_tabs else f"modules/{slug}/index.html"
+            url = (
+                frontend_tabs[0].get("url", "")
+                if frontend_tabs
+                else f"modules/{slug}/index.html"
+            )
             result.append(
                 AvailableModule(
                     slug=slug,

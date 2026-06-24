@@ -14,7 +14,12 @@ class CustoProdutoRepository:
             WHERE B1_COD BETWEEN :inicial AND :final AND D_E_L_E_T_ = ''
             ORDER BY B1_COD
         """)
-        return [dict(r) for r in self.db.execute(query, {"inicial": inicial, "final": final}).mappings().all()]
+        return [
+            dict(r)
+            for r in self.db.execute(query, {"inicial": inicial, "final": final})
+            .mappings()
+            .all()
+        ]
 
     def buscar_produto(self, codigo: str) -> Optional[dict]:
         query = text("""
@@ -33,7 +38,9 @@ class CustoProdutoRepository:
             WHERE G1_COD = :code AND SG1.D_E_L_E_T_ = ''
             ORDER BY G1_COMP
         """)
-        return [dict(r) for r in self.db.execute(query, {"code": codigo}).mappings().all()]
+        return [
+            dict(r) for r in self.db.execute(query, {"code": codigo}).mappings().all()
+        ]
 
     def buscar_custo_standard(self, codigo: str) -> float:
         query = text("""

@@ -1,0 +1,13 @@
+{
+  "name": "New Theme",
+  "colors": {
+    "--skin-primary": "#123456"
+  },
+  "fonts": null,
+  "icon_library": "fontawesome",
+  "tokens": null,
+  "company_name": null,
+  "copyright_text": null,
+  "logo_url": null,
+  "logo_short_url": null
+}

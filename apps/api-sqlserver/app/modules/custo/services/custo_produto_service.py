@@ -1,7 +1,13 @@
 import structlog
 from app.modules.custo.exceptions import NenhumProdutoNoIntervalo, ProdutoNaoEncontrado
-from app.modules.custo.repositories.custo_produto_repository import CustoProdutoRepository
-from app.modules.custo.schemas.custo_produto import CustoProdutoResponse, CustoProdutoRangeResponse, ComponenteCusto
+from app.modules.custo.repositories.custo_produto_repository import (
+    CustoProdutoRepository,
+)
+from app.modules.custo.schemas.custo_produto import (
+    CustoProdutoResponse,
+    CustoProdutoRangeResponse,
+    ComponenteCusto,
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -24,8 +30,12 @@ class CustoProdutoService:
             except Exception:
                 continue
 
-        logger.info("Range calculado", inicial=inicial, final=final, total=len(resultados))
-        return CustoProdutoRangeResponse(produtos=resultados, total_produtos=len(resultados))
+        logger.info(
+            "Range calculado", inicial=inicial, final=final, total=len(resultados)
+        )
+        return CustoProdutoRangeResponse(
+            produtos=resultados, total_produtos=len(resultados)
+        )
 
     def calcular(self, codigo: str) -> CustoProdutoResponse:
         codigo = codigo.strip().upper()
@@ -43,20 +53,27 @@ class CustoProdutoService:
             custo = self.repository.buscar_custo_standard(cod_comp)
             total_comp = round(custo * qtd, 2)
 
-            componentes.append(ComponenteCusto(
-                codigo=cod_comp,
-                descricao=comp.get("B1_DESC", "").strip() or "N/A",
-                quantidade=qtd,
-                custo_standard=custo,
-                custo_total=total_comp,
-            ))
+            componentes.append(
+                ComponenteCusto(
+                    codigo=cod_comp,
+                    descricao=comp.get("B1_DESC", "").strip() or "N/A",
+                    quantidade=qtd,
+                    custo_standard=custo,
+                    custo_total=total_comp,
+                )
+            )
             total += total_comp
 
         if not componentes:
             custo_produto = self.repository.buscar_custo_standard(codigo)
             total = custo_produto
 
-        logger.info("Custo calculado", codigo=codigo, total=round(total, 2), componentes=len(componentes))
+        logger.info(
+            "Custo calculado",
+            codigo=codigo,
+            total=round(total, 2),
+            componentes=len(componentes),
+        )
         return CustoProdutoResponse(
             codigo=codigo,
             descricao=produto["B1_DESC"].strip(),
