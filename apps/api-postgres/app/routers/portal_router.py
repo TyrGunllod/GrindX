@@ -1,3 +1,4 @@
+import json
 import shutil
 from pathlib import Path
 from typing import List
@@ -106,8 +107,10 @@ def listar_modulos_disponiveis(
     for aba in db.query(Aba).all():
         abas_map[aba.id] = aba.nome
 
+    modulos_vinculados = set()
     result = []
     for mod in db.query(Modulo).all():
+        modulos_vinculados.add(mod.slug)
         result.append(
             AvailableModule(
                 slug=mod.slug,
@@ -117,6 +120,41 @@ def listar_modulos_disponiveis(
                 aba_vinculada=abas_map.get(mod.aba_id),
             )
         )
+
+    # Adiciona modulos instalados no filesystem que nao estao vinculados
+    api_dir = Path(__file__).resolve().parent.parent.parent
+    for base_dir in [api_dir / "app" / "modules", api_dir.parent / "api-sqlserver" / "app" / "modules"]:
+        if not base_dir.exists():
+            continue
+        for module_dir in sorted(base_dir.iterdir()):
+            if not module_dir.is_dir() or module_dir.name.startswith("_"):
+                continue
+            slug = module_dir.name
+            if slug in modulos_vinculados:
+                continue
+            # Le module.json se existir para obter metadados
+            manifest_path = module_dir / "module.json"
+            nome = slug
+            url = ""
+            if manifest_path.exists():
+                try:
+                    m = json.loads(manifest_path.read_text(encoding="utf-8"))
+                    nome = m.get("module_name", slug)
+                    frontend_tabs = m.get("frontend_tabs", [])
+                    if frontend_tabs:
+                        url = frontend_tabs[0].get("url", "")
+                    else:
+                        url = m.get("menu_label", "")
+                except Exception:
+                    pass
+            result.append(
+                AvailableModule(
+                    slug=slug,
+                    nome=nome,
+                    url=url,
+                    ja_vinculado=False,
+                )
+            )
 
     return result
 
