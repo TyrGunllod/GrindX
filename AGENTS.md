@@ -11,10 +11,11 @@
 
 ```powershell
 make venv              # cria .venv e instala requirements das duas APIs
-make dev-postgres      # uvicorn porta 8002
-make dev-sqlserver     # uvicorn porta 8001
-make dev-frontend      # http.server porta 8101
+make dev-postgres      # uvicorn porta 8002 (Win: scripts/dev-postgres.ps1)
+make dev-sqlserver     # uvicorn porta 8001 (Win: scripts/dev-sqlserver.ps1)
+make dev-frontend      # http.server porta 8101 (Win: scripts/dev-frontend.ps1)
 make dev-all           # todos (terminais separados via pwsh no Windows)
+make dev-kill-port     # Win: remove portproxy rules nas portas dev (req admin)
 make migrate           # alembic upgrade head
 make seed              # popula dados iniciais
 make test-all          # pytest de todas as APIs + shared + raiz
@@ -27,6 +28,8 @@ make volumes           # cria Containers/volumes/ para runtime
 make clean             # remove __pycache__ e .pytest_cache
 make deploy DEST=...   # copia configs para diretório externo
 ```
+
+**Windows portproxy:** `svchost.exe (iphlpsvc)` pode ocupar portas via `netsh interface portproxy`. Os scripts `.ps1` tentam remover o conflito automaticamente. Se falhar, execute `make dev-kill-port` como Administrador uma vez.
 
 ## PYTHONPATH — Crítico
 

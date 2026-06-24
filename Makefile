@@ -3,7 +3,7 @@
 # ==========================================
 
 .PHONY: venv build up down logs images \
-        dev-postgres dev-sqlserver dev-frontend dev-all \
+        dev-postgres dev-sqlserver dev-frontend dev-all dev-kill-port \
         migrate seed \
         test-postgres test-sqlserver test-shared test-root test-all \
         lint format clean volumes deploy
@@ -36,16 +36,31 @@ endif
 # ==========================================
 
 dev-postgres:
+ifeq ($(OS),Windows_NT)
+	@echo "Iniciando API Postgres na porta 8002..."
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev-postgres.ps1
+else
 	@echo "Iniciando API Postgres na porta 8002..."
 	cd apps/api-postgres && $(PP_APP) $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002
+endif
 
 dev-sqlserver:
+ifeq ($(OS),Windows_NT)
+	@echo "Iniciando API SQL Server na porta 8001..."
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev-sqlserver.ps1
+else
 	@echo "Iniciando API SQL Server na porta 8001..."
 	cd apps/api-sqlserver && $(PP_APP) $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
+endif
 
 dev-frontend:
+ifeq ($(OS),Windows_NT)
+	@echo "Iniciando Frontend na porta 8101..."
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev-frontend.ps1
+else
 	@echo "Iniciando Frontend na porta 8101..."
 	$(PY) -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0
+endif
 
 dev-all:
 ifeq ($(OS),Windows_NT)
@@ -61,6 +76,14 @@ else
 	@echo "  make dev-sqlserver"
 	@echo "  make dev-frontend"
 	@echo "Acesse: http://localhost:8101"
+endif
+
+dev-kill-port:
+ifeq ($(OS),Windows_NT)
+	@echo "Liberando portas de desenvolvimento (8001, 8002, 8101)..."
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/kill-port.ps1
+else
+	@echo "Linux: use fuser -k 8002/tcp ou lsof -ti:8002 | xargs kill"
 endif
 
 # ==========================================
