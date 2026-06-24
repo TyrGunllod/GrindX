@@ -668,6 +668,10 @@ def import_module(
 
         if not dry_run:
             copy_backend(import_dir, module_name, force, target_api=target_api)
+            # Copia module.json para o backend (para scan/remover)
+            api_dir = _get_api_dir() if target_api == "postgres" else _get_sqlserver_api_dir()
+            manifest_dest = api_dir / "app" / "modules" / module_name / "module.json"
+            shutil.copy2(import_dir / "module.json", manifest_dest)
         steps.append("Backend copiado")
         _tick = _log_step("copy_backend", _tick)
 
