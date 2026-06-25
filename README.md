@@ -8,7 +8,7 @@ O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado e
 
 ## Status do Projeto
 
-Projeto em desenvolvimento ativo. Funcionalidades principais implementadas e funcionais (autenticação JWT + RBAC, CRUD de usuários, portal modular com shell, skin system com dual layout, importação de módulos). CI/CD, testes automatizados (179) e documentação acompanham o desenvolvimento.
+Projeto em desenvolvimento ativo. Funcionalidades principais implementadas e funcionais (autenticação JWT + RBAC, CRUD de usuários, portal modular com shell, skin system com dual layout, importação de módulos). CI/CD, testes automatizados (251) e documentação acompanham o desenvolvimento.
 
 ---
 
@@ -36,7 +36,7 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 
 - Python 3.12+
 - PostgreSQL rodando localmente
-- ODBC Driver 17 for SQL Server (apenas para `api-sqlserver`)
+- ODBC Driver 17 for SQL Server ou FreeTDS (apenas para `api-sqlserver`)
 
 ### Setup Inicial
 
@@ -78,14 +78,14 @@ Acesse em `http://localhost:8101`.
 
 ## Testes
 
-Suite com 179+ testes cobrindo unitários, integração e validação do monorepo.
+Suite com 251+ testes cobrindo unitários, integração e validação do monorepo.
 
 | Pacote | Testes | Cobertura |
 |--------|--------|-----------|
-| `api-postgres` | 179 | Auth, RBAC, temas, usuários, portal, segurança, cache, importação |
-| `api-sqlserver` | 8+ | Cliente SQL Server |
+| `api-postgres` | 190 | Auth, RBAC, temas, usuários, portal, segurança, cache, importação, PDF |
+| `api-sqlserver` | 11 | Health check e cliente SQL Server |
 | `shared` | 26 | Permissões RBAC |
-| `tests/` (raiz) | 24 | Validação de pacotes |
+| `tests/` (raiz) | 24 | Validação de pacotes e JWT cross-API |
 
 ```powershell
 make test-postgres    # somente api-postgres
@@ -101,7 +101,7 @@ make test-all         # todos os pacotes
 
 Workflow único em `.github/workflows/release.yml`:
 
-- **`test-api-postgres`** — 179 testes com SQLite in-memory, cobertura mínima 70%
+- **`test-api-postgres`** — 190 testes com SQLite in-memory, cobertura mínima 70%
 - **`test-api-sqlserver`** — testes de integração com SQL Server
 - **`test-root`** — testes do monorepo (depende dos dois anteriores)
 - **`lint`** — `ruff check` + `ruff format --check` em `packages/` e `apps/`
@@ -190,13 +190,16 @@ GrindX/
 │       └── exceptions/        # Exceções customizadas + códigos de erro
 ├── tests/                     # Testes do monorepo (raiz)
 ├── Makefile                   # Automação de tasks
-├── podman-compose.yml         # Orquestração de containers
+├── compose.yaml                # Orquestração Podman
+├── AGENTS.md                   # Convenções do assistente
 └── pytest.ini                 # Configuração de testes
 ```
 
 ---
 
 Desenvolvido com foco em **SOLID**, **Clean Code** e **Performance**.
+
+Toda alteração deve passar por `ruff format`, `ruff check` e `make test-all` antes do push.
 
 ---
 ## License

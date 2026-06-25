@@ -139,7 +139,7 @@ O `podman-compose.yml` define três serviços:
 | `api-sqlserver` | 8001 | python:3.12-slim |
 | `api-postgres` | 8002 | python:3.12-slim |
 
-O pacote `packages/shared` é montado como volume em `/app/shared` nos containers das APIs. O frontend é servido via Nginx oficial com cache de assets e gzip.
+O pacote `packages/` é copiado para a imagem (`/app/packages/`) e sobrescrito por bind mount em `compose.yaml` (`./packages:/app/packages:z`) para facilitar o desenvolvimento. Em produção standalone (sem compose), o `shared` já está embutido na imagem. O frontend é servido via Nginx oficial com cache de assets e gzip.
 
 Os containers rodam com usuário não-root (UID 1001) e health checks configurados.
 
@@ -149,7 +149,7 @@ Os containers rodam com usuário não-root (UID 1001) e health checks configurad
 
 Configurado via `pyproject.toml` (raiz) — `python-semantic-release` com parser **angular**.
 
-- A versão é definida em `APP_VERSION` em cada `config.py` (atualmente `1.19.0`)
+- A versão é definida em `APP_VERSION` em cada `config.py` (atualmente `1.36.1`)
 - O build hook `scripts/update_frontend_version.py` sincroniza `apps/frontend-webapp/version.json`
 - O CI gera automaticamente: bump de versão, changelog, tag e release no GitHub
 
@@ -165,7 +165,7 @@ Content-Security-Policy:
   script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
   style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
   img-src 'self' data: blob: http://localhost:8002 https://ui-avatars.com;
-  connect-src 'self' http://localhost:8002 http://127.0.0.1:8002;
+   connect-src 'self' http://localhost:8001 http://127.0.0.1:8001 http://localhost:8002 http://127.0.0.1:8002;
   font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
 ```
 
@@ -219,6 +219,7 @@ O frontend já aplica CSP, security headers e cache de assets. A API é acessada
 - [ ] SSL/HTTPS ativo via reverse proxy
 - [ ] Health checks respondendo: `/v1/health` em cada API
 - [ ] Rate limiting ativo (100 requests/min por padrão)
+- [ ] Pacote `packages/` presente no diretório do deploy (copiado por `make deploy`)
 - [ ] Cache TTLCache operacional (15 min TTL para temas/usuários/portal)
 - [ ] Logs configurados (nível INFO ou superior)
 - [ ] Backup do banco PostgreSQL agendado

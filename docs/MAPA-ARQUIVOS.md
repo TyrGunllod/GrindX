@@ -2,7 +2,7 @@
 
 # GrindX — Mapa de Arquivos
 
-Inventário completo do projeto. Atualizado em 2026-06-09.
+Inventário completo do projeto. Atualizado em 2026-06-25.
 
 **Status geral: funcionalidades principais implementadas e rodando.**
 
@@ -287,7 +287,8 @@ GrindX/
 ├── Makefile                            ✅
 ├── MAPA-ARQUIVOS.md                    ✅ Este arquivo
 ├── README.md                           ✅
-├── podman-compose.yml                  ✅
+├── AGENTS.md                           ✅ Convenções do assistente
+├── compose.yaml                        ✅ Orquestração Podman
 ├── pytest.ini                          ✅
 ├── scripts/
 │   ├── update_frontend_version.py   ✅ Semantic release

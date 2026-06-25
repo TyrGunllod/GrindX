@@ -10,7 +10,7 @@
 |------------|--------------|-----|
 | Python | 3.12 | Runtime das APIs |
 | PostgreSQL | 14+ | Banco principal |
-| ODBC Driver 17 for SQL Server | — | Apenas para `api-sqlserver` |
+| ODBC Driver 17 for SQL Server ou FreeTDS | — | Apenas para `api-sqlserver` |
 | Git | qualquer | Versionamento |
 | Podman | 4+ | Containers (substituto Docker) |
 | make (GnuMake) | qualquer | Automação de tasks |
@@ -140,14 +140,16 @@ Acessar: `http://localhost:8101`
 
 ```powershell
 # Da raiz do projeto
-make test-postgres       # 178 testes — api-postgres
-make test-sqlserver      # testes api-sqlserver
-make test-shared         # 26 testes RBAC
-make test-root           # 21 testes de integração do monorepo
-make test-all            # todos de uma vez
+make test-postgres       # 190 testes — api-postgres
+make test-sqlserver      # 11 testes — api-sqlserver
+make test-shared         # 26 testes — RBAC shared
+make test-root           # 24 testes de integração do monorepo
+make test-all            # todos de uma vez (obrigatório antes de push)
 ```
 
 Os testes usam SQLite in-memory — não precisam de PostgreSQL real rodando.
+
+> **Importante:** os testes do `api-sqlserver` precisam de `PYTHONPATH` com `packages/` — o Makefile já configura automaticamente. Em Windows, use `cmd /c` para executar (PowerShell não suporta `set PYTHONPATH=...&&`).
 
 ---
 

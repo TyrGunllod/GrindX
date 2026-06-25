@@ -6,7 +6,7 @@
 
 ## Status Atual
 
-Projeto em desenvolvimento ativo — funcionalidades principais implementadas e rodando.
+Projeto em desenvolvimento ativo — funcionalidades principais implementadas e rodando. 251+ testes automatizados, CI/CD com semantic release, deploy via containers Podman.
 
 ---
 
@@ -23,6 +23,9 @@ Monorepo Python + Vanilla JS. Dois backends FastAPI independentes compartilhando
 - **Forgot-password:** fluxo completo de recuperação de senha com envio de email
 - **Skin system:** temas visuais customizáveis por empresa com persistência
 - **Troca de senha:** alteração de senha pelo próprio usuário logado
+- **Geração de PDF:** módulo de custos com xhtml2pdf no api-postgres
+- **Módulo de custos:** consulta a produtos e cálculo de custos no api-sqlserver
+- **Zero Drift:** sistema de checkpoint para grounding de sessão
 
 ---
 

@@ -50,6 +50,7 @@ ruff check .                   # sem erros
 
 ```powershell
 ruff format packages/ apps/ && ruff check --fix . && ruff check .
+make test-all
 ```
 
 Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 — alembic/versions ignora I001.
