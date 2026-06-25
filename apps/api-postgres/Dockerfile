@@ -1,5 +1,13 @@
 FROM python:3.12-slim
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libxml2 \
+    libxslt1.1 \
+    libfreetype6 \
+    libjpeg62-turbo \
+    zlib1g \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN groupadd --gid 1001 appgroup && \
     useradd --uid 1001 --gid appgroup --no-create-home appuser
 
