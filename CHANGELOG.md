@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v1.36.2 (2026-06-25)
+
+### Bug Fixes
+
+- Add CSP connect-src for port 8001 in nginx.conf and system deps for xhtml2pdf
+  ([`cd53d12`](https://github.com/TyrGunllod/GrindX/commit/cd53d12b3c5887314389a24e0d015ca40c6b6de2))
+
+- Add system deps for xhtml2pdf (libxml2, libxslt, libfreetype) in api-postgres Dockerfile
+  ([`0e2a922`](https://github.com/TyrGunllod/GrindX/commit/0e2a92275bd2aca80a589401891392956e207c87))
+
+
 ## v1.36.1 (2026-06-25)
 
 ### Bug Fixes
