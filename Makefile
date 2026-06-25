@@ -187,8 +187,8 @@ images:
 	$(eval V := $(shell $(PY) scripts/get_version.py))
 	@echo "Construindo imagens versao $(V)..."
 	podman build -t grindx-frontend:$(V) -t grindx-frontend:latest -f apps/frontend-webapp/Dockerfile apps/frontend-webapp
-	podman build -t grindx-api-sqlserver:$(V) -t grindx-api-sqlserver:latest -f apps/api-sqlserver/Dockerfile apps/api-sqlserver
-	podman build -t grindx-api-postgres:$(V) -t grindx-api-postgres:latest -f apps/api-postgres/Dockerfile apps/api-postgres
+	podman build -t grindx-api-sqlserver:$(V) -t grindx-api-sqlserver:latest -f apps/api-sqlserver/Dockerfile .
+	podman build -t grindx-api-postgres:$(V) -t grindx-api-postgres:latest -f apps/api-postgres/Dockerfile .
 	@echo "Imagens criadas: grindx-*:$(V) e grindx-*:latest"
 	@echo "Exportando para $(IMG_DIR)..."
 ifeq ($(OS),Windows_NT)
@@ -208,6 +208,7 @@ endif
 deploy:
 	@echo "Exportando configs para ~/Apps/GrindX/..."
 	mkdir -p ~/Apps/GrindX/apps/api-postgres/uploads
+	mkdir -p ~/Apps/GrindX/apps/frontend-webapp
 	cp compose.yaml ~/Apps/GrindX/
 	cp Makefile ~/Apps/GrindX/
 	cp apps/api-postgres/.env.example ~/Apps/GrindX/.env.postgres.example
@@ -215,6 +216,7 @@ deploy:
 	test -f .env.postgres && cp .env.postgres ~/Apps/GrindX/ || true
 	test -f .env.sqlserver && cp .env.sqlserver ~/Apps/GrindX/ || true
 	cp apps/frontend-webapp/nginx.conf ~/Apps/GrindX/apps/frontend-webapp/nginx.conf
+	cp -r packages ~/Apps/GrindX/packages
 	@echo "Configs exportadas para ~/Apps/GrindX/"
 	@echo "Proximo passo:"
 	@echo "  cd ~/Apps/GrindX"

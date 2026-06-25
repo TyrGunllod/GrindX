@@ -19,10 +19,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY apps/api-sqlserver/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY apps/api-sqlserver/app/ app/
+COPY packages/ packages/
 
 RUN chown -R appuser:appgroup /app
 
