@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.1 (2026-06-25)
+
+### Bug Fixes
+
+- Include shared module in containers via build + volume mount
+  ([`3a7ec01`](https://github.com/TyrGunllod/GrindX/commit/3a7ec01e62dec702e1b571319550e4797ba13e2d))
+
+
 ## v1.36.0 (2026-06-24)
 
 ### Bug Fixes
