@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.4 (2026-06-25)
+
+### Bug Fixes
+
+- Missing closeModal element in users module breaks bindEvents and loadUsers
+  ([`0940a50`](https://github.com/TyrGunllod/GrindX/commit/0940a5094dc77574a24ed42e6c56096376072880))
+
+
 ## v1.36.3 (2026-06-25)
 
 ### Bug Fixes
