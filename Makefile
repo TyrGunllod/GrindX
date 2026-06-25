@@ -172,10 +172,12 @@ ifeq ($(OS),Windows_NT)
 	if not exist "$(VOLUMES_DIR)\grindx\frontend" mkdir "$(VOLUMES_DIR)\grindx\frontend"
 	if not exist "$(VOLUMES_DIR)\grindx\api-postgres\uploads" mkdir "$(VOLUMES_DIR)\grindx\api-postgres\uploads"
 	if exist "apps\frontend-webapp\nginx.conf" copy /y "apps\frontend-webapp\nginx.conf" "$(VOLUMES_DIR)\grindx\frontend\nginx.conf" >nul
+	if exist "apps\api-postgres\uploads" xcopy /s /e /y "apps\api-postgres\uploads" "$(VOLUMES_DIR)\grindx\api-postgres\uploads\" >nul
 else
 	mkdir -p "$(VOLUMES_DIR)/grindx/frontend"
 	mkdir -p "$(VOLUMES_DIR)/grindx/api-postgres/uploads"
 	test -f apps/frontend-webapp/nginx.conf && cp apps/frontend-webapp/nginx.conf "$(VOLUMES_DIR)/grindx/frontend/nginx.conf" || true
+	test -d apps/api-postgres/uploads && cp -r apps/api-postgres/uploads/. "$(VOLUMES_DIR)/grindx/api-postgres/uploads/" || true
 endif
 	@echo "Volumes prontos em $(VOLUMES_DIR)."
 
