@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.6 (2026-06-25)
+
+### Bug Fixes
+
+- Copy uploads content in make volumes target
+  ([`917cd90`](https://github.com/TyrGunllod/GrindX/commit/917cd90fe7d574511bc1185356e0c2eb52ebaf2b))
+
+
 ## v1.36.5 (2026-06-25)
 
 ### Bug Fixes
