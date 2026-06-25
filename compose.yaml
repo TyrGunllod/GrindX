@@ -52,7 +52,7 @@ services:
     volumes:
       - ./.env.postgres:/app/.env:z
       - ./packages:/app/packages:z
-      - ${HOME:-.}/Containers/volumes/grindx/api-postgres/uploads:/app/static/uploads:z
+      - ${HOME:-.}/Containers/volumes/grindx/api-postgres/uploads:/app/uploads:z
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
       interval: 30s
