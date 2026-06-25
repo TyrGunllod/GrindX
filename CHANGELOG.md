@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.7 (2026-06-25)
+
+### Bug Fixes
+
+- Align compose uploads volume mount with app path (/app/uploads)
+  ([`dadef70`](https://github.com/TyrGunllod/GrindX/commit/dadef709be0c98558f08069a046460a77a14d117))
+
+
 ## v1.36.6 (2026-06-25)
 
 ### Bug Fixes
