@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.36.3 (2026-06-25)
+
+### Bug Fixes
+
+- **style**: Ajustes visuais
+  ([`32067ca`](https://github.com/TyrGunllod/GrindX/commit/32067ca54e664fafdfb2358451e6a24632bf82eb))
+
+### Documentation
+
+- Update project state — 251 tests, CSP 8001, shared volume, xhtml2pdf deps
+  ([`c15480a`](https://github.com/TyrGunllod/GrindX/commit/c15480a65a54a6ce22324e8f95c6e094e60daca9))
+
+
 ## v1.36.2 (2026-06-25)
 
 ### Bug Fixes
