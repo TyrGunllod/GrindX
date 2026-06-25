@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.5 (2026-06-25)
+
+### Bug Fixes
+
+- Remove closeModal references that broke bindEvents
+  ([`7908e86`](https://github.com/TyrGunllod/GrindX/commit/7908e86bc5f13b6f958e376b733aebcbe2e4ab99))
+
+
 ## v1.36.4 (2026-06-25)
 
 ### Bug Fixes
