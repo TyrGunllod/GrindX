@@ -90,11 +90,9 @@ class UsersController extends window.grindx.controllers.BaseController {
             this.modalTitle.textContent = 'Cadastrar Usuário';
             this.modalController.open();
         };
-        document.getElementById('closeModal').onclick = () => this.modalController.close();
         document.getElementById('btnCancel').onclick = () => this.modalController.close();
         document.getElementById('btnSave').onclick = () => this.saveUser();
 
-        document.getElementById('closePermissoesModal').onclick = () => this.permissoesController.close();
         document.getElementById('btnCancelPermissoes').onclick = () => this.permissoesController.close();
         document.getElementById('btnSavePermissoes').onclick = () => this.savePermissoes();
     }
