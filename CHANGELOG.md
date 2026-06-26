@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.10 (2026-06-26)
+
+### Bug Fixes
+
+- Sub-aba collapse/expand toggle in topbar dropdown like sidebar
+  ([`22b2944`](https://github.com/TyrGunllod/GrindX/commit/22b294430667a0bb8eade3ea49b79924d023a8dc))
+
+
 ## v1.36.9 (2026-06-26)
 
 ### Bug Fixes
