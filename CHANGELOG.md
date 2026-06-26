@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.12 (2026-06-26)
+
+### Bug Fixes
+
+- Stop propagation on sub-aba toggle click to prevent dropdown closing
+  ([`e74506b`](https://github.com/TyrGunllod/GrindX/commit/e74506bb26e34a19ee2bb6d853a03edd5e2517be))
+
+
 ## v1.36.11 (2026-06-26)
 
 ### Bug Fixes

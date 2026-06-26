@@ -13,7 +13,7 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Constante de modulo para compatibilidade com semantic-release version_variable
-APP_VERSION = "1.36.11"
+APP_VERSION = "1.36.12"
 
 
 class Settings(BaseSettings):
