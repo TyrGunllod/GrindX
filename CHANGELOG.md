@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v1.37.1 (2026-06-26)
+
+### Bug Fixes
+
+- Use same-origin API URL for external access (non-localhost IPs)
+  ([`d0070ba`](https://github.com/TyrGunllod/GrindX/commit/d0070baacbe35c5d9fabdfec77ef222f3695a551))
+
+- Use token_urlsafe in tests to avoid flaky entropy validation
+  ([`5493154`](https://github.com/TyrGunllod/GrindX/commit/5493154920c70319fd73bd66af56d1fe5966c191))
+
+
 ## v1.37.0 (2026-06-26)
 
 ### Bug Fixes
