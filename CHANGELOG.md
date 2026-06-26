@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.14 (2026-06-26)
+
+### Bug Fixes
+
+- Add manual WOFF/WOFF2 magic byte detection in font upload validation
+  ([`e9f466f`](https://github.com/TyrGunllod/GrindX/commit/e9f466f235e2de90805d64598662e954230ca64d))
+
+
 ## v1.36.13 (2026-06-26)
 
 ### Bug Fixes
