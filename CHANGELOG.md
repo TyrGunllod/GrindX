@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.8 (2026-06-26)
+
+### Bug Fixes
+
+- Show sub-aba labels in topbar dropdown navigation
+  ([`7512453`](https://github.com/TyrGunllod/GrindX/commit/75124539450bb733cc2752be78f2bbfb579b6a66))
+
+
 ## v1.36.7 (2026-06-25)
 
 ### Bug Fixes
