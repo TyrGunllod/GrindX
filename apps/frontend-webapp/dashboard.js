@@ -193,11 +193,20 @@ class DashboardController extends window.grindx.controllers.BaseController {
                     if (mod.role_minima === 'admin' && this.user.role !== 'admin') return false;
                     return true;
                 });
-                return childMods.map(mod => `
-                    <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
-                        <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
-                    </button>
-                `).join('');
+                if (!childMods.length) return '';
+                return `
+                    <div class="nav-dropdown-subgroup">
+                        <div class="nav-dropdown-subgroup-label">
+                            <i class="${child.icone || 'fas fa-folder'}"></i>
+                            <span>${child.nome}</span>
+                        </div>
+                        ${childMods.map(mod => `
+                            <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
+                                <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
             }).join('');
 
             const directModsHtml = modulos.map(mod => `
