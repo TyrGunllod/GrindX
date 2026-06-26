@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v1.37.0 (2026-06-26)
+
+### Bug Fixes
+
+- Escape variable names in ps1 script
+  ([`3f1fc89`](https://github.com/TyrGunllod/GrindX/commit/3f1fc897cd9fa3fa2124756075fabce44ea3982b))
+
+### Chores
+
+- Update CSS and add interozone-green skin
+  ([`3b4ce4b`](https://github.com/TyrGunllod/GrindX/commit/3b4ce4bccd78045833bb06ec6f64004b23f6489c))
+
+### Features
+
+- Add make dev-external target for WSL port forwarding and firewall setup
+  ([`b1f982c`](https://github.com/TyrGunllod/GrindX/commit/b1f982c209279a40bf6b769776e7a1058321b0b3))
+
+
 ## v1.36.14 (2026-06-26)
 
 ### Bug Fixes
