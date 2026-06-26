@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.9 (2026-06-26)
+
+### Bug Fixes
+
+- Sub-aba label clickable with cascade indent for child modules in topbar dropdown
+  ([`677f3d9`](https://github.com/TyrGunllod/GrindX/commit/677f3d9564d848d65bf462fa9f37e6262d61f4fa))
+
+
 ## v1.36.8 (2026-06-26)
 
 ### Bug Fixes
