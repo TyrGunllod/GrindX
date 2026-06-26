@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.11 (2026-06-26)
+
+### Bug Fixes
+
+- Nav-dropdown width adapts to text content (max-content)
+  ([`a3f595b`](https://github.com/TyrGunllod/GrindX/commit/a3f595b3260694b6d2f6486f0e87ce156d073321))
+
+
 ## v1.36.10 (2026-06-26)
 
 ### Bug Fixes
