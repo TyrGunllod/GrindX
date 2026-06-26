@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.37.2 (2026-06-26)
+
+### Bug Fixes
+
+- Add missing config.js to index and dashboard HTML; fix skinLoader external URL fallback
+  ([`c2517a5`](https://github.com/TyrGunllod/GrindX/commit/c2517a50e1be940dee9b16c4771aee26a1495d90))
+
+
 ## v1.37.1 (2026-06-26)
 
 ### Bug Fixes
