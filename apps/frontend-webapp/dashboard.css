@@ -687,7 +687,8 @@ iframe {
     position: fixed;
     top: 0;
     left: -9999px;
-    min-width: 100px;
+    width: max-content;
+    max-width: 90vw;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
@@ -726,8 +727,6 @@ iframe {
     white-space: nowrap;
 }
 .nav-dropdown-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
     min-width: 0;
 }
 .nav-dropdown-item i {
