@@ -757,6 +757,10 @@ iframe {
 .nav-dropdown-subgroup {
     margin-top: 0.25rem;
 }
+.nav-dropdown-subgroup .nav-dropdown-item {
+    padding-left: 1.8rem;
+    font-size: 0.78rem;
+}
 .nav-dropdown-subgroup:first-child {
     margin-top: 0;
 }
@@ -764,18 +768,25 @@ iframe {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.35rem 0.75rem 0.15rem;
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
     color: var(--text-muted);
     letter-spacing: 0.5px;
+    cursor: pointer;
 }
 .nav-dropdown-subgroup-label i {
     font-size: 0.75rem;
     width: 1.2rem;
     text-align: center;
     color: var(--text-muted);
+}
+.nav-dropdown-subgroup-label:hover {
+    background: rgba(79, 70, 229, 0.08);
+    color: var(--primary);
+}
+.nav-dropdown-subgroup-label:hover i {
+    color: var(--primary);
 }
 
 .nav-dropdown-divider {

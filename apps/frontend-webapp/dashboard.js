@@ -194,12 +194,13 @@ class DashboardController extends window.grindx.controllers.BaseController {
                     return true;
                 });
                 if (!childMods.length) return '';
+                const firstMod = childMods[0];
                 return `
                     <div class="nav-dropdown-subgroup">
-                        <div class="nav-dropdown-subgroup-label">
+                        <button class="nav-dropdown-item nav-dropdown-subgroup-label" data-module="${firstMod.slug}" data-url="${firstMod.url}">
                             <i class="${child.icone || 'fas fa-folder'}"></i>
                             <span>${child.nome}</span>
-                        </div>
+                        </button>
                         ${childMods.map(mod => `
                             <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
                                 <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
