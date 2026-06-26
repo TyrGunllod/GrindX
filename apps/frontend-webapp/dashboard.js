@@ -196,7 +196,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 if (!childMods.length) return '';
                 return `
                     <div class="nav-dropdown-subgroup collapsed" data-child="${child.id}">
-                        <div class="nav-dropdown-subgroup-label" onclick="window.dashboard.toggleTopbarChild(${child.id})">
+                        <div class="nav-dropdown-subgroup-label" onclick="event.stopPropagation(); window.dashboard.toggleTopbarChild(${child.id})">
                             <i class="${child.icone || 'fas fa-folder'}"></i>
                             <span>${child.nome}</span>
                             <i class="fas fa-chevron-down chevron"></i>
