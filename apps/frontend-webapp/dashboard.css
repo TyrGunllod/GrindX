@@ -768,18 +768,35 @@ iframe {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.5rem;
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
     color: var(--text-muted);
     letter-spacing: 0.5px;
     cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
 }
 .nav-dropdown-subgroup-label i {
     font-size: 0.75rem;
     width: 1.2rem;
     text-align: center;
     color: var(--text-muted);
+    transition: color 0.15s;
+}
+.nav-dropdown-subgroup-label .chevron {
+    margin-left: auto;
+    font-size: 0.55rem;
+    opacity: 0.5;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-dropdown-subgroup:not(.collapsed) .nav-dropdown-subgroup-label .chevron {
+    transform: rotate(180deg);
 }
 .nav-dropdown-subgroup-label:hover {
     background: rgba(79, 70, 229, 0.08);
@@ -787,6 +804,14 @@ iframe {
 }
 .nav-dropdown-subgroup-label:hover i {
     color: var(--primary);
+}
+.nav-dropdown-child-container {
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+}
+.nav-dropdown-subgroup.collapsed .nav-dropdown-child-container {
+    max-height: 0;
 }
 
 .nav-dropdown-divider {

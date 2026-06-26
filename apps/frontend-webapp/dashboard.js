@@ -194,18 +194,20 @@ class DashboardController extends window.grindx.controllers.BaseController {
                     return true;
                 });
                 if (!childMods.length) return '';
-                const firstMod = childMods[0];
                 return `
-                    <div class="nav-dropdown-subgroup">
-                        <button class="nav-dropdown-item nav-dropdown-subgroup-label" data-module="${firstMod.slug}" data-url="${firstMod.url}">
+                    <div class="nav-dropdown-subgroup collapsed" data-child="${child.id}">
+                        <div class="nav-dropdown-subgroup-label" onclick="window.dashboard.toggleTopbarChild(${child.id})">
                             <i class="${child.icone || 'fas fa-folder'}"></i>
                             <span>${child.nome}</span>
-                        </button>
-                        ${childMods.map(mod => `
-                            <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
-                                <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
-                            </button>
-                        `).join('')}
+                            <i class="fas fa-chevron-down chevron"></i>
+                        </div>
+                        <div class="nav-dropdown-child-container">
+                            ${childMods.map(mod => `
+                                <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
+                                    <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
+                                </button>
+                            `).join('')}
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -392,6 +394,12 @@ class DashboardController extends window.grindx.controllers.BaseController {
         if (wasCollapsed) {
             group.classList.remove('collapsed');
         }
+    }
+
+    toggleTopbarChild(childId) {
+        const group = document.querySelector(`.nav-dropdown-subgroup[data-child="${childId}"]`);
+        if (!group) return;
+        group.classList.toggle('collapsed');
     }
 
     toggleSubgroup(abaId) {
