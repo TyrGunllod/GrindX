@@ -72,7 +72,7 @@ if ($Remove) {
         if ($LASTEXITCODE -eq 0) {
             Write-Host "  [OK] Porta $port removida" -ForegroundColor Green
         } else {
-            Write-Host "  [WARN] Porta $port: $r" -ForegroundColor Yellow
+Write-Host "  [WARN] Porta ${port}: $r" -ForegroundColor Yellow
             $ok = $false
         }
     }
@@ -92,7 +92,7 @@ foreach ($port in $Ports) {
     if ($LASTEXITCODE -eq 0) {
         Write-Host "  [OK] Porta $port -> $wslIp`:$port" -ForegroundColor Green
     } else {
-        Write-Host "  [WARN] Porta $port: $r" -ForegroundColor Yellow
+        Write-Host "  [WARN] Porta ${port}: $r" -ForegroundColor Yellow
         $ok = $false
     }
 }
