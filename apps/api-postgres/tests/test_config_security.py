@@ -22,10 +22,10 @@ class TestSecretKeyEntropy:
             Settings(SECRET_KEY="a" * 32)
 
     def test_secret_key_accepts_high_entropy(self):
-        """Chave gerada por secrets.token_hex(32) deve passar (entropia ~3.9)."""
+        """Chave gerada por secrets.token_urlsafe(32) deve passar (entropia ~5.8)."""
         from app.core.config import Settings
 
-        key = secrets.token_hex(32)
+        key = secrets.token_urlsafe(32)
         settings = Settings(SECRET_KEY=key)
         assert settings.SECRET_KEY == key
 
@@ -45,7 +45,7 @@ class TestCorsConfiguration:
         from app.core.config import Settings
 
         settings = Settings(
-            SECRET_KEY=secrets.token_hex(32),
+            SECRET_KEY=secrets.token_urlsafe(32),
             ENVIRONMENT="production",
             CORS_ORIGINS="*",
         )
@@ -57,7 +57,7 @@ class TestCorsConfiguration:
         from app.core.config import Settings
 
         settings = Settings(
-            SECRET_KEY=secrets.token_hex(32),
+            SECRET_KEY=secrets.token_urlsafe(32),
             ENVIRONMENT="production",
             CORS_ORIGINS="",
         )
@@ -69,7 +69,7 @@ class TestCorsConfiguration:
         from app.core.config import Settings
 
         settings = Settings(
-            SECRET_KEY=secrets.token_hex(32),
+            SECRET_KEY=secrets.token_urlsafe(32),
             ENVIRONMENT="production",
             CORS_ORIGINS="https://app.grindx.com",
         )
@@ -80,7 +80,7 @@ class TestCorsConfiguration:
         from app.core.config import Settings
 
         settings = Settings(
-            SECRET_KEY=secrets.token_hex(32),
+            SECRET_KEY=secrets.token_urlsafe(32),
             ENVIRONMENT="development",
             CORS_ORIGINS="",
         )
@@ -94,7 +94,7 @@ class TestCorsConfiguration:
         from app.core.config import Settings
 
         settings = Settings(
-            SECRET_KEY=secrets.token_hex(32),
+            SECRET_KEY=secrets.token_urlsafe(32),
             ENVIRONMENT="development",
             CORS_ORIGINS="",
             DEV_NETWORK_IP="192.168.0.62",
