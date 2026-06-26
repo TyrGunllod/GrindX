@@ -44,18 +44,28 @@ def _validate_file_magic(
     Raises:
         HTTPException: Se o tipo não for detectável ou não corresponder.
     """
-    kind = filetype.guess(file_bytes[:261])
-    if kind is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Não foi possível detectar o tipo do arquivo de {file_label}. "
-            "Verifique se o arquivo não está corrompido.",
-        )
-    if kind.mime not in allowed_mimes:
+    header = file_bytes[:4]
+
+    # Detecção manual de WOFF (wOFF) e WOFF2 (wOF2) — filetype lib não reconhece
+    if header == b"wOFF":
+        detected_mime = "font/woff"
+    elif header == b"wOF2":
+        detected_mime = "font/woff2"
+    else:
+        kind = filetype.guess(file_bytes[:261])
+        if kind is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Não foi possível detectar o tipo do arquivo de {file_label}. "
+                "Verifique se o arquivo não está corrompido.",
+            )
+        detected_mime = kind.mime
+
+    if detected_mime not in allowed_mimes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Tipo de arquivo de {file_label} não corresponde ao conteúdo. "
-            f"Esperado: {', '.join(allowed_mimes)}. Detectado: {kind.mime}",
+            f"Esperado: {', '.join(allowed_mimes)}. Detectado: {detected_mime}",
         )
 
 
