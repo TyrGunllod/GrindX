@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.36.13 (2026-06-26)
+
+### Bug Fixes
+
+- Sidebar sub-abas start collapsed, only expand on click
+  ([`b4183d5`](https://github.com/TyrGunllod/GrindX/commit/b4183d500bb507bb1a0ce5417d7e06d3e4468fcd))
+
+
 ## v1.36.12 (2026-06-26)
 
 ### Bug Fixes
