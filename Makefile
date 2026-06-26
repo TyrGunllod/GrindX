@@ -3,7 +3,7 @@
 # ==========================================
 
 .PHONY: venv build up down logs images \
-        dev-postgres dev-sqlserver dev-frontend dev-all dev-kill-port \
+        dev-postgres dev-sqlserver dev-frontend dev-all dev-kill-port dev-external \
         migrate seed \
         test-postgres test-sqlserver test-shared test-root test-all \
         lint format clean volumes deploy
@@ -84,6 +84,14 @@ ifeq ($(OS),Windows_NT)
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/kill-port.ps1
 else
 	@echo "Linux: use fuser -k 8002/tcp ou lsof -ti:8002 | xargs kill"
+endif
+
+dev-external:
+ifeq ($(OS),Windows_NT)
+	@echo "Configurando acesso externo para Podman no WSL..."
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/external-access.ps1
+else
+	@echo "Linux: servicos ja escutam em 0.0.0.0, acesso externo via IP da maquina."
 endif
 
 # ==========================================

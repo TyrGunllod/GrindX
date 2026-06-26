@@ -532,7 +532,7 @@ iframe {
 }
 
 .nav-subtitle:hover {
-    background: rgba(79, 70, 229, 0.08);
+   /* background: rgba(79, 70, 229, 0.08);*/
     color: var(--text-main);
 }
 

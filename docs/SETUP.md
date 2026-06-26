@@ -290,3 +290,38 @@ set PYTHONPATH=D:\_Projetos\GrindX\packages
 ### Rate limit no CI
 
 - O workflow usa variável `RATE_LIMIT_REQUESTS=100` — valores baixos podem causar flaky tests; aumentar se necessário.
+
+### APIs não sobem — portas ocupadas (WSL/Windows)
+
+Se as portas 8001, 8002 ou 8101 estiverem ocupadas, pode ser conflito com `netsh interface portproxy` do Windows (`svchost.exe iphlpsvc`):
+
+```powershell
+make dev-kill-port
+```
+
+### Acesso externo (celular, outro PC na rede)
+
+Com Podman no WSL2, os containers só respondem em `localhost`. Para acessar de outros dispositivos na rede:
+
+**Opção 1 — Modo mirrored WSL2 (recomendado, Windows 11 23H2+)**
+
+Criar `%USERPROFILE%\.wslconfig`:
+```ini
+[wsl2]
+networkingMode=mirrored
+dnsTunneling=true
+firewall=false
+autoProxy=true
+```
+Reiniciar WSL: `wsl --shutdown && wsl`
+
+**Opção 2 — Script automático (Administrador)**
+
+```powershell
+make dev-external
+```
+
+Isso cria portproxy do Windows para o IP do WSL2 e libera as portas no firewall. Para remover:
+```powershell
+pwsh -NoProfile -File scripts/external-access.ps1 -Remove
+```
