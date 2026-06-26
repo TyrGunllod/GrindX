@@ -343,7 +343,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         }).join('');
 
         const childrenHtml = hasChildren ? aba.children.map(child => `
-            <div class="nav-subgroup" id="subgroup-${child.id}">
+            <div class="nav-subgroup collapsed" id="subgroup-${child.id}">
                 <div class="nav-subtitle" onclick="window.dashboard.toggleSubgroup('${child.id}')">
                     <div class="nav-title-label">
                         <i class="${child.icone || 'fas fa-folder'} icon-sm"></i>
