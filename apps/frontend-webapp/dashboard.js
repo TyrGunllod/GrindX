@@ -21,6 +21,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         this.topbar = document.getElementById('topbar');
         this.topbarNav = document.getElementById('topbarNav');
         this.currentLayout = 'topbar';
+        this.zoomLevel = 1;
 
         this.init();
     }
@@ -75,6 +76,10 @@ class DashboardController extends window.grindx.controllers.BaseController {
             this.mainNav.addEventListener('click', (e) => this.handleNavigation(e));
 
             document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
+
+            document.getElementById('zoomIn')?.addEventListener('click', () => this.zoomIn());
+            document.getElementById('zoomOut')?.addEventListener('click', () => this.zoomOut());
+            document.getElementById('zoomReset')?.addEventListener('click', () => this.zoomReset());
 
             // Preview banner events
             document.getElementById('applyPermanentBtn')?.addEventListener('click', () => this.applyPreviewSkinPermanently());
@@ -380,16 +385,57 @@ class DashboardController extends window.grindx.controllers.BaseController {
      navigateToModule(url) {
          if (!url) return;
          this.showLoader(true);
+         this.zoomLevel = 1;
+         document.getElementById('zoomControls').style.display = '';
+         document.getElementById('zoomLevel').textContent = '100%';
+
+         const wrapper = document.createElement('div');
+         wrapper.className = 'iframe-zoom-wrapper';
 
          const iframe = document.createElement('iframe');
+         iframe.className = 'module-iframe';
          iframe.src = url;
          iframe.onload = () => {
              this.showLoader(false);
              this.applySkinToIframe(iframe);
+             this.applyZoom();
          };
 
+         wrapper.appendChild(iframe);
          this.viewport.innerHTML = '';
-         this.viewport.appendChild(iframe);
+         this.viewport.appendChild(wrapper);
+     }
+
+     zoomIn() {
+         this.zoomLevel = Math.min(2, +(this.zoomLevel + 0.1).toFixed(1));
+         this.applyZoom();
+     }
+
+     zoomOut() {
+         this.zoomLevel = Math.max(0.3, +(this.zoomLevel - 0.1).toFixed(1));
+         this.applyZoom();
+     }
+
+     zoomReset() {
+         this.zoomLevel = 1;
+         this.applyZoom();
+     }
+
+     applyZoom() {
+         const wrapper = this.viewport.querySelector('.iframe-zoom-wrapper');
+         if (!wrapper) return;
+         const iframe = wrapper.querySelector('iframe');
+         if (!iframe) return;
+         const pct = Math.round(this.zoomLevel * 100);
+         document.getElementById('zoomLevel').textContent = pct + '%';
+         const w = 100 / this.zoomLevel;
+         const h = 100 / this.zoomLevel;
+         wrapper.style.width = w + '%';
+         wrapper.style.height = h + '%';
+         iframe.style.transform = 'scale(' + this.zoomLevel + ')';
+         iframe.style.width = (100 / this.zoomLevel) + '%';
+         iframe.style.height = (100 / this.zoomLevel) + '%';
+         iframe.style.transformOrigin = '0 0';
      }
 
     applySkinToIframe(iframe) {
