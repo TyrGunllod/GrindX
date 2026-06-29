@@ -155,16 +155,10 @@ class DashboardController extends window.grindx.controllers.BaseController {
         const trunc = (s, n) => s && s.length > n ? s.substring(0, n) + '...' : s;
 
         const groupsHtml = abas.map((aba, idx) => {
-            const modulos = (aba.modulos || []).filter(mod => {
-                if (mod.role_minima === 'admin' && this.user.role !== 'admin') return false;
-                return true;
-            });
+            const modulos = (aba.modulos || []);
 
             const childrenHtml = (aba.children || []).map(child => {
-                const childMods = (child.modulos || []).filter(mod => {
-                    if (mod.role_minima === 'admin' && this.user.role !== 'admin') return false;
-                    return true;
-                });
+                const childMods = (child.modulos || []);
                 if (!childMods.length) return '';
                 return `
                     <div class="nav-dropdown-subgroup collapsed" data-child="${child.id}">
@@ -286,14 +280,11 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
     _renderNavGroup(aba) {
         const hasChildren = aba.children && aba.children.length > 0;
-        const modulesHtml = (aba.modulos || []).map(mod => {
-            if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
-            return `
-                <button type="button" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}">
-                    <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
-                </button>
-            `;
-        }).join('');
+        const modulesHtml = (aba.modulos || []).map(mod => `
+            <button type="button" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}">
+                <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
+            </button>
+        `).join('');
 
         const childrenHtml = hasChildren ? aba.children.map(child => `
             <div class="nav-subgroup collapsed" id="subgroup-${child.id}">
@@ -305,14 +296,11 @@ class DashboardController extends window.grindx.controllers.BaseController {
                     <i class="fas fa-chevron-down chevron"></i>
                 </div>
                 <div class="nav-links-container">
-                    ${(child.modulos || []).map(mod => {
-                        if (mod.role_minima === 'admin' && this.user.role !== 'admin') return '';
-                        return `
-                            <button type="button" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}">
-                                <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
-                            </button>
-                        `;
-                    }).join('')}
+                    ${(child.modulos || []).map(mod => `
+                        <button type="button" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}">
+                            <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
+                        </button>
+                    `).join('')}
                 </div>
             </div>
         `).join('') : '';
