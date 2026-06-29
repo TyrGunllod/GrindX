@@ -9,9 +9,15 @@ from fastapi.testclient import TestClient
 
 class TestScanEndpoint:
     def test_scan_sem_pasta_import_retorna_vazio(
-        self, client: TestClient, auth_headers: dict
+        self, client: TestClient, auth_headers: dict, monkeypatch
     ):
         """When import/ dir doesn't exist, scan returns empty list."""
+        from pathlib import Path
+
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir",
+            lambda: Path("C:\\nonexistent_import_dir_grindx_test"),
+        )
         response = client.get("/v1/import/scan", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
