@@ -77,11 +77,7 @@ def obter_menu_dinamico(
             if aba.parent_id == parent_id:
                 children = build_tree(abas_list, aba.id)
                 if current_user.role != "admin":
-                    is_restricted = aba.nome.lower() in ("gestão", "gestao")
-                    if is_restricted:
-                        mods = [m for m in (aba.modulos or []) if m.id in accessible_ids]
-                    else:
-                        mods = list(aba.modulos or [])
+                    mods = [m for m in (aba.modulos or []) if m.id in accessible_ids]
                     if not mods and not children:
                         continue
                 else:

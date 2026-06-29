@@ -237,31 +237,83 @@ class UsersController extends window.grindx.controllers.BaseController {
         this.permissoesController.open();
 
         try {
-            // Busca módulos do usuário e menu completo
             const [userModulos, menu] = await Promise.all([
                 window.grindx.api.get(`/usuarios/${id}/modulos`),
-                window.grindx.api.get('/portal/menu') // Assumindo que este endpoint existe e retorna tudo para admin ou já foi filtrado no backend para admin
+                window.grindx.api.get('/portal/menu')
             ]);
 
-            const liberados = userModulos.modulos || [];
-            
-            // Renderiza checkboxes agrupados
-            let html = '<div class="grid grid-1 gap-4">';
-            menu.forEach(aba => {
-                html += `<div><strong>${aba.nome}</strong><div class="grid grid-md-2 gap-2 mt-2">`;
-                aba.modulos.forEach(mod => {
-                    const checked = liberados.includes(mod.id) ? 'checked' : '';
-                    html += `
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" name="modulo" value="${mod.id}" ${checked}>
-                            ${mod.nome}
-                        </label>
+            const liberados = new Set(userModulos.modulos || []);
+
+            const renderModulo = (mod, depth = 0) => {
+                const checked = liberados.has(mod.id) ? 'checked' : '';
+                const isAdminOnly = mod.role_minima === 'admin';
+                const badge = isAdminOnly ? ' <span class="badge badge-admin-only">Admin</span>' : '';
+                return `
+                    <label class="perm-checkbox ${depth > 0 ? 'perm-checkbox-child' : ''}">
+                        <input type="checkbox" name="modulo" value="${mod.id}" ${checked}>
+                        <i class="${mod.icone || 'fas fa-cube'}"></i>
+                        <span>${mod.nome}</span>
+                        ${badge}
+                    </label>
+                `;
+            };
+
+            const renderChildren = (children) => {
+                return children.map(child => {
+                    const childMods = (child.modulos || []).map(m => renderModulo(m, 1)).join('');
+                    const sub = renderChildren(child.children || []);
+                    if (!childMods && !sub) return '';
+                    return `
+                        <div class="perm-subgroup">
+                            <div class="perm-subgroup-header">
+                                <i class="${child.icone || 'fas fa-folder'}"></i>
+                                <span>${child.nome}</span>
+                            </div>
+                            <div class="perm-modules">${childMods}${sub}</div>
+                        </div>
                     `;
-                });
-                html += '</div></div>';
+                }).join('');
+            };
+
+            let html = '<div class="perm-container">';
+            menu.forEach(aba => {
+                const directMods = (aba.modulos || []).map(m => renderModulo(m)).join('');
+                const childrenHtml = renderChildren(aba.children || []);
+                const totalMods = (aba.modulos || []).length
+                    + (aba.children || []).reduce((acc, c) => acc + (c.modulos || []).length, 0);
+                const checkedCount = (aba.modulos || []).filter(m => liberados.has(m.id)).length;
+                const allChecked = totalMods > 0 && checkedCount === totalMods;
+
+                html += `
+                    <div class="perm-aba">
+                        <div class="perm-aba-header">
+                            <div class="perm-aba-title">
+                                <i class="${aba.icone || 'fas fa-folder'}"></i>
+                                <span>${aba.nome}</span>
+                            </div>
+                            <label class="perm-toggle-label" title="${allChecked ? 'Limpar todos' : 'Selecionar todos'}">
+                                <input type="checkbox" class="perm-aba-toggle" ${allChecked ? 'checked' : ''}>
+                                <span class="perm-toggle-text">${allChecked ? 'Limpar' : 'Selecionar todos'}</span>
+                            </label>
+                        </div>
+                        <div class="perm-modules">
+                            ${directMods}
+                            ${childrenHtml}
+                        </div>
+                    </div>
+                `;
             });
             html += '</div>';
             container.innerHTML = html;
+
+            container.querySelectorAll('.perm-aba-toggle').forEach(cb => {
+                cb.addEventListener('change', function () {
+                    const abaCard = this.closest('.perm-aba');
+                    abaCard.querySelectorAll('input[name="modulo"]').forEach(m => m.checked = this.checked);
+                    const txt = this.closest('.perm-toggle-label').querySelector('.perm-toggle-text');
+                    txt.textContent = this.checked ? 'Limpar' : 'Selecionar todos';
+                });
+            });
         } catch (err) {
             console.error('Falha ao carregar permissões:', err);
             container.innerHTML = '<p class="text-danger">Erro ao carregar permissões.</p>';
