@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v1.37.3 (2026-06-29)
+
+### Bug Fixes
+
+- Restore per-module permission model and improve permissions UI
+  ([`d5814cc`](https://github.com/TyrGunllod/GrindX/commit/d5814cc81f698e711ce13019a498b6f04717611c))
+
+- Show all modules to non-admin users except Gestão tab
+  ([`dcc3e91`](https://github.com/TyrGunllod/GrindX/commit/dcc3e918c7c507b7c5807fde378468016005e43c))
+
+
 ## v1.37.2 (2026-06-26)
 
 ### Bug Fixes
