@@ -306,7 +306,8 @@ class StructureController extends window.grindx.controllers.BaseController {
                 window.grindx.components.LoadingSpinner.toast('Informe o nome do módulo.', 'warning');
                 return;
             }
-            const roleMinima = document.getElementById('modRoleMinima').value;
+            const roleMinimaEl = document.getElementById('modRoleMinima');
+            const roleMinima = roleMinimaEl ? roleMinimaEl.value : 'operador';
             try {
                 await window.grindx.api.request(`/portal/modulos/${this.currentModuloId}`, {
                     method: 'PUT',
@@ -329,7 +330,8 @@ class StructureController extends window.grindx.controllers.BaseController {
         const moduleUrl = document.getElementById('modUrl').value;
         const slug = document.getElementById('modSlug').value;
         const icone = document.getElementById('modIcone').value;
-        const roleMinima = document.getElementById('modRoleMinima').value;
+        const roleMinimaEl = document.getElementById('modRoleMinima');
+        const roleMinima = roleMinimaEl ? roleMinimaEl.value : 'operador';
 
         try {
             await window.grindx.api.request('/portal/modulos', {
