@@ -1,13 +1,14 @@
 from typing import Optional
 
 import structlog
-from fastapi import APIRouter, Depends, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from shared.schemas.auth import TokenPayload
 from shared.schemas.base import PaginatedResponse
 from sqlalchemy.orm import Session
 
-from app.auth.dependencies import require_role, require_role_or_higher
+from app.auth.dependencies import get_current_user, require_role, require_role_or_higher
 from app.database import get_db
-from app.models.usuario import UsuarioModulo
+from app.models.usuario import Usuario, UsuarioModulo
 from app.schemas.usuario import (
     UsuarioCreate,
     UsuarioModulosResponse,
@@ -47,10 +48,12 @@ def listar_usuarios(
 def criar_usuario(
     schema: UsuarioCreate,
     request: Request,
-    current_user=Depends(require_role("admin")),
+    current_user: TokenPayload = Depends(require_role_or_higher("operador")),
     db: Session = Depends(get_db),
 ):
-    """Cria um novo usuário. Acesso: admin."""
+    """Cria um novo usuário. Acesso: operador ou superior."""
+    if schema.role == "admin" and current_user.role != "admin":
+        raise HTTPException(403, "Apenas administradores podem criar usuários admin.")
     service = UsuarioService(db)
     result = service.criar_usuario(schema, empresa_id=current_user.company_id)
     client_ip = request.client.host if request.client else "unknown"
@@ -79,10 +82,16 @@ def buscar_usuario(
 def atualizar_usuario(
     usuario_id: int,
     schema: UsuarioUpdate,
+    current_user: TokenPayload = Depends(require_role_or_higher("operador")),
     db: Session = Depends(get_db),
-    _: None = Depends(require_role("admin")),
 ):
-    """Atualiza dados de um usuário. Acesso: admin."""
+    """Atualiza dados de um usuário. Acesso: operador ou superior."""
+    if current_user.role != "admin":
+        target = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+        if target and target.role == "admin":
+            raise HTTPException(403, "Apenas administradores podem alterar usuários admin.")
+        if schema.role == "admin":
+            raise HTTPException(403, "Apenas administradores podem definir o perfil admin.")
     service = UsuarioService(db)
     return service.atualizar_usuario(usuario_id, schema)
 
@@ -91,10 +100,14 @@ def atualizar_usuario(
 def desativar_usuario(
     usuario_id: int,
     request: Request,
+    current_user: TokenPayload = Depends(require_role_or_higher("operador")),
     db: Session = Depends(get_db),
-    _: None = Depends(require_role("admin")),
 ):
-    """Desativa um usuário (soft delete). Acesso: admin."""
+    """Desativa um usuário (soft delete). Acesso: operador ou superior."""
+    if current_user.role != "admin":
+        target = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+        if target and target.role == "admin":
+            raise HTTPException(403, "Apenas administradores podem desativar usuários admin.")
     service = UsuarioService(db)
     service.desativar_usuario(usuario_id)
     client_ip = request.client.host if request.client else "unknown"
@@ -109,10 +122,10 @@ def desativar_usuario(
 @router.get("/{usuario_id}/modulos", response_model=UsuarioModulosResponse)
 def listar_modulos_usuario(
     usuario_id: int,
+    current_user: TokenPayload = Depends(require_role_or_higher("operador")),
     db: Session = Depends(get_db),
-    _: None = Depends(require_role("admin")),
 ):
-    """Retorna lista de modulo_ids liberados para o usuário. Acesso: admin."""
+    """Retorna lista de modulo_ids liberados para o usuário. Acesso: operador ou superior."""
     modulos = (
         db.query(UsuarioModulo.modulo_id)
         .filter(UsuarioModulo.usuario_id == usuario_id)
@@ -127,10 +140,10 @@ def listar_modulos_usuario(
 def atualizar_modulos_usuario(
     usuario_id: int,
     schema: UsuarioModulosUpdate,
+    current_user: TokenPayload = Depends(require_role_or_higher("operador")),
     db: Session = Depends(get_db),
-    _: None = Depends(require_role("admin")),
 ):
-    """Substitui a lista completa de módulos liberados. Acesso: admin."""
+    """Substitui a lista completa de módulos liberados. Acesso: operador ou superior."""
     # Deleta existentes
     db.query(UsuarioModulo).filter(UsuarioModulo.usuario_id == usuario_id).delete()
 
