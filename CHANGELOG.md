@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.38.0 (2026-06-29)
+
+### Features
+
+- Move layout preference from skin to user profile, remove hover from user dropdown
+  ([`a885b95`](https://github.com/TyrGunllod/GrindX/commit/a885b9518282d75e624567eb3131a8c655d8f07f))
+
+
 ## v1.37.3 (2026-06-29)
 
 ### Bug Fixes
