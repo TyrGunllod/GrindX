@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.38.1 (2026-06-29)
+
+### Bug Fixes
+
+- Discover plain HTML modules in available-modules scan
+  ([`cd32a0d`](https://github.com/TyrGunllod/GrindX/commit/cd32a0dbf4f1ef8b73049ea894d0ddf7cba93d17))
+
+
 ## v1.38.0 (2026-06-29)
 
 ### Features
