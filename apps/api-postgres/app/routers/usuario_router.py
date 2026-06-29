@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query, Request, status
 from shared.schemas.base import PaginatedResponse
 from sqlalchemy.orm import Session
 
-from app.auth.dependencies import require_role
+from app.auth.dependencies import require_role, require_role_or_higher
 from app.database import get_db
 from app.models.usuario import UsuarioModulo
 from app.schemas.usuario import (
@@ -28,9 +28,9 @@ def listar_usuarios(
     page_size: int = Query(20, ge=1, le=100),
     role: Optional[str] = Query(None),
     db: Session = Depends(get_db),
-    _: None = Depends(require_role("admin")),
+    _: None = Depends(require_role_or_higher("operador")),
 ):
-    """Lista todos os usuários. Acesso: admin."""
+    """Lista todos os usuários. Acesso: operador ou superior."""
     service = UsuarioService(db)
     items, total = service.listar_usuarios(page, page_size, role)
 
@@ -68,9 +68,9 @@ def criar_usuario(
 def buscar_usuario(
     usuario_id: int,
     db: Session = Depends(get_db),
-    _: None = Depends(require_role("admin")),
+    _: None = Depends(require_role_or_higher("operador")),
 ):
-    """Busca um usuário por ID. Acesso: admin."""
+    """Busca um usuário por ID. Acesso: operador ou superior."""
     service = UsuarioService(db)
     return service.buscar_por_id(usuario_id)
 
