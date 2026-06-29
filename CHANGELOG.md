@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.38.2 (2026-06-29)
+
+### Bug Fixes
+
+- Remove redundant role_minima frontend filter
+  ([`b0109b0`](https://github.com/TyrGunllod/GrindX/commit/b0109b08080d6951633b7f6dd251e8863d249614))
+
+
 ## v1.38.1 (2026-06-29)
 
 ### Bug Fixes
