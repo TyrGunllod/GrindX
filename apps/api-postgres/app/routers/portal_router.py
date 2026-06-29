@@ -269,11 +269,12 @@ def criar_modulo(
     slug: str,
     url: str,
     icone: str,
+    role_minima: str = "operador",
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
     try:
-        novo_mod = Modulo(aba_id=aba_id, nome=nome, slug=slug, url=url, icone=icone)
+        novo_mod = Modulo(aba_id=aba_id, nome=nome, slug=slug, url=url, icone=icone, role_minima=role_minima)
         db.add(novo_mod)
         db.commit()
     except IntegrityError as e:
@@ -294,6 +295,7 @@ def atualizar_modulo(
     modulo_id: int,
     nome: str,
     aba_id: int,
+    role_minima: str | None = None,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
@@ -302,6 +304,8 @@ def atualizar_modulo(
         raise HTTPException(404, "Módulo não encontrado")
     mod.nome = nome
     mod.aba_id = aba_id
+    if role_minima is not None:
+        mod.role_minima = role_minima
     db.commit()
     db.refresh(mod)
     invalidate(_portal_cache, _portal_lock, "abas:active")

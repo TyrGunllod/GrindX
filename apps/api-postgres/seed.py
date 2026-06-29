@@ -256,7 +256,7 @@ def seed_database():
                 "slug": "users",
                 "url": "modules/users/index.html",
                 "icone": "fas fa-user-friends",
-                "role_minima": "admin",
+                "role_minima": "operador",
             },
             {
                 "aba": "Gestão",

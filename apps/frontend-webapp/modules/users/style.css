@@ -121,6 +121,21 @@ td strong {
 /* ==========================================
    PERMISSIONS MODAL
    ========================================== */
+#permissoesModal .modal-card {
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#permissoesModal #permissoesContent {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+#permissoesModal .modal-footer {
+    flex-shrink: 0;
+}
 .perm-container {
     display: flex;
     flex-direction: column;

@@ -81,10 +81,18 @@ class StructureController extends window.grindx.controllers.BaseController {
         `;
         this.moduloForm.appendChild(urlGroup);
 
-        this.moduloForm.appendChild(window.grindx.components.FormField.createIconSelect({
-            id: 'modIcone',
-            label: 'Ícone do Módulo'
-        }));
+        const roleGroup = document.createElement('div');
+        roleGroup.className = 'form-group';
+        roleGroup.innerHTML = `
+            <label for="modRoleMinima">Perfil Mínimo</label>
+            <select id="modRoleMinima" class="form-control">
+                <option value="leitura">Leitura</option>
+                <option value="operador" selected>Operador</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <small class="form-hint">Perfil mínimo necessário para acessar este módulo.</small>
+        `;
+        this.moduloForm.appendChild(roleGroup);
 
         this._createPickerModal();
     }
@@ -282,6 +290,7 @@ class StructureController extends window.grindx.controllers.BaseController {
         document.getElementById('modNome').value = mod.nome;
         document.getElementById('modUrl').value = mod.url;
         document.getElementById('modSlug').value = mod.slug;
+        document.getElementById('modRoleMinima').value = mod.role_minima || 'operador';
         const iconeSelect = document.getElementById('modIcone');
         iconeSelect.value = mod.icone || 'fas fa-cube';
         iconeSelect.dispatchEvent(new Event('change'));
@@ -297,10 +306,11 @@ class StructureController extends window.grindx.controllers.BaseController {
                 window.grindx.components.LoadingSpinner.toast('Informe o nome do módulo.', 'warning');
                 return;
             }
+            const roleMinima = document.getElementById('modRoleMinima').value;
             try {
                 await window.grindx.api.request(`/portal/modulos/${this.currentModuloId}`, {
                     method: 'PUT',
-                    params: { nome, aba_id: abaId }
+                    params: { nome, aba_id: abaId, role_minima: roleMinima }
                 });
                 await this.loadStructure();
                 this.toastSuccess('Módulo salvo com sucesso.');
@@ -319,11 +329,12 @@ class StructureController extends window.grindx.controllers.BaseController {
         const moduleUrl = document.getElementById('modUrl').value;
         const slug = document.getElementById('modSlug').value;
         const icone = document.getElementById('modIcone').value;
+        const roleMinima = document.getElementById('modRoleMinima').value;
 
         try {
             await window.grindx.api.request('/portal/modulos', {
                 method: 'POST',
-                params: { nome, slug, url: moduleUrl, icone, aba_id: abaId }
+                params: { nome, slug, url: moduleUrl, icone, aba_id: abaId, role_minima: roleMinima }
             });
             await this.loadStructure();
             this.toastSuccess('Módulo criado com sucesso.');

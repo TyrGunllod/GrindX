@@ -184,7 +184,7 @@ body {
 input, select, textarea, button, a, .nav-link, .nav-dropdown-item,
 .picker-item, .theme-option, .template-card {
   min-height: 25px;
-/*  padding: 0px 15px 0px 15px;*/
+  padding: 0px 15px 0px 15px;
   border-radius: 12px;
   
 }
