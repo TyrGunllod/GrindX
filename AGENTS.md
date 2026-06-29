@@ -38,9 +38,10 @@ make deploy DEST=...   # copia configs para diretório externo
 - **CI** usa `PYTHONPATH=${{ github.workspace }}/packages`
 - **Manual (Windows):** `set PYTHONPATH=..\..\packages && python -m pytest tests/ -v`
 
-## Pre-commit
+## Pre-push (obrigatório antes de todo git push)
 
-**Antes de todo `git push`, obrigatório (nesta ordem):**
+> **ATENÇÃO:** Estas etapas são MANDATÓRIAS antes de todo `git push`.
+> Pular esta verificação causa falha no CI. Execute nesta ordem:
 
 ```powershell
 make test-all
