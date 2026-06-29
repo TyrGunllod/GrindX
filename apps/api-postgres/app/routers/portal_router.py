@@ -147,7 +147,6 @@ def listar_modulos_disponiveis(
                 m = json.loads(manifest_path.read_text(encoding="utf-8"))
             except Exception:
                 continue
-            # So mostra se tiver frontend_tabs ou diretorio frontend correspondente
             frontend_tabs = m.get("frontend_tabs", [])
             if not frontend_tabs and slug not in frontend_modules:
                 continue
@@ -162,6 +161,25 @@ def listar_modulos_disponiveis(
                     slug=slug,
                     nome=nome,
                     url=url,
+                    ja_vinculado=False,
+                )
+            )
+
+    # Também descobre módulos HTML puros (sem backend) na pasta frontend
+    if frontend_base.exists():
+        for fe_dir in sorted(frontend_base.iterdir()):
+            if not fe_dir.is_dir() or fe_dir.name.startswith("_"):
+                continue
+            slug = fe_dir.name
+            if slug in modulos_vinculados:
+                continue
+            if not (fe_dir / "index.html").exists():
+                continue
+            result.append(
+                AvailableModule(
+                    slug=slug,
+                    nome=slug.replace("-", " ").title(),
+                    url=f"modules/{slug}/index.html",
                     ja_vinculado=False,
                 )
             )
