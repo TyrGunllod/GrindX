@@ -40,17 +40,12 @@ make deploy DEST=...   # copia configs para diretório externo
 
 ## Pre-commit
 
-```powershell
-ruff format packages/ apps/
-ruff check --fix .
-ruff check .                   # sem erros
-```
-
-**Antes de todo `git push`, obrigatório:**
+**Antes de todo `git push`, obrigatório (nesta ordem):**
 
 ```powershell
-ruff format packages/ apps/ && ruff check --fix . && ruff check .
 make test-all
+ruff format packages/ apps/
+ruff check .                   # sem erros
 ```
 
 Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 — alembic/versions ignora I001.
