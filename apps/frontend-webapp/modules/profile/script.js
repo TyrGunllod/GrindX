@@ -34,8 +34,13 @@
         document.getElementById('profileEmail').value = profile.email || '';
 
         const currentTheme = window.grindx.theme.theme;
-        document.querySelectorAll('.theme-option').forEach(btn => {
+        document.querySelectorAll('.toggle-option[data-theme]').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+        });
+
+        const currentLayout = window.parent.grindx?.storage?.get('grindx_layout') || profile.layout_preference || 'topbar';
+        document.querySelectorAll('.toggle-option[data-layout]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.layout === currentLayout);
         });
     }
 
@@ -91,13 +96,26 @@
                 document.getElementById('passwordForm').reset();
             }
 
-            const selectedTheme = document.querySelector('.theme-option.active')?.dataset.theme;
+            const selectedTheme = document.querySelector('.toggle-option[data-theme].active')?.dataset.theme;
+            const updateData = {};
             if (selectedTheme && selectedTheme !== window.grindx.theme.theme) {
                 window.grindx.theme.theme = selectedTheme;
                 window.grindx.storage.set('grindx_theme', selectedTheme);
                 window.grindx.theme.apply();
                 window.parent.postMessage('theme-changed', '*');
-                await window.grindx.api.put('/auth/me', { theme_preference: selectedTheme });
+                updateData.theme_preference = selectedTheme;
+            }
+
+            const selectedLayout = document.querySelector('.toggle-option[data-layout].active')?.dataset.layout;
+            const currentLayout = window.parent.grindx?.storage?.get('grindx_layout') || '';
+            if (selectedLayout && selectedLayout !== currentLayout) {
+                window.parent.grindx.storage.set('grindx_layout', selectedLayout);
+                updateData.layout_preference = selectedLayout;
+                window.parent.postMessage('layout-changed', '*');
+            }
+
+            if (Object.keys(updateData).length > 0) {
+                await window.grindx.api.put('/auth/me', updateData);
             }
 
             window.parent.postMessage('profile-saved', '*');
@@ -135,9 +153,10 @@
     function setupEvents() {
         document.getElementById('saveProfileBtn').addEventListener('click', handleSave);
 
-        document.querySelectorAll('.theme-option').forEach(btn => {
+        document.querySelectorAll('.toggle-option').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
+                const group = btn.closest('.toggle-group');
+                group.querySelectorAll('.toggle-option').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
             });
         });
@@ -155,7 +174,7 @@
     window.addEventListener('message', (e) => {
         if (e.data === 'theme-changed') {
             const currentTheme = window.grindx.theme.theme;
-            document.querySelectorAll('.theme-option').forEach(btn => {
+            document.querySelectorAll('.toggle-option[data-theme]').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.theme === currentTheme);
             });
         }

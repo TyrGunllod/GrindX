@@ -82,12 +82,12 @@
     margin-top: 4px;
 }
 
-.theme-toggle-group {
+.toggle-group {
     display: flex;
     gap: 12px;
 }
 
-.theme-option {
+.toggle-option {
     flex: 1;
     padding: 12px 16px;
     border: 2px solid var(--border-color, #e2e8f0);
@@ -103,15 +103,22 @@
     gap: 8px;
 }
 
-.theme-option:hover {
+.toggle-option:hover {
     border-color: var(--primary, #00c2e0);
     background: color-mix(in srgb, var(--primary, #00c2e0) 8%, transparent);
 }
 
-.theme-option.active {
+.toggle-option.active {
     border-color: var(--primary, #00c2e0);
     background: color-mix(in srgb, var(--primary, #00c2e0) 12%, transparent);
     color: var(--primary, #00c2e0);
+}
+
+.form-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted, #94a3b8);
+    margin-top: 6px;
 }
 
 .profile-actions {

@@ -198,9 +198,6 @@ class SkinLoader {
         }
         this._updateBranding(skin.company_name, skin.copyright_text);
         this._updateLogos(skin.logo_url, skin.logo_short_url);
-        if (skin.layout_mode) {
-            this.applyLayout(skin.layout_mode);
-        }
     }
 
     /**

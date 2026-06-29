@@ -23,11 +23,13 @@ class UsuarioUpdate(BaseModel):
     ativo: Optional[bool] = None
     password: Optional[str] = None
     theme_preference: Optional[str] = None
+    layout_preference: Optional[str] = None
 
 
 class UsuarioResponse(UsuarioBase):
     id: int
     theme_preference: Optional[str] = None
+    layout_preference: Optional[str] = None
     criado_em: datetime
     atualizado_em: datetime
 

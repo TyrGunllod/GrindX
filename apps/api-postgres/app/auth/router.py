@@ -181,6 +181,7 @@ def update_me(
         email=dados.email,
         nome_completo=dados.nome_completo,
         theme_preference=dados.theme_preference,
+        layout_preference=dados.layout_preference,
     )
     logger.info(
         "perfil_atualizado_via_api",

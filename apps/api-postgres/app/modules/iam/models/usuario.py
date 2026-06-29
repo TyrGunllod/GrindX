@@ -41,6 +41,11 @@ class Usuario(IamBase):
         nullable=True,
         comment="Preferência de tema: light, dark ou null (sistema)",
     )
+    layout_preference: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
+        comment="Preferência de layout: sidebar, topbar ou null (padrão)",
+    )
     role: Mapped[str] = mapped_column(
         String(20),
         nullable=False,

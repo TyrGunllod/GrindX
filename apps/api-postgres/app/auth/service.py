@@ -202,21 +202,9 @@ class AuthService:
         email: str | None = None,
         nome_completo: str | None = None,
         theme_preference: str | None = None,
+        layout_preference: str | None = None,
     ) -> Usuario:
-        """Atualiza o perfil do próprio usuário (email e/ou nome completo).
-
-        Args:
-            user_id: ID do usuário.
-            email: Novo e-mail (opcional).
-            nome_completo: Novo nome completo (opcional).
-
-        Returns:
-            Usuario atualizado.
-
-        Raises:
-            NotFoundError: Se o usuário não for encontrado.
-            ConflictError: Se o e-mail já estiver em uso por outro usuário.
-        """
+        """Atualiza o perfil do próprio usuário."""
         usuario = self.usuario_repo.buscar_por_id(user_id)
         if not usuario:
             raise NotFoundError(resource="Usuário", identifier=user_id)
@@ -232,6 +220,8 @@ class AuthService:
             dados["nome_completo"] = nome_completo
         if theme_preference is not None:
             dados["theme_preference"] = theme_preference
+        if layout_preference is not None:
+            dados["layout_preference"] = layout_preference
 
         if not dados:
             return usuario

@@ -61,6 +61,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
             if (profile.theme_preference) {
                 window.grindx.theme.syncFromProfile(profile.theme_preference);
             }
+            this.applyLayoutPreference(profile.layout_preference);
         } catch (err) {
             console.warn('Não foi possível carregar o perfil do usuário logado:', err);
         }
@@ -89,10 +90,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
             window.addEventListener('message', (e) => {
                 if (e.data === 'sidebar-update') this.loadDynamicMenu();
                 if (e.data === 'profile-saved') this.loadCurrentUserProfile();
-            });
-
-            window.addEventListener('layoutchange', (e) => {
-                this.applyLayout(e.detail.mode);
+                if (e.data === 'layout-changed') this.applyLayoutPreference();
             });
 
             // Logo click handlers using event delegation
@@ -101,35 +99,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 if (logo) {
                     e.stopPropagation();
                     logo.classList.toggle('open');
-                    logo.classList.remove('hover');
                 } else {
                     document.querySelectorAll('.logo-clickable.open').forEach(el => {
                         el.classList.remove('open');
-                    });
-                }
-            });
-
-            // Logo hover handlers with timer to bridge gap to dropdown
-            let logoHoverTimeout;
-            document.querySelectorAll('.logo-clickable').forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    clearTimeout(logoHoverTimeout);
-                    if (!el.classList.contains('open')) {
-                        el.classList.add('hover');
-                    }
-                });
-                el.addEventListener('mouseleave', () => {
-                    logoHoverTimeout = setTimeout(() => {
-                        el.classList.remove('hover');
-                    }, 150);
-                });
-                const dd = el.querySelector('.user-dropdown');
-                if (dd) {
-                    dd.addEventListener('mouseenter', () => clearTimeout(logoHoverTimeout));
-                    dd.addEventListener('mouseleave', () => {
-                        logoHoverTimeout = setTimeout(() => {
-                            el.classList.remove('hover');
-                        }, 150);
                     });
                 }
             });
@@ -310,25 +282,6 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 document.getElementById('activeModuleTitle').textContent = item.textContent.trim();
             });
         });
-    }
-
-    applyLayout(mode) {
-        if (window.innerWidth < 1024) {
-            mode = 'sidebar';
-        }
-        this.currentLayout = mode;
-        const body = document.body;
-        body.classList.remove('layout-sidebar', 'layout-topbar');
-        body.classList.add(`layout-${mode}`);
-
-        if (mode === 'topbar') {
-            this.sidebar.style.display = 'none';
-            this.topbar.style.display = 'flex';
-            if (this._lastAbas) this.renderTopbarNav(this._lastAbas);
-        } else {
-            this.sidebar.style.display = '';
-            this.topbar.style.display = 'none';
-        }
     }
 
     _renderNavGroup(aba) {
@@ -788,6 +741,27 @@ class DashboardController extends window.grindx.controllers.BaseController {
         
         // Show success message
         alert('Skin aplicada permanentemente!');
+    }
+
+    applyLayoutPreference(preference) {
+        const mode = preference || window.grindx.storage.get('grindx_layout') || 'topbar';
+        if (!mode) return;
+        window.grindx.storage.set('grindx_layout', mode);
+        const validMode = ['sidebar', 'topbar'].includes(mode) ? mode : 'topbar';
+        document.documentElement.classList.remove('layout-sidebar', 'layout-topbar');
+        document.documentElement.classList.add(`layout-${validMode}`);
+        this.currentLayout = validMode;
+        const body = document.body;
+        body.classList.remove('layout-sidebar', 'layout-topbar');
+        body.classList.add(`layout-${validMode}`);
+        if (validMode === 'topbar') {
+            this.sidebar.style.display = 'none';
+            this.topbar.style.display = 'flex';
+            if (this._lastAbas) this.renderTopbarNav(this._lastAbas);
+        } else {
+            this.sidebar.style.display = '';
+            this.topbar.style.display = 'none';
+        }
     }
 }
 

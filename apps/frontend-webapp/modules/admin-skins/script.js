@@ -448,8 +448,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         document.getElementById('skinName').value = skin.name || '';
         document.getElementById('companyName').value = skin.company_name || '';
         document.getElementById('copyrightText').value = skin.copyright_text || '';
-        document.getElementById('layoutMode').value = skin.layout_mode || 'topbar';
-
         const logoPreview = document.getElementById('logoPreview');
         if (logoPreview) {
             if (skin.logo_url) {
@@ -774,7 +772,6 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 icons: this.iconFont || null,
             },
             icon_library: 'fontawesome',
-            layout_mode: document.getElementById('layoutMode').value || 'topbar',
             tokens: {
                 '--skin-radius-sm': document.getElementById('radiusSm').value,
                 '--skin-radius-md': document.getElementById('radiusMd').value,
