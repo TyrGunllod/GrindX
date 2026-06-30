@@ -2,6 +2,31 @@
 
 <!-- version list -->
 
+## v1.40.0 (2026-06-30)
+
+### Code Style
+
+- Format portal.py with ruff
+  ([`da0c8cf`](https://github.com/TyrGunllod/GrindX/commit/da0c8cf87e49cd0ea953d7dad08284708579ee60))
+
+### Features
+
+- Add migration 012_add_modulo_ordem
+  ([`07a673a`](https://github.com/TyrGunllod/GrindX/commit/07a673a1fb2c964c920a7c7ab39ef49687d910c5))
+
+- Add modOrdem validation rule
+  ([`6f89699`](https://github.com/TyrGunllod/GrindX/commit/6f896995c4db7bcfbd2c47270cd92f6924bd132a))
+
+- Add ordem column to Modulo model and order_by on relationship
+  ([`3aff7c9`](https://github.com/TyrGunllod/GrindX/commit/3aff7c9b40cb64f1bdfe58bc437c688145bbbe20))
+
+- Add ordem field to module form and display in structure UI
+  ([`4470d41`](https://github.com/TyrGunllod/GrindX/commit/4470d41a0120f6b6ddb2843b4eb2afeffaa7b0ad))
+
+- Add ordem to API schema and CRUD endpoints for modules
+  ([`795af5b`](https://github.com/TyrGunllod/GrindX/commit/795af5bbeb77ced11d53e7dc52a8e32e2228a1cf))
+
+
 ## v1.39.0 (2026-06-30)
 
 ### Bug Fixes
