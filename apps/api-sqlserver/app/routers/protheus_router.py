@@ -1,0 +1,86 @@
+"""
+Router de consulta de produtos (tabela SB1 do Protheus).
+Read-only — apenas endpoints GET.
+"""
+
+from enum import Enum
+
+import structlog
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+
+logger = structlog.get_logger(__name__)
+
+router = APIRouter(prefix="/v1/produtos", tags=["Produtos Protheus"])
+
+
+class ModoDescricao(str, Enum):
+    inicio = "inicio"
+    exato = "exato"
+    trecho = "trecho"
+
+
+class ItemProtheus(BaseModel):
+    codigo: str
+    descricao: str
+
+
+@router.get("/por-codigo", response_model=list[ItemProtheus])
+def buscar_por_codigo(
+    codigo: str = Query(
+        ..., min_length=4, description="Código do produto (mín. 4 caracteres)"
+    ),
+    db: Session = Depends(get_db),
+):
+    try:
+        sql = text(
+            "SELECT B1_COD, B1_DESC FROM SB1 WHERE B1_COD LIKE :codigo ORDER BY B1_COD"
+        )
+        rows = db.execute(sql, {"codigo": f"{codigo}%"}).fetchall()
+        return [ItemProtheus(codigo=r[0], descricao=r[1]) for r in rows]
+    except SQLAlchemyError as exc:
+        logger.error("Falha ao consultar SB1 por código", error=str(exc))
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, "Erro ao consultar banco de dados"
+        )
+
+
+@router.get("/por-descricao", response_model=list[ItemProtheus])
+def buscar_por_descricao(
+    descricao: str = Query(
+        ..., min_length=4, description="Descrição do produto (mín. 4 caracteres)"
+    ),
+    modo: ModoDescricao = Query(
+        ModoDescricao.inicio, description="Modo de busca: inicio, exato ou trecho"
+    ),
+    db: Session = Depends(get_db),
+):
+    if modo == ModoDescricao.exato:
+        sql = text(
+            "SELECT B1_COD, B1_DESC FROM SB1 WHERE B1_DESC = :descricao ORDER BY B1_COD"
+        )
+        params = {"descricao": descricao}
+    elif modo == ModoDescricao.trecho:
+        sql = text(
+            "SELECT B1_COD, B1_DESC FROM SB1 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
+        )
+        params = {"descricao": f"%{descricao}%"}
+    else:
+        sql = text(
+            "SELECT B1_COD, B1_DESC FROM SB1 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
+        )
+        params = {"descricao": f"{descricao}%"}
+
+    try:
+        rows = db.execute(sql, params).fetchall()
+        return [ItemProtheus(codigo=r[0], descricao=r[1]) for r in rows]
+    except SQLAlchemyError as exc:
+        logger.error("Falha ao consultar SB1 por descrição", error=str(exc))
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, "Erro ao consultar banco de dados"
+        )
