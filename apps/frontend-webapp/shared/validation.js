@@ -106,7 +106,8 @@
             { id: 'modAbaId', required: true, message: 'Selecione a aba de destino.' },
             { id: 'modNome', required: true, message: 'Informe o nome do módulo.' },
             { id: 'modUrl', required: true, urlPath: true, message: 'Informe a URL do arquivo.' },
-            { id: 'modSlug', required: true, minLength: 2, message: 'Informe o identificador.' }
+            { id: 'modSlug', required: true, minLength: 2, message: 'Informe o identificador.' },
+            { id: 'modOrdem', number: true }
         ]
     };
 
