@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v1.42.0 (2026-06-30)
+
+### Documentation
+
+- Add modulo-ordem design spec and implementation plan
+  ([`b784409`](https://github.com/TyrGunllod/GrindX/commit/b784409a606d87d0c0bc19782afca6176a579a17))
+
+- Add protheus produtos endpoint plan
+  ([`ba2c22b`](https://github.com/TyrGunllod/GrindX/commit/ba2c22b1364cfa97c2a2c200d7ad1b51880ef18c))
+
+### Features
+
+- Add protheus produto endpoints (por-codigo / por-descricao)
+  ([`45e68d3`](https://github.com/TyrGunllod/GrindX/commit/45e68d354bc762b004c5a41efb6468c224944432))
+
+- Register protheus_router in main.py
+  ([`4e0ca68`](https://github.com/TyrGunllod/GrindX/commit/4e0ca6862d1027e292e1bc7b0e4ec2db448dba15))
+
+
 ## v1.41.2 (2026-06-30)
 
 ### Bug Fixes
