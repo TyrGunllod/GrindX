@@ -274,7 +274,14 @@ def criar_modulo(
     _: None = Depends(require_role("admin")),
 ):
     try:
-        novo_mod = Modulo(aba_id=aba_id, nome=nome, slug=slug, url=url, icone=icone, role_minima=role_minima)
+        novo_mod = Modulo(
+            aba_id=aba_id,
+            nome=nome,
+            slug=slug,
+            url=url,
+            icone=icone,
+            role_minima=role_minima,
+        )
         db.add(novo_mod)
         db.commit()
     except IntegrityError as e:
