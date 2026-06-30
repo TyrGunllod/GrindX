@@ -160,34 +160,38 @@ class DashboardController extends window.grindx.controllers.BaseController {
         const trunc = (s, n) => s && s.length > n ? s.substring(0, n) + '...' : s;
 
         const groupsHtml = abas.map((aba, idx) => {
-            const modulos = (aba.modulos || []);
+            const items = [
+                ...(aba.children || []).map(c => ({ ...c, _tipo: 'aba' })),
+                ...(aba.modulos || []).map(m => ({ ...m, _tipo: 'modulo' }))
+            ].sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
 
-            const childrenHtml = (aba.children || []).map(child => {
-                const childMods = (child.modulos || []);
-                if (!childMods.length) return '';
+            const itemsHtml = items.map(item => {
+                if (item._tipo === 'aba') {
+                    const childMods = (item.modulos || []);
+                    if (!childMods.length) return '';
+                    return `
+                        <div class="nav-dropdown-subgroup collapsed" data-child="${item.id}">
+                            <div class="nav-dropdown-subgroup-label" onclick="event.stopPropagation(); window.dashboard.toggleTopbarChild(${item.id})">
+                                <i class="${item.icone || 'fas fa-folder'}"></i>
+                                <span>${item.nome}</span>
+                                <i class="fas fa-chevron-down chevron"></i>
+                            </div>
+                            <div class="nav-dropdown-child-container">
+                                ${childMods.map(mod => `
+                                    <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
+                                        <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
                 return `
-                    <div class="nav-dropdown-subgroup collapsed" data-child="${child.id}">
-                        <div class="nav-dropdown-subgroup-label" onclick="event.stopPropagation(); window.dashboard.toggleTopbarChild(${child.id})">
-                            <i class="${child.icone || 'fas fa-folder'}"></i>
-                            <span>${child.nome}</span>
-                            <i class="fas fa-chevron-down chevron"></i>
-                        </div>
-                        <div class="nav-dropdown-child-container">
-                            ${childMods.map(mod => `
-                                <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
-                                    <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
+                    <button class="nav-dropdown-item" data-module="${item.slug}" data-url="${item.url}">
+                        <i class="${item.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${item.nome}">${trunc(item.nome, 16)}</span>
+                    </button>
                 `;
             }).join('');
-
-            const directModsHtml = modulos.map(mod => `
-                <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
-                    <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
-                </button>
-            `).join('');
 
             const separator = idx < abas.length - 1 ? '<div class="nav-separator"></div>' : '';
 
@@ -200,8 +204,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                         <span class="active-dot"></span>
                     </button>
                     <div class="nav-dropdown" role="menu">
-                        ${childrenHtml}
-                        ${directModsHtml}
+                        ${itemsHtml}
                     </div>
                 </div>
                 ${separator}
@@ -284,31 +287,38 @@ class DashboardController extends window.grindx.controllers.BaseController {
     }
 
     _renderNavGroup(aba) {
-        const hasChildren = aba.children && aba.children.length > 0;
-        const modulesHtml = (aba.modulos || []).map(mod => `
-            <button type="button" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}">
-                <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
-            </button>
-        `).join('');
+        const items = [
+            ...(aba.children || []).map(c => ({ ...c, _tipo: 'aba' })),
+            ...(aba.modulos || []).map(m => ({ ...m, _tipo: 'modulo' }))
+        ].sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
 
-        const childrenHtml = hasChildren ? aba.children.map(child => `
-            <div class="nav-subgroup collapsed" id="subgroup-${child.id}">
-                <div class="nav-subtitle" onclick="window.dashboard.toggleSubgroup('${child.id}')">
-                    <div class="nav-title-label">
-                        <i class="${child.icone || 'fas fa-folder'} icon-sm"></i>
-                        <span>${child.nome}</span>
+        const itemsHtml = items.map(item => {
+            if (item._tipo === 'aba') {
+                return `
+                    <div class="nav-subgroup collapsed" id="subgroup-${item.id}">
+                        <div class="nav-subtitle" onclick="window.dashboard.toggleSubgroup('${item.id}')">
+                            <div class="nav-title-label">
+                                <i class="${item.icone || 'fas fa-folder'} icon-sm"></i>
+                                <span>${item.nome}</span>
+                            </div>
+                            <i class="fas fa-chevron-down chevron"></i>
+                        </div>
+                        <div class="nav-links-container">
+                            ${(item.modulos || []).map(mod => `
+                                <button type="button" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}">
+                                    <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
+                                </button>
+                            `).join('')}
+                        </div>
                     </div>
-                    <i class="fas fa-chevron-down chevron"></i>
-                </div>
-                <div class="nav-links-container">
-                    ${(child.modulos || []).map(mod => `
-                        <button type="button" class="nav-link" data-module="${mod.slug}" data-url="${mod.url}">
-                            <i class="${mod.icone || 'fas fa-cube'} icon-sm"></i> <span>${mod.nome}</span>
-                        </button>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('') : '';
+                `;
+            }
+            return `
+                <button type="button" class="nav-link" data-module="${item.slug}" data-url="${item.url}">
+                    <i class="${item.icone || 'fas fa-cube'} icon-sm"></i> <span>${item.nome}</span>
+                </button>
+            `;
+        }).join('');
 
         return `
             <div class="nav-group collapsed" id="group-${aba.id}">
@@ -320,8 +330,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                     <i class="fas fa-chevron-down chevron"></i>
                 </div>
                 <div class="nav-links-container">
-                    ${childrenHtml}
-                    ${modulesHtml}
+                    ${itemsHtml}
                 </div>
             </div>
         `;
