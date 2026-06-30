@@ -28,6 +28,7 @@ class ModuloSchema(BaseModel):
     icone: str
     slug: str
     role_minima: str
+    ordem: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -270,6 +271,7 @@ def criar_modulo(
     url: str,
     icone: str,
     role_minima: str = "operador",
+    ordem: int = 0,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
@@ -281,6 +283,7 @@ def criar_modulo(
             url=url,
             icone=icone,
             role_minima=role_minima,
+            ordem=ordem,
         )
         db.add(novo_mod)
         db.commit()
@@ -303,6 +306,7 @@ def atualizar_modulo(
     nome: str,
     aba_id: int,
     role_minima: str | None = None,
+    ordem: int | None = None,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
@@ -313,6 +317,8 @@ def atualizar_modulo(
     mod.aba_id = aba_id
     if role_minima is not None:
         mod.role_minima = role_minima
+    if ordem is not None:
+        mod.ordem = ordem
     db.commit()
     db.refresh(mod)
     invalidate(_portal_cache, _portal_lock, "abas:active")
