@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.41.0 (2026-06-30)
+
+### Features
+
+- Merge sub-abas and modulos in single ordem sequence
+  ([`902ba33`](https://github.com/TyrGunllod/GrindX/commit/902ba33a24ed1cb69965c960c0f0724677d7c063))
+
+
 ## v1.40.0 (2026-06-30)
 
 ### Code Style
