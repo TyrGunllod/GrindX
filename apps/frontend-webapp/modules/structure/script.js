@@ -324,10 +324,11 @@ class StructureController extends window.grindx.controllers.BaseController {
                 return;
             }
             const roleMinima = this._val('modRoleMinima') || 'operador';
+            const ordem = parseInt(this._val('modOrdem')) || 0;
             try {
                 await window.grindx.api.request(`/portal/modulos/${this.currentModuloId}`, {
                     method: 'PUT',
-                    params: { nome, aba_id: abaId, role_minima: roleMinima }
+                    params: { nome, aba_id: abaId, role_minima: roleMinima, ordem }
                 });
                 await this.loadStructure();
                 this.toastSuccess('Módulo salvo com sucesso.');
