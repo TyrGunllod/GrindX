@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.42.1 (2026-06-30)
+
+### Bug Fixes
+
+- Use SB1010 instead of SB1 for Protheus product table
+  ([`7e31196`](https://github.com/TyrGunllod/GrindX/commit/7e31196ad769bbe992f5f794c4c3a8121f976448))
+
+
 ## v1.42.0 (2026-06-30)
 
 ### Documentation
