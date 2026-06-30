@@ -1,5 +1,5 @@
 """
-Router de consulta de produtos (tabela SB1 do Protheus).
+Router de consulta de produtos (tabela SB1010 do Protheus).
 Read-only — apenas endpoints GET.
 """
 
@@ -39,12 +39,12 @@ def buscar_por_codigo(
 ):
     try:
         sql = text(
-            "SELECT B1_COD, B1_DESC FROM SB1 WHERE B1_COD LIKE :codigo ORDER BY B1_COD"
+            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_COD LIKE :codigo ORDER BY B1_COD"
         )
         rows = db.execute(sql, {"codigo": f"{codigo}%"}).fetchall()
         return [ItemProtheus(codigo=r[0], descricao=r[1]) for r in rows]
     except SQLAlchemyError as exc:
-        logger.error("Falha ao consultar SB1 por código", error=str(exc))
+        logger.error("Falha ao consultar SB1010 por código", error=str(exc))
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE, "Erro ao consultar banco de dados"
         )
@@ -62,17 +62,17 @@ def buscar_por_descricao(
 ):
     if modo == ModoDescricao.exato:
         sql = text(
-            "SELECT B1_COD, B1_DESC FROM SB1 WHERE B1_DESC = :descricao ORDER BY B1_COD"
+            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_DESC = :descricao ORDER BY B1_COD"
         )
         params = {"descricao": descricao}
     elif modo == ModoDescricao.trecho:
         sql = text(
-            "SELECT B1_COD, B1_DESC FROM SB1 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
+            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
         )
         params = {"descricao": f"%{descricao}%"}
     else:
         sql = text(
-            "SELECT B1_COD, B1_DESC FROM SB1 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
+            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
         )
         params = {"descricao": f"{descricao}%"}
 
@@ -80,7 +80,7 @@ def buscar_por_descricao(
         rows = db.execute(sql, params).fetchall()
         return [ItemProtheus(codigo=r[0], descricao=r[1]) for r in rows]
     except SQLAlchemyError as exc:
-        logger.error("Falha ao consultar SB1 por descrição", error=str(exc))
+        logger.error("Falha ao consultar SB1010 por descrição", error=str(exc))
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE, "Erro ao consultar banco de dados"
         )
