@@ -46,6 +46,7 @@ class StructureController extends window.grindx.controllers.BaseController {
 
         const moduleFields = [
             { label: 'Nome do Módulo', id: 'modNome', required: true },
+            { label: 'Ordem', id: 'modOrdem', type: 'number', value: 0 },
             { label: 'Identificador (Slug)', id: 'modSlug', required: true }
         ];
 
@@ -166,6 +167,7 @@ class StructureController extends window.grindx.controllers.BaseController {
                             <div class="modulo-info">
                                 <strong>${mod.nome}</strong>
                                 <span class="modulo-url">${mod.url}</span>
+                                ${mod.ordem != null ? `<span class="modulo-ordem">Ordem: ${mod.ordem}</span>` : ''}
                             </div>
                             <div class="actions-group">
                                 <button class="btn-icon" data-action="edit-mod" data-id="${mod.id}" data-aba-id="${aba.id}"><i class="fas fa-pen"></i></button>
@@ -290,6 +292,8 @@ class StructureController extends window.grindx.controllers.BaseController {
         document.getElementById('modNome').value = mod.nome;
         document.getElementById('modUrl').value = mod.url;
         document.getElementById('modSlug').value = mod.slug;
+        const ordemEl = document.getElementById('modOrdem');
+        if (ordemEl) ordemEl.value = mod.ordem != null ? mod.ordem : 0;
         const roleEl = document.getElementById('modRoleMinima');
         if (roleEl) roleEl.value = mod.role_minima || 'operador';
         const iconeSelect = document.getElementById('modIcone');
@@ -338,11 +342,12 @@ class StructureController extends window.grindx.controllers.BaseController {
         const slug = this._val('modSlug');
         const icone = this._val('modIcone') || 'fas fa-cube';
         const roleMinima = this._val('modRoleMinima') || 'operador';
+        const ordem = parseInt(this._val('modOrdem')) || 0;
 
         try {
             await window.grindx.api.request('/portal/modulos', {
                 method: 'POST',
-                params: { nome, slug, url: moduleUrl, icone, aba_id: abaId, role_minima: roleMinima }
+                params: { nome, slug, url: moduleUrl, icone, aba_id: abaId, role_minima: roleMinima, ordem }
             });
             await this.loadStructure();
             this.toastSuccess('Módulo criado com sucesso.');
