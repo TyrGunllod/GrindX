@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.41.2 (2026-06-30)
+
+### Bug Fixes
+
+- Merge sub-abas and modulos by ordem in sidebar and topbar
+  ([`10b1493`](https://github.com/TyrGunllod/GrindX/commit/10b1493ce5086c028916b8ad8a0ee1d060a6936b))
+
+
 ## v1.41.1 (2026-06-30)
 
 ### Bug Fixes
