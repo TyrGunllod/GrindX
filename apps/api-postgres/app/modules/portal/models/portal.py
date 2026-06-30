@@ -16,7 +16,12 @@ class Aba(PortalBase):
 
     parent = relationship("Aba", remote_side=[id], back_populates="children")
     children = relationship("Aba", back_populates="parent", cascade="all")
-    modulos = relationship("Modulo", back_populates="aba", cascade="all, delete-orphan", order_by="Modulo.ordem")
+    modulos = relationship(
+        "Modulo",
+        back_populates="aba",
+        cascade="all, delete-orphan",
+        order_by="Modulo.ordem",
+    )
 
 
 class Modulo(PortalBase):
