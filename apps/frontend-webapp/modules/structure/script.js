@@ -290,24 +290,31 @@ class StructureController extends window.grindx.controllers.BaseController {
         document.getElementById('modNome').value = mod.nome;
         document.getElementById('modUrl').value = mod.url;
         document.getElementById('modSlug').value = mod.slug;
-        document.getElementById('modRoleMinima').value = mod.role_minima || 'operador';
+        const roleEl = document.getElementById('modRoleMinima');
+        if (roleEl) roleEl.value = mod.role_minima || 'operador';
         const iconeSelect = document.getElementById('modIcone');
-        iconeSelect.value = mod.icone || 'fas fa-cube';
-        iconeSelect.dispatchEvent(new Event('change'));
+        if (iconeSelect) {
+            iconeSelect.value = mod.icone || 'fas fa-cube';
+            iconeSelect.dispatchEvent(new Event('change'));
+        }
         this._setModuleFormReadonly(true);
         this.openModuloModal('Editar Módulo');
     }
 
+    _val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value : '';
+    }
+
     async saveModulo() {
         if (this.currentModuloId) {
-            const nome = document.getElementById('modNome').value;
-            const abaId = document.getElementById('modAbaId').value;
+            const nome = this._val('modNome');
+            const abaId = this._val('modAbaId');
             if (!nome.trim()) {
                 window.grindx.components.LoadingSpinner.toast('Informe o nome do módulo.', 'warning');
                 return;
             }
-            const roleMinimaEl = document.getElementById('modRoleMinima');
-            const roleMinima = roleMinimaEl ? roleMinimaEl.value : 'operador';
+            const roleMinima = this._val('modRoleMinima') || 'operador';
             try {
                 await window.grindx.api.request(`/portal/modulos/${this.currentModuloId}`, {
                     method: 'PUT',
@@ -325,13 +332,12 @@ class StructureController extends window.grindx.controllers.BaseController {
 
         if (!this.validateModuloForm()) return;
 
-        const abaId = document.getElementById('modAbaId').value;
-        const nome = document.getElementById('modNome').value;
-        const moduleUrl = document.getElementById('modUrl').value;
-        const slug = document.getElementById('modSlug').value;
-        const icone = document.getElementById('modIcone').value;
-        const roleMinimaEl = document.getElementById('modRoleMinima');
-        const roleMinima = roleMinimaEl ? roleMinimaEl.value : 'operador';
+        const abaId = this._val('modAbaId');
+        const nome = this._val('modNome');
+        const moduleUrl = this._val('modUrl');
+        const slug = this._val('modSlug');
+        const icone = this._val('modIcone') || 'fas fa-cube';
+        const roleMinima = this._val('modRoleMinima') || 'operador';
 
         try {
             await window.grindx.api.request('/portal/modulos', {
