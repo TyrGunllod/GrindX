@@ -149,7 +149,11 @@ class StructureController extends window.grindx.controllers.BaseController {
 
     _renderAbaCard(aba, depth) {
         const indent = depth * 16;
-        const hasChildren = aba.children && aba.children.length > 0;
+        const items = [
+            ...(aba.children || []).map(c => ({ ...c, _tipo: 'aba' })),
+            ...(aba.modulos || []).map(m => ({ ...m, _tipo: 'modulo' }))
+        ].sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
+
         return `
             <div class="aba-card" style="margin-left: ${indent}px${depth > 0 ? '; border-left: 3px solid var(--primary)' : ''}">
                 <header class="aba-header">
@@ -160,19 +164,20 @@ class StructureController extends window.grindx.controllers.BaseController {
                             `<button class="btn-icon text-danger" data-action="delete-aba" data-id="${aba.id}" title="Excluir"><i class="fas fa-trash"></i></button>`}
                     </div>
                 </header>
-                ${hasChildren ? `<div class="sub-abas-section">${aba.children.map(child => this._renderAbaCard(child, depth + 1)).join('')}</div>` : ''}
                 <div class="modulos-list">
-                    ${aba.modulos.map(mod => `
-                        <div class="modulo-item">
+                    ${items.map(item => item._tipo === 'aba' ? `
+                        ${this._renderAbaCard(item, depth + 1)}
+                    ` : `
+                        <div class="modulo-item" style="margin-left: ${(depth + 1) * 16}px">
                             <div class="modulo-info">
-                                <strong>${mod.nome}</strong>
-                                <span class="modulo-url">${mod.url}</span>
-                                ${mod.ordem != null ? `<span class="modulo-ordem">Ordem: ${mod.ordem}</span>` : ''}
+                                <strong>${item.nome}</strong>
+                                <span class="modulo-url">${item.url}</span>
+                                ${item.ordem != null ? `<span class="modulo-ordem">Ordem: ${item.ordem}</span>` : ''}
                             </div>
                             <div class="actions-group">
-                                <button class="btn-icon" data-action="edit-mod" data-id="${mod.id}" data-aba-id="${aba.id}"><i class="fas fa-pen"></i></button>
-                                ${this.isProtectedModule(mod.nome) || this.isProtectedAba(aba.nome) ? '' :
-                                    `<button class="btn-icon text-danger" data-action="delete-mod" data-id="${mod.id}"><i class="fas fa-trash"></i></button>`}
+                                <button class="btn-icon" data-action="edit-mod" data-id="${item.id}" data-aba-id="${aba.id}"><i class="fas fa-pen"></i></button>
+                                ${this.isProtectedModule(item.nome) || this.isProtectedAba(aba.nome) ? '' :
+                                    `<button class="btn-icon text-danger" data-action="delete-mod" data-id="${item.id}"><i class="fas fa-trash"></i></button>`}
                             </div>
                         </div>
                     `).join('')}
