@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.41.1 (2026-06-30)
+
+### Bug Fixes
+
+- Send ordem param on module PUT (edit)
+  ([`9a7d9f7`](https://github.com/TyrGunllod/GrindX/commit/9a7d9f719568313a95feb10d10735a55a3a9174e))
+
+
 ## v1.41.0 (2026-06-30)
 
 ### Features
