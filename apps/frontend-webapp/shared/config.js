@@ -12,8 +12,6 @@
 
 window.GRINDX_CONFIG = {
   // URL base da API — usa variavel injetada (window.__GRINDX_API_URL)
-  // Em localhost/127.0.0.1 usa direto porta 8002; em IP externo usa /v1 (same-origin via nginx proxy)
-  API_BASE_URL: window.__GRINDX_API_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? `http://${window.location.hostname}:8002/v1`
-    : `/v1`),
+  // Em localhost/127.0.0.1/IP local usa direto a porta 8002
+  API_BASE_URL: window.__GRINDX_API_URL || `http://${window.location.hostname}:8002/v1`,
 };

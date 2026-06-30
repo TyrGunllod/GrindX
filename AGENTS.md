@@ -1,3 +1,26 @@
+# AGENTS.md — GrindX Monorepo
+
+## ⚠️ Regras Críticas — leia antes de qualquer tarefa
+
+Estas regras causam falha de CI, bug sutil ou retrabalho quando ignoradas. Revise esta lista antes de considerar qualquer tarefa concluída.
+
+**Sempre:**
+- [ ] PYTHONPATH apontando para `packages/` em qualquer comando manual (`shared` não é instalado via pip) — ver seção PYTHONPATH
+- [ ] Antes de `git push`: `make test-all` → `ruff format packages/ apps/` → `ruff check .`, nesta ordem — ver seção Pre-push
+- [ ] `var(--...)` para cores/fontes no frontend — nunca valores fixos (design system Glassmorphism)
+- [ ] `ErrorCode.CONSTANT` de `packages/shared/exceptions/codes.py` — nunca strings literais de erro
+- [ ] `config.js` incluído em TODO `index.html` de módulo, nesta ordem: `config.js` → `app.js` → `apiService.js` → `baseController.js` → `script.js`
+- [ ] Atualizar `README.md`, `docs/API.md`, `docs/DATABASE.md`, `docs/SETUP.md`, `docs/README.md` e este `AGENTS.md` ao alterar código relevante — ver seção Docs Sync
+
+**Nunca sem confirmação explícita do usuário:**
+- [ ] Adicionar endpoint de escrita em `api-sqlserver` — é somente leitura (`allow_methods=["GET"]`)
+- [ ] `CORS_ORIGINS=*` em qualquer ambiente que não seja dev local
+- [ ] Editar uma migration do Alembic já mergeada em `main` — sempre criar uma nova
+- [ ] Remover ou pular um teste que está falhando
+- [ ] Fazer rewrite amplo do repositório — preferir diffs pequenos e focados
+
+---
+
 ## Monorepo Structure
 
 - `apps/api-postgres/` — FastAPI principal (porta 8002), JWT + RBAC, PostgreSQL via Alembic
@@ -43,11 +66,9 @@ make deploy DEST=...   # copia configs para diretório externo
 > **ATENÇÃO:** Estas etapas são MANDATÓRIAS antes de todo `git push`.
 > Pular esta verificação causa falha no CI. Execute nesta ordem:
 
-```powershell
-make test-all
-ruff format packages/ apps/
-ruff check .                   # sem erros
-```
+- [ ] `make test-all`
+- [ ] `ruff format packages/ apps/`
+- [ ] `ruff check .` — sem erros
 
 Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 — alembic/versions ignora I001.
 
@@ -81,6 +102,7 @@ Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 —
 - **Volumes no WSL**: `compose.yaml` usa `${PWD}` para paths de volume (não `./` relativo). Projeto deve estar clonado dentro do filesystem WSL (`~/...`), não em `/mnt/c/...`
 - **Ordem de scripts nos módulos**: `config.js` → `app.js` → `apiService.js` → `baseController.js` → `script.js`. `config.js` deve ser incluído em TODO `index.html` de módulo
 - **CSP no nginx**: `style-src` inclui `https://fonts.googleapis.com` (Google Fonts); `connect-src` inclui `http://localhost:8002 http://127.0.0.1:8002`
+- **API URL no frontend** (`config.js`): sempre constroi `http://{hostname}:8002/v1`. Em producao com proxy, `window.__GRINDX_API_URL` pode ser injetado para sobrescrever
 
 ## Error Codes
 
@@ -113,8 +135,7 @@ Módulos read-only (consultas a tabelas do Protheus) usam `target_api: "sqlserve
 - Backend copiado para `apps/api-sqlserver/app/modules/{nome}/` (sem models, sem base.py)
 - Router registrado no `main.py` do api-sqlserver
 - Migration, dependency factory e alembic import são **pulados**
-- O campo `target_api` pode ser sobrescrito via CLI: `--target-api=sqlserver`
-- `--target-api` pode ser passado via CLI: `--target-api=sqlserver`
+- `target_api` pode ser sobrescrito via CLI: `--target-api=sqlserver`
 - `frontend/shared/` é ignorado durante a cópia (já existe no monorepo)
 - `python scripts/import_module.py {nome} --import-dir={tmp} --target-api=sqlserver`
 

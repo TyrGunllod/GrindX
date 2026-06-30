@@ -1,4 +1,17 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": ["AGENTS.md"]
+  "instructions": ["AGENTS.md"],
+  "permission": {
+    "edit": {
+      "*": "allow",
+      "**/alembic/versions/*.py": "ask",
+      "apps/api-sqlserver/**/main.py": "ask",
+      "apps/api-sqlserver/**/*router*.py": "ask"
+    },
+    "bash": {
+      "*": "allow",
+      "git push *": "ask",
+      "rm -rf *": "deny"
+    }
+  }
 }
