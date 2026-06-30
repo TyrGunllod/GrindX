@@ -2,6 +2,61 @@
 
 <!-- version list -->
 
+## v1.39.0 (2026-06-30)
+
+### Bug Fixes
+
+- Allow operators to manage non-admin users
+  ([`5540ae7`](https://github.com/TyrGunllod/GrindX/commit/5540ae78b29c427f09bff022f9c6b0e2598dd0da))
+
+- Allow operators to read users via API
+  ([`83aab4d`](https://github.com/TyrGunllod/GrindX/commit/83aab4d28d3b9e4fad4b673aac3438b7c304cd0d))
+
+- External API access via config.js and CSP
+  ([`d1e98a1`](https://github.com/TyrGunllod/GrindX/commit/d1e98a1edc0bfef361eb04eb019c339f2a1cbb5f))
+
+- Move zoom controls outside top-bar for desktop visibility
+  ([`1a0fb16`](https://github.com/TyrGunllod/GrindX/commit/1a0fb16438fcf7de00c719336b4e88523ee60230))
+
+- Null-safe form field access in module save/edit
+  ([`3da5ccc`](https://github.com/TyrGunllod/GrindX/commit/3da5cccf3255560aa65dbb75295b2a8f17d1d309))
+
+- Null-safe role_minima in module save
+  ([`f66a499`](https://github.com/TyrGunllod/GrindX/commit/f66a499986a410552a0fb770181f8da6abb8284c))
+
+- Remove unused imports from usuario_router
+  ([`848434b`](https://github.com/TyrGunllod/GrindX/commit/848434bde3b51d1ae5150810868cca7e63efb546))
+
+### Chores
+
+- Remove accidentally tracked temp file
+  ([`708abc5`](https://github.com/TyrGunllod/GrindX/commit/708abc55a6279f8cde4aaff77e3cef2ca83bc33e))
+
+### Code Style
+
+- Format portal_router.py with ruff
+  ([`4b26df5`](https://github.com/TyrGunllod/GrindX/commit/4b26df5282eb998578af90e101f958141f22d39a))
+
+### Documentation
+
+- Clarify pre-push mandatory checks
+  ([`781d23d`](https://github.com/TyrGunllod/GrindX/commit/781d23d6262d5a761492722d319f4a29738cc451))
+
+- Update pre-commit order in AGENTS.md
+  ([`ae823c1`](https://github.com/TyrGunllod/GrindX/commit/ae823c10e42d4bcf0eb821d66cf77287a7d02172))
+
+- Update pre-push ruff check to match make lint
+  ([`4f22fb5`](https://github.com/TyrGunllod/GrindX/commit/4f22fb581c9f5dc7b6c55b1e69cc753308fa8886))
+
+### Features
+
+- Add role_minima to module CRUD, change Usuarios to operador
+  ([`dd0c5e6`](https://github.com/TyrGunllod/GrindX/commit/dd0c5e661592ba159bd60579e4343d6aa4324efe))
+
+- Add zoom controls to iframe viewport
+  ([`9e625d6`](https://github.com/TyrGunllod/GrindX/commit/9e625d6c8752e1e9575a72dce9deedc0ed279d18))
+
+
 ## v1.38.2 (2026-06-29)
 
 ### Bug Fixes
