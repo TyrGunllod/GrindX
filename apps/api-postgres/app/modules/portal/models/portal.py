@@ -16,7 +16,7 @@ class Aba(PortalBase):
 
     parent = relationship("Aba", remote_side=[id], back_populates="children")
     children = relationship("Aba", back_populates="parent", cascade="all")
-    modulos = relationship("Modulo", back_populates="aba", cascade="all, delete-orphan")
+    modulos = relationship("Modulo", back_populates="aba", cascade="all, delete-orphan", order_by="Modulo.ordem")
 
 
 class Modulo(PortalBase):
@@ -34,6 +34,7 @@ class Modulo(PortalBase):
     url = Column(String(255), nullable=False)
     icone = Column(String(50), nullable=True)
     role_minima = Column(String(20), default="operador")
+    ordem = Column(Integer, default=0)
     ativo = Column(Boolean, default=True)
 
     aba = relationship("Aba", back_populates="modulos")
