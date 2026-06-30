@@ -3,8 +3,6 @@ Router de consulta de produtos (tabela SB1010 do Protheus).
 Read-only — apenas endpoints GET.
 """
 
-from enum import Enum
-
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
@@ -17,12 +15,6 @@ from app.database import get_db
 logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/v1/produtos", tags=["Produtos Protheus"])
-
-
-class ModoDescricao(str, Enum):
-    inicio = "inicio"
-    exato = "exato"
-    trecho = "trecho"
 
 
 class ItemProtheus(BaseModel):
@@ -55,29 +47,13 @@ def buscar_por_descricao(
     descricao: str = Query(
         ..., min_length=4, description="Descrição do produto (mín. 4 caracteres)"
     ),
-    modo: ModoDescricao = Query(
-        ModoDescricao.inicio, description="Modo de busca: inicio, exato ou trecho"
-    ),
     db: Session = Depends(get_db),
 ):
-    if modo == ModoDescricao.exato:
-        sql = text(
-            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_DESC = :descricao ORDER BY B1_COD"
-        )
-        params = {"descricao": descricao}
-    elif modo == ModoDescricao.trecho:
-        sql = text(
-            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
-        )
-        params = {"descricao": f"%{descricao}%"}
-    else:
-        sql = text(
-            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
-        )
-        params = {"descricao": f"{descricao}%"}
-
     try:
-        rows = db.execute(sql, params).fetchall()
+        sql = text(
+            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
+        )
+        rows = db.execute(sql, {"descricao": f"%{descricao}%"}).fetchall()
         return [ItemProtheus(codigo=r[0], descricao=r[1]) for r in rows]
     except SQLAlchemyError as exc:
         logger.error("Falha ao consultar SB1010 por descrição", error=str(exc))
