@@ -6,7 +6,7 @@ Estas regras causam falha de CI, bug sutil ou retrabalho quando ignoradas. Revis
 
 **Sempre:**
 - [ ] PYTHONPATH apontando para `packages/` em qualquer comando manual (`shared` não é instalado via pip) — ver seção PYTHONPATH
-- [ ] Antes de `git push`: `make test-all` → `ruff format packages/ apps/` → `ruff check .`, nesta ordem — ver seção Pre-push
+- [ ] Antes de `git push`: `make test-all` → `ruff format packages/ apps/` → `ruff check --fix . && ruff check .`, nesta ordem — ver seção Pre-push
 - [ ] `var(--...)` para cores/fontes no frontend — nunca valores fixos (design system Glassmorphism)
 - [ ] `ErrorCode.CONSTANT` de `packages/shared/exceptions/codes.py` — nunca strings literais de erro
 - [ ] `config.js` incluído em TODO `index.html` de módulo, nesta ordem: `config.js` → `app.js` → `apiService.js` → `baseController.js` → `script.js`
@@ -68,7 +68,7 @@ make deploy DEST=...   # copia configs para diretório externo
 
 - [ ] `make test-all`
 - [ ] `ruff format packages/ apps/`
-- [ ] `ruff check .` — sem erros
+- [ ] `ruff check --fix . && ruff check .` — sem erros
 
 Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 — alembic/versions ignora I001.
 
