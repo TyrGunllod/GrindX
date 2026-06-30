@@ -6,7 +6,7 @@ from shared.schemas.auth import TokenPayload
 from shared.schemas.base import PaginatedResponse
 from sqlalchemy.orm import Session
 
-from app.auth.dependencies import get_current_user, require_role, require_role_or_higher
+from app.auth.dependencies import require_role_or_higher
 from app.database import get_db
 from app.models.usuario import Usuario, UsuarioModulo
 from app.schemas.usuario import (
@@ -89,9 +89,13 @@ def atualizar_usuario(
     if current_user.role != "admin":
         target = db.query(Usuario).filter(Usuario.id == usuario_id).first()
         if target and target.role == "admin":
-            raise HTTPException(403, "Apenas administradores podem alterar usuários admin.")
+            raise HTTPException(
+                403, "Apenas administradores podem alterar usuários admin."
+            )
         if schema.role == "admin":
-            raise HTTPException(403, "Apenas administradores podem definir o perfil admin.")
+            raise HTTPException(
+                403, "Apenas administradores podem definir o perfil admin."
+            )
     service = UsuarioService(db)
     return service.atualizar_usuario(usuario_id, schema)
 
@@ -107,7 +111,9 @@ def desativar_usuario(
     if current_user.role != "admin":
         target = db.query(Usuario).filter(Usuario.id == usuario_id).first()
         if target and target.role == "admin":
-            raise HTTPException(403, "Apenas administradores podem desativar usuários admin.")
+            raise HTTPException(
+                403, "Apenas administradores podem desativar usuários admin."
+            )
     service = UsuarioService(db)
     service.desativar_usuario(usuario_id)
     client_ip = request.client.host if request.client else "unknown"
