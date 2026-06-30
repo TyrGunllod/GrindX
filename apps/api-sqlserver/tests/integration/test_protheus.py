@@ -16,21 +16,21 @@ class TestPorCodigo:
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1 (B1_COD, B1_DESC) VALUES ('ABC123', 'Produto Teste')
+            INSERT INTO SB1 (B1_COD, B1_DESC) VALUES ('ABCD01', 'Produto Teste')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1 (B1_COD, B1_DESC) VALUES ('ABC456', 'Outro Produto')
+            INSERT INTO SB1 (B1_COD, B1_DESC) VALUES ('ABCD02', 'Outro Produto')
         """)
         )
         db_session.commit()
 
-        resp = client.get("/v1/produtos/por-codigo?codigo=ABC")
+        resp = client.get("/v1/produtos/por-codigo?codigo=ABCD")
         assert resp.status_code == 200
         data = resp.json()
         assert len(data) == 2
-        assert data[0]["codigo"] == "ABC123"
+        assert data[0]["codigo"] == "ABCD01"
         assert data[0]["descricao"] == "Produto Teste"
 
     def test_por_codigo_minimo_4_caracteres(self, client: TestClient):

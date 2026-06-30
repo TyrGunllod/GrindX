@@ -15,6 +15,7 @@ from app.core.logging import setup_logging
 from app.middleware.request_id import RequestIdMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.routers.health_router import router as health_router
+from app.routers.protheus_router import router as protheus_router
 
 logger = structlog.get_logger(__name__)
 
@@ -37,8 +38,8 @@ app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description=(
-        "Health check da conexão com o SQL Server. "
-        "Apenas o endpoint /health está disponível."
+        "Consultas read-only ao SQL Server Protheus. "
+        "Endpoints: /health, /v1/produtos/por-codigo, /v1/produtos/por-descricao"
     ),
     docs_url="/v1/docs",
     redoc_url="/v1/redoc",
@@ -62,3 +63,4 @@ app.add_middleware(
 
 # Routers
 app.include_router(health_router)
+app.include_router(protheus_router)
