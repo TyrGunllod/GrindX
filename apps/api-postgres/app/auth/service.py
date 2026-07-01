@@ -209,6 +209,8 @@ class AuthService:
         cargo: str | None = None,
         classificacao: str | None = None,
         cpf: str | None = None,
+        rg: str | None = None,
+        salario: str | None = None,
         endereco: str | None = None,
         numero: str | None = None,
         cep: str | None = None,
@@ -245,6 +247,10 @@ class AuthService:
             dados["classificacao"] = classificacao
         if cpf is not None:
             dados["cpf"] = cpf
+        if rg is not None:
+            dados["rg"] = rg
+        if salario is not None:
+            dados["salario"] = salario
         if endereco is not None:
             dados["endereco"] = endereco
         if numero is not None:

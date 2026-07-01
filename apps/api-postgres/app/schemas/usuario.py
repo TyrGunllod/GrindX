@@ -30,6 +30,8 @@ class UsuarioUpdate(BaseModel):
     cargo: Optional[str] = None
     classificacao: Optional[str] = None
     cpf: Optional[str] = None
+    rg: Optional[str] = None
+    salario: Optional[str] = None
     endereco: Optional[str] = None
     numero: Optional[str] = None
     cep: Optional[str] = None
@@ -47,6 +49,8 @@ class UsuarioResponse(UsuarioBase):
     cargo: Optional[str] = None
     classificacao: Optional[str] = None
     cpf: Optional[str] = None
+    rg: Optional[str] = None
+    salario: Optional[str] = None
     endereco: Optional[str] = None
     numero: Optional[str] = None
     cep: Optional[str] = None

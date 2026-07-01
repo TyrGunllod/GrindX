@@ -32,7 +32,7 @@
 
                     <hr class="field-divider">
 
-                    <div class="form-row">
+                    <div class="form-row form-row-3">
                         <div class="form-group">
                             <label for="profileCodigo">Código</label>
                             <input type="text" id="profileCodigo" class="form-control">
@@ -40,6 +40,10 @@
                         <div class="form-group">
                             <label for="profileCbo">C.B.O</label>
                             <input type="text" id="profileCbo" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileSalario">Salário Base</label>
+                            <input type="text" id="profileSalario" class="form-control" inputmode="decimal">
                         </div>
                     </div>
                     <div class="form-group">
@@ -72,18 +76,22 @@
                             <input type="text" id="profileCpf" class="form-control" maxlength="14" inputmode="numeric">
                         </div>
                         <div class="form-group">
-                            <label for="profileCep">CEP</label>
-                            <input type="text" id="profileCep" class="form-control" maxlength="9" inputmode="numeric">
+                            <label for="profileRg">RG</label>
+                            <input type="text" id="profileRg" class="form-control" maxlength="12" inputmode="numeric">
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div class="form-row form-row-addr">
+                        <div class="form-group form-group-grow">
                             <label for="profileEndereco">Endereço</label>
                             <input type="text" id="profileEndereco" class="form-control">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group form-group-sm">
                             <label for="profileNumero">Nº</label>
-                            <input type="text" id="profileNumero" class="form-control" maxlength="10">
+                            <input type="text" id="profileNumero" class="form-control" maxlength="6">
+                        </div>
+                        <div class="form-group form-group-cep">
+                            <label for="profileCep">CEP</label>
+                            <input type="text" id="profileCep" class="form-control" maxlength="9" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-row">

@@ -38,6 +38,8 @@
         document.getElementById('profileCargo').value = profile.cargo || '';
         document.getElementById('profileClassificacao').value = profile.classificacao || '';
         document.getElementById('profileCpf').value = formatCpf(profile.cpf || '');
+        document.getElementById('profileRg').value = formatRg(profile.rg || '');
+        document.getElementById('profileSalario').value = formatSalario(profile.salario || '');
         document.getElementById('profileEndereco').value = profile.endereco || '';
         document.getElementById('profileNumero').value = profile.numero || '';
         document.getElementById('profileCep').value = formatCep(profile.cep || '');
@@ -91,6 +93,25 @@
     function formatTelefone(v) { return formatFone(v, false); }
     function formatCelular(v) { return formatFone(v, true); }
 
+    function formatRg(v) {
+        const d = v.replace(/\D/g, '').slice(0, 9);
+        if (d.length <= 2) return d;
+        if (d.length <= 5) return d.slice(0, 2) + '.' + d.slice(2);
+        if (d.length <= 8) return d.slice(0, 2) + '.' + d.slice(2, 5) + '.' + d.slice(5);
+        return d.slice(0, 2) + '.' + d.slice(2, 5) + '.' + d.slice(5, 8) + '-' + d.slice(8);
+    }
+
+    function formatSalario(v) {
+        const d = v.replace(/[^\d,]/g, '').replace(',', '.').split('.');
+        let num = d[0] ? parseInt(d[0].replace(/\D/g, ''), 10) : 0;
+        let dec = d[1] ? d[1].replace(/\D/g, '').slice(0, 2).padEnd(2, '0') : '00';
+        return num.toLocaleString('pt-BR') + ',' + dec;
+    }
+
+    function unformatSalario(v) {
+        return v.replace(/\./g, '').replace(',', '.');
+    }
+
     function stripMask(v) {
         return v.replace(/\D/g, '');
     }
@@ -118,7 +139,7 @@
 
         try {
             const data = {};
-            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'classificacao', 'cpf', 'endereco', 'numero', 'cep', 'telefone', 'celular', 'email'];
+            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'classificacao', 'cpf', 'rg', 'salario', 'endereco', 'numero', 'cep', 'telefone', 'celular', 'email'];
             fields.forEach(f => {
                 const el = document.getElementById('profile' + f.charAt(0).toUpperCase() + f.slice(1));
                 if (el) data[f] = el.value.trim();
@@ -128,6 +149,8 @@
             if (data.cep) data.cep = stripMask(data.cep);
             if (data.telefone) data.telefone = stripMask(data.telefone);
             if (data.celular) data.celular = stripMask(data.celular);
+            if (data.rg) data.rg = stripMask(data.rg);
+            if (data.salario) data.salario = unformatSalario(data.salario);
             if (data.email === currentUser.email) delete data.email;
 
             if (Object.keys(data).length > 0) {
@@ -262,6 +285,14 @@
         const el = document.getElementById('profileCelular');
         if (el.value) el.value = formatCelular(el.value);
     }
+    function maskRgOnBlur() {
+        const el = document.getElementById('profileRg');
+        if (el.value) el.value = formatRg(el.value);
+    }
+    function maskSalarioOnBlur() {
+        const el = document.getElementById('profileSalario');
+        if (el.value) el.value = formatSalario(el.value);
+    }
     function unmaskOnFocus(el) {
         el.value = stripMask(el.value);
     }
@@ -302,6 +333,13 @@
         cepEl.addEventListener('focus', () => unmaskOnFocus(cepEl));
         telEl.addEventListener('focus', () => unmaskOnFocus(telEl));
         celEl.addEventListener('focus', () => unmaskOnFocus(celEl));
+
+        const rgEl = document.getElementById('profileRg');
+        const salarioEl = document.getElementById('profileSalario');
+        rgEl.addEventListener('blur', maskRgOnBlur);
+        salarioEl.addEventListener('blur', maskSalarioOnBlur);
+        rgEl.addEventListener('focus', () => unmaskOnFocus(rgEl));
+        salarioEl.addEventListener('focus', () => salarioEl.value = unformatSalario(salarioEl.value));
 
         document.getElementById('profileCbo').addEventListener('blur', lookupCbo);
 

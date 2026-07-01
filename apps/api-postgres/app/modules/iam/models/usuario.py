@@ -62,6 +62,10 @@ class Usuario(IamBase):
         comment="Classificação: Junior, Pleno, Senior, I, II, III, IV, V",
     )
     cpf: Mapped[str | None] = mapped_column(String(14), nullable=True, comment="CPF")
+    rg: Mapped[str | None] = mapped_column(String(12), nullable=True, comment="RG")
+    salario: Mapped[str | None] = mapped_column(
+        String(20), nullable=True, comment="Salário Base"
+    )
     endereco: Mapped[str | None] = mapped_column(
         String(255), nullable=True, comment="Endereço"
     )

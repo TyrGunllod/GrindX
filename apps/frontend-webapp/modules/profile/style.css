@@ -38,6 +38,28 @@
     gap: 16px;
 }
 
+.form-row-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form-row-addr {
+    display: flex;
+    gap: 12px;
+}
+
+.form-group-grow {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-group-sm {
+    flex: 0 0 80px;
+}
+
+.form-group-cep {
+    flex: 0 0 120px;
+}
+
 .form-group {
     margin-bottom: 16px;
 }

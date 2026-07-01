@@ -188,6 +188,8 @@ def update_me(
         cargo=dados.cargo,
         classificacao=dados.classificacao,
         cpf=dados.cpf,
+        rg=dados.rg,
+        salario=dados.salario,
         endereco=dados.endereco,
         numero=dados.numero,
         cep=dados.cep,
