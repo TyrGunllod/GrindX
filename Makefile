@@ -67,17 +67,8 @@ ifeq ($(OS),Windows_NT)
 	@echo "Iniciando Frontend com HTTPS na porta 443..."
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev-https.ps1
 else
-	@echo "Iniciando Frontend com HTTPS na porta 443..."
-	@cd apps/frontend-webapp && $(PY) -c "
-import http.server, ssl, os
-httpd = http.server.HTTPServer(('0.0.0.0', 443), http.server.SimpleHTTPRequestHandler)
-httpd.socket = ssl.wrap_socket(httpd.socket,
-    certfile=os.path.abspath('../../.certs/dev-cert.pem'),
-    keyfile=os.path.abspath('../../.certs/dev-key.pem'),
-    server_side=True)
-print('Servindo frontend em https://localhost')
-httpd.serve_forever()
-"
+	@echo "Iniciando Frontend com HTTPS na porta 8443..."
+	$(PY) scripts/serve-https.py 8443
 endif
 
 dev-all:
