@@ -14,17 +14,27 @@ fi
 
 SSL_OPTS="--ssl-keyfile=$KEY --ssl-certfile=$CERT"
 
-VENV_PY="$ROOT/apps/api-postgres/.venv/bin/python"
-if [ ! -f "$VENV_PY" ]; then
-    echo "Virtualenv não encontrado em $VENV_PY" >&2
-    echo "Execute: cd apps/api-postgres && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt" >&2
-    exit 1
+VENV_POSTGRES="$ROOT/apps/api-postgres/.venv/bin/python"
+VENV_SQLSERVER="$ROOT/apps/api-sqlserver/.venv/bin/python"
+
+echo "=== API SQL Server (porta 8001, HTTPS) ==="
+if [ -f "$VENV_SQLSERVER" ]; then
+    cd "$ROOT/apps/api-sqlserver"
+    PYTHONPATH="$ROOT/packages" "$VENV_SQLSERVER" -m uvicorn app.main:app --host 0.0.0.0 --port 8001 $SSL_OPTS &
+    SQL_PID=$!
+    cd "$ROOT"
+else
+    echo "  Virtualenv sqlserver não encontrado — pulando" >&2
 fi
 
 echo "=== API PostgreSQL (porta 8002, HTTPS) ==="
+if [ ! -f "$VENV_POSTGRES" ]; then
+    echo "Virtualenv postgres não encontrado em $VENV_POSTGRES" >&2
+    exit 1
+fi
 cd "$ROOT/apps/api-postgres"
-PYTHONPATH="$ROOT/packages" "$VENV_PY" -m uvicorn app.main:app --host 0.0.0.0 --port 8002 $SSL_OPTS &
-API_PID=$!
+PYTHONPATH="$ROOT/packages" "$VENV_POSTGRES" -m uvicorn app.main:app --host 0.0.0.0 --port 8002 $SSL_OPTS &
+PG_PID=$!
 cd "$ROOT"
 
 echo "=== Frontend (porta 8443, HTTPS) ==="
@@ -32,11 +42,12 @@ python3 "$ROOT/scripts/serve-https.py" 8443 &
 FRONT_PID=$!
 
 echo "=== Pronto! ==="
-echo "Frontend: https://localhost:8443"
-echo "API:      https://localhost:8002/v1/docs"
+echo "Frontend:  https://localhost:8443"
+echo "API PG:    https://localhost:8002/v1/docs"
+echo "API SQL:   https://localhost:8001/health"
 echo ""
 echo "Pressione ENTER para parar..."
 read -r
 
-kill $API_PID $FRONT_PID 2>/dev/null
+kill $PG_PID $SQL_PID $FRONT_PID 2>/dev/null
 echo "Servidores parados."
