@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.48.0 (2026-07-01)
+
+### Bug Fixes
+
+- Use venv Python for uvicorn in dev-https.sh
+  ([`d77e88d`](https://github.com/TyrGunllod/GrindX/commit/d77e88d731a4e9cfa0c96417d78151dec23f1a3a))
+
+### Features
+
+- Add api-sqlserver with HTTPS to dev-https.sh
+  ([`14dc41b`](https://github.com/TyrGunllod/GrindX/commit/14dc41b770ae69ca6b150dad2030bddf9dae6de5))
+
+
 ## v1.47.0 (2026-07-01)
 
 ### Documentation
