@@ -236,6 +236,25 @@
         el.value = stripMask(el.value);
     }
 
+    async function lookupCbo() {
+        const cboEl = document.getElementById('profileCbo');
+        const cargoEl = document.getElementById('profileCargo');
+        const cbo = cboEl.value.replace(/\D/g, '').slice(0, 6);
+        if (cbo.length < 4) return;
+        try {
+            const res = await fetch('https://sistemas.unasus.gov.br/ws_cbo/cbo.php?cbo=' + cbo);
+            const xml = await res.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(xml, 'text/xml');
+            const desc = doc.querySelector('descricao');
+            if (desc && desc.textContent) {
+                cargoEl.value = desc.textContent;
+            }
+        } catch (e) {
+            // silently fail — external API may be unreachable
+        }
+    }
+
     function setupEvents() {
         document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
         document.getElementById('savePasswordBtn').addEventListener('click', savePassword);
@@ -247,6 +266,8 @@
         cepEl.addEventListener('blur', maskCepOnBlur);
         cpfEl.addEventListener('focus', () => unmaskOnFocus(cpfEl));
         cepEl.addEventListener('focus', () => unmaskOnFocus(cepEl));
+
+        document.getElementById('profileCbo').addEventListener('blur', lookupCbo);
 
         document.querySelectorAll('.toggle-option').forEach(btn => {
             btn.addEventListener('click', () => {
