@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.52.0 (2026-07-01)
+
+### Features
+
+- Add classificacao dropdown next to Cargo in profile
+  ([`e76d1ea`](https://github.com/TyrGunllod/GrindX/commit/e76d1eaa31ed0adb9702617dbf6e0025b354a482))
+
+
 ## v1.51.0 (2026-07-01)
 
 ### Features
