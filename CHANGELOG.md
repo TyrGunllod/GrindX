@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.55.1 (2026-07-01)
+
+### Bug Fixes
+
+- Proxy CBO lookup through backend to avoid CORS; make Cargo readonly
+  ([`de21497`](https://github.com/TyrGunllod/GrindX/commit/de2149757e62efa4a4f903ea84b71e464f721dc4))
+
+
 ## v1.55.0 (2026-07-01)
 
 ### Features
