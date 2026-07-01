@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.46.1 (2026-07-01)
+
+### Bug Fixes
+
+- Use SSLContext instead of deprecated wrap_socket for Python 3.12+
+  ([`bbb93e5`](https://github.com/TyrGunllod/GrindX/commit/bbb93e5cb9fd3648fba5bb20249a1029546187c7))
+
+### Refactoring
+
+- Dev-frontend-https on port 8443 (no sudo) via serve-https.py script
+  ([`85c4208`](https://github.com/TyrGunllod/GrindX/commit/85c4208edeb3cd6a801ba37051c8cd601492e7ec))
+
+
 ## v1.46.0 (2026-07-01)
 
 ### Documentation
