@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.51.0 (2026-07-01)
+
+### Features
+
+- Auto-fill Cargo from CBO via external API on blur
+  ([`fed3474`](https://github.com/TyrGunllod/GrindX/commit/fed3474ec3e2e3613a639ccb2219399c446da3d9))
+
+
 ## v1.50.0 (2026-07-01)
 
 ### Features
