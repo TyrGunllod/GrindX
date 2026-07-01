@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v1.45.0 (2026-07-01)
+
+### Chores
+
+- Add certs directory with gitignore
+  ([`8194fb9`](https://github.com/TyrGunllod/GrindX/commit/8194fb99bd1762b112462de0d035f6ab77abb565))
+
+### Code Style
+
+- Format with ruff
+  ([`e54851e`](https://github.com/TyrGunllod/GrindX/commit/e54851e8e1bae34a1a202d7742dde1fd6bde697e))
+
+### Features
+
+- Add dev-https.ps1 script and HTTPS config in nginx
+  ([`949bf45`](https://github.com/TyrGunllod/GrindX/commit/949bf4562981e6851a33d9e5aac21ab94ac914c9))
+
+- Add HTTPS port and cert volume to compose, update CSP for HTTPS
+  ([`de177aa`](https://github.com/TyrGunllod/GrindX/commit/de177aa6c3c808166e7bcc43790bbca540798be2))
+
+- Use dynamic protocol for API URLs (support HTTPS)
+  ([`e71dc2f`](https://github.com/TyrGunllod/GrindX/commit/e71dc2fda189a671c2c8ad807826a1753fb7a3dc))
+
+
 ## v1.44.0 (2026-07-01)
 
 ### Features
