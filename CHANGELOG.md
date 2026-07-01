@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.54.0 (2026-07-01)
+
+### Features
+
+- Add salario, rg fields; restructure profile layout rows
+  ([`84b286a`](https://github.com/TyrGunllod/GrindX/commit/84b286a1f78223cb41b01d53db44674cee573924))
+
+
 ## v1.53.0 (2026-07-01)
 
 ### Features
