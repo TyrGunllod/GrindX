@@ -78,11 +78,11 @@ Acesse em `http://localhost:8101`.
 # 2. Gerar certificados
 mkcert -key-file .certs/dev-key.pem -cert-file .certs/dev-cert.pem localhost 127.0.0.1 ::1
 
-# 3. Rodar frontend com HTTPS
-make dev-frontend-https
+# 3. Rodar tudo com HTTPS
+make dev-https
 ```
 
-Acesse em `https://localhost:8443`.
+Acesse frontend em `https://localhost:8443` e API em `https://localhost:8002/v1/docs`.
 
 ### Credenciais de Teste
 
