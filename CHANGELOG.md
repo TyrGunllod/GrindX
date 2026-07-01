@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.50.0 (2026-07-01)
+
+### Features
+
+- Add numero field, CPF/CEP input masks to profile
+  ([`64231a4`](https://github.com/TyrGunllod/GrindX/commit/64231a448abbb18b44aaee1d59404a900216fbf6))
+
+
 ## v1.49.0 (2026-07-01)
 
 ### Bug Fixes
