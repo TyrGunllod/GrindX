@@ -209,6 +209,7 @@ class AuthService:
         cargo: str | None = None,
         cpf: str | None = None,
         endereco: str | None = None,
+        numero: str | None = None,
         cep: str | None = None,
     ) -> Usuario:
         """Atualiza o perfil do próprio usuário."""
@@ -241,6 +242,8 @@ class AuthService:
             dados["cpf"] = cpf
         if endereco is not None:
             dados["endereco"] = endereco
+        if numero is not None:
+            dados["numero"] = numero
         if cep is not None:
             dados["cep"] = cep
 

@@ -188,6 +188,7 @@ def update_me(
         cargo=dados.cargo,
         cpf=dados.cpf,
         endereco=dados.endereco,
+        numero=dados.numero,
         cep=dados.cep,
     )
     logger.info(

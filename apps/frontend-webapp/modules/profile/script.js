@@ -36,9 +36,10 @@
         document.getElementById('profileCbo').value = profile.cbo || '';
         document.getElementById('profileDepartamento').value = profile.departamento || '';
         document.getElementById('profileCargo').value = profile.cargo || '';
-        document.getElementById('profileCpf').value = profile.cpf || '';
+        document.getElementById('profileCpf').value = formatCpf(profile.cpf || '');
         document.getElementById('profileEndereco').value = profile.endereco || '';
-        document.getElementById('profileCep').value = profile.cep || '';
+        document.getElementById('profileNumero').value = profile.numero || '';
+        document.getElementById('profileCep').value = formatCep(profile.cep || '');
 
         const currentTheme = window.grindx.theme.theme;
         document.querySelectorAll('.toggle-option[data-theme]').forEach(btn => {
@@ -54,6 +55,24 @@
     function formatRole(role) {
         const labels = { admin: 'Administrador', operador: 'Operador', leitura: 'Leitura' };
         return labels[role] || role || 'Usuário';
+    }
+
+    function formatCpf(v) {
+        const d = v.replace(/\D/g, '').slice(0, 11);
+        if (d.length <= 3) return d;
+        if (d.length <= 6) return d.slice(0, 3) + '.' + d.slice(3);
+        if (d.length <= 9) return d.slice(0, 3) + '.' + d.slice(3, 6) + '.' + d.slice(6);
+        return d.slice(0, 3) + '.' + d.slice(3, 6) + '.' + d.slice(6, 9) + '-' + d.slice(9, 11);
+    }
+
+    function formatCep(v) {
+        const d = v.replace(/\D/g, '').slice(0, 8);
+        if (d.length <= 5) return d;
+        return d.slice(0, 5) + '-' + d.slice(5);
+    }
+
+    function stripMask(v) {
+        return v.replace(/\D/g, '');
     }
 
     function showError(elementId, message) {
@@ -79,12 +98,14 @@
 
         try {
             const data = {};
-            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'cpf', 'endereco', 'cep', 'email'];
+            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'cpf', 'endereco', 'numero', 'cep', 'email'];
             fields.forEach(f => {
                 const el = document.getElementById('profile' + f.charAt(0).toUpperCase() + f.slice(1));
                 if (el) data[f] = el.value.trim();
             });
 
+            if (data.cpf) data.cpf = stripMask(data.cpf);
+            if (data.cep) data.cep = stripMask(data.cep);
             if (data.email === currentUser.email) delete data.email;
 
             if (Object.keys(data).length > 0) {
@@ -203,10 +224,29 @@
         setTimeout(() => toast.remove(), 4000);
     }
 
+    function maskCpfOnBlur() {
+        const el = document.getElementById('profileCpf');
+        if (el.value) el.value = formatCpf(el.value);
+    }
+    function maskCepOnBlur() {
+        const el = document.getElementById('profileCep');
+        if (el.value) el.value = formatCep(el.value);
+    }
+    function unmaskOnFocus(el) {
+        el.value = stripMask(el.value);
+    }
+
     function setupEvents() {
         document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
         document.getElementById('savePasswordBtn').addEventListener('click', savePassword);
         document.getElementById('savePreferencesBtn').addEventListener('click', savePreferences);
+
+        const cpfEl = document.getElementById('profileCpf');
+        const cepEl = document.getElementById('profileCep');
+        cpfEl.addEventListener('blur', maskCpfOnBlur);
+        cepEl.addEventListener('blur', maskCepOnBlur);
+        cpfEl.addEventListener('focus', () => unmaskOnFocus(cpfEl));
+        cepEl.addEventListener('focus', () => unmaskOnFocus(cepEl));
 
         document.querySelectorAll('.toggle-option').forEach(btn => {
             btn.addEventListener('click', () => {
