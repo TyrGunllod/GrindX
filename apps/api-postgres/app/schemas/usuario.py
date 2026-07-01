@@ -28,6 +28,7 @@ class UsuarioUpdate(BaseModel):
     cbo: Optional[str] = None
     departamento: Optional[str] = None
     cargo: Optional[str] = None
+    classificacao: Optional[str] = None
     cpf: Optional[str] = None
     endereco: Optional[str] = None
     numero: Optional[str] = None
@@ -42,6 +43,7 @@ class UsuarioResponse(UsuarioBase):
     cbo: Optional[str] = None
     departamento: Optional[str] = None
     cargo: Optional[str] = None
+    classificacao: Optional[str] = None
     cpf: Optional[str] = None
     endereco: Optional[str] = None
     numero: Optional[str] = None

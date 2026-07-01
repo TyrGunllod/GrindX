@@ -56,6 +56,11 @@ class Usuario(IamBase):
     cargo: Mapped[str | None] = mapped_column(
         String(100), nullable=True, comment="Cargo"
     )
+    classificacao: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
+        comment="Classificação: Junior, Pleno, Senior, I, II, III, IV, V",
+    )
     cpf: Mapped[str | None] = mapped_column(String(14), nullable=True, comment="CPF")
     endereco: Mapped[str | None] = mapped_column(
         String(255), nullable=True, comment="Endereço"

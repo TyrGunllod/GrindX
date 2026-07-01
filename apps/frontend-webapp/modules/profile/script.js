@@ -36,6 +36,7 @@
         document.getElementById('profileCbo').value = profile.cbo || '';
         document.getElementById('profileDepartamento').value = profile.departamento || '';
         document.getElementById('profileCargo').value = profile.cargo || '';
+        document.getElementById('profileClassificacao').value = profile.classificacao || '';
         document.getElementById('profileCpf').value = formatCpf(profile.cpf || '');
         document.getElementById('profileEndereco').value = profile.endereco || '';
         document.getElementById('profileNumero').value = profile.numero || '';
@@ -98,7 +99,7 @@
 
         try {
             const data = {};
-            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'cpf', 'endereco', 'numero', 'cep', 'email'];
+            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'classificacao', 'cpf', 'endereco', 'numero', 'cep', 'email'];
             fields.forEach(f => {
                 const el = document.getElementById('profile' + f.charAt(0).toUpperCase() + f.slice(1));
                 if (el) data[f] = el.value.trim();

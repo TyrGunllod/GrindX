@@ -186,6 +186,7 @@ def update_me(
         cbo=dados.cbo,
         departamento=dados.departamento,
         cargo=dados.cargo,
+        classificacao=dados.classificacao,
         cpf=dados.cpf,
         endereco=dados.endereco,
         numero=dados.numero,
