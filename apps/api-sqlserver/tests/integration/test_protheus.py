@@ -83,7 +83,9 @@ class TestPorDescricao:
         resp = client.get("/v1/produtos/por-descricao?descricao=AB")
         assert resp.status_code == 422
 
-    def test_por_descricao_sem_resultados(self, client: TestClient, db_session: Session):
+    def test_por_descricao_sem_resultados(
+        self, client: TestClient, db_session: Session
+    ):
         db_session.execute(
             text("""
             CREATE TABLE SB1010 (B1_COD VARCHAR(20), B1_DESC VARCHAR(100))
