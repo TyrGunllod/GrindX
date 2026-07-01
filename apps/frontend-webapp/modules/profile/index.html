@@ -36,49 +36,51 @@
                 </form>
             </div>
 
-            <div class="profile-card">
-                <h2><i class="fas fa-key"></i> Alterar Senha</h2>
-                <form id="passwordForm">
-                    <div class="form-group">
-                        <label for="currentPassword">Senha Atual</label>
-                        <input type="password" id="currentPassword" class="form-control" minlength="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="newPassword">Nova Senha</label>
-                        <input type="password" id="newPassword" class="form-control" minlength="6">
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirmar Nova Senha</label>
-                        <input type="password" id="confirmPassword" class="form-control" minlength="6">
-                    </div>
-                    <span class="field-error" id="passwordError" style="display:none;"></span>
-                </form>
-            </div>
-
-            <div class="profile-card">
-                <h2><i class="fas fa-palette"></i> Preferências</h2>
-                <div class="form-group">
-                    <label>Tema</label>
-                    <div class="toggle-group">
-                        <button type="button" class="toggle-option" data-theme="light">
-                            <i class="fas fa-sun"></i> Claro
-                        </button>
-                        <button type="button" class="toggle-option" data-theme="dark">
-                            <i class="fas fa-moon"></i> Escuro
-                        </button>
-                    </div>
+            <div class="profile-card-row">
+                <div class="profile-card">
+                    <h2><i class="fas fa-key"></i> Alterar Senha</h2>
+                    <form id="passwordForm">
+                        <div class="form-group">
+                            <label for="currentPassword">Senha Atual</label>
+                            <input type="password" id="currentPassword" class="form-control" minlength="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">Nova Senha</label>
+                            <input type="password" id="newPassword" class="form-control" minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmar Nova Senha</label>
+                            <input type="password" id="confirmPassword" class="form-control" minlength="6">
+                        </div>
+                        <span class="field-error" id="passwordError" style="display:none;"></span>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label>Layout do Dashboard</label>
-                    <div class="toggle-group">
-                        <button type="button" class="toggle-option" data-layout="topbar">
-                            <i class="fas fa-window-maximize"></i> Topbar
-                        </button>
-                        <button type="button" class="toggle-option" data-layout="sidebar">
-                            <i class="fas fa-bars"></i> Sidebar
-                        </button>
+
+                <div class="profile-card">
+                    <h2><i class="fas fa-palette"></i> Preferências</h2>
+                    <div class="form-group">
+                        <label>Tema</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-option" data-theme="light">
+                                <i class="fas fa-sun"></i> Claro
+                            </button>
+                            <button type="button" class="toggle-option" data-theme="dark">
+                                <i class="fas fa-moon"></i> Escuro
+                            </button>
+                        </div>
                     </div>
-                    <small class="form-hint">Topbar mostra navegação horizontal com mais espaço para iframes.</small>
+                    <div class="form-group">
+                        <label>Layout do Dashboard</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-option" data-layout="topbar">
+                                <i class="fas fa-window-maximize"></i> Topbar
+                            </button>
+                            <button type="button" class="toggle-option" data-layout="sidebar">
+                                <i class="fas fa-bars"></i> Sidebar
+                            </button>
+                        </div>
+                        <small class="form-hint">Topbar mostra navegação horizontal com mais espaço para iframes.</small>
+                    </div>
                 </div>
             </div>
 
