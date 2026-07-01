@@ -70,15 +70,18 @@ Acesse em `http://localhost:8101`.
 
 ### HTTPS (Desenvolvimento Local)
 
-```powershell
+```bash
 # 1. Instalar mkcert (uma vez)
-winget install mkcert
-mkcert -install
+# Windows: winget install mkcert
+# Linux:   sudo apt install libnss3-tools && sudo mkcert -install
 
 # 2. Gerar certificados
 mkcert -key-file .certs/dev-key.pem -cert-file .certs/dev-cert.pem localhost 127.0.0.1 ::1
 
-# 3. Rodar com HTTPS
+# 3. Rodar frontend com HTTPS (Linux)
+sudo make dev-frontend-https
+
+# Windows:
 .\scripts\dev-https.ps1
 ```
 
