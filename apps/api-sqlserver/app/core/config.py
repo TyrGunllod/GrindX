@@ -134,7 +134,12 @@ class Settings(BaseSettings):
     @property
     def csp_connect_srcs(self) -> list[str]:
         """URLs permitidas no CSP connect-src."""
-        srcs = ["'self'", "http://localhost:8001", "http://localhost:8002", "https://localhost:8002"]
+        srcs = [
+            "'self'",
+            "http://localhost:8001",
+            "http://localhost:8002",
+            "https://localhost:8002",
+        ]
         if self.DEV_NETWORK_IP:
             srcs.append(f"http://{self.DEV_NETWORK_IP}:8001")
             srcs.append(f"http://{self.DEV_NETWORK_IP}:8002")
