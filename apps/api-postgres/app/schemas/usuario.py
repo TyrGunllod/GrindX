@@ -24,6 +24,7 @@ class UsuarioUpdate(BaseModel):
     password: Optional[str] = None
     theme_preference: Optional[str] = None
     layout_preference: Optional[str] = None
+    layout_mobile_preference: Optional[str] = None
     codigo: Optional[str] = None
     cbo: Optional[str] = None
     departamento: Optional[str] = None
@@ -43,6 +44,7 @@ class UsuarioResponse(UsuarioBase):
     id: int
     theme_preference: Optional[str] = None
     layout_preference: Optional[str] = None
+    layout_mobile_preference: Optional[str] = None
     codigo: Optional[str] = None
     cbo: Optional[str] = None
     departamento: Optional[str] = None

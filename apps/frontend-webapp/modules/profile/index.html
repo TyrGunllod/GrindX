@@ -148,8 +148,8 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Layout do Dashboard</label>
-                        <div class="toggle-group">
+                        <label>Layout Desktop</label>
+                        <div class="toggle-group" id="layoutDesktopGroup">
                             <button type="button" class="toggle-option" data-layout="topbar">
                                 <i class="fas fa-window-maximize"></i> Topbar
                             </button>
@@ -157,7 +157,18 @@
                                 <i class="fas fa-bars"></i> Sidebar
                             </button>
                         </div>
-                        <small class="form-hint">Topbar mostra navegação horizontal com mais espaço para iframes.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Layout Celular / Tablet</label>
+                        <div class="toggle-group" id="layoutMobileGroup">
+                            <button type="button" class="toggle-option" data-layout-mobile="topbar">
+                                <i class="fas fa-window-maximize"></i> Topbar
+                            </button>
+                            <button type="button" class="toggle-option" data-layout-mobile="sidebar">
+                                <i class="fas fa-bars"></i> Sidebar
+                            </button>
+                        </div>
+                        <small class="form-hint">Aplicado automaticamente em telas menores que 768px.</small>
                     </div>
                     <button class="btn btn-primary card-save-btn" id="savePreferencesBtn"><i class="fas fa-save"></i> Salvar</button>
                 </div>

@@ -182,6 +182,7 @@ def update_me(
         nome_completo=dados.nome_completo,
         theme_preference=dados.theme_preference,
         layout_preference=dados.layout_preference,
+        layout_mobile_preference=dados.layout_mobile_preference,
         codigo=dados.codigo,
         cbo=dados.cbo,
         departamento=dados.departamento,

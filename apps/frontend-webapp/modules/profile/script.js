@@ -52,8 +52,13 @@
         });
 
         const currentLayout = window.parent.grindx?.storage?.get('grindx_layout') || profile.layout_preference || 'topbar';
-        document.querySelectorAll('.toggle-option[data-layout]').forEach(btn => {
+        document.querySelectorAll('#layoutDesktopGroup .toggle-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.layout === currentLayout);
+        });
+
+        const mobileLayout = window.parent.grindx?.storage?.get('grindx_layout_mobile') || profile.layout_mobile_preference || 'sidebar';
+        document.querySelectorAll('#layoutMobileGroup .toggle-option').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.layoutMobile === mobileLayout);
         });
     }
 
@@ -233,12 +238,20 @@
                 updateData.theme_preference = selectedTheme;
             }
 
-            const selectedLayout = document.querySelector('.toggle-option[data-layout].active')?.dataset.layout;
+            const selectedLayout = document.querySelector('#layoutDesktopGroup .toggle-option.active')?.dataset.layout;
             const currentLayout = window.parent.grindx?.storage?.get('grindx_layout') || '';
             if (selectedLayout && selectedLayout !== currentLayout) {
                 window.parent.grindx.storage.set('grindx_layout', selectedLayout);
                 updateData.layout_preference = selectedLayout;
                 window.parent.postMessage('layout-changed', '*');
+            }
+
+            const selectedMobileLayout = document.querySelector('#layoutMobileGroup .toggle-option.active')?.dataset.layoutMobile;
+            const currentMobileLayout = window.parent.grindx?.storage?.get('grindx_layout_mobile') || '';
+            if (selectedMobileLayout && selectedMobileLayout !== currentMobileLayout) {
+                window.parent.grindx.storage.set('grindx_layout_mobile', selectedMobileLayout);
+                updateData.layout_mobile_preference = selectedMobileLayout;
+                window.parent.postMessage('layout-mobile-changed', '*');
             }
 
             if (Object.keys(updateData).length > 0) {

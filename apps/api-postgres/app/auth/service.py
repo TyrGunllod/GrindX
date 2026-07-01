@@ -203,6 +203,7 @@ class AuthService:
         nome_completo: str | None = None,
         theme_preference: str | None = None,
         layout_preference: str | None = None,
+        layout_mobile_preference: str | None = None,
         codigo: str | None = None,
         cbo: str | None = None,
         departamento: str | None = None,
@@ -235,6 +236,8 @@ class AuthService:
             dados["theme_preference"] = theme_preference
         if layout_preference is not None:
             dados["layout_preference"] = layout_preference
+        if layout_mobile_preference is not None:
+            dados["layout_mobile_preference"] = layout_mobile_preference
         if codigo is not None:
             dados["codigo"] = codigo
         if cbo is not None:

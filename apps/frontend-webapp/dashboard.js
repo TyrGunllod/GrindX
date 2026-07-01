@@ -48,6 +48,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         };
         this.user = user;
         this.updateUserUI(user);
+        this._applyLayoutForDevice();
     }
 
     async loadCurrentUserProfile() {
@@ -63,6 +64,10 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 window.grindx.theme.syncFromProfile(profile.theme_preference);
             }
             this.applyLayoutPreference(profile.layout_preference);
+            if (profile.layout_mobile_preference) {
+                window.grindx.storage.set('grindx_layout_mobile', profile.layout_mobile_preference);
+            }
+            this._applyLayoutForDevice();
         } catch (err) {
             console.warn('Não foi possível carregar o perfil do usuário logado:', err);
         }
@@ -73,6 +78,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
             document.getElementById('closeSidebar')?.addEventListener('click', () => this.toggleSidebar(false));
             document.getElementById('sidebarOverlay')?.addEventListener('click', () => this.handleSidebarOverlayClick());
             window.addEventListener('resize', debounce(() => this.handleSidebarResize(), 150));
+            window.addEventListener('resize', debounce(() => this._applyLayoutForDevice(), 300));
             this.mainNav.addEventListener('click', (e) => this.handleNavigation(e));
 
             document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
@@ -97,7 +103,8 @@ class DashboardController extends window.grindx.controllers.BaseController {
             window.addEventListener('message', (e) => {
                 if (e.data === 'sidebar-update') this.loadDynamicMenu();
                 if (e.data === 'profile-saved') this.loadCurrentUserProfile();
-                if (e.data === 'layout-changed') this.applyLayoutPreference();
+                if (e.data === 'layout-changed') this._applyLayoutForDevice();
+                if (e.data === 'layout-mobile-changed') this._applyLayoutForDevice();
             });
 
             // Logo click handlers using event delegation
@@ -784,10 +791,12 @@ class DashboardController extends window.grindx.controllers.BaseController {
         alert('Skin aplicada permanentemente!');
     }
 
-    applyLayoutPreference(preference) {
-        const mode = preference || window.grindx.storage.get('grindx_layout') || 'topbar';
+    _applyLayoutForDevice() {
+        const isMobile = window.innerWidth < 768;
+        const prefKey = isMobile ? 'grindx_layout_mobile' : 'grindx_layout';
+        const profileKey = isMobile ? 'layout_mobile_preference' : 'layout_preference';
+        const mode = this.user?.[profileKey] || window.grindx.storage.get(prefKey) || 'topbar';
         if (!mode) return;
-        window.grindx.storage.set('grindx_layout', mode);
         const validMode = ['sidebar', 'topbar'].includes(mode) ? mode : 'topbar';
         document.documentElement.classList.remove('layout-sidebar', 'layout-topbar');
         document.documentElement.classList.add(`layout-${validMode}`);

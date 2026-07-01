@@ -46,6 +46,11 @@ class Usuario(IamBase):
         nullable=True,
         comment="Preferência de layout: sidebar, topbar ou null (padrão)",
     )
+    layout_mobile_preference: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
+        comment="Preferência de layout mobile: sidebar, topbar ou null (padrão)",
+    )
     codigo: Mapped[str | None] = mapped_column(
         String(50), nullable=True, comment="Código do funcionário"
     )
