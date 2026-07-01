@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.53.0 (2026-07-01)
+
+### Features
+
+- Add telefone and celular fields with masks to profile
+  ([`113405e`](https://github.com/TyrGunllod/GrindX/commit/113405ebaa79c033227f7feb79d96f9e7f63e8df))
+
+
 ## v1.52.0 (2026-07-01)
 
 ### Features
