@@ -191,6 +191,8 @@ def update_me(
         endereco=dados.endereco,
         numero=dados.numero,
         cep=dados.cep,
+        telefone=dados.telefone,
+        celular=dados.celular,
     )
     logger.info(
         "perfil_atualizado_via_api",

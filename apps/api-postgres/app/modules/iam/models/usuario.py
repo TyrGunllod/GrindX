@@ -69,6 +69,12 @@ class Usuario(IamBase):
         String(20), nullable=True, comment="Número do endereço"
     )
     cep: Mapped[str | None] = mapped_column(String(10), nullable=True, comment="CEP")
+    telefone: Mapped[str | None] = mapped_column(
+        String(15), nullable=True, comment="Telefone"
+    )
+    celular: Mapped[str | None] = mapped_column(
+        String(15), nullable=True, comment="Celular"
+    )
     role: Mapped[str] = mapped_column(
         String(20),
         nullable=False,

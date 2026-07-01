@@ -33,6 +33,8 @@ class UsuarioUpdate(BaseModel):
     endereco: Optional[str] = None
     numero: Optional[str] = None
     cep: Optional[str] = None
+    telefone: Optional[str] = None
+    celular: Optional[str] = None
 
 
 class UsuarioResponse(UsuarioBase):
@@ -48,6 +50,8 @@ class UsuarioResponse(UsuarioBase):
     endereco: Optional[str] = None
     numero: Optional[str] = None
     cep: Optional[str] = None
+    telefone: Optional[str] = None
+    celular: Optional[str] = None
     criado_em: datetime
     atualizado_em: datetime
 

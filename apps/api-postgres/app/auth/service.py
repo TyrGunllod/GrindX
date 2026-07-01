@@ -212,6 +212,8 @@ class AuthService:
         endereco: str | None = None,
         numero: str | None = None,
         cep: str | None = None,
+        telefone: str | None = None,
+        celular: str | None = None,
     ) -> Usuario:
         """Atualiza o perfil do próprio usuário."""
         usuario = self.usuario_repo.buscar_por_id(user_id)
@@ -249,6 +251,10 @@ class AuthService:
             dados["numero"] = numero
         if cep is not None:
             dados["cep"] = cep
+        if telefone is not None:
+            dados["telefone"] = telefone
+        if celular is not None:
+            dados["celular"] = celular
 
         if not dados:
             return usuario

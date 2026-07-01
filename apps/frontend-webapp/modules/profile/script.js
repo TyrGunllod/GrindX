@@ -41,6 +41,8 @@
         document.getElementById('profileEndereco').value = profile.endereco || '';
         document.getElementById('profileNumero').value = profile.numero || '';
         document.getElementById('profileCep').value = formatCep(profile.cep || '');
+        document.getElementById('profileTelefone').value = formatTelefone(profile.telefone || '');
+        document.getElementById('profileCelular').value = formatCelular(profile.celular || '');
 
         const currentTheme = window.grindx.theme.theme;
         document.querySelectorAll('.toggle-option[data-theme]').forEach(btn => {
@@ -72,6 +74,23 @@
         return d.slice(0, 5) + '-' + d.slice(5);
     }
 
+    function formatFone(v, isCelular) {
+        const d = v.replace(/\D/g, '').slice(0, isCelular ? 11 : 10);
+        if (d.length < 3) return d;
+        let s = '(' + d.slice(0, 2) + ') ';
+        if (isCelular) {
+            s += d.slice(2, 7);
+            if (d.length > 7) s += '-' + d.slice(7);
+        } else {
+            s += d.slice(2, 6);
+            if (d.length > 6) s += '-' + d.slice(6);
+        }
+        return s;
+    }
+
+    function formatTelefone(v) { return formatFone(v, false); }
+    function formatCelular(v) { return formatFone(v, true); }
+
     function stripMask(v) {
         return v.replace(/\D/g, '');
     }
@@ -99,7 +118,7 @@
 
         try {
             const data = {};
-            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'classificacao', 'cpf', 'endereco', 'numero', 'cep', 'email'];
+            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'classificacao', 'cpf', 'endereco', 'numero', 'cep', 'telefone', 'celular', 'email'];
             fields.forEach(f => {
                 const el = document.getElementById('profile' + f.charAt(0).toUpperCase() + f.slice(1));
                 if (el) data[f] = el.value.trim();
@@ -107,6 +126,8 @@
 
             if (data.cpf) data.cpf = stripMask(data.cpf);
             if (data.cep) data.cep = stripMask(data.cep);
+            if (data.telefone) data.telefone = stripMask(data.telefone);
+            if (data.celular) data.celular = stripMask(data.celular);
             if (data.email === currentUser.email) delete data.email;
 
             if (Object.keys(data).length > 0) {
@@ -233,6 +254,14 @@
         const el = document.getElementById('profileCep');
         if (el.value) el.value = formatCep(el.value);
     }
+    function maskTelefoneOnBlur() {
+        const el = document.getElementById('profileTelefone');
+        if (el.value) el.value = formatTelefone(el.value);
+    }
+    function maskCelularOnBlur() {
+        const el = document.getElementById('profileCelular');
+        if (el.value) el.value = formatCelular(el.value);
+    }
     function unmaskOnFocus(el) {
         el.value = stripMask(el.value);
     }
@@ -263,10 +292,16 @@
 
         const cpfEl = document.getElementById('profileCpf');
         const cepEl = document.getElementById('profileCep');
+        const telEl = document.getElementById('profileTelefone');
+        const celEl = document.getElementById('profileCelular');
         cpfEl.addEventListener('blur', maskCpfOnBlur);
         cepEl.addEventListener('blur', maskCepOnBlur);
+        telEl.addEventListener('blur', maskTelefoneOnBlur);
+        celEl.addEventListener('blur', maskCelularOnBlur);
         cpfEl.addEventListener('focus', () => unmaskOnFocus(cpfEl));
         cepEl.addEventListener('focus', () => unmaskOnFocus(cepEl));
+        telEl.addEventListener('focus', () => unmaskOnFocus(telEl));
+        celEl.addEventListener('focus', () => unmaskOnFocus(celEl));
 
         document.getElementById('profileCbo').addEventListener('blur', lookupCbo);
 
