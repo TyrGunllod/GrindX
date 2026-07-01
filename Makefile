@@ -3,7 +3,7 @@
 # ==========================================
 
 .PHONY: venv build up down logs images \
-        dev-postgres dev-sqlserver dev-frontend dev-all dev-kill-port dev-external \
+        dev-postgres dev-sqlserver dev-frontend dev-frontend-https dev-all dev-kill-port dev-external \
         migrate seed \
         test-postgres test-sqlserver test-shared test-root test-all \
         lint format clean volumes deploy
@@ -60,6 +60,24 @@ ifeq ($(OS),Windows_NT)
 else
 	@echo "Iniciando Frontend na porta 8101..."
 	$(PY) -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0
+endif
+
+dev-frontend-https:
+ifeq ($(OS),Windows_NT)
+	@echo "Iniciando Frontend com HTTPS na porta 443..."
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev-https.ps1
+else
+	@echo "Iniciando Frontend com HTTPS na porta 443..."
+	@cd apps/frontend-webapp && $(PY) -c "
+import http.server, ssl, os
+httpd = http.server.HTTPServer(('0.0.0.0', 443), http.server.SimpleHTTPRequestHandler)
+httpd.socket = ssl.wrap_socket(httpd.socket,
+    certfile=os.path.abspath('../../.certs/dev-cert.pem'),
+    keyfile=os.path.abspath('../../.certs/dev-key.pem'),
+    server_side=True)
+print('Servindo frontend em https://localhost')
+httpd.serve_forever()
+"
 endif
 
 dev-all:
