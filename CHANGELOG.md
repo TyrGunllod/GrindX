@@ -2,6 +2,38 @@
 
 <!-- version list -->
 
+## v1.43.0 (2026-07-01)
+
+### Code Style
+
+- Format test_protheus.py with ruff
+  ([`4e00ef8`](https://github.com/TyrGunllod/GrindX/commit/4e00ef8a02e0bb30d21e65443aa36d425bd9ee47))
+
+### Documentation
+
+- Add PWA implementation plan
+  ([`88d386a`](https://github.com/TyrGunllod/GrindX/commit/88d386a600ba4971ca174f345cd4551595714439))
+
+### Features
+
+- Add PWA icons 192x192 and 512x512
+  ([`24803ad`](https://github.com/TyrGunllod/GrindX/commit/24803adf981f74cfbeabae49ea4ebf871272669f))
+
+- Add service worker with Network First + Cache First strategies
+  ([`421b7ef`](https://github.com/TyrGunllod/GrindX/commit/421b7ef68ddcc835fbb9516481448e2cc4d553d6))
+
+- Register service worker and add iOS PWA meta tags
+  ([`1404040`](https://github.com/TyrGunllod/GrindX/commit/140404001cff49e5879f2d3de36da811ec9d325e))
+
+- Update manifest with 192x192 and 512x512 icons, change start_url to dashboard
+  ([`263eb91`](https://github.com/TyrGunllod/GrindX/commit/263eb91a30766bd4014411834a04c333e7d66343))
+
+### Refactoring
+
+- Remove modo param, always use LIKE %texto% for descricao search
+  ([`ea4d10e`](https://github.com/TyrGunllod/GrindX/commit/ea4d10e2a301233eca26d7b0c8eb125e4adc73f5))
+
+
 ## v1.42.1 (2026-06-30)
 
 ### Bug Fixes
