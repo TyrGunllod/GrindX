@@ -2,6 +2,23 @@
 
 <!-- version list -->
 
+## v1.49.0 (2026-07-01)
+
+### Bug Fixes
+
+- Add HTTPS origins to CORS and CSP for dev HTTPS support
+  ([`179d9ad`](https://github.com/TyrGunllod/GrindX/commit/179d9ad030ea3ce4c7e4457a512bbd5cfc4ac6e3))
+
+- Remove trailing CRLF line in config.py to pass ruff format check
+  ([`99b7746`](https://github.com/TyrGunllod/GrindX/commit/99b7746238df634fe92588dfb613ac7e8963d000))
+
+### Features
+
+- Add profile fields (codigo, cbo, departamento, cargo, cpf, endereco, cep) and per-card save
+  buttons
+  ([`c775d4b`](https://github.com/TyrGunllod/GrindX/commit/c775d4b51bd22db44ab5b467f11ad7318e7dde00))
+
+
 ## v1.48.0 (2026-07-01)
 
 ### Bug Fixes
