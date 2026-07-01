@@ -137,9 +137,12 @@ class Settings(BaseSettings):
                 "http://localhost:3000",
                 "http://localhost:8101",
                 "http://127.0.0.1:8101",
+                "https://localhost:8443",
+                "https://127.0.0.1:8443",
             ]
             if self.DEV_NETWORK_IP:
                 dev_origins.append(f"http://{self.DEV_NETWORK_IP}:8101")
+                dev_origins.append(f"https://{self.DEV_NETWORK_IP}:8443")
             # Mescla com o que veio do CORS_ORIGINS (evita duplicatas)
             merged = list(dict.fromkeys(parsed + dev_origins))
             return merged
@@ -151,22 +154,21 @@ class Settings(BaseSettings):
         """URLs permitidas no CSP connect-src."""
         if self.PROXY_MODE:
             return ["'self'"]
-        srcs = ["'self'", "http://localhost:8001", "http://localhost:8002"]
+        srcs = ["'self'", "http://localhost:8001", "http://localhost:8002", "https://localhost:8001", "https://localhost:8002"]
         if self.DEV_NETWORK_IP:
             srcs.append(f"http://{self.DEV_NETWORK_IP}:8001")
             srcs.append(f"http://{self.DEV_NETWORK_IP}:8002")
+            srcs.append(f"https://{self.DEV_NETWORK_IP}:8001")
+            srcs.append(f"https://{self.DEV_NETWORK_IP}:8002")
         # Adiciona todos os IPs de CORS_ORIGINS nas portas da API
         if not self.is_production:
             for origin in self.allowed_origins_list:
-                if (
-                    origin.startswith("http://")
-                    and "localhost" not in origin
-                    and "127.0.0.1" not in origin
-                ):
-                    host = origin.split("//")[1].rsplit(":", 1)[0]
-                    if host:
-                        srcs.append(f"http://{host}:8001")
-                        srcs.append(f"http://{host}:8002")
+                host = origin.split("//")[1].rsplit(":", 1)[0] if "//" in origin else None
+                if host and "localhost" not in host and "127.0.0.1" not in host:
+                    srcs.append(f"http://{host}:8001")
+                    srcs.append(f"http://{host}:8002")
+                    srcs.append(f"https://{host}:8001")
+                    srcs.append(f"https://{host}:8002")
         return list(dict.fromkeys(srcs))
 
     model_config = SettingsConfigDict(
