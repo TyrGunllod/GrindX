@@ -258,45 +258,6 @@
     color: var(--text-main);
 }
 
-.zoom-controls {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    padding: 2px 8px;
-    background: var(--bg-card);
-    border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0;
-}
-
-.zoom-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 0.75rem;
-    border-radius: 4px;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s, color 0.15s;
-}
-
-.zoom-btn:hover {
-    background: var(--bg-hover);
-    color: var(--text-main);
-}
-
-.zoom-level {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    min-width: 36px;
-    text-align: center;
-    user-select: none;
-}
-
 .iframe-zoom-wrapper {
     overflow: auto;
     width: 100%;

@@ -11,7 +11,8 @@
 <body>
     <div class="module-page">
         <div class="profile-container">
-            <div class="profile-card">
+
+            <div class="profile-card" id="profileDataCard">
                 <h2><i class="fas fa-user-circle"></i> Meus Dados</h2>
                 <form id="profileForm">
                     <div class="form-row">
@@ -28,16 +29,54 @@
                         <label>Nome Completo</label>
                         <input type="text" id="profileName" class="form-control" disabled>
                     </div>
+
+                    <hr class="field-divider">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profileCodigo">Código</label>
+                            <input type="text" id="profileCodigo" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileCbo">C.B.O</label>
+                            <input type="text" id="profileCbo" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profileDepartamento">Departamento</label>
+                            <input type="text" id="profileDepartamento" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileCargo">Cargo</label>
+                            <input type="text" id="profileCargo" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profileCpf">CPF</label>
+                            <input type="text" id="profileCpf" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileCep">CEP</label>
+                            <input type="text" id="profileCep" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileEndereco">Endereço</label>
+                        <input type="text" id="profileEndereco" class="form-control">
+                    </div>
                     <div class="form-group">
                         <label for="profileEmail">E-mail</label>
                         <input type="email" id="profileEmail" class="form-control" required>
                         <span class="field-error" id="emailError" style="display:none;"></span>
                     </div>
                 </form>
+                <button class="btn btn-primary card-save-btn" id="saveProfileBtn"><i class="fas fa-save"></i> Salvar</button>
             </div>
 
             <div class="profile-card-row">
-                <div class="profile-card">
+                <div class="profile-card" id="passwordCard">
                     <h2><i class="fas fa-key"></i> Alterar Senha</h2>
                     <form id="passwordForm">
                         <div class="form-group">
@@ -54,9 +93,10 @@
                         </div>
                         <span class="field-error" id="passwordError" style="display:none;"></span>
                     </form>
+                    <button class="btn btn-primary card-save-btn" id="savePasswordBtn"><i class="fas fa-save"></i> Salvar</button>
                 </div>
 
-                <div class="profile-card">
+                <div class="profile-card" id="preferencesCard">
                     <h2><i class="fas fa-palette"></i> Preferências</h2>
                     <div class="form-group">
                         <label>Tema</label>
@@ -81,12 +121,10 @@
                         </div>
                         <small class="form-hint">Topbar mostra navegação horizontal com mais espaço para iframes.</small>
                     </div>
+                    <button class="btn btn-primary card-save-btn" id="savePreferencesBtn"><i class="fas fa-save"></i> Salvar</button>
                 </div>
             </div>
 
-            <div class="profile-actions">
-                <button id="saveProfileBtn" class="btn btn-primary"><i class="fas fa-save"></i> <span class="hide-mobile">Salvar Alterações</span></button>
-            </div>
         </div>
     </div>
 

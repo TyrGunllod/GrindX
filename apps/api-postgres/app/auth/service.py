@@ -203,6 +203,13 @@ class AuthService:
         nome_completo: str | None = None,
         theme_preference: str | None = None,
         layout_preference: str | None = None,
+        codigo: str | None = None,
+        cbo: str | None = None,
+        departamento: str | None = None,
+        cargo: str | None = None,
+        cpf: str | None = None,
+        endereco: str | None = None,
+        cep: str | None = None,
     ) -> Usuario:
         """Atualiza o perfil do próprio usuário."""
         usuario = self.usuario_repo.buscar_por_id(user_id)
@@ -222,6 +229,20 @@ class AuthService:
             dados["theme_preference"] = theme_preference
         if layout_preference is not None:
             dados["layout_preference"] = layout_preference
+        if codigo is not None:
+            dados["codigo"] = codigo
+        if cbo is not None:
+            dados["cbo"] = cbo
+        if departamento is not None:
+            dados["departamento"] = departamento
+        if cargo is not None:
+            dados["cargo"] = cargo
+        if cpf is not None:
+            dados["cpf"] = cpf
+        if endereco is not None:
+            dados["endereco"] = endereco
+        if cep is not None:
+            dados["cep"] = cep
 
         if not dados:
             return usuario

@@ -32,6 +32,13 @@
         document.getElementById('profileRole').value = formatRole(profile.role);
         document.getElementById('profileName').value = profile.nome_completo || '';
         document.getElementById('profileEmail').value = profile.email || '';
+        document.getElementById('profileCodigo').value = profile.codigo || '';
+        document.getElementById('profileCbo').value = profile.cbo || '';
+        document.getElementById('profileDepartamento').value = profile.departamento || '';
+        document.getElementById('profileCargo').value = profile.cargo || '';
+        document.getElementById('profileCpf').value = profile.cpf || '';
+        document.getElementById('profileEndereco').value = profile.endereco || '';
+        document.getElementById('profileCep').value = profile.cep || '';
 
         const currentTheme = window.grindx.theme.theme;
         document.querySelectorAll('.toggle-option[data-theme]').forEach(btn => {
@@ -57,47 +64,101 @@
         }
     }
 
-    async function handleSave() {
-        const saveBtn = document.getElementById('saveProfileBtn');
-        saveBtn.disabled = true;
-        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+    function setLoading(btnId, loading) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        btn.disabled = loading;
+        btn.innerHTML = loading
+            ? '<i class="fas fa-spinner fa-spin"></i> Salvando...'
+            : '<i class="fas fa-save"></i> Salvar';
+    }
 
+    async function saveProfile() {
+        setLoading('saveProfileBtn', true);
         showError('emailError', '');
+
+        try {
+            const data = {};
+            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'cpf', 'endereco', 'cep', 'email'];
+            fields.forEach(f => {
+                const el = document.getElementById('profile' + f.charAt(0).toUpperCase() + f.slice(1));
+                if (el) data[f] = el.value.trim();
+            });
+
+            if (data.email === currentUser.email) delete data.email;
+
+            if (Object.keys(data).length > 0) {
+                await window.grindx.api.put('/auth/me', data);
+                Object.assign(currentUser, data);
+            }
+
+            window.parent.postMessage('profile-saved', '*');
+            showToast('Dados salvos com sucesso!', 'success');
+        } catch (err) {
+            const msg = err.message || 'Erro ao salvar dados.';
+            if (msg.toLowerCase().includes('email') || msg.toLowerCase().includes('e-mail')) {
+                showError('emailError', msg);
+            } else {
+                showToast(msg, 'error');
+            }
+        } finally {
+            setLoading('saveProfileBtn', false);
+        }
+    }
+
+    async function savePassword() {
+        setLoading('savePasswordBtn', true);
         showError('passwordError', '');
 
         try {
-            const newEmail = document.getElementById('profileEmail').value.trim();
-            if (newEmail !== currentUser.email) {
-                await window.grindx.api.put('/auth/me', { email: newEmail });
-                currentUser.email = newEmail;
-            }
-
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
-            if (currentPassword || newPassword || confirmPassword) {
-                if (newPassword !== confirmPassword) {
-                    showError('passwordError', 'Nova senha e confirmação não conferem.');
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
-                    return;
-                }
-                if (newPassword.length < 6) {
-                    showError('passwordError', 'Nova senha deve ter no mínimo 6 caracteres.');
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
-                    return;
-                }
-                await window.grindx.api.post('/auth/change-password', {
-                    current_password: currentPassword,
-                    new_password: newPassword,
-                });
-                document.getElementById('passwordForm').reset();
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showError('passwordError', 'Preencha todos os campos de senha.');
+                setLoading('savePasswordBtn', false);
+                return;
             }
 
-            const selectedTheme = document.querySelector('.toggle-option[data-theme].active')?.dataset.theme;
+            if (newPassword !== confirmPassword) {
+                showError('passwordError', 'Nova senha e confirmação não conferem.');
+                setLoading('savePasswordBtn', false);
+                return;
+            }
+            if (newPassword.length < 6) {
+                showError('passwordError', 'Nova senha deve ter no mínimo 6 caracteres.');
+                setLoading('savePasswordBtn', false);
+                return;
+            }
+
+            await window.grindx.api.post('/auth/change-password', {
+                current_password: currentPassword,
+                new_password: newPassword,
+            });
+
+            document.getElementById('passwordForm').reset();
+            window.parent.postMessage('profile-saved', '*');
+            showToast('Senha alterada com sucesso!', 'success');
+        } catch (err) {
+            const msg = err.message || 'Erro ao alterar senha.';
+            if (msg.toLowerCase().includes('senha') || msg.toLowerCase().includes('password')) {
+                showError('passwordError', msg);
+            } else {
+                showToast(msg, 'error');
+            }
+        } finally {
+            setLoading('savePasswordBtn', false);
+        }
+    }
+
+    async function savePreferences() {
+        setLoading('savePreferencesBtn', true);
+
+        try {
             const updateData = {};
+
+            const selectedTheme = document.querySelector('.toggle-option[data-theme].active')?.dataset.theme;
             if (selectedTheme && selectedTheme !== window.grindx.theme.theme) {
                 window.grindx.theme.theme = selectedTheme;
                 window.grindx.storage.set('grindx_theme', selectedTheme);
@@ -119,19 +180,11 @@
             }
 
             window.parent.postMessage('profile-saved', '*');
-            showToast('Alterações salvas com sucesso!', 'success');
+            showToast('Preferências salvas com sucesso!', 'success');
         } catch (err) {
-            const msg = err.message || 'Erro ao salvar alterações.';
-            if (msg.toLowerCase().includes('email') || msg.toLowerCase().includes('e-mail')) {
-                showError('emailError', msg);
-            } else if (msg.toLowerCase().includes('senha') || msg.toLowerCase().includes('password')) {
-                showError('passwordError', msg);
-            } else {
-                showToast(msg, 'error');
-            }
+            showToast(err.message || 'Erro ao salvar preferências.', 'error');
         } finally {
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+            setLoading('savePreferencesBtn', false);
         }
     }
 
@@ -151,7 +204,9 @@
     }
 
     function setupEvents() {
-        document.getElementById('saveProfileBtn').addEventListener('click', handleSave);
+        document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+        document.getElementById('savePasswordBtn').addEventListener('click', savePassword);
+        document.getElementById('savePreferencesBtn').addEventListener('click', savePreferences);
 
         document.querySelectorAll('.toggle-option').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -161,11 +216,20 @@
             });
         });
 
-        document.querySelectorAll('input').forEach(input => {
+        document.querySelectorAll('#profileForm input').forEach(input => {
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    handleSave();
+                    saveProfile();
+                }
+            });
+        });
+
+        document.querySelectorAll('#passwordForm input').forEach(input => {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    savePassword();
                 }
             });
         });

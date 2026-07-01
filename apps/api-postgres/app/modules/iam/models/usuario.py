@@ -46,6 +46,21 @@ class Usuario(IamBase):
         nullable=True,
         comment="Preferência de layout: sidebar, topbar ou null (padrão)",
     )
+    codigo: Mapped[str | None] = mapped_column(
+        String(50), nullable=True, comment="Código do funcionário"
+    )
+    cbo: Mapped[str | None] = mapped_column(String(20), nullable=True, comment="C.B.O")
+    departamento: Mapped[str | None] = mapped_column(
+        String(100), nullable=True, comment="Departamento"
+    )
+    cargo: Mapped[str | None] = mapped_column(
+        String(100), nullable=True, comment="Cargo"
+    )
+    cpf: Mapped[str | None] = mapped_column(String(14), nullable=True, comment="CPF")
+    endereco: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, comment="Endereço"
+    )
+    cep: Mapped[str | None] = mapped_column(String(10), nullable=True, comment="CEP")
     role: Mapped[str] = mapped_column(
         String(20),
         nullable=False,

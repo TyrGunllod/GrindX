@@ -77,9 +77,11 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
             document.getElementById('toggleCollapse')?.addEventListener('click', () => this.toggleSidebarCollapse());
 
-            document.getElementById('zoomIn')?.addEventListener('click', () => this.zoomIn());
-            document.getElementById('zoomOut')?.addEventListener('click', () => this.zoomOut());
-            document.getElementById('zoomReset')?.addEventListener('click', () => this.zoomReset());
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'PageUp') { e.preventDefault(); this.zoomIn(); }
+                else if (e.key === 'PageDown') { e.preventDefault(); this.zoomOut(); }
+                else if (e.key === 'Home') { e.preventDefault(); this.zoomReset(); }
+            });
 
             // Preview banner events
             document.getElementById('applyPermanentBtn')?.addEventListener('click', () => this.applyPreviewSkinPermanently());
@@ -395,8 +397,6 @@ class DashboardController extends window.grindx.controllers.BaseController {
          if (!url) return;
          this.showLoader(true);
          this.zoomLevel = 1;
-         document.getElementById('zoomControls').style.display = '';
-         document.getElementById('zoomLevel').textContent = '100%';
 
          const wrapper = document.createElement('div');
          wrapper.className = 'iframe-zoom-wrapper';
@@ -435,8 +435,6 @@ class DashboardController extends window.grindx.controllers.BaseController {
          if (!wrapper) return;
          const iframe = wrapper.querySelector('iframe');
          if (!iframe) return;
-         const pct = Math.round(this.zoomLevel * 100);
-         document.getElementById('zoomLevel').textContent = pct + '%';
          const w = 100 / this.zoomLevel;
          const h = 100 / this.zoomLevel;
          wrapper.style.width = w + '%';
