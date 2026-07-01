@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.44.0 (2026-07-01)
+
+### Features
+
+- Place preferences card beside change password card in profile
+  ([`326e98b`](https://github.com/TyrGunllod/GrindX/commit/326e98b7d90591ee7334abc0d07983e279e6d162))
+
+
 ## v1.43.0 (2026-07-01)
 
 ### Code Style
