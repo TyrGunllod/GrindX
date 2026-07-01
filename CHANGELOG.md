@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v1.46.0 (2026-07-01)
+
+### Documentation
+
+- Update README with dev-frontend-https make target
+  ([`a1e7a3b`](https://github.com/TyrGunllod/GrindX/commit/a1e7a3bda268815654df0ee8032c933d956e06de))
+
+- Update README, API.md, SETUP.md, DEPLOYMENT.md with PWA, HTTPS and Protheus endpoints
+  ([`a20f0ef`](https://github.com/TyrGunllod/GrindX/commit/a20f0ef4e5610148955e61ef9c1150161fdf0f08))
+
+### Features
+
+- Add dev-frontend-https make target
+  ([`b107889`](https://github.com/TyrGunllod/GrindX/commit/b107889ce9abef77e9ba3263466f5df3e6ba44bc))
+
+
 ## v1.45.0 (2026-07-01)
 
 ### Chores
