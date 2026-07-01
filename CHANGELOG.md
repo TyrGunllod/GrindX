@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.55.0 (2026-07-01)
+
+### Features
+
+- Separate Desktop and Mobile layout preferences in profile
+  ([`7e85c2f`](https://github.com/TyrGunllod/GrindX/commit/7e85c2f1d35ecdbde0c5bc4b91591d03166ee71b))
+
+
 ## v1.54.0 (2026-07-01)
 
 ### Features
