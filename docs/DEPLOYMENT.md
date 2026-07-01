@@ -47,6 +47,21 @@ Workflow único em `.github/workflows/release.yml` — executa em push para `mai
 
 ---
 
+## HTTPS no Deploy
+
+O nginx do frontend suporta TLS com redirect automático HTTP→HTTPS.
+
+1. Obter certificados (ex: Let's Encrypt com certbot)
+2. Montar certificados no container via `compose.yaml`:
+   ```yaml
+   volumes:
+     - /caminho/cert.pem:/etc/nginx/certs/dev-cert.pem:ro,z
+     - /caminho/key.pem:/etc/nginx/certs/dev-key.pem:ro,z
+   ```
+3. O `nginx.conf` já possui bloco SSL na porta 443. Apenas substitua os paths dos certificados.
+
+---
+
 ## Variáveis de Ambiente em Produção
 
 **Nunca usar** `.env` de desenvolvimento. Injetar via secrets do container/plataforma.

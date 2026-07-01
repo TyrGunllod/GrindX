@@ -420,6 +420,38 @@ Cria um tema a partir de um template existente.
 
 ---
 
+## Produtos Protheus (api-sqlserver)
+
+Endpoints read-only da `api-sqlserver` para consulta de produtos na tabela `SB1010` do Protheus. Requerem token JWT (válido da `api-postgres`).
+
+Base URL: `http://localhost:8001/v1/produtos`
+
+### `GET /v1/produtos/por-codigo?codigo=XXXX`
+
+Busca produtos pelo código (`B1_COD`). Mínimo **4 caracteres**. Retorna todos que **iniciam** com o valor informado.
+
+**Response 200:**
+```json
+[{"codigo": "ABCD01", "descricao": "Produto Teste"}]
+```
+
+**422:** `codigo` com menos de 4 caracteres.
+
+### `GET /v1/produtos/por-descricao?descricao=XXXX`
+
+Busca produtos pela descrição (`B1_DESC`). Mínimo **4 caracteres**. Usa `LIKE %texto%` (busca por trecho).
+
+**Parâmetros:**
+- `descricao` (obrigatório, min 4) — texto da descrição
+- Sem parâmetro `modo` — sempre busca por trecho
+
+**Response 200:**
+```json
+[{"codigo": "001", "descricao": "Produto Teste Um"}]
+```
+
+---
+
 ## Importação de Módulos
 
 Endpoints para escanear e importar módulos frontend a partir de arquivos ZIP. Requer perfil `admin`.

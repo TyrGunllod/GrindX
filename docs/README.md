@@ -51,7 +51,8 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 
 | Serviço | URL | Porta |
 |---------|-----|-------|
-| Frontend | `http://localhost:8101` | 8101 |
+| Frontend (HTTP) | `http://localhost:8101` | 8101 |
+| Frontend (HTTPS) | `https://localhost` | 443 |
 | API Postgres | `http://localhost:8002` | 8002 |
 | API SQL Server | `http://localhost:8001` | 8001 |
 | Swagger UI | `http://localhost:8002/v1/docs` | 8002 |

@@ -2,7 +2,7 @@
 
 # GrindX — Sistema de Gestão Integrado (Monorepo)
 
-O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado em escalabilidade, segurança e experiência do usuário premium.
+O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado em escalabilidade, segurança e experiência do usuário premium. Suporta **PWA** (instalável como app) e **HTTPS** em desenvolvimento e produção.
 
 ---
 
@@ -19,12 +19,12 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 ### Backend
 
 - **`api-postgres` (porta 8002):** API principal em FastAPI. Gerencia autenticação JWT, RBAC, usuários, temas/skins, estrutura do portal e importação de módulos.
-- **`api-sqlserver` (porta 8001):** API somente leitura para integração com bases SQL Server legadas. Valida tokens JWT emitidos pela `api-postgres`.
+- **`api-sqlserver` (porta 8001):** API somente leitura para integração com bases SQL Server legadas (Protheus). Endpoints: `/health`, `/v1/produtos/por-codigo`, `/v1/produtos/por-descricao`. Valida tokens JWT emitidos pela `api-postgres`.
 - **`shared`:** Pacote Python compartilhado entre as APIs — segurança, schemas e exceções.
 
 ### Frontend
 
-- **Portal Modular (porta 8101):** Shell que gerencia navegação e carrega módulos via iframe isolado. Preparado para reverse proxy (nginx) com same-origin API e CSP estático.
+- **Portal Modular (porta 8101):** Shell que gerencia navegação e carrega módulos via iframe isolado. **PWA-ready** (service worker, manifest com ícones 192x192 e 512x512, `display: standalone`). Preparado para reverse proxy (nginx) com same-origin API, CSP estático e HTTPS.
 - **Módulos:** `home`, `users`, `structure`, `admin-skins`, `importer`, `profile` — cada um é standalone e testável independentemente.
 - **Design System:** Glassmorphism + tokens CSS + `UIFactory` para consistência absoluta.
 
@@ -68,6 +68,22 @@ python -m http.server 8101 --directory apps/frontend-webapp
 
 Acesse em `http://localhost:8101`.
 
+### HTTPS (Desenvolvimento Local)
+
+```powershell
+# 1. Instalar mkcert (uma vez)
+winget install mkcert
+mkcert -install
+
+# 2. Gerar certificados
+mkcert -key-file .certs/dev-key.pem -cert-file .certs/dev-cert.pem localhost 127.0.0.1 ::1
+
+# 3. Rodar com HTTPS
+.\scripts\dev-https.ps1
+```
+
+Acesse em `https://localhost`.
+
 ### Credenciais de Teste
 
 | Usuário | Senha | Perfil |
@@ -78,12 +94,12 @@ Acesse em `http://localhost:8101`.
 
 ## Testes
 
-Suite com 251+ testes cobrindo unitários, integração e validação do monorepo.
+Suite com 270+ testes cobrindo unitários, integração e validação do monorepo.
 
 | Pacote | Testes | Cobertura |
 |--------|--------|-----------|
 | `api-postgres` | 190 | Auth, RBAC, temas, usuários, portal, segurança, cache, importação, PDF |
-| `api-sqlserver` | 11 | Health check e cliente SQL Server |
+| `api-sqlserver` | 20 | Health check, clientes e consulta de produtos Protheus |
 | `shared` | 26 | Permissões RBAC |
 | `tests/` (raiz) | 24 | Validação de pacotes e JWT cross-API |
 

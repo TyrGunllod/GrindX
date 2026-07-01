@@ -291,6 +291,59 @@ set PYTHONPATH=D:\_Projetos\GrindX\packages
 
 - O workflow usa variável `RATE_LIMIT_REQUESTS=100` — valores baixos podem causar flaky tests; aumentar se necessário.
 
+## PWA
+
+O frontend é um **Progressive Web App** instalável.
+
+**Service worker:** `apps/frontend-webapp/sw.js` com estratégia Cache First para assets estáticos e Network First para páginas e API.
+
+**Manifest:** `assets/site.webmanifest` com `display: standalone`, ícones 32x32, 180x180, 192x192 e 512x512.
+
+Para testar a instalação, acesse o frontend via HTTPS (necessário para service workers em dispositivos reais).
+
+---
+
+## HTTPS (Desenvolvimento Local)
+
+### Windows (recomendado)
+
+```powershell
+# 1. Instalar mkcert (uma vez)
+winget install mkcert
+
+# 2. Criar CA local confiável
+mkcert -install
+
+# 3. Gerar certificados para dev
+cd <projeto>
+mkcert -key-file .certs/dev-key.pem -cert-file .certs/dev-cert.pem localhost 127.0.0.1 ::1
+
+# 4. Rodar tudo com HTTPS
+.\scripts\dev-https.ps1
+```
+
+Acesse `https://localhost` (frontend) e `https://localhost:8002/v1/docs` (Swagger).
+
+### WSL / Ubuntu Server
+
+```bash
+# 1. Instalar mkcert
+sudo apt install -y libnss3-tools
+curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+chmod +x mkcert-v*-linux-amd64
+sudo mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+
+# 2. CA local + certificados
+mkcert -install
+mkcert -key-file .certs/dev-key.pem -cert-file .certs/dev-cert.pem localhost 127.0.0.1 ::1
+```
+
+### Produção
+
+No servidor, usar nginx com certificados reais (Let's Encrypt). O `nginx.conf` do frontend já possui bloco SSL configurado. Montar os certificados via volume no `compose.yaml`.
+
+---
+
 ### APIs não sobem — portas ocupadas (WSL/Windows)
 
 Se as portas 8001, 8002 ou 8101 estiverem ocupadas, pode ser conflito com `netsh interface portproxy` do Windows (`svchost.exe iphlpsvc`):
