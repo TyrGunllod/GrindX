@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.47.0 (2026-07-01)
+
+### Documentation
+
+- Update README with make dev-https command
+  ([`64fd1ba`](https://github.com/TyrGunllod/GrindX/commit/64fd1ba4b4fa0daa1d35253261ddd9df34d065f5))
+
+### Features
+
+- Add dev-https.sh for Linux and update make target to run API + frontend with HTTPS
+  ([`5399798`](https://github.com/TyrGunllod/GrindX/commit/53997986d389a94d78eb5ea69f2ac1d0db0c335a))
+
+
 ## v1.46.1 (2026-07-01)
 
 ### Bug Fixes
