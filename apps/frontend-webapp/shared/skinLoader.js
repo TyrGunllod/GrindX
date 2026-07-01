@@ -65,7 +65,7 @@ class SkinLoader {
         if (!path) return path;
         if (path.startsWith('http://') || path.startsWith('https://')) return path;
         const apiUrl = window.grindx?.config?.API_BASE_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? `http://${window.location.hostname}:8002/v1`
+            ? `${window.location.protocol}//${window.location.hostname}:8002/v1`
             : `/v1`);
         const base = apiUrl.replace(/\/v1$/, '');
         return base + path;
@@ -153,7 +153,7 @@ class SkinLoader {
             const token = window.grindx?.session?.getToken();
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
             const baseUrl = window.grindx?.config?.API_BASE_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? `http://${window.location.hostname}:8002/v1`
+                ? `${window.location.protocol}//${window.location.hostname}:8002/v1`
                 : `/v1`);
             const resp = await fetch(`${baseUrl}/themes/active`, { headers });
             if (!resp.ok) return null;
