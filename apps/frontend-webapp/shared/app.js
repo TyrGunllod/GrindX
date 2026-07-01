@@ -255,3 +255,9 @@ const grindx = {
 };
 
 window.grindx = grindx;
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+    });
+}
