@@ -316,8 +316,7 @@
         const cbo = cboEl.value.replace(/\D/g, '').slice(0, 6);
         if (cbo.length < 4) return;
         try {
-            const res = await fetch('https://sistemas.unasus.gov.br/ws_cbo/cbo.php?cbo=' + cbo);
-            const xml = await res.text();
+            const xml = await window.grindx.api.get('/cbo/' + cbo);
             const parser = new DOMParser();
             const doc = parser.parseFromString(xml, 'text/xml');
             const desc = doc.querySelector('descricao');

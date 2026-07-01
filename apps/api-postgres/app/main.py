@@ -26,6 +26,7 @@ from app.core.logging import setup_logging
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_id import RequestIdMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.routers.cbo import router as cbo_router
 from app.routers.health_router import router as health_router
 from app.routers.import_router import router as import_router
 from app.routers.portal_router import router as portal_router
@@ -124,6 +125,8 @@ app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 # Routers
 # =========================================================
 
+app.include_router(cbo_router)
+app.include_router(cbo_router)
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(usuario_router)
