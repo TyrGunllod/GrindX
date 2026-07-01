@@ -12,6 +12,8 @@ FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "ap
 
 os.chdir(FRONTEND_DIR)
 httpd = http.server.HTTPServer(("0.0.0.0", PORT), http.server.SimpleHTTPRequestHandler)
-httpd.socket = ssl.wrap_socket(httpd.socket, certfile=CERT, keyfile=KEY, server_side=True)
-print(f"Servindo frontend em https://localhost:{PORT}")
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain(CERT, KEY)
+httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
+print(f"Serving frontend at https://localhost:{PORT}")
 httpd.serve_forever()
