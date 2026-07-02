@@ -188,7 +188,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                             <div class="nav-dropdown-child-container">
                                 ${childMods.map(mod => `
                                     <button class="nav-dropdown-item" data-module="${mod.slug}" data-url="${mod.url}">
-                                        <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 16)}</span>
+                                        <i class="${mod.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${mod.nome}">${trunc(mod.nome, 30)}</span>
                                     </button>
                                 `).join('')}
                             </div>
@@ -197,7 +197,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 }
                 return `
                     <button class="nav-dropdown-item" data-module="${item.slug}" data-url="${item.url}">
-                        <i class="${item.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${item.nome}">${trunc(item.nome, 16)}</span>
+                        <i class="${item.icone || 'fas fa-cube'}"></i> <span class="nav-dropdown-text" title="${item.nome}">${trunc(item.nome, 30)}</span>
                     </button>
                 `;
             }).join('');

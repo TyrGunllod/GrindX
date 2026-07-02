@@ -53,7 +53,17 @@
             const url = response.url || '';
             if (!url.endsWith('/auth/token') && !url.includes('/auth/refresh')) {
                 window.grindx.session.clear();
-                try { window.top.location.href = 'index.html'; } catch (e) { window.location.href = 'index.html'; }
+                try {
+                    const doc = window.top.document;
+                    const toast = doc.createElement('div');
+                    toast.className = 'toast toast-error';
+                    toast.textContent = 'Sessão expirada. Você será redirecionado.';
+                    toast.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;padding:16px 24px;border-radius:8px;background:var(--skin-danger,#dc2626);color:#fff;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.2);animation:fadeIn 0.3s';
+                    doc.body.appendChild(toast);
+                    setTimeout(() => { window.top.location.href = 'index.html'; }, 2000);
+                } catch (e) {
+                    window.location.href = 'index.html';
+                }
                 throw new Error('Sessão expirada. Faça login novamente.');
             }
         }
