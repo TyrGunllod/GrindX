@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.57.0 (2026-07-02)
+
+### Features
+
+- Password fields in single horizontal row with save button inline
+  ([`050ad27`](https://github.com/TyrGunllod/GrindX/commit/050ad27b5766bd61cf70a855908dad6766a1d41d))
+
+
 ## v1.56.1 (2026-07-02)
 
 ### Bug Fixes
