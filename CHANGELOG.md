@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.61.0 (2026-07-02)
+
+### Features
+
+- Add hemico icon font for FormBuilder
+  ([`f3b5b67`](https://github.com/TyrGunllod/GrindX/commit/f3b5b678203d480ca3a792eb52d91e3bc3c21146))
+
+
 ## v1.60.4 (2026-07-02)
 
 ### Performance Improvements
