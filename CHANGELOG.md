@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.63.0 (2026-07-02)
+
+### Features
+
+- Show toast before redirect on session timeout (401)
+  ([`9b22edb`](https://github.com/TyrGunllod/GrindX/commit/9b22edb28b7b4d62deb7ad6eedcc51bc97e6af5a))
+
+
 ## v1.62.2 (2026-07-02)
 
 ### Bug Fixes
