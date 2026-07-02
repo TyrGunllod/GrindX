@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.60.2 (2026-07-02)
+
+### Bug Fixes
+
+- Add missing renderTable method to AdminsController
+  ([`101be33`](https://github.com/TyrGunllod/GrindX/commit/101be333bea5d44d2e01943fa691e47410fcf096))
+
+
 ## v1.60.1 (2026-07-02)
 
 ### Bug Fixes
