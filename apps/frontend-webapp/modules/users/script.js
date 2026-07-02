@@ -82,7 +82,6 @@ class UsersController extends window.grindx.controllers.BaseController {
             this.modalController.open();
         };
         document.getElementById('btnCancel').onclick = () => this.modalController.close();
-        document.getElementById('btnCloseModal').onclick = () => this.modalController.close();
         document.getElementById('btnSave').onclick = () => this.saveUser();
 
         document.getElementById('btnCancelPermissoes').onclick = () => this.permissoesController.close();
@@ -147,6 +146,22 @@ class UsersController extends window.grindx.controllers.BaseController {
         cboEl.addEventListener('blur', () => this.lookupCbo());
         document.getElementById('searchUserCboBtn').addEventListener('click', () => this.lookupCbo());
         document.getElementById('searchUserCepBtn').addEventListener('click', () => this.lookupCep());
+
+        const focusable = document.querySelectorAll('#userForm input, #userForm select, #userForm button, .modal-dialog input');
+        focusable.forEach(el => {
+            el.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                if (el.id === 'userCbo') this.lookupCbo();
+                if (el.id === 'userCep') this.lookupCep();
+                let next = false;
+                for (const f of focusable) {
+                    if (f.disabled) continue;
+                    if (next) { f.focus(); break; }
+                    if (f === el) next = true;
+                }
+            });
+        });
     }
 
     async lookupCbo() {
