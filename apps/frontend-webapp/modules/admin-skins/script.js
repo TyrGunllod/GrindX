@@ -558,7 +558,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
     _populateFontDropdowns() {
         const customNames = this.customFonts.map(f => f.name);
-        ['fontHeading', 'fontBody'].forEach(id => {
+        ['fontHeading', 'fontBody', 'fontModule'].forEach(id => {
             const sel = document.getElementById(id);
             if (!sel) return;
             const builtIn = sel.querySelectorAll('option:not(.custom-font-option)');
