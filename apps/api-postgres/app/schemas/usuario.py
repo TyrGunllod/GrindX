@@ -14,6 +14,22 @@ class UsuarioBase(BaseModel):
 
 class UsuarioCreate(UsuarioBase):
     password: str = Field(..., min_length=6)
+    codigo: Optional[str] = None
+    cbo: Optional[str] = None
+    departamento: Optional[str] = None
+    cargo: Optional[str] = None
+    classificacao: Optional[str] = None
+    cpf: Optional[str] = None
+    rg: Optional[str] = None
+    salario: Optional[str] = None
+    endereco: Optional[str] = None
+    numero: Optional[str] = None
+    bairro: Optional[str] = None
+    cidade: Optional[str] = None
+    uf: Optional[str] = None
+    cep: Optional[str] = None
+    telefone: Optional[str] = None
+    celular: Optional[str] = None
 
 
 class UsuarioUpdate(BaseModel):

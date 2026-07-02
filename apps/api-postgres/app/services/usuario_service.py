@@ -31,6 +31,30 @@ class UsuarioService:
         if self.repo.buscar_por_email(schema.email):
             raise ConflictError(f"E-mail '{schema.email}' já está em uso")
 
+        profile_fields = [
+            "codigo",
+            "cbo",
+            "departamento",
+            "cargo",
+            "classificacao",
+            "cpf",
+            "rg",
+            "salario",
+            "endereco",
+            "numero",
+            "bairro",
+            "cidade",
+            "uf",
+            "cep",
+            "telefone",
+            "celular",
+        ]
+        extras = {
+            f: getattr(schema, f)
+            for f in profile_fields
+            if getattr(schema, f) is not None
+        }
+
         usuario = Usuario(
             username=schema.username,
             email=schema.email,
@@ -39,6 +63,7 @@ class UsuarioService:
             role=schema.role,
             ativo=schema.ativo,
             empresa_id=empresa_id,
+            **extras,
         )
         return self.repo.criar(usuario)
 
