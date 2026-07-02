@@ -329,9 +329,11 @@
             const desc = doc.querySelector('descricao');
             if (desc && desc.textContent) {
                 cargoEl.value = desc.textContent;
+            } else {
+                showToast('CBO não encontrado.', 'error');
             }
         } catch (e) {
-            // silently fail
+            showToast('Erro ao consultar CBO.', 'error');
         }
     }
 
@@ -345,8 +347,9 @@
             if (data.bairro) document.getElementById('profileBairro').value = data.bairro;
             if (data.localidade) document.getElementById('profileCidade').value = data.localidade;
             if (data.uf) document.getElementById('profileUf').value = data.uf;
+            if (!data.logradouro) showToast('CEP não encontrado.', 'error');
         } catch (e) {
-            // silently fail
+            showToast('Erro ao consultar CEP.', 'error');
         }
     }
 
