@@ -215,8 +215,9 @@
             document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
             document.getElementById('confirmPassword').value = '';
+            closeModal('passwordModal');
             window.parent.postMessage('profile-saved', '*');
-            showToast('Senha alterada com sucesso!', 'success');
+            window.parent.location.reload();
         } catch (err) {
             const msg = err.message || 'Erro ao alterar senha.';
             if (msg.toLowerCase().includes('senha') || msg.toLowerCase().includes('password')) {
@@ -264,8 +265,9 @@
                 await window.grindx.api.put('/auth/me', updateData);
             }
 
+            closeModal('preferencesModal');
             window.parent.postMessage('profile-saved', '*');
-            showToast('Preferências salvas com sucesso!', 'success');
+            window.parent.location.reload();
         } catch (err) {
             showToast(err.message || 'Erro ao salvar preferências.', 'error');
         } finally {
@@ -363,8 +365,6 @@
 
         document.getElementById('openPasswordModalBtn').addEventListener('click', () => openModal('passwordModal'));
         document.getElementById('openPreferencesModalBtn').addEventListener('click', () => openModal('preferencesModal'));
-        document.getElementById('closePasswordModal').addEventListener('click', () => closeModal('passwordModal'));
-        document.getElementById('closePreferencesModal').addEventListener('click', () => closeModal('preferencesModal'));
         document.getElementById('cancelPasswordModal').addEventListener('click', () => closeModal('passwordModal'));
         document.getElementById('cancelPreferencesModal').addEventListener('click', () => closeModal('preferencesModal'));
 
