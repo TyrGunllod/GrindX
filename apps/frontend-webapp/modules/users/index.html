@@ -65,162 +65,137 @@
             </header>
             <div class="modal-scroll">
                 <form id="userForm">
-                    <div class="user-form-card">
-                        <div class="user-form-card-header">
-                            <i class="fas fa-user-circle"></i>
-                            <span>Dados do Usuário</span>
+                    <div class="profile-card">
+                        <h2><i class="fas fa-user-circle"></i> Dados do Usuário</h2>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="userUsername">Nome de Usuário</label>
+                                <input type="text" id="userUsername" class="form-control" required minlength="3" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <label for="userRole">Perfil</label>
+                                <select id="userRole" class="form-control"></select>
+                            </div>
                         </div>
-                        <div class="user-form-body">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="userUsername">Nome de Usuário</label>
-                                    <input type="text" id="userUsername" class="form-control" required minlength="3" maxlength="50">
-                                </div>
-                                <div class="form-group">
-                                    <label for="userRole">Perfil</label>
-                                    <select id="userRole" class="form-control"></select>
+                        <div class="form-group">
+                            <label for="userNomeCompleto">Nome Completo</label>
+                            <input type="text" id="userNomeCompleto" class="form-control" required minlength="2" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">E-mail</label>
+                            <input type="email" id="userEmail" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userPassword">Senha</label>
+                            <input type="password" id="userPassword" class="form-control" minlength="6" placeholder="Mínimo 6 caracteres">
+                            <small class="form-hint" id="passwordHint">Preencha apenas se deseja alterar a senha.</small>
+                        </div>
+
+                        <hr class="field-divider">
+
+                        <div class="section-label"><i class="fas fa-briefcase"></i> Dados Profissionais</div>
+                        <div class="form-row form-row-3">
+                            <div class="form-group">
+                                <label for="userCodigo">Código</label>
+                                <input type="text" id="userCodigo" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="userCbo">C.B.O</label>
+                                <div class="input-with-btn">
+                                    <input type="text" id="userCbo" class="form-control">
+                                    <button type="button" class="btn btn-sm btn-outline search-btn" id="searchUserCboBtn" title="Buscar CBO"><i class="fas fa-search"></i></button>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="userNomeCompleto">Nome Completo</label>
-                                <input type="text" id="userNomeCompleto" class="form-control" required minlength="2" maxlength="100">
+                                <label for="userSalario">Salário Base</label>
+                                <input type="text" id="userSalario" class="form-control" inputmode="decimal">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="userDepartamento">Departamento</label>
+                            <input type="text" id="userDepartamento" class="form-control">
+                        </div>
+                        <div class="form-row form-row-cargo-class">
+                            <div class="form-group form-group-cargo">
+                                <label for="userCargo">Cargo</label>
+                                <input type="text" id="userCargo" class="form-control" readonly>
+                            </div>
+                            <div class="form-group form-group-class">
+                                <label for="userClassificacao">Classificação</label>
+                                <select id="userClassificacao" class="form-control">
+                                    <option value="">Selecione...</option>
+                                    <option value="Junior">Junior</option>
+                                    <option value="Pleno">Pleno</option>
+                                    <option value="Senior">Senior</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="field-divider">
+
+                        <div class="section-label"><i class="fas fa-id-card"></i> Documentos</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="userCpf">CPF</label>
+                                <input type="text" id="userCpf" class="form-control" maxlength="14" inputmode="numeric">
                             </div>
                             <div class="form-group">
-                                <label for="userEmail">E-mail</label>
-                                <input type="email" id="userEmail" class="form-control" required>
+                                <label for="userRg">RG</label>
+                                <input type="text" id="userRg" class="form-control" maxlength="12" inputmode="numeric">
+                            </div>
+                        </div>
+
+                        <hr class="field-divider">
+
+                        <div class="section-label"><i class="fas fa-map-marker-alt"></i> Endereço</div>
+                        <div class="form-row form-row-addr">
+                            <div class="form-group form-group-grow">
+                                <label for="userEndereco">Endereço</label>
+                                <input type="text" id="userEndereco" class="form-control" readonly>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label for="userNumero">Nº</label>
+                                <input type="text" id="userNumero" class="form-control" maxlength="6">
+                            </div>
+                            <div class="form-group form-group-cep">
+                                <label for="userCep">CEP</label>
+                                <div class="input-with-btn">
+                                    <input type="text" id="userCep" class="form-control" maxlength="9" inputmode="numeric">
+                                    <button type="button" class="btn btn-sm btn-outline search-btn" id="searchUserCepBtn" title="Buscar CEP"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row form-row-addr">
+                            <div class="form-group form-group-bairro">
+                                <label for="userBairro">Bairro</label>
+                                <input type="text" id="userBairro" class="form-control" readonly>
+                            </div>
+                            <div class="form-group form-group-cidade">
+                                <label for="userCidade">Cidade</label>
+                                <input type="text" id="userCidade" class="form-control" readonly>
+                            </div>
+                            <div class="form-group form-group-uf">
+                                <label for="userUf">UF</label>
+                                <input type="text" id="userUf" class="form-control" maxlength="2" readonly>
+                            </div>
+                        </div>
+
+                        <hr class="field-divider">
+
+                        <div class="section-label"><i class="fas fa-phone"></i> Contato</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="userTelefone">Telefone</label>
+                                <input type="text" id="userTelefone" class="form-control" maxlength="14" inputmode="numeric">
                             </div>
                             <div class="form-group">
-                                <label for="userPassword">Senha</label>
-                                <input type="password" id="userPassword" class="form-control" minlength="6" placeholder="Mínimo 6 caracteres">
-                                <small class="form-hint" id="passwordHint">Preencha apenas se deseja alterar a senha.</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="user-form-card">
-                        <div class="user-form-card-header">
-                            <i class="fas fa-briefcase"></i>
-                            <span>Dados Profissionais</span>
-                        </div>
-                        <div class="user-form-body">
-                            <div class="form-row form-row-3">
-                                <div class="form-group">
-                                    <label for="userCodigo">Código</label>
-                                    <input type="text" id="userCodigo" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="userCbo">C.B.O</label>
-                                    <div class="input-with-btn">
-                                        <input type="text" id="userCbo" class="form-control">
-                                        <button type="button" class="btn btn-sm btn-outline search-btn" id="searchUserCboBtn" title="Buscar CBO"><i class="fas fa-search"></i></button>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="userSalario">Salário Base</label>
-                                    <input type="text" id="userSalario" class="form-control" inputmode="decimal">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="userDepartamento">Departamento</label>
-                                <input type="text" id="userDepartamento" class="form-control">
-                            </div>
-                            <div class="form-row form-row-cargo-class">
-                                <div class="form-group form-group-cargo">
-                                    <label for="userCargo">Cargo</label>
-                                    <input type="text" id="userCargo" class="form-control" readonly>
-                                </div>
-                                <div class="form-group form-group-class">
-                                    <label for="userClassificacao">Classificação</label>
-                                    <select id="userClassificacao" class="form-control">
-                                        <option value="">Selecione...</option>
-                                        <option value="Junior">Junior</option>
-                                        <option value="Pleno">Pleno</option>
-                                        <option value="Senior">Senior</option>
-                                        <option value="I">I</option>
-                                        <option value="II">II</option>
-                                        <option value="III">III</option>
-                                        <option value="IV">IV</option>
-                                        <option value="V">V</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="user-form-card">
-                        <div class="user-form-card-header">
-                            <i class="fas fa-id-card"></i>
-                            <span>Documentos</span>
-                        </div>
-                        <div class="user-form-body">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="userCpf">CPF</label>
-                                    <input type="text" id="userCpf" class="form-control" maxlength="14" inputmode="numeric">
-                                </div>
-                                <div class="form-group">
-                                    <label for="userRg">RG</label>
-                                    <input type="text" id="userRg" class="form-control" maxlength="12" inputmode="numeric">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="user-form-card">
-                        <div class="user-form-card-header">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Endereço</span>
-                        </div>
-                        <div class="user-form-body">
-                            <div class="form-row form-row-addr">
-                                <div class="form-group form-group-grow">
-                                    <label for="userEndereco">Endereço</label>
-                                    <input type="text" id="userEndereco" class="form-control" readonly>
-                                </div>
-                                <div class="form-group form-group-sm">
-                                    <label for="userNumero">Nº</label>
-                                    <input type="text" id="userNumero" class="form-control" maxlength="6">
-                                </div>
-                                <div class="form-group form-group-cep">
-                                    <label for="userCep">CEP</label>
-                                    <div class="input-with-btn">
-                                        <input type="text" id="userCep" class="form-control" maxlength="9" inputmode="numeric">
-                                        <button type="button" class="btn btn-sm btn-outline search-btn" id="searchUserCepBtn" title="Buscar CEP"><i class="fas fa-search"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-row form-row-addr">
-                                <div class="form-group form-group-bairro">
-                                    <label for="userBairro">Bairro</label>
-                                    <input type="text" id="userBairro" class="form-control" readonly>
-                                </div>
-                                <div class="form-group form-group-cidade">
-                                    <label for="userCidade">Cidade</label>
-                                    <input type="text" id="userCidade" class="form-control" readonly>
-                                </div>
-                                <div class="form-group form-group-uf">
-                                    <label for="userUf">UF</label>
-                                    <input type="text" id="userUf" class="form-control" maxlength="2" readonly>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="user-form-card">
-                        <div class="user-form-card-header">
-                            <i class="fas fa-phone"></i>
-                            <span>Contato</span>
-                        </div>
-                        <div class="user-form-body">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="userTelefone">Telefone</label>
-                                    <input type="text" id="userTelefone" class="form-control" maxlength="14" inputmode="numeric">
-                                </div>
-                                <div class="form-group">
-                                    <label for="userCelular">Celular</label>
-                                    <input type="text" id="userCelular" class="form-control" maxlength="15" inputmode="numeric">
-                                </div>
+                                <label for="userCelular">Celular</label>
+                                <input type="text" id="userCelular" class="form-control" maxlength="15" inputmode="numeric">
                             </div>
                         </div>
                     </div>

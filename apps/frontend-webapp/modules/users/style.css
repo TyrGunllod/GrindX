@@ -285,7 +285,7 @@ td strong {
 }
 
 /* ==========================================
-   USER FORM MODAL (Card Layout)
+   USER FORM MODAL (Profile Card Layout)
    ========================================== */
 #userModal .modal-card-wide {
     max-width: 720px;
@@ -298,112 +298,74 @@ td strong {
     overflow-y: auto;
     flex: 1;
     min-height: 0;
-    padding: var(--space-4) var(--space-6);
+    padding: 0;
 }
 
-#userModal .modal-close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 0 var(--space-2);
-    line-height: 1;
+#userModal .modal-scroll .profile-card {
+    padding: 20px 24px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+    background: transparent;
 }
 
-#userModal .modal-close-btn:hover {
+#userModal .modal-scroll .profile-card h2 {
+    font-size: 1.05rem;
+    margin: 0 0 18px;
     color: var(--text-main);
-}
-
-.user-form-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 1rem;
-    overflow: hidden;
-    margin-bottom: var(--space-4);
-}
-
-.user-form-card-header {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
-    padding: 0.875rem 1.25rem;
-    background: var(--bg-subtle);
-    border-bottom: 1px solid var(--border-color);
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-main);
+    gap: 8px;
 }
 
-.user-form-card-header i {
-    font-size: 1rem;
+#userModal .modal-scroll .profile-card h2 i {
     color: var(--primary);
+    font-size: 1.15rem;
+}
+
+#userModal .modal-scroll .field-divider {
+    margin: 16px 0;
+    border: none;
+    border-top: 1px solid var(--border-color);
+}
+
+#userModal .modal-header {
+    padding: var(--space-4) var(--space-6);
+    border-bottom: 1px solid var(--border-color);
+}
+
+#userModal .modal-footer {
+    padding: var(--space-4) var(--space-6);
+    border-top: 1px solid var(--border-color);
+}
+
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.section-label i {
+    color: var(--primary);
+    font-size: 0.9rem;
     width: 1.25rem;
     text-align: center;
 }
 
-.user-form-body {
-    padding: 1.25rem;
-}
-
-.user-form-body .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+#userForm .form-group {
     margin-bottom: 1rem;
 }
 
-.user-form-body .form-row-3 {
-    grid-template-columns: 1fr 1fr 1fr;
-}
-
-.user-form-body .form-row-cargo-class {
-    grid-template-columns: 2fr 1fr;
-}
-
-.user-form-body .form-row-addr {
-    grid-template-columns: 1fr auto auto;
-}
-
-.user-form-body .form-group-grow {
-    grid-column: span 1;
-}
-
-.user-form-body .form-group-sm {
-    max-width: 90px;
-}
-
-.user-form-body .form-group-cep {
-    min-width: 160px;
-}
-
-.user-form-body .form-group-bairro {
-    grid-column: span 1;
-}
-
-.user-form-body .form-group-cidade {
-    grid-column: span 1;
-}
-
-.user-form-body .form-group-uf {
-    max-width: 80px;
-}
-
-.user-form-body .form-group-cargo {
-    grid-column: span 1;
-}
-
-.user-form-body .form-group-class {
-    grid-column: span 1;
-}
-
-.user-form-body .form-group {
-    margin-bottom: 0;
-}
-
-.user-form-body .form-group label {
+#userForm .form-group label {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--text-muted);
     margin-bottom: 0.375rem;
@@ -411,7 +373,7 @@ td strong {
     letter-spacing: 0.03em;
 }
 
-.user-form-body .form-control {
+#userForm .form-control {
     width: 100%;
     padding: 0.625rem 0.875rem;
     border: 1px solid var(--border-color);
@@ -420,34 +382,35 @@ td strong {
     color: var(--text-main);
     font-size: 0.875rem;
     transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
 }
 
-.user-form-body .form-control:focus {
+#userForm .form-control:focus {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-.user-form-body .form-control:read-only,
-.user-form-body .form-control[readonly] {
+#userForm .form-control:read-only,
+#userForm .form-control[readonly] {
     background: var(--bg-subtle);
     cursor: default;
     opacity: 0.8;
 }
 
-.user-form-body .form-hint {
+#userForm .form-hint {
     display: block;
     margin-top: 0.375rem;
     font-size: 0.75rem;
     color: var(--text-muted);
 }
 
-.user-form-body .input-with-btn {
+#userForm .input-with-btn {
     display: flex;
     gap: 0.375rem;
 }
 
-.user-form-body .search-btn {
+#userForm .search-btn {
     flex-shrink: 0;
     padding: 0.5rem 0.75rem;
     border: 1px solid var(--border-color);
@@ -460,9 +423,64 @@ td strong {
     transition: background 0.15s, color 0.15s;
 }
 
-.user-form-body .search-btn:hover {
+#userForm .search-btn:hover {
     background: var(--bg-hover);
     color: var(--primary);
+}
+
+#userForm .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+#userForm .form-row-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#userForm .form-row-addr {
+    display: flex;
+    gap: 12px;
+}
+
+#userForm .form-row-cargo-class {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+}
+
+#userForm .form-group-grow {
+    flex: 1;
+    min-width: 0;
+}
+
+#userForm .form-group-sm {
+    flex: 0 0 80px;
+}
+
+#userForm .form-group-cep {
+    flex: 0 0 150px;
+}
+
+#userForm .form-group-bairro {
+    flex: 1;
+    min-width: 0;
+}
+
+#userForm .form-group-cidade {
+    flex: 0 0 200px;
+}
+
+#userForm .form-group-uf {
+    flex: 0 0 60px;
+}
+
+#userForm .form-group-cargo {
+    grid-column: span 1;
+}
+
+#userForm .form-group-class {
+    grid-column: span 1;
 }
 
 @media (max-width: 767px) {
@@ -473,20 +491,23 @@ td strong {
     }
 
     #userModal .modal-scroll {
-        padding: var(--space-3);
+        padding: 0;
     }
 
-    .user-form-body .form-row,
-    .user-form-body .form-row-3,
-    .user-form-body .form-row-cargo-class,
-    .user-form-body .form-row-addr {
+    #userForm .form-row,
+    #userForm .form-row-3,
+    #userForm .form-row-cargo-class {
         grid-template-columns: 1fr;
     }
 
-    .user-form-body .form-group-sm,
-    .user-form-body .form-group-cep,
-    .user-form-body .form-group-uf {
-        max-width: none;
+    #userForm .form-row-addr {
+        flex-wrap: wrap;
+    }
+
+    #userForm .form-group-sm,
+    #userForm .form-group-cep,
+    #userForm .form-group-uf {
+        flex: 1;
     }
 }
 
