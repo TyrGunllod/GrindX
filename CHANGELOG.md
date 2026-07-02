@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.56.0 (2026-07-02)
+
+### Features
+
+- Add bairro, cidade, uf; CEP lookup; search buttons; Enter->next field
+  ([`2f4bd82`](https://github.com/TyrGunllod/GrindX/commit/2f4bd825e9ede799dd5641191606c2f10b6feea7))
+
+
 ## v1.55.2 (2026-07-02)
 
 ### Bug Fixes
