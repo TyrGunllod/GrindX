@@ -482,7 +482,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
             '--skin-border-color-dark',
             '--skin-sidebar-bg', '--skin-sidebar-text', '--skin-sidebar-active',
             '--skin-header-bg', '--skin-header-text',
-            '--skin-font-heading', '--skin-font-body',
+            '--skin-font-heading', '--skin-font-body', '--skin-font-module',
             '--skin-radius-sm', '--skin-radius-md', '--skin-radius-lg', '--skin-radius-xl',
             '--skin-shadow-card', '--skin-shadow-modal',
         ];
@@ -508,8 +508,8 @@ class DashboardController extends window.grindx.controllers.BaseController {
             'Source Sans Pro': 'https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;500;600;700&display=swap',
         };
 
-        // Inject Google Fonts <link> for heading and body
-        [fonts.heading, fonts.body].forEach(name => {
+        // Inject Google Fonts <link> for heading, body and nav
+        [fonts.heading, fonts.body, fonts.nav].forEach(name => {
             if (name && fontCdnMap[name]) {
                 const existing = doc.querySelector(`link[href="${fontCdnMap[name]}"]`);
                 if (!existing) {

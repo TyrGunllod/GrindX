@@ -110,6 +110,7 @@
     /* Fonts */
     --skin-font-heading: 'Barlow Condensed', 'Arial Narrow', sans-serif;
     --skin-font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+    --skin-font-module: 'DM Sans', system-ui, -apple-system, sans-serif;
 
     /* Tokens */
     --skin-radius-sm: 0.25rem;
@@ -188,6 +189,11 @@ input, select, textarea, button, a, .nav-link, .nav-dropdown-item,
   border-radius: 12px;
   
 }
+/* Module navigation font */
+.nav-link, .topbar-nav a, .nav-group-trigger {
+  font-family: var(--skin-font-module);
+}
+
 /* Content area base */
 .content-area {
   padding: var(--space-2);

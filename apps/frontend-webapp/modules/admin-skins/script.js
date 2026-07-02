@@ -74,7 +74,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         this.setupColorSync('colorBorderColorDark', 'colorBorderColorDarkText');
 
         // Font select live update
-        ['fontHeading', 'fontBody'].forEach(id => {
+        ['fontHeading', 'fontBody', 'fontModule'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
                 el.addEventListener('change', () => this.previewSkin());
@@ -478,6 +478,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         const fonts = skin.fonts || {};
         document.getElementById('fontHeading').value = fonts.heading || 'Barlow Condensed';
         document.getElementById('fontBody').value = fonts.body || 'DM Sans';
+        document.getElementById('fontModule').value = fonts.nav || 'DM Sans';
         this.customFonts = (fonts.custom || []).map(f => ({ name: f.name, data: f.data, format: f.format }));
         this._populateFontDropdowns();
 
@@ -768,6 +769,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             fonts: {
                 heading: document.getElementById('fontHeading').value,
                 body: document.getElementById('fontBody').value,
+                nav: document.getElementById('fontModule').value,
                 custom: this.customFonts,
                 icons: this.iconFont || null,
             },
@@ -970,6 +972,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
         document.getElementById('fontHeading').value = f.heading || 'Barlow Condensed';
         document.getElementById('fontBody').value = f.body || 'DM Sans';
+        document.getElementById('fontModule').value = f.nav || 'DM Sans';
         this.customFonts = snap.customFonts || (f.custom || []).map(fo => ({ name: fo.name, url: fo.url, format: fo.format }));
         this._populateFontDropdowns();
 
@@ -1018,6 +1021,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
             val('colorBorderColorDarkText') !== (c['--skin-border-color-dark'] || 'rgba(255, 255, 255, 0.05)') ||
             val('fontHeading') !== (f.heading || 'Barlow Condensed') ||
             val('fontBody') !== (f.body || 'DM Sans') ||
+            val('fontModule') !== (f.nav || 'DM Sans') ||
             val('radiusMd') !== (t['--skin-radius-md'] || '0.5rem') ||
             val('radiusLg') !== (t['--skin-radius-lg'] || '0.75rem') ||
             val('radiusSm') !== (t['--skin-radius-sm'] || '0.25rem') ||
@@ -1046,7 +1050,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
                 layout_mode: 'topbar',
                 logo_url: null,
                 colors: {},
-                fonts: { heading: 'Barlow Condensed', body: 'DM Sans', custom: [] },
+                fonts: { heading: 'Barlow Condensed', body: 'DM Sans', nav: 'DM Sans', custom: [] },
                 tokens: {},
                 customFonts: [],
             });
