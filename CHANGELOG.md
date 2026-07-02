@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.58.0 (2026-07-02)
+
+### Features
+
+- Preferences below password; toast on CBO/CEP lookup errors
+  ([`433f6b6`](https://github.com/TyrGunllod/GrindX/commit/433f6b6b667e4b4470e42625af28f2fc6eb8ba1e))
+
+
 ## v1.57.0 (2026-07-02)
 
 ### Features
