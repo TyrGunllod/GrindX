@@ -413,6 +413,10 @@ class AdminsController extends window.grindx.controllers.BaseController {
         }
     }
 
+    renderTable(users) {
+        this.userTable.render(users);
+    }
+
     renderTableOrEmpty() {
         if (this.users.length) {
             this.renderTable(this.users);
