@@ -258,7 +258,7 @@ class SkinLoader {
         }
 
         // Carrega Google Fonts se necessário
-        const fontNames = [fonts.heading, fonts.body].filter(Boolean);
+        const fontNames = [fonts.heading, fonts.body, fonts.nav].filter(Boolean);
         for (const name of fontNames) {
             if (FONT_CDN_MAP[name]) {
                 const link = document.createElement('link');
@@ -276,6 +276,9 @@ class SkinLoader {
         }
         if (fonts.body) {
             root.style.setProperty('--skin-font-body', `'${fonts.body}', system-ui, -apple-system, sans-serif`);
+        }
+        if (fonts.nav) {
+            root.style.setProperty('--skin-font-module', `'${fonts.nav}', system-ui, -apple-system, sans-serif`);
         }
     }
 

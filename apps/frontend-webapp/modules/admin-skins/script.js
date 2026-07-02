@@ -222,6 +222,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         // Fonts preview
         if (g('pfHeading')) g('pfHeading').style.fontFamily = g('fontHeading')?.value || 'Barlow Condensed';
         if (g('pfBody')) g('pfBody').style.fontFamily = g('fontBody')?.value || 'DM Sans';
+        if (g('pfModule')) g('pfModule').style.fontFamily = g('fontModule')?.value || 'DM Sans';
 
         // Tokens Extras preview
         if (g('previewTokens')) {
@@ -917,6 +918,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
         const fonts = {
             heading: document.getElementById('fontHeading').value,
             body: document.getElementById('fontBody').value,
+            nav: document.getElementById('fontModule').value,
             custom: this.customFonts,
         };
 
