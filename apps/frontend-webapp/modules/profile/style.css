@@ -110,6 +110,47 @@
     color: var(--primary, #00c2e0);
 }
 
+.password-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.password-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+    min-width: 0;
+}
+
+.password-btn-group {
+    flex: 0 0 auto;
+}
+
+.password-btn-group .btn {
+    white-space: nowrap;
+}
+
+.password-row .field-error {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+}
+
+@media (max-width: 600px) {
+    .password-row {
+        flex-wrap: wrap;
+    }
+    .password-row .form-group {
+        flex: 1 1 100%;
+    }
+    .password-btn-group {
+        flex: 1 1 100%;
+    }
+    .password-btn-group .btn {
+        width: 100%;
+    }
+}
+
 .form-group {
     margin-bottom: 16px;
 }

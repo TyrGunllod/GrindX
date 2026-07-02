@@ -212,7 +212,9 @@
                 new_password: newPassword,
             });
 
-            document.getElementById('passwordForm').reset();
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
             window.parent.postMessage('profile-saved', '*');
             showToast('Senha alterada com sucesso!', 'success');
         } catch (err) {
@@ -386,7 +388,7 @@
             });
         });
 
-        const focusable = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm button, #passwordForm input');
+        const focusable = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm button, #passwordCard input');
         focusable.forEach(el => {
             el.addEventListener('keydown', (e) => {
                 if (e.key !== 'Enter') return;
