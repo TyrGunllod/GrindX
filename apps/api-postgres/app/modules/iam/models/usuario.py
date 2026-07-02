@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.modules.iam.base import IamBase
 from app.modules.portal.models.portal import Modulo
+from app.utils.encryption import EncryptedString
 
 
 class Usuario(IamBase):
@@ -66,13 +67,17 @@ class Usuario(IamBase):
         nullable=True,
         comment="Classificação: Junior, Pleno, Senior, I, II, III, IV, V",
     )
-    cpf: Mapped[str | None] = mapped_column(String(14), nullable=True, comment="CPF")
-    rg: Mapped[str | None] = mapped_column(String(12), nullable=True, comment="RG")
+    cpf: Mapped[str | None] = mapped_column(
+        EncryptedString(255), nullable=True, comment="CPF"
+    )
+    rg: Mapped[str | None] = mapped_column(
+        EncryptedString(255), nullable=True, comment="RG"
+    )
     salario: Mapped[str | None] = mapped_column(
-        String(20), nullable=True, comment="Salário Base"
+        EncryptedString(255), nullable=True, comment="Salário Base"
     )
     endereco: Mapped[str | None] = mapped_column(
-        String(255), nullable=True, comment="Endereço"
+        EncryptedString(255), nullable=True, comment="Endereço"
     )
     numero: Mapped[str | None] = mapped_column(
         String(20), nullable=True, comment="Número do endereço"
@@ -86,10 +91,10 @@ class Usuario(IamBase):
     uf: Mapped[str | None] = mapped_column(String(2), nullable=True, comment="UF")
     cep: Mapped[str | None] = mapped_column(String(10), nullable=True, comment="CEP")
     telefone: Mapped[str | None] = mapped_column(
-        String(15), nullable=True, comment="Telefone"
+        EncryptedString(255), nullable=True, comment="Telefone"
     )
     celular: Mapped[str | None] = mapped_column(
-        String(15), nullable=True, comment="Celular"
+        EncryptedString(255), nullable=True, comment="Celular"
     )
     role: Mapped[str] = mapped_column(
         String(20),
