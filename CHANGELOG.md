@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.62.0 (2026-07-02)
+
+### Features
+
+- Add module font selector for sidebar/topbar navigation
+  ([`aa5eec2`](https://github.com/TyrGunllod/GrindX/commit/aa5eec2efed6853eb215bbce5adb41f3bb5a7abe))
+
+
 ## v1.61.1 (2026-07-02)
 
 ### Bug Fixes
