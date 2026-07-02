@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.59.0 (2026-07-02)
+
+### Features
+
+- Full profile fields in user create/edit form with auto-username
+  ([`3f74263`](https://github.com/TyrGunllod/GrindX/commit/3f742637b92cbfccaffe2c2b254cc4bd97edc776))
+
+### Refactoring
+
+- Password and preferences as modal buttons in single card
+  ([`f49da29`](https://github.com/TyrGunllod/GrindX/commit/f49da29e89139d3ca0ee517956f8b889941f6ad4))
+
+
 ## v1.58.0 (2026-07-02)
 
 ### Features
