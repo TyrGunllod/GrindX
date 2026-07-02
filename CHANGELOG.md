@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v1.60.3 (2026-07-02)
+
+### Bug Fixes
+
+- Add missing applyLayoutPreference and admins status badge
+  ([`e881847`](https://github.com/TyrGunllod/GrindX/commit/e88184740cd521c0019cf30a324c0f41461fc1be))
+
+- Restore toggleUserStatus method removed during refactor
+  ([`684d30f`](https://github.com/TyrGunllod/GrindX/commit/684d30fae8a3cf2cd3871f6fd8743ec3def99956))
+
+
 ## v1.60.2 (2026-07-02)
 
 ### Bug Fixes
