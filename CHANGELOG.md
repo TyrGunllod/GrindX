@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.61.1 (2026-07-02)
+
+### Bug Fixes
+
+- Add TTF/OTF magic byte detection in font upload validation
+  ([`af44fcd`](https://github.com/TyrGunllod/GrindX/commit/af44fcdb0da97c4e6561126030a6788ed1427b2f))
+
+
 ## v1.61.0 (2026-07-02)
 
 ### Features
