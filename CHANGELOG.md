@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v1.56.1 (2026-07-02)
+
+### Bug Fixes
+
+- Enter moves to next field, CBO/CEP lookup on Enter; username lowercase
+  ([`34a9934`](https://github.com/TyrGunllod/GrindX/commit/34a993447323eb0abcf03b0ab18a755fef041818))
+
+- Profile username always lowercase
+  ([`ecc54ae`](https://github.com/TyrGunllod/GrindX/commit/ecc54ae29a6b517234aa311a06f81fbe6fd6b024))
+
+
 ## v1.56.0 (2026-07-02)
 
 ### Features
