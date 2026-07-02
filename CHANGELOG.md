@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.55.2 (2026-07-02)
+
+### Bug Fixes
+
+- FormatSalario stripping decimal dot, causing two extra zeros
+  ([`ff179a9`](https://github.com/TyrGunllod/GrindX/commit/ff179a9fb1c44ccc126128770a25b0fad8819008))
+
+
 ## v1.55.1 (2026-07-01)
 
 ### Bug Fixes
