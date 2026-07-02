@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.62.2 (2026-07-02)
+
+### Bug Fixes
+
+- Apply nav font in skinLoader and preview; add module font preview
+  ([`bc88b13`](https://github.com/TyrGunllod/GrindX/commit/bc88b1318f4ee7a454989e7c10a6f2847eafc9f2))
+
+
 ## v1.62.1 (2026-07-02)
 
 ### Bug Fixes
