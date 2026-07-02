@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.60.4 (2026-07-02)
+
+### Performance Improvements
+
+- Add preconnect/dns-prefetch for CDN domains to speed up icon loading
+  ([`389c8e0`](https://github.com/TyrGunllod/GrindX/commit/389c8e0f0f858c8e624984d4f28c3cd54789f556))
+
+
 ## v1.60.3 (2026-07-02)
 
 ### Bug Fixes
