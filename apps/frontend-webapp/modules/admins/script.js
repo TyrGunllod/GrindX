@@ -24,11 +24,12 @@ class AdminsController extends window.grindx.controllers.BaseController {
             {
                 dataLabel: 'Status',
                 render: user => `
-                    <button class="btn-icon ${user.ativo ? 'text-success' : 'text-muted'}" 
-                            onclick="window.adminsController.toggleUserStatus('${user.id}', ${!user.ativo})" 
-                            title="${user.ativo ? 'Desativar' : 'Ativar'}">
-                        <i class="fas ${user.ativo ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
-                    </button>
+                    <span class="badge ${user.ativo ? 'badge-success' : 'badge-muted'}" 
+                          style="cursor:pointer" 
+                          onclick="window.adminsController.toggleUserStatus('${user.id}', ${!user.ativo})" 
+                          title="${user.ativo ? 'Clique para desativar' : 'Clique para ativar'}">
+                        ${user.ativo ? 'Ativo' : 'Inativo'}
+                    </span>
                 `
             },
             {
@@ -263,7 +264,7 @@ class AdminsController extends window.grindx.controllers.BaseController {
     async loadUsers() {
         this.tableBody.innerHTML = `
             <tr>
-                <td colspan="5"></td>
+                <td colspan="4"></td>
             </tr>
         `;
         const loadingCell = this.tableBody.querySelector('td');

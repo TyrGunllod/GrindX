@@ -791,6 +791,14 @@ class DashboardController extends window.grindx.controllers.BaseController {
         alert('Skin aplicada permanentemente!');
     }
 
+    applyLayoutPreference(layout) {
+        if (!layout) return;
+        window.grindx.storage.set('grindx_layout', layout);
+        this.user = this.user || {};
+        this.user.layout_preference = layout;
+        this._applyLayoutForDevice();
+    }
+
     _applyLayoutForDevice() {
         const isMobile = window.innerWidth < 768;
         const prefKey = isMobile ? 'grindx_layout_mobile' : 'grindx_layout';
