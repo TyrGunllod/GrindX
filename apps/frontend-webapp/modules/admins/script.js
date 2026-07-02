@@ -270,7 +270,7 @@ class AdminsController extends window.grindx.controllers.BaseController {
         loadingCell.appendChild(window.grindx.components.LoadingSpinner.create('Carregando administradores...'));
 
         try {
-            const result = await window.grindx.api.get('/usuarios?role=admin');
+            const result = await window.grindx.api.get('/usuarios', { role: 'admin' });
 
             if (result && Array.isArray(result.items)) {
                 this.users = result.items;

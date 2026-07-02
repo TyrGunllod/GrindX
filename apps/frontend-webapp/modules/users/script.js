@@ -284,7 +284,7 @@ class UsersController extends window.grindx.controllers.BaseController {
         loadingCell.appendChild(window.grindx.components.LoadingSpinner.create('Carregando usuários...'));
 
         try {
-            const result = await window.grindx.api.get('/usuarios?exclude_role=admin');
+            const result = await window.grindx.api.get('/usuarios', { exclude_role: 'admin' });
 
             if (result && Array.isArray(result.items)) {
                 this.users = result.items;
