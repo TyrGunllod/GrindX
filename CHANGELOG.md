@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.62.1 (2026-07-02)
+
+### Bug Fixes
+
+- Include imported fonts in module font dropdown
+  ([`41b09a9`](https://github.com/TyrGunllod/GrindX/commit/41b09a92bab313041f19a0285b2429e02f501700))
+
+
 ## v1.62.0 (2026-07-02)
 
 ### Features
