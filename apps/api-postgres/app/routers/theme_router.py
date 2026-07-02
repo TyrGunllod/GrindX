@@ -46,11 +46,13 @@ def _validate_file_magic(
     """
     header = file_bytes[:4]
 
-    # Detecção manual de WOFF (wOFF) e WOFF2 (wOF2) — filetype lib não reconhece
+    # Detecção manual de WOFF (wOFF), WOFF2 (wOF2), TTF/OTF (0x00010000 ou OTTO) — filetype lib não reconhece
     if header == b"wOFF":
         detected_mime = "font/woff"
     elif header == b"wOF2":
         detected_mime = "font/woff2"
+    elif header[:4] == b"\x00\x01\x00\x00" or header[:4] == b"OTTO":
+        detected_mime = "font/sfnt"
     else:
         kind = filetype.guess(file_bytes[:261])
         if kind is None:
