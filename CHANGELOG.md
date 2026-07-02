@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.60.0 (2026-07-02)
+
+### Features
+
+- Separate user and admin management modules with status toggle
+  ([`0e0217c`](https://github.com/TyrGunllod/GrindX/commit/0e0217ce52ad3e11e167b0e7220437136e52e7e3))
+
+### Refactoring
+
+- User form uses single profile-card layout with section labels
+  ([`c5e16d9`](https://github.com/TyrGunllod/GrindX/commit/c5e16d99a84354d0a16d0b304e5b0fc5ed2d4953))
+
+
 ## v1.59.1 (2026-07-02)
 
 ### Bug Fixes
