@@ -147,6 +147,25 @@ class UsuarioRepository:
         items = list(self.db.scalars(stmt).all())
         return items, total
 
+    def listar_excluindo_role(
+        self, role: str, page: int = 1, page_size: int = 20
+    ) -> tuple[list[Usuario], int]:
+        """Lista usuários excluindo um role específico."""
+        count_stmt = (
+            select(func.count()).select_from(Usuario).where(Usuario.role != role)
+        )
+        total = self.db.scalar(count_stmt) or 0
+
+        stmt = (
+            select(Usuario)
+            .where(Usuario.role != role)
+            .order_by(Usuario.username)
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
+        items = list(self.db.scalars(stmt).all())
+        return items, total
+
     def criar(self, usuario: Usuario) -> Usuario:
         """Cria um novo usuário no banco.
 

@@ -28,12 +28,13 @@ def listar_usuarios(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     role: Optional[str] = Query(None),
+    exclude_role: Optional[str] = Query(None),
     db: Session = Depends(get_db),
     _: None = Depends(require_role_or_higher("operador")),
 ):
     """Lista todos os usuários. Acesso: operador ou superior."""
     service = UsuarioService(db)
-    items, total = service.listar_usuarios(page, page_size, role)
+    items, total = service.listar_usuarios(page, page_size, role, exclude_role)
 
     return PaginatedResponse(
         items=items,

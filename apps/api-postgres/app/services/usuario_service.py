@@ -11,8 +11,18 @@ class UsuarioService:
     def __init__(self, db: Session):
         self.repo = UsuarioRepository(db)
 
-    def listar_usuarios(self, page: int = 1, page_size: int = 20, role: str = None):
-        if role:
+    def listar_usuarios(
+        self,
+        page: int = 1,
+        page_size: int = 20,
+        role: str = None,
+        exclude_role: str = None,
+    ):
+        if exclude_role:
+            items, total = self.repo.listar_excluindo_role(
+                exclude_role, page, page_size
+            )
+        elif role:
             items, total = self.repo.listar_por_role(role, page, page_size)
         else:
             items, total = self.repo.listar_todos(page, page_size)

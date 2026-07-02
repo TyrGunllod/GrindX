@@ -1,4 +1,4 @@
-class UsersController extends window.grindx.controllers.BaseController {
+class AdminsController extends window.grindx.controllers.BaseController {
     constructor() {
         super();
         this.tableBody = document.getElementById('userTableBody');
@@ -8,28 +8,24 @@ class UsersController extends window.grindx.controllers.BaseController {
             onClose: () => this.resetForm()
         });
 
-        this.permissoesModal = document.getElementById('permissoesModal');
-        this.permissoesController = new window.grindx.components.ReusableModal(this.permissoesModal);
-
         this.userForm = document.getElementById('userForm');
         this.modalTitle = document.getElementById('modalTitle');
         this.userTable = new window.grindx.components.DataTable(this.tableBody, [
             {
-                dataLabel: 'Usuário',
+                dataLabel: 'Administrador',
                 render: user => `
                     <div class="flex items-center gap-2">
-                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo)}&background=4f46e5&color=fff&bold=true" class="avatar-mini" alt="">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo)}&background=ef4444&color=fff&bold=true" class="avatar-mini" alt="">
                         <strong>${user.nome_completo}</strong>
                     </div>
                 `
             },
             { className: 'hide-mobile', dataLabel: 'E-mail', render: user => user.email },
-            { dataLabel: 'Perfil', render: user => `<span class="badge role-${user.role}">${user.role.toUpperCase()}</span>` },
             {
                 dataLabel: 'Status',
                 render: user => `
                     <button class="btn-icon ${user.ativo ? 'text-success' : 'text-muted'}" 
-                            onclick="window.usersController.toggleUserStatus('${user.id}', ${!user.ativo})" 
+                            onclick="window.adminsController.toggleUserStatus('${user.id}', ${!user.ativo})" 
                             title="${user.ativo ? 'Desativar' : 'Ativar'}">
                         <i class="fas ${user.ativo ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
                     </button>
@@ -40,8 +36,7 @@ class UsersController extends window.grindx.controllers.BaseController {
                 className: 'text-right',
                 render: user => `
                     <div class="actions-group justify-end">
-                        <button class="btn-icon" onclick="window.usersController.editUser('${user.id}')" title="Editar Usuário"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon" onclick="window.usersController.openPermissoes('${user.id}')" title="Permissões"><i class="fas fa-shield-alt"></i></button>
+                        <button class="btn-icon" onclick="window.adminsController.editUser('${user.id}')" title="Editar"><i class="fas fa-edit"></i></button>
                     </div>
                 `
             }
@@ -54,7 +49,7 @@ class UsersController extends window.grindx.controllers.BaseController {
     }
 
     async init() {
-        console.log('Módulo de Usuários Inicializado');
+        console.log('Módulo de Administradores Inicializado');
 
         if (!this.requireAuth('../../index.html')) {
             console.error('Token não encontrado no LocalStorage!');
@@ -70,29 +65,22 @@ class UsersController extends window.grindx.controllers.BaseController {
     populateRoleSelect() {
         const sel = document.getElementById('userRole');
         sel.innerHTML = '';
-        window.grindx.constants.USER_ROLES
-            .filter(r => r.value !== 'admin')
-            .forEach(r => {
-                const opt = document.createElement('option');
-                opt.value = r.value;
-                opt.textContent = r.label;
-                sel.appendChild(opt);
-            });
+        const opt = document.createElement('option');
+        opt.value = 'admin';
+        opt.textContent = 'Administrador';
+        sel.appendChild(opt);
     }
 
     bindEvents() {
         document.getElementById('addUserBtn').onclick = () => {
             this.resetForm();
-            this.modalTitle.textContent = 'Cadastrar Usuário';
+            this.modalTitle.textContent = 'Cadastrar Administrador';
             document.getElementById('passwordHint').style.display = 'block';
             document.getElementById('userPassword').required = true;
             this.modalController.open();
         };
         document.getElementById('btnCancel').onclick = () => this.modalController.close();
         document.getElementById('btnSave').onclick = () => this.saveUser();
-
-        document.getElementById('btnCancelPermissoes').onclick = () => this.permissoesController.close();
-        document.getElementById('btnSavePermissoes').onclick = () => this.savePermissoes();
 
         const nomeField = document.getElementById('userNomeCompleto');
         const usernameField = document.getElementById('userUsername');
@@ -116,13 +104,11 @@ class UsersController extends window.grindx.controllers.BaseController {
         const conectivos = new Set(['do', 'da', 'de', 'dos', 'das', 'e']);
         const partes = nomeCompleto.trim().toLowerCase().split(/\s+/).filter(Boolean);
         if (partes.length === 0) return '';
-
         const primeiroNome = partes[0];
         const iniciais = partes.slice(1)
             .filter(p => !conectivos.has(p))
             .map(p => p[0] || '')
             .join('');
-
         return primeiroNome + iniciais;
     }
 
@@ -281,24 +267,20 @@ class UsersController extends window.grindx.controllers.BaseController {
             </tr>
         `;
         const loadingCell = this.tableBody.querySelector('td');
-        loadingCell.appendChild(window.grindx.components.LoadingSpinner.create('Carregando usuários...'));
+        loadingCell.appendChild(window.grindx.components.LoadingSpinner.create('Carregando administradores...'));
 
         try {
-            const result = await window.grindx.api.get('/usuarios?exclude_role=admin');
+            const result = await window.grindx.api.get('/usuarios?role=admin');
 
             if (result && Array.isArray(result.items)) {
                 this.users = result.items;
                 this.renderTableOrEmpty();
             } else {
-                this.userTable.renderEmpty('Nenhum usuário encontrado.', 5);
+                this.userTable.renderEmpty('Nenhum administrador encontrado.', 4);
             }
         } catch (err) {
-            this.userTable.renderEmpty(window.grindx.components.LoadingSpinner.toUserMessage(err), 5);
+            this.userTable.renderEmpty(window.grindx.components.LoadingSpinner.toUserMessage(err), 4);
         }
-    }
-
-    renderTable(users) {
-        this.userTable.render(users);
     }
 
     editUser(id) {
@@ -307,12 +289,12 @@ class UsersController extends window.grindx.controllers.BaseController {
 
         this.currentUserId = id;
         this.autoGenUsername = false;
-        this.modalTitle.textContent = 'Editar Usuário';
+        this.modalTitle.textContent = 'Editar Administrador';
         document.getElementById('passwordHint').style.display = 'block';
         document.getElementById('userPassword').required = false;
 
         document.getElementById('userUsername').value = user.username || '';
-        document.getElementById('userRole').value = user.role || 'leitura';
+        document.getElementById('userRole').value = 'admin';
         document.getElementById('userNomeCompleto').value = user.nome_completo || '';
         document.getElementById('userEmail').value = user.email || '';
         document.getElementById('userPassword').value = '';
@@ -348,7 +330,7 @@ class UsersController extends window.grindx.controllers.BaseController {
             nome_completo: getVal('userNomeCompleto'),
             email: getVal('userEmail'),
             username: getVal('userUsername'),
-            role: getVal('userRole'),
+            role: 'admin',
             codigo: getVal('userCodigo'),
             cbo: getVal('userCbo'),
             departamento: getVal('userDepartamento'),
@@ -388,17 +370,13 @@ class UsersController extends window.grindx.controllers.BaseController {
                 this.upsertUser(createdUser);
             }
 
-            this.showToast('Usuário salvo com sucesso.', 'success');
+            this.showToast('Administrador salvo com sucesso.', 'success');
             this.modalController.close();
             this.renderTableOrEmpty();
         } catch (err) {
-            this.handleSaveError(err);
+            const msg = err.message || err.detail || 'Erro ao salvar administrador.';
+            this.showToast(msg, 'error');
         }
-    }
-
-    handleSaveError(err) {
-        const msg = err.message || err.detail || 'Erro ao salvar usuário.';
-        this.showToast(msg, 'error');
     }
 
     validateUserForm() {
@@ -440,14 +418,25 @@ class UsersController extends window.grindx.controllers.BaseController {
             this.renderTable(this.users);
             return;
         }
-        this.userTable.renderEmpty('Nenhum usuário encontrado.', 5);
+        this.userTable.renderEmpty('Nenhum administrador encontrado.', 4);
+    }
+
+    async toggleUserStatus(id, novoStatus) {
+        try {
+            const updatedUser = await window.grindx.api.put(`/usuarios/${id}`, { ativo: novoStatus });
+            this.upsertUser(updatedUser);
+            this.renderTableOrEmpty();
+            this.showToast(`Administrador ${novoStatus ? 'ativado' : 'desativado'} com sucesso.`, 'success');
+        } catch (err) {
+            this.showToast(err.message || 'Erro ao alterar status.', 'error');
+        }
     }
 
     resetForm() {
         this.currentUserId = null;
         this.autoGenUsername = true;
         this.userForm.reset();
-        document.getElementById('userRole').value = 'leitura';
+        document.getElementById('userRole').value = 'admin';
         document.getElementById('userCargo').value = '';
         document.getElementById('userClassificacao').value = '';
         document.getElementById('userEndereco').value = '';
@@ -455,113 +444,9 @@ class UsersController extends window.grindx.controllers.BaseController {
         document.getElementById('userCidade').value = '';
         document.getElementById('userUf').value = '';
         document.getElementById('passwordHint').style.display = 'none';
-        const errorEls = document.querySelectorAll('.field-error');
-        errorEls.forEach(el => el.style.display = 'none');
-    }
-
-    async openPermissoes(id) {
-        this.currentUserId = id;
-        const container = document.getElementById('permissoesContent');
-        container.innerHTML = '<p>Carregando permissões...</p>';
-        this.permissoesController.open();
-
-        try {
-            const [userModulos, menu] = await Promise.all([
-                window.grindx.api.get(`/usuarios/${id}/modulos`),
-                window.grindx.api.get('/portal/menu')
-            ]);
-
-            const liberados = new Set(userModulos.modulos || []);
-
-            const renderModulo = (mod, depth = 0) => {
-                const checked = liberados.has(mod.id) ? 'checked' : '';
-                const isAdminOnly = mod.role_minima === 'admin';
-                const badge = isAdminOnly ? ' <span class="badge badge-admin-only">Admin</span>' : '';
-                return `
-                    <label class="perm-checkbox ${depth > 0 ? 'perm-checkbox-child' : ''}">
-                        <input type="checkbox" name="modulo" value="${mod.id}" ${checked}>
-                        <i class="${mod.icone || 'fas fa-cube'}"></i>
-                        <span>${mod.nome}</span>
-                        ${badge}
-                    </label>
-                `;
-            };
-
-            const renderChildren = (children) => {
-                return children.map(child => {
-                    const childMods = (child.modulos || []).map(m => renderModulo(m, 1)).join('');
-                    const sub = renderChildren(child.children || []);
-                    if (!childMods && !sub) return '';
-                    return `
-                        <div class="perm-subgroup">
-                            <div class="perm-subgroup-header">
-                                <i class="${child.icone || 'fas fa-folder'}"></i>
-                                <span>${child.nome}</span>
-                            </div>
-                            <div class="perm-modules">${childMods}${sub}</div>
-                        </div>
-                    `;
-                }).join('');
-            };
-
-            let html = '<div class="perm-container">';
-            menu.forEach(aba => {
-                const directMods = (aba.modulos || []).map(m => renderModulo(m)).join('');
-                const childrenHtml = renderChildren(aba.children || []);
-                const totalMods = (aba.modulos || []).length
-                    + (aba.children || []).reduce((acc, c) => acc + (c.modulos || []).length, 0);
-                const checkedCount = (aba.modulos || []).filter(m => liberados.has(m.id)).length;
-                const allChecked = totalMods > 0 && checkedCount === totalMods;
-
-                html += `
-                    <div class="perm-aba">
-                        <div class="perm-aba-header">
-                            <div class="perm-aba-title">
-                                <i class="${aba.icone || 'fas fa-folder'}"></i>
-                                <span>${aba.nome}</span>
-                            </div>
-                            <label class="perm-toggle-label" title="${allChecked ? 'Limpar todos' : 'Selecionar todos'}">
-                                <input type="checkbox" class="perm-aba-toggle" ${allChecked ? 'checked' : ''}>
-                                <span class="perm-toggle-text">${allChecked ? 'Limpar' : 'Selecionar todos'}</span>
-                            </label>
-                        </div>
-                        <div class="perm-modules">
-                            ${directMods}
-                            ${childrenHtml}
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            container.innerHTML = html;
-
-            container.querySelectorAll('.perm-aba-toggle').forEach(cb => {
-                cb.addEventListener('change', function () {
-                    const abaCard = this.closest('.perm-aba');
-                    abaCard.querySelectorAll('input[name="modulo"]').forEach(m => m.checked = this.checked);
-                    const txt = this.closest('.perm-toggle-label').querySelector('.perm-toggle-text');
-                    txt.textContent = this.checked ? 'Limpar' : 'Selecionar todos';
-                });
-            });
-        } catch (err) {
-            container.innerHTML = '<p class="text-danger">Erro ao carregar permissões.</p>';
-        }
-    }
-
-    async savePermissoes() {
-        const checkboxes = document.querySelectorAll('#permissoesContent input[name="modulo"]:checked');
-        const moduloIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-
-        try {
-            await window.grindx.api.put(`/usuarios/${this.currentUserId}/modulos`, { modulo_ids: moduloIds });
-            this.showToast('Permissões atualizadas com sucesso.', 'success');
-            this.permissoesController.close();
-        } catch (err) {
-            this.showToast(err.message || 'Erro ao salvar permissões.', 'error');
-        }
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    window.usersController = new UsersController();
+    window.adminsController = new AdminsController();
 });

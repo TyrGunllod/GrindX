@@ -9,8 +9,8 @@ Cria (somente o que estiver faltando):
     - Empresa base GrindX
     - 1 usuário admin
     - Skin padrão GrindX (ativa)
-    - Abas Principal e Gestão
-    - Módulos Dashboard, Usuários, Estrutura, Skins
+    -     Abas Principal, R. HUMANOS e Gestão
+    - Módulos Dashboard, Usuários, Administradores, Estrutura, Skins
 """
 
 import sys
@@ -220,6 +220,7 @@ def seed_database():
         # =========================================================
         abas_seed = [
             {"nome": "Principal", "icone": "fas fa-th-large", "ordem": 0},
+            {"nome": "R. HUMANOS", "icone": "fas fa-users", "ordem": 50},
             {"nome": "Gestão", "icone": "fas fa-users-cog", "ordem": 100},
         ]
 
@@ -251,12 +252,20 @@ def seed_database():
                 "icone": "fas fa-home",
             },
             {
-                "aba": "Gestão",
+                "aba": "R. HUMANOS",
                 "nome": "Usuários",
                 "slug": "users",
                 "url": "modules/users/index.html",
                 "icone": "fas fa-user-friends",
                 "role_minima": "operador",
+            },
+            {
+                "aba": "Gestão",
+                "nome": "Administradores",
+                "slug": "admins",
+                "url": "modules/admins/index.html",
+                "icone": "fas fa-shield-alt",
+                "role_minima": "admin",
             },
             {
                 "aba": "Gestão",

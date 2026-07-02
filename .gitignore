@@ -85,6 +85,7 @@ apps/frontend-webapp/modules/*
 !apps/frontend-webapp/modules/importer
 !apps/frontend-webapp/modules/structure
 !apps/frontend-webapp/modules/users
+!apps/frontend-webapp/modules/admins
 !apps/frontend-webapp/modules/profile
 
 # =========================
