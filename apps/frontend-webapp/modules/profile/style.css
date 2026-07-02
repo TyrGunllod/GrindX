@@ -110,46 +110,6 @@
     color: var(--primary, #00c2e0);
 }
 
-.password-row {
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-}
-
-.password-row .form-group {
-    flex: 1;
-    margin-bottom: 0;
-    min-width: 0;
-}
-
-.password-btn-group {
-    flex: 0 0 auto;
-}
-
-.password-btn-group .btn {
-    white-space: nowrap;
-}
-
-.password-row .field-error {
-    position: absolute;
-    bottom: -20px;
-    left: 0;
-}
-
-@media (max-width: 600px) {
-    .password-row {
-        flex-wrap: wrap;
-    }
-    .password-row .form-group {
-        flex: 1 1 100%;
-    }
-    .password-btn-group {
-        flex: 1 1 100%;
-    }
-    .password-btn-group .btn {
-        width: 100%;
-    }
-}
 
 .form-group {
     margin-bottom: 16px;
@@ -249,6 +209,81 @@
     width: 100%;
 }
 
+.settings-row {
+    display: flex;
+    gap: 12px;
+}
+
+.settings-btn {
+    flex: 1;
+    padding: 16px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-dialog {
+    background: var(--bg-card, #fff);
+    border-radius: var(--radius-lg, 0.75rem);
+    width: 90%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted, #64748b);
+    padding: 0;
+    line-height: 1;
+}
+
+.modal-body {
+    padding: 20px 24px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 0 24px 20px;
+}
+
+.modal-footer .btn {
+    min-width: 100px;
+}
+
 @media (max-width: 600px) {
     .module-page {
         padding: 16px;
@@ -259,8 +294,7 @@
     .profile-card {
         padding: 16px;
     }
-}
-
-.theme-option {
-  min-height: 44px;
+    .settings-row {
+        flex-direction: column;
+    }
 }

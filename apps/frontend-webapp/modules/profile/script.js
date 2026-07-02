@@ -353,10 +353,26 @@
         }
     }
 
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
     function setupEvents() {
         document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
         document.getElementById('savePasswordBtn').addEventListener('click', savePassword);
         document.getElementById('savePreferencesBtn').addEventListener('click', savePreferences);
+
+        document.getElementById('openPasswordModalBtn').addEventListener('click', () => openModal('passwordModal'));
+        document.getElementById('openPreferencesModalBtn').addEventListener('click', () => openModal('preferencesModal'));
+        document.getElementById('closePasswordModal').addEventListener('click', () => closeModal('passwordModal'));
+        document.getElementById('closePreferencesModal').addEventListener('click', () => closeModal('preferencesModal'));
+        document.getElementById('cancelPasswordModal').addEventListener('click', () => closeModal('passwordModal'));
+        document.getElementById('cancelPreferencesModal').addEventListener('click', () => closeModal('preferencesModal'));
+
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', (e) => {
+                if (e.target === el) el.style.display = 'none';
+            });
+        });
 
         const cpfEl = document.getElementById('profileCpf');
         const cepEl = document.getElementById('profileCep');
@@ -391,7 +407,7 @@
             });
         });
 
-        const focusable = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm button, #passwordCard input');
+        const focusable = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm button, .modal-dialog input');
         focusable.forEach(el => {
             el.addEventListener('keydown', (e) => {
                 if (e.key !== 'Enter') return;
