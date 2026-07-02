@@ -107,9 +107,10 @@
     }
 
     function formatSalario(v) {
-        const d = v.replace(/[^\d,]/g, '').replace(',', '.').split('.');
-        let num = d[0] ? parseInt(d[0].replace(/\D/g, ''), 10) : 0;
-        let dec = d[1] ? d[1].replace(/\D/g, '').slice(0, 2).padEnd(2, '0') : '00';
+        if (!v) return '';
+        const parts = v.replace(',', '.').split('.');
+        const num = parseInt(parts[0], 10) || 0;
+        const dec = parts.length > 1 ? parts[1].slice(0, 2).padEnd(2, '0') : '00';
         return num.toLocaleString('pt-BR') + ',' + dec;
     }
 
