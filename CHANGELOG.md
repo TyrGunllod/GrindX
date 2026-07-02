@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.64.0 (2026-07-02)
+
+### Features
+
+- Encrypt sensitive user fields (CPF, RG, salary, address, phone)
+  ([`8da38b4`](https://github.com/TyrGunllod/GrindX/commit/8da38b44eb5c747def04b6adf903897b1ae71734))
+
+### Refactoring
+
+- Remove close buttons from profile modals, close and reload on save
+  ([`d217e58`](https://github.com/TyrGunllod/GrindX/commit/d217e580161cf957f96df0f812acb3f331a6a8b3))
+
+
 ## v1.63.0 (2026-07-02)
 
 ### Features
