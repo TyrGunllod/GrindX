@@ -28,11 +28,12 @@ class UsersController extends window.grindx.controllers.BaseController {
             {
                 dataLabel: 'Status',
                 render: user => `
-                    <button class="btn-icon ${user.ativo ? 'text-success' : 'text-muted'}" 
-                            onclick="window.usersController.toggleUserStatus('${user.id}', ${!user.ativo})" 
-                            title="${user.ativo ? 'Desativar' : 'Ativar'}">
-                        <i class="fas ${user.ativo ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
-                    </button>
+                    <span class="badge ${user.ativo ? 'badge-success' : 'badge-muted'}" 
+                          style="cursor:pointer" 
+                          onclick="window.usersController.toggleUserStatus('${user.id}', ${!user.ativo})" 
+                          title="${user.ativo ? 'Clique para desativar' : 'Clique para ativar'}">
+                        ${user.ativo ? 'Ativo' : 'Inativo'}
+                    </span>
                 `
             },
             {
@@ -423,6 +424,17 @@ class UsersController extends window.grindx.controllers.BaseController {
             return false;
         }
         return true;
+    }
+
+    async toggleUserStatus(id, novoStatus) {
+        try {
+            const updatedUser = await window.grindx.api.put(`/usuarios/${id}`, { ativo: novoStatus });
+            this.upsertUser(updatedUser);
+            this.renderTableOrEmpty();
+            this.showToast(`Usuário ${novoStatus ? 'ativado' : 'desativado'} com sucesso.`, 'success');
+        } catch (err) {
+            this.showToast(err.message || 'Erro ao alterar status.', 'error');
+        }
     }
 
     upsertUser(user) {
