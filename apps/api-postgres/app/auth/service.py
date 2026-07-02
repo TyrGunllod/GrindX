@@ -214,6 +214,9 @@ class AuthService:
         salario: str | None = None,
         endereco: str | None = None,
         numero: str | None = None,
+        bairro: str | None = None,
+        cidade: str | None = None,
+        uf: str | None = None,
         cep: str | None = None,
         telefone: str | None = None,
         celular: str | None = None,
@@ -258,6 +261,12 @@ class AuthService:
             dados["endereco"] = endereco
         if numero is not None:
             dados["numero"] = numero
+        if bairro is not None:
+            dados["bairro"] = bairro
+        if cidade is not None:
+            dados["cidade"] = cidade
+        if uf is not None:
+            dados["uf"] = uf
         if cep is not None:
             dados["cep"] = cep
         if telefone is not None:

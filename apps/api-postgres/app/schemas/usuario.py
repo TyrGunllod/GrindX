@@ -35,6 +35,9 @@ class UsuarioUpdate(BaseModel):
     salario: Optional[str] = None
     endereco: Optional[str] = None
     numero: Optional[str] = None
+    bairro: Optional[str] = None
+    cidade: Optional[str] = None
+    uf: Optional[str] = None
     cep: Optional[str] = None
     telefone: Optional[str] = None
     celular: Optional[str] = None
@@ -55,6 +58,9 @@ class UsuarioResponse(UsuarioBase):
     salario: Optional[str] = None
     endereco: Optional[str] = None
     numero: Optional[str] = None
+    bairro: Optional[str] = None
+    cidade: Optional[str] = None
+    uf: Optional[str] = None
     cep: Optional[str] = None
     telefone: Optional[str] = None
     celular: Optional[str] = None

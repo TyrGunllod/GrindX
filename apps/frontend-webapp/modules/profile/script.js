@@ -43,6 +43,9 @@
         document.getElementById('profileEndereco').value = profile.endereco || '';
         document.getElementById('profileNumero').value = profile.numero || '';
         document.getElementById('profileCep').value = formatCep(profile.cep || '');
+        document.getElementById('profileBairro').value = profile.bairro || '';
+        document.getElementById('profileCidade').value = profile.cidade || '';
+        document.getElementById('profileUf').value = profile.uf || '';
         document.getElementById('profileTelefone').value = formatTelefone(profile.telefone || '');
         document.getElementById('profileCelular').value = formatCelular(profile.celular || '');
 
@@ -145,7 +148,7 @@
 
         try {
             const data = {};
-            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'classificacao', 'cpf', 'rg', 'salario', 'endereco', 'numero', 'cep', 'telefone', 'celular', 'email'];
+            const fields = ['codigo', 'cbo', 'departamento', 'cargo', 'classificacao', 'cpf', 'rg', 'salario', 'endereco', 'numero', 'bairro', 'cidade', 'uf', 'cep', 'telefone', 'celular', 'email'];
             fields.forEach(f => {
                 const el = document.getElementById('profile' + f.charAt(0).toUpperCase() + f.slice(1));
                 if (el) data[f] = el.value.trim();
@@ -290,6 +293,7 @@
     function maskCepOnBlur() {
         const el = document.getElementById('profileCep');
         if (el.value) el.value = formatCep(el.value);
+        lookupCep();
     }
     function maskTelefoneOnBlur() {
         const el = document.getElementById('profileTelefone');
@@ -325,7 +329,22 @@
                 cargoEl.value = desc.textContent;
             }
         } catch (e) {
-            // silently fail — external API may be unreachable
+            // silently fail
+        }
+    }
+
+    async function lookupCep() {
+        const cepEl = document.getElementById('profileCep');
+        const cep = cepEl.value.replace(/\D/g, '').slice(0, 8);
+        if (cep.length < 8) return;
+        try {
+            const data = await window.grindx.api.get('/cep/' + cep);
+            if (data.logradouro) document.getElementById('profileEndereco').value = data.logradouro;
+            if (data.bairro) document.getElementById('profileBairro').value = data.bairro;
+            if (data.localidade) document.getElementById('profileCidade').value = data.localidade;
+            if (data.uf) document.getElementById('profileUf').value = data.uf;
+        } catch (e) {
+            // silently fail
         }
     }
 
@@ -356,6 +375,9 @@
 
         document.getElementById('profileCbo').addEventListener('blur', lookupCbo);
 
+        document.getElementById('searchCboBtn').addEventListener('click', lookupCbo);
+        document.getElementById('searchCepBtn').addEventListener('click', lookupCep);
+
         document.querySelectorAll('.toggle-option').forEach(btn => {
             btn.addEventListener('click', () => {
                 const group = btn.closest('.toggle-group');
@@ -366,19 +388,13 @@
 
         document.querySelectorAll('#profileForm input').forEach(input => {
             input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    saveProfile();
-                }
+                if (e.key === 'Enter') e.preventDefault();
             });
         });
 
         document.querySelectorAll('#passwordForm input').forEach(input => {
             input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    savePassword();
-                }
+                if (e.key === 'Enter') e.preventDefault();
             });
         });
     }

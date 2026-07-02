@@ -39,7 +39,10 @@
                         </div>
                         <div class="form-group">
                             <label for="profileCbo">C.B.O</label>
-                            <input type="text" id="profileCbo" class="form-control">
+                            <div class="input-with-btn">
+                                <input type="text" id="profileCbo" class="form-control">
+                                <button type="button" class="btn btn-sm btn-outline search-btn" id="searchCboBtn" title="Buscar CBO"><i class="fas fa-search"></i></button>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="profileSalario">Salário Base</label>
@@ -50,12 +53,12 @@
                         <label for="profileDepartamento">Departamento</label>
                         <input type="text" id="profileDepartamento" class="form-control">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div class="form-row form-row-cargo-class">
+                        <div class="form-group form-group-cargo">
                             <label for="profileCargo">Cargo</label>
                             <input type="text" id="profileCargo" class="form-control" readonly>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group form-group-class">
                             <label for="profileClassificacao">Classificação</label>
                             <select id="profileClassificacao" class="form-control">
                                 <option value="">Selecione...</option>
@@ -83,7 +86,7 @@
                     <div class="form-row form-row-addr">
                         <div class="form-group form-group-grow">
                             <label for="profileEndereco">Endereço</label>
-                            <input type="text" id="profileEndereco" class="form-control">
+                            <input type="text" id="profileEndereco" class="form-control" readonly>
                         </div>
                         <div class="form-group form-group-sm">
                             <label for="profileNumero">Nº</label>
@@ -91,7 +94,24 @@
                         </div>
                         <div class="form-group form-group-cep">
                             <label for="profileCep">CEP</label>
-                            <input type="text" id="profileCep" class="form-control" maxlength="9" inputmode="numeric">
+                            <div class="input-with-btn">
+                                <input type="text" id="profileCep" class="form-control" maxlength="9" inputmode="numeric">
+                                <button type="button" class="btn btn-sm btn-outline search-btn" id="searchCepBtn" title="Buscar CEP"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row form-row-addr">
+                        <div class="form-group form-group-bairro">
+                            <label for="profileBairro">Bairro</label>
+                            <input type="text" id="profileBairro" class="form-control" readonly>
+                        </div>
+                        <div class="form-group form-group-cidade">
+                            <label for="profileCidade">Cidade</label>
+                            <input type="text" id="profileCidade" class="form-control" readonly>
+                        </div>
+                        <div class="form-group form-group-uf">
+                            <label for="profileUf">UF</label>
+                            <input type="text" id="profileUf" class="form-control" maxlength="2" readonly>
                         </div>
                     </div>
                     <div class="form-row">

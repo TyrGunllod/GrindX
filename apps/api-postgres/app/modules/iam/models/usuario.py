@@ -62,7 +62,7 @@ class Usuario(IamBase):
         String(100), nullable=True, comment="Cargo"
     )
     classificacao: Mapped[str | None] = mapped_column(
-        String(20),
+        String(10),
         nullable=True,
         comment="Classificação: Junior, Pleno, Senior, I, II, III, IV, V",
     )
@@ -77,6 +77,13 @@ class Usuario(IamBase):
     numero: Mapped[str | None] = mapped_column(
         String(20), nullable=True, comment="Número do endereço"
     )
+    bairro: Mapped[str | None] = mapped_column(
+        String(100), nullable=True, comment="Bairro"
+    )
+    cidade: Mapped[str | None] = mapped_column(
+        String(100), nullable=True, comment="Cidade"
+    )
+    uf: Mapped[str | None] = mapped_column(String(2), nullable=True, comment="UF")
     cep: Mapped[str | None] = mapped_column(String(10), nullable=True, comment="CEP")
     telefone: Mapped[str | None] = mapped_column(
         String(15), nullable=True, comment="Telefone"

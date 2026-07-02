@@ -47,6 +47,12 @@
     gap: 12px;
 }
 
+.form-row-cargo-class {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+}
+
 .form-group-grow {
     flex: 1;
     min-width: 0;
@@ -57,7 +63,51 @@
 }
 
 .form-group-cep {
-    flex: 0 0 120px;
+    flex: 0 0 150px;
+}
+
+.form-group-bairro {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-group-cidade {
+    flex: 0 0 200px;
+}
+
+.form-group-uf {
+    flex: 0 0 60px;
+}
+
+.input-with-btn {
+    display: flex;
+    gap: 4px;
+}
+
+.input-with-btn .form-control {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-btn {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--bg-card, #fff);
+    color: var(--text-muted, #64748b);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.search-btn:hover {
+    background: var(--bg-hover, #f1f5f9);
+    color: var(--primary, #00c2e0);
 }
 
 .form-group {
