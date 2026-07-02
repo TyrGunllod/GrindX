@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.59.1 (2026-07-02)
+
+### Bug Fixes
+
+- Remove close button, add Enter key navigation in user form
+  ([`055bcee`](https://github.com/TyrGunllod/GrindX/commit/055bcee812943a919c92fc21ffd83d46ab23d223))
+
+
 ## v1.59.0 (2026-07-02)
 
 ### Features
