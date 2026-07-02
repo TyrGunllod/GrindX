@@ -386,15 +386,19 @@
             });
         });
 
-        document.querySelectorAll('#profileForm input').forEach(input => {
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') e.preventDefault();
-            });
-        });
-
-        document.querySelectorAll('#passwordForm input').forEach(input => {
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') e.preventDefault();
+        const focusable = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm button, #passwordForm input');
+        focusable.forEach(el => {
+            el.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                if (el.id === 'profileCbo') lookupCbo();
+                if (el.id === 'profileCep') lookupCep();
+                let next = false;
+                for (const f of focusable) {
+                    if (f.disabled) continue;
+                    if (next) { f.focus(); break; }
+                    if (f === el) next = true;
+                }
             });
         });
     }
