@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.60.1 (2026-07-02)
+
+### Bug Fixes
+
+- Pass query params as object to api.get instead of URL string
+  ([`77768bb`](https://github.com/TyrGunllod/GrindX/commit/77768bb40cb39ecc6ce7f881aa42030441553bd2))
+
+
 ## v1.60.0 (2026-07-02)
 
 ### Features
