@@ -31,7 +31,7 @@ def buscar_por_codigo(
 ):
     try:
         sql = text(
-            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_COD LIKE :codigo ORDER BY B1_COD"
+            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_COD LIKE :codigo AND (D_E_L_E_T_ = '' OR D_E_L_E_T_ IS NULL) ORDER BY B1_COD"
         )
         rows = db.execute(sql, {"codigo": f"{codigo}%"}).fetchall()
         return [ItemProtheus(codigo=r[0], descricao=r[1]) for r in rows]
@@ -51,7 +51,7 @@ def buscar_por_descricao(
 ):
     try:
         sql = text(
-            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_DESC LIKE :descricao ORDER BY B1_COD"
+            "SELECT B1_COD, B1_DESC FROM SB1010 WHERE B1_DESC LIKE :descricao AND (D_E_L_E_T_ = '' OR D_E_L_E_T_ IS NULL) ORDER BY B1_COD"
         )
         rows = db.execute(sql, {"descricao": f"%{descricao}%"}).fetchall()
         return [ItemProtheus(codigo=r[0], descricao=r[1]) for r in rows]

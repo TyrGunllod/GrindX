@@ -11,17 +11,29 @@ class TestPorCodigo:
     def test_por_codigo_retorna_itens(self, client: TestClient, db_session: Session):
         db_session.execute(
             text("""
-            CREATE TABLE SB1010 (B1_COD VARCHAR(20), B1_DESC VARCHAR(100))
+            CREATE TABLE SB1010 (
+                B1_COD VARCHAR(20),
+                B1_DESC VARCHAR(100),
+                D_E_L_E_T_ VARCHAR(1)
+            )
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC) VALUES ('ABCD01', 'Produto Teste')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
+            VALUES ('ABCD01', 'Produto Teste', '')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC) VALUES ('ABCD02', 'Outro Produto')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
+            VALUES ('ABCD02', 'Outro Produto', '')
+        """)
+        )
+        db_session.execute(
+            text("""
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
+            VALUES ('ABCD03', 'Produto Deletado', '*')
         """)
         )
         db_session.commit()
@@ -40,7 +52,11 @@ class TestPorCodigo:
     def test_por_codigo_sem_resultados(self, client: TestClient, db_session: Session):
         db_session.execute(
             text("""
-            CREATE TABLE SB1010 (B1_COD VARCHAR(20), B1_DESC VARCHAR(100))
+            CREATE TABLE SB1010 (
+                B1_COD VARCHAR(20),
+                B1_DESC VARCHAR(100),
+                D_E_L_E_T_ VARCHAR(1)
+            )
         """)
         )
         db_session.commit()
@@ -54,22 +70,35 @@ class TestPorDescricao:
     def test_por_descricao_retorna_itens(self, client: TestClient, db_session: Session):
         db_session.execute(
             text("""
-            CREATE TABLE SB1010 (B1_COD VARCHAR(20), B1_DESC VARCHAR(100))
+            CREATE TABLE SB1010 (
+                B1_COD VARCHAR(20),
+                B1_DESC VARCHAR(100),
+                D_E_L_E_T_ VARCHAR(1)
+            )
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC) VALUES ('001', 'Produto Teste Um')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
+            VALUES ('001', 'Produto Teste Um', '')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC) VALUES ('002', 'Produto Teste Dois')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
+            VALUES ('002', 'Produto Teste Dois', '')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC) VALUES ('003', 'Outro Item')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
+            VALUES ('003', 'Outro Item', '')
+        """)
+        )
+        db_session.execute(
+            text("""
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
+            VALUES ('004', 'Produto Deletado', '*')
         """)
         )
         db_session.commit()
@@ -88,7 +117,11 @@ class TestPorDescricao:
     ):
         db_session.execute(
             text("""
-            CREATE TABLE SB1010 (B1_COD VARCHAR(20), B1_DESC VARCHAR(100))
+            CREATE TABLE SB1010 (
+                B1_COD VARCHAR(20),
+                B1_DESC VARCHAR(100),
+                D_E_L_E_T_ VARCHAR(1)
+            )
         """)
         )
         db_session.commit()
