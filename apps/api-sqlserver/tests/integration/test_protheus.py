@@ -36,12 +36,18 @@ class TestPorCodigo:
             VALUES ('ABCD03', 'Produto Deletado', '*')
         """)
         )
+        db_session.execute(
+            text("""
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
+            VALUES ('ABCD04', 'Produto Ativo', ' ')
+        """)
+        )
         db_session.commit()
 
         resp = client.get("/v1/produtos/por-codigo?codigo=ABCD")
         assert resp.status_code == 200
         data = resp.json()
-        assert len(data) == 2
+        assert len(data) == 3
         assert data[0]["codigo"] == "ABCD01"
         assert data[0]["descricao"] == "Produto Teste"
 
@@ -101,12 +107,18 @@ class TestPorDescricao:
             VALUES ('004', 'Produto Deletado', '*')
         """)
         )
+        db_session.execute(
+            text("""
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
+            VALUES ('005', 'Produto Ativo', ' ')
+        """)
+        )
         db_session.commit()
 
         resp = client.get("/v1/produtos/por-descricao?descricao=Produto")
         assert resp.status_code == 200
         data = resp.json()
-        assert len(data) == 2
+        assert len(data) == 3
 
     def test_por_descricao_minimo_4_caracteres(self, client: TestClient):
         resp = client.get("/v1/produtos/por-descricao?descricao=AB")
