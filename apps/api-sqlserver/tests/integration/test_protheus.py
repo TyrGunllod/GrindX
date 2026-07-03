@@ -14,32 +14,39 @@ class TestPorCodigo:
             CREATE TABLE SB1010 (
                 B1_COD VARCHAR(20),
                 B1_DESC VARCHAR(100),
-                D_E_L_E_T_ VARCHAR(1)
+                D_E_L_E_T_ VARCHAR(1),
+                B1_MSBLQL VARCHAR(1)
             )
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
-            VALUES ('ABCD01', 'Produto Teste', '')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('ABCD01', 'Produto Teste', '', '2')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
-            VALUES ('ABCD02', 'Outro Produto', '')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('ABCD02', 'Outro Produto', '', '2')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
-            VALUES ('ABCD03', 'Produto Deletado', '*')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('ABCD03', 'Produto Deletado', '*', '2')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
-            VALUES ('ABCD04', 'Produto Ativo', ' ')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('ABCD04', 'Produto Ativo', ' ', '2')
+        """)
+        )
+        db_session.execute(
+            text("""
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('ABCD05', 'Produto Bloqueado', '', '1')
         """)
         )
         db_session.commit()
@@ -61,7 +68,8 @@ class TestPorCodigo:
             CREATE TABLE SB1010 (
                 B1_COD VARCHAR(20),
                 B1_DESC VARCHAR(100),
-                D_E_L_E_T_ VARCHAR(1)
+                D_E_L_E_T_ VARCHAR(1),
+                B1_MSBLQL VARCHAR(1)
             )
         """)
         )
@@ -79,38 +87,45 @@ class TestPorDescricao:
             CREATE TABLE SB1010 (
                 B1_COD VARCHAR(20),
                 B1_DESC VARCHAR(100),
-                D_E_L_E_T_ VARCHAR(1)
+                D_E_L_E_T_ VARCHAR(1),
+                B1_MSBLQL VARCHAR(1)
             )
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
-            VALUES ('001', 'Produto Teste Um', '')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('001', 'Produto Teste Um', '', '2')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
-            VALUES ('002', 'Produto Teste Dois', '')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('002', 'Produto Teste Dois', '', '2')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
-            VALUES ('003', 'Outro Item', '')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('003', 'Outro Item', '', '2')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
-            VALUES ('004', 'Produto Deletado', '*')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('004', 'Produto Deletado', '*', '2')
         """)
         )
         db_session.execute(
             text("""
-            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_)
-            VALUES ('005', 'Produto Ativo', ' ')
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('005', 'Produto Ativo', ' ', '2')
+        """)
+        )
+        db_session.execute(
+            text("""
+            INSERT INTO SB1010 (B1_COD, B1_DESC, D_E_L_E_T_, B1_MSBLQL)
+            VALUES ('006', 'Produto Bloqueado', '', '1')
         """)
         )
         db_session.commit()
@@ -132,7 +147,8 @@ class TestPorDescricao:
             CREATE TABLE SB1010 (
                 B1_COD VARCHAR(20),
                 B1_DESC VARCHAR(100),
-                D_E_L_E_T_ VARCHAR(1)
+                D_E_L_E_T_ VARCHAR(1),
+                B1_MSBLQL VARCHAR(1)
             )
         """)
         )
