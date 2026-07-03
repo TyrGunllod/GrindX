@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.65.1 (2026-07-03)
+
+### Bug Fixes
+
+- Add D_E_L_E_T_ = ' ' (space) to Protheus product filter
+  ([`9a6641a`](https://github.com/TyrGunllod/GrindX/commit/9a6641a3216545570b3505636949c20b7d994fd5))
+
+
 ## v1.65.0 (2026-07-03)
 
 ### Features
