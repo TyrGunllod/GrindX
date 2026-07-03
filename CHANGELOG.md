@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.65.0 (2026-07-03)
+
+### Features
+
+- Add D_E_L_E_T_ filter to Protheus product queries
+  ([`9f6a075`](https://github.com/TyrGunllod/GrindX/commit/9f6a075a0c704a6a7df41041e788a6b05d688ac1))
+
+
 ## v1.64.0 (2026-07-02)
 
 ### Features
