@@ -122,7 +122,10 @@ def copy_migration(dry_run: bool = False):
         content = f.read_text(encoding="utf-8")
         content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{next_rev}"', content)
         content = re.sub(r'down_revision\s*=\s*[^#\n]+', f'down_revision = "{last_rev}"', content)
-        new_name = re.sub(r'^\d+', next_rev, f.name)
+        if re.match(r'^\d+', f.name):
+            new_name = re.sub(r'^\d+', next_rev, f.name)
+        else:
+            new_name = next_rev + "_" + f.name
         dest_path = dest / new_name
         if dry_run:
             logger.info("[DRY-RUN] Criaria %s (revision %s, down_revision %s)", dest_path, next_rev, last_rev)
