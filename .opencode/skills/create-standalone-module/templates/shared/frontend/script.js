@@ -6,6 +6,9 @@ let editingId = null;
 // Detectar contexto (session existe via app.js)
 const _isGrindx = typeof window !== 'undefined' && window.grindx && window.grindx.session;
 
+// API base: relativa no GrindX, absoluta no standalone
+const API_BASE = _isGrindx ? '/{route_api}' : 'http://localhost:7000/{route_api}';
+
 // Helper: fetch com auth automática
 async function _fetch(url, options) {
     const headers = {};
@@ -46,24 +49,24 @@ function downloadFromUrl(url, filename) {
 // API calls
 const api = {
     async listar(page = 1, page_size = 20) {
-        return _fetch('/{route_api}?page=' + page + '&page_size=' + page_size);
+        return _fetch(API_BASE + '?page=' + page + '&page_size=' + page_size);
     },
     async criar(dados) {
-        return _fetch('/{route_api}', {
+        return _fetch(API_BASE, {
             method: 'POST',
             body: JSON.stringify(dados),
             headers: { 'Content-Type': 'application/json' }
         });
     },
     async atualizar(id, dados) {
-        return _fetch('/{route_api}/' + id, {
+        return _fetch(API_BASE + '/' + id, {
             method: 'PUT',
             body: JSON.stringify(dados),
             headers: { 'Content-Type': 'application/json' }
         });
     },
     async excluir(id) {
-        return _fetch('/{route_api}/' + id, { method: 'DELETE' });
+        return _fetch(API_BASE + '/' + id, { method: 'DELETE' });
     }
 };
 
