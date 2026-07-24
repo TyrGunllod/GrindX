@@ -6,8 +6,15 @@ let editingId = null;
 // Detectar contexto (session existe via app.js)
 const _isGrindx = typeof window !== 'undefined' && window.grindx && window.grindx.session;
 
-// API base: relativa no GrindX, absoluta no standalone
-const API_BASE = _isGrindx ? '/{route_api}' : 'http://localhost:7000/{route_api}';
+// API base: 3-tier (GRINDX_CONFIG → grindx.config → auto-detect)
+const API_BASE = (function() {
+    if (window.GRINDX_CONFIG?.API_BASE_URL) return window.GRINDX_CONFIG.API_BASE_URL + '/{route_api}';
+    if (window.grindx?.config?.API_BASE_URL) return window.grindx.config.API_BASE_URL + '/{route_api}';
+    var h = window.location.hostname;
+    return (h === 'localhost' || h === '127.0.0.1')
+        ? 'http://' + h + ':7000/{route_api}'
+        : '/{route_api}';
+})();
 
 // Helper: fetch com auth automática
 async function _fetch(url, options) {
