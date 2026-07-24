@@ -22,7 +22,16 @@ logger = structlog.get_logger(__name__)
 MODULE_NAME = "{entity_name}"
 MODULE_SRC = Path(__file__).parent
 STANDALONE_ROOT = MODULE_SRC.parent.parent.parent  # raiz do modulo-{module_name}/
-GRINDX_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent.parent.parent / "GrindX"
+
+def _find_grindx_root():
+    current = Path(__file__).resolve().parent
+    while current.parent != current:
+        if (current / "apps").is_dir() and (current / "packages").is_dir():
+            return current
+        current = current.parent
+    return None
+
+GRINDX_ROOT = _find_grindx_root() or (STANDALONE_ROOT.parent / "GrindX")
 # postgres: "api-postgres" | sqlserver: "api-sqlserver"
 GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
 GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
@@ -72,13 +81,18 @@ def copy_migration(dry_run: bool = False):
     last_num = 0
     last_rev = "000"
     if dest.exists():
-        for f in dest.glob("*.py"):
+        files = list(dest.glob("*.py"))
+        logger.info("Diretorio de migrations: %s (%d arquivos .py)", dest, len(files))
+        for f in files:
             m = re.match(r"^(\d+)", f.name)
             if m:
                 n = int(m.group(1))
+                logger.info("  Encontrado: %s (prefixo %d)", f.name, n)
                 if n > last_num:
                     last_num = n
                     last_rev = m.group(1)
+    else:
+        logger.warning("Diretorio de migrations nao encontrado: %s", dest)
 
     next_rev = str(last_num + 1).zfill(3)
 
