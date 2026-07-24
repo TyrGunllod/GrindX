@@ -101,7 +101,7 @@ Project_Management/modulo-{module_name}/
 │           ├── base.py                         # Templates/postgres/base.py
 │           ├── models/
 │           │   ├── __init__.py
-│           │   └── {module_name}.py            # Templates/postgres/model.py
+│           │   └── {entity_name_lower}.py                   # Templates/postgres/model.py
 │           ├── schemas/
 │           │   ├── __init__.py                 # Templates/shared/backend/init_schemas.py
 │           │   └── {module_name}.py            # Templates/shared/backend/schema.py
