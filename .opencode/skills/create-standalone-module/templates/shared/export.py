@@ -120,18 +120,23 @@ def copy_migration(dry_run: bool = False):
 
     for f in MIGRATION_SRC.glob("*.py"):
         content = f.read_text(encoding="utf-8")
-        content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{next_rev}"', content)
-        content = re.sub(r'down_revision\s*=\s*[^#\n]+', f'down_revision = "{last_rev}"', content)
+        src_rev_match = re.search(r'revision\s*=\s*"(\d+)"', content)
+        src_rev = int(src_rev_match.group(1)) if src_rev_match else 0
+        # Se a revision da fonte for maior que a ultima existente, mantem
+        use_rev = str(src_rev).zfill(3) if src_rev > last_num else next_rev
+        down = last_rev if src_rev > last_num else last_rev
+        content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{use_rev}"', content)
+        content = re.sub(r'down_revision\s*=\s*[^#\n]+', f'down_revision = "{down}"', content)
         if re.match(r'^\d+', f.name):
-            new_name = re.sub(r'^\d+', next_rev, f.name)
+            new_name = re.sub(r'^\d+', use_rev, f.name)
         else:
-            new_name = next_rev + "_" + f.name
+            new_name = use_rev + "_" + f.name
         dest_path = dest / new_name
         if dry_run:
-            logger.info("[DRY-RUN] Criaria %s (revision %s, down_revision %s)", dest_path, next_rev, last_rev)
+            logger.info("[DRY-RUN] Criaria %s (revision %s, down_revision %s)", dest_path, use_rev, down)
         else:
             dest_path.write_text(content, encoding="utf-8")
-            logger.info("Migration %s copiada como %s (revision %s, down_revision %s)", f.name, new_name, next_rev, last_rev)
+            logger.info("Migration %s copiada como %s (revision %s, down_revision %s)", f.name, new_name, use_rev, down)
 
 
 def register_routes(dry_run: bool = False):

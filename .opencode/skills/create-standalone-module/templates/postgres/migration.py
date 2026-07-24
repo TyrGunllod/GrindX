@@ -9,8 +9,8 @@ from typing import Sequence
 from alembic import op
 import sqlalchemy as sa
 
-revision: str = "{{revision}}"
-down_revision: str | None = "{{down_revision}}"
+revision: str = "{migration_start_number}"
+down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 

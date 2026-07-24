@@ -41,6 +41,7 @@ Após definir o padrão de tech stack, pergunte ao usuário cada parâmetro abai
 | 9 | `frontend_tabs` | Array de abas (name, url, menu_icone, order) | Ver abaixo | — |
 | 10 | `menu_label` | Rótulo do menu lateral | `"Gestão de Projetos"` | `{entity_name}` |
 | 11 | `menu_description` | Subtítulo do header da página | `"Gerencie projetos e tarefas"` | `"Gerencie {entity_name_lower} do sistema"` |
+| 12 | `migration_start_number` | Número inicial da migration (3 dígitos, evita colisão) | `"100"` | `"100"` |
 
 **Exemplo de `frontend_tabs`:**
 ```json
@@ -73,6 +74,8 @@ Baseado na escolha do Tech Stack:
 - `{route_api}` — API path
 - `{frontend_prefix}` — prefixo abreviado (ex: gp)
 - `{frontend_tabs}` — array de abas
+- `{menu_description}` — subtítulo do header
+- `{migration_start_number}` — número inicial da migration (3 dígitos, padrão 100)
 
 ## Directory Structure
 
