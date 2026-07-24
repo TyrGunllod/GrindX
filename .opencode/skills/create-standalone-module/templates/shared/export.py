@@ -96,6 +96,27 @@ def copy_migration(dry_run: bool = False):
 
     next_rev = str(last_num + 1).zfill(3)
 
+    # Se MIGRATION_SRC nao existe (rodando dentro do GrindX), procura migration
+    # ja copiada no dest e renomeia/atualiza in-place
+    if not MIGRATION_SRC.exists() or not list(MIGRATION_SRC.glob("*.py")):
+        for old_file in dest.glob("*_{module_name}*.py"):
+            content = old_file.read_text(encoding="utf-8")
+            old_rev = re.search(r'revision\s*=\s*"(\d+)"', content)
+            if old_rev and old_rev.group(1) == next_rev:
+                logger.info("Migration ja esta com revision %s, pulando", next_rev)
+                return
+            content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{next_rev}"', content)
+            content = re.sub(r'down_revision\s*=\s*[^#\n]+', f'down_revision = "{last_rev}"', content)
+            new_name = re.sub(r'^\d+', next_rev, old_file.name)
+            dest_path = dest / new_name
+            if dry_run:
+                logger.info("[DRY-RUN] Renomearia %s -> %s", old_file.name, new_name)
+            else:
+                old_file.rename(dest_path)
+                dest_path.write_text(content, encoding="utf-8")
+                logger.info("Migration renomeada: %s -> %s (revision %s, down_revision %s)", old_file.name, new_name, next_rev, last_rev)
+        return
+
     for f in MIGRATION_SRC.glob("*.py"):
         content = f.read_text(encoding="utf-8")
         content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{next_rev}"', content)
