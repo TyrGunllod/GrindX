@@ -68,25 +68,31 @@ def copy_migration(dry_run: bool = False):
         logger.info("[DRY-RUN] Copiaria migrations de %s -> %s", MIGRATION_SRC, dest)
         return
 
-    # Escanear ultima revision do GrindX
+    # Escanear prefixo numerico dos arquivos de migration do GrindX
+    last_num = 0
     last_rev = "000"
-    for f in dest.glob("*.py"):
-        content = f.read_text(encoding="utf-8")
-        m = re.search(r'revision\s*=\s*"(\d+)"', content)
-        if m and m.group(1) > last_rev:
-            last_rev = m.group(1)
+    if dest.exists():
+        for f in dest.glob("*.py"):
+            m = re.match(r"^(\d+)", f.name)
+            if m:
+                n = int(m.group(1))
+                if n > last_num:
+                    last_num = n
+                    last_rev = m.group(1)
 
-    next_rev = str(int(last_rev) + 1).zfill(len(last_rev))
+    next_rev = str(last_num + 1).zfill(3)
 
     for f in MIGRATION_SRC.glob("*.py"):
         content = f.read_text(encoding="utf-8")
-        # Substitui revision e down_revision
         content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{next_rev}"', content)
         content = re.sub(r'down_revision\s*=\s*[^#\n]+', f'down_revision = "{last_rev}"', content)
         new_name = re.sub(r'^\d+', next_rev, f.name)
         dest_path = dest / new_name
-        dest_path.write_text(content, encoding="utf-8")
-        logger.info("Migration %s copiada como %s (revision %s, down_revision %s)", f.name, new_name, next_rev, last_rev)
+        if dry_run:
+            logger.info("[DRY-RUN] Criaria %s", dest_path)
+        else:
+            dest_path.write_text(content, encoding="utf-8")
+            logger.info("Migration %s copiada como %s (revision %s, down_revision %s)", f.name, new_name, next_rev, last_rev)
 
 
 def register_routes(dry_run: bool = False):
