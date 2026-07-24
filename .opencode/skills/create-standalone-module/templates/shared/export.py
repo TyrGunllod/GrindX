@@ -61,13 +61,32 @@ def copy_frontend(dry_run: bool = False):
 
 
 def copy_migration(dry_run: bool = False):
+    import re
+
     dest = GRINDX_API / "alembic" / "versions"
     if dry_run:
         logger.info("[DRY-RUN] Copiaria migrations de %s -> %s", MIGRATION_SRC, dest)
-    else:
-        for f in MIGRATION_SRC.glob("*.py"):
-            shutil.copy2(f, dest / f.name)
-            logger.info("Migration %s copiada", f.name)
+        return
+
+    # Escanear ultima revision do GrindX
+    last_rev = "000"
+    for f in dest.glob("*.py"):
+        content = f.read_text(encoding="utf-8")
+        m = re.search(r'revision\s*=\s*"(\d+)"', content)
+        if m and m.group(1) > last_rev:
+            last_rev = m.group(1)
+
+    next_rev = str(int(last_rev) + 1).zfill(len(last_rev))
+
+    for f in MIGRATION_SRC.glob("*.py"):
+        content = f.read_text(encoding="utf-8")
+        # Substitui revision e down_revision
+        content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{next_rev}"', content)
+        content = re.sub(r'down_revision\s*=\s*[^#\n]+', f'down_revision = "{last_rev}"', content)
+        new_name = re.sub(r'^\d+', next_rev, f.name)
+        dest_path = dest / new_name
+        dest_path.write_text(content, encoding="utf-8")
+        logger.info("Migration %s copiada como %s (revision %s, down_revision %s)", f.name, new_name, next_rev, last_rev)
 
 
 def register_routes(dry_run: bool = False):
@@ -227,7 +246,11 @@ def remove_frontend(dry_run: bool = False):
 def remove_migration(dry_run: bool = False):
     dest = GRINDX_API / "alembic" / "versions"
     for f in dest.glob("*.py"):
-        if "{module_name}" in f.name.lower():
+        try:
+            content = f.read_text(encoding="utf-8")
+        except Exception:
+            continue
+        if "{module_name}" in content:
             if dry_run:
                 logger.info("[DRY-RUN] Removeria %s", f)
             else:
