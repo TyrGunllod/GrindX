@@ -40,6 +40,7 @@ Após definir o padrão de tech stack, pergunte ao usuário cada parâmetro abai
 | 8 | `frontend_prefix` | Prefixo abreviado p/ sub-módulos | `gp` | Primeiras letras |
 | 9 | `frontend_tabs` | Array de abas (name, url, menu_icone, order) | Ver abaixo | — |
 | 10 | `menu_label` | Rótulo do menu lateral | `"Gestão de Projetos"` | `{entity_name}` |
+| 11 | `menu_description` | Subtítulo do header da página | `"Gerencie projetos e tarefas"` | `"Gerencie {entity_name_lower} do sistema"` |
 
 **Exemplo de `frontend_tabs`:**
 ```json
@@ -80,38 +81,63 @@ Baseado na escolha do Tech Stack:
 ```
 Project_Management/modulo-{module_name}/
 ├── module.json                                 # Templates/postgres/module.json
-├── app/modules/{module_name}/
+├── app/
+│   ├── __init__.py                             # Templates/shared/standalone/app_init.py
+│   ├── main.py                                 # Templates/shared/standalone/main.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py                           # Templates/shared/standalone/config.py
+│   │   ├── database_protheus.py                # Templates/shared/standalone/database_protheus.py
+│   │   └── auth.py                             # Templates/shared/standalone/auth.py
+│   └── modules/
+│       ├── iam/
+│       │   ├── __init__.py
+│       │   └── base.py                         # Templates/shared/standalone/iam_base.py
+│       └── {module_name}/
+│           ├── __init__.py
+│           ├── base.py                         # Templates/postgres/base.py
+│           ├── models/
+│           │   ├── __init__.py
+│           │   └── {module_name}.py            # Templates/postgres/model.py
+│           ├── schemas/
+│           │   ├── __init__.py                 # Templates/shared/backend/init_schemas.py
+│           │   └── {module_name}.py            # Templates/shared/backend/schema.py
+│           ├── repositories/
+│           │   ├── __init__.py                 # Templates/shared/backend/init_repositories.py
+│           │   └── {module_name}_repository.py # Templates/shared/backend/repository.py
+│           ├── services/
+│           │   ├── __init__.py                 # Templates/shared/backend/init_services.py
+│           │   └── {module_name}_service.py    # Templates/shared/backend/service.py
+│           ├── routers/
+│           │   ├── __init__.py                 # Templates/shared/backend/init_routers.py
+│           │   └── {module_name}_router.py     # Templates/shared/backend/router.py
+│           ├── tests/
+│           │   ├── __init__.py
+│           │   ├── conftest.py                 # Templates/shared/tests/conftest.py
+│           │   ├── test_{module_name}_unit.py  # Templates/shared/tests/test_unit.py
+│           │   └── test_{module_name}_integration.py  # Templates/shared/tests/test_integration.py
+│           ├── export.py                       # Templates/shared/export.py
+│           └── README.md
+├── shared/
 │   ├── __init__.py
-│   ├── base.py                                 # Templates/postgres/base.py
-│   ├── models/
+│   ├── exceptions/
 │   │   ├── __init__.py
-│   │   └── {module_name}.py                    # Templates/postgres/model.py
-│   ├── schemas/
-│   │   ├── __init__.py                         # Templates/shared/backend/init_schemas.py
-│   │   └── {module_name}.py                    # Templates/shared/backend/schema.py
-│   ├── repositories/
-│   │   ├── __init__.py                         # Templates/shared/backend/init_repositories.py
-│   │   └── {module_name}_repository.py         # Templates/shared/backend/repository.py
-│   ├── services/
-│   │   ├── __init__.py                         # Templates/shared/backend/init_services.py
-│   │   └── {module_name}_service.py            # Templates/shared/backend/service.py
-│   ├── routers/
-│   │   ├── __init__.py                         # Templates/shared/backend/init_routers.py
-│   │   └── {module_name}_router.py             # Templates/shared/backend/router.py
-│   ├── tests/
-│   │   ├── __init__.py
-│   │   ├── conftest.py                         # Templates/shared/tests/conftest.py
-│   │   ├── test_{module_name}_unit.py          # Templates/shared/tests/test_unit.py
-│   │   └── test_{module_name}_integration.py   # Templates/shared/tests/test_integration.py
-│   ├── export.py                               # Templates/shared/export.py
-│   └── README.md
+│   │   └── base.py                             # Templates/shared/standalone/shared_exceptions.py
+│   └── schemas/
+│       ├── __init__.py
+│       └── base.py                             # Templates/shared/standalone/shared_schemas.py
 ├── frontend/
 │   ├── {frontend_prefix}_{tab1}/
 │   │   ├── index.html, script.js, style.css    # Templates/shared/frontend/*
-│   └── shared/
-│       └── core.css
+│   │   ├── shared/
+│   │   │   ├── core.css                         # Templates/shared/frontend/shared/core.css
+│   │   │   └── app.js                           # Templates/shared/frontend/shared/app.js
+│   │   └── (style.css importa shared/core.css)
+│   └── ...
 ├── migration/
 │   └── {revision}_{table_name}.py              # Templates/postgres/migration.py
+├── .env.example                                # Templates/shared/standalone/env_example
+├── .gitignore                                  # Templates/shared/standalone/gitignore
 ├── Makefile, requirements.txt, pytest.ini, run_tests.ps1  # Templates/shared/support/*
 ```
 
@@ -124,6 +150,51 @@ Project_Management/modulo-{module_name}/
 - ✏️ `routers/{module_name}_router.py` — factory inline (padrão atual)
 - ✏️ `repositories/` — usa `text()` da SQLAlchemy, não models
 - 🆕 `exceptions.py` — exceções específicas do domínio
+
+## 1.0 Standalone Prerequisites
+
+Antes de criar o módulo, crie os arquivos de suporte standalone que permitem rodar sem o GrindX:
+
+### `app/__init__.py` → `templates/shared/standalone/app_init.py`
+Pacote `app` (vazio).
+
+### `app/main.py` → `templates/shared/standalone/main.py`
+FastAPI app que importa e registra o router do módulo. Substitua `{module_name}`.
+
+### `app/core/config.py` → `templates/shared/standalone/config.py`
+Carrega `.env` via `python-dotenv`, expõe `DATABASE_URL`.
+
+### `app/core/database_protheus.py` → `templates/shared/standalone/database_protheus.py`
+Engine SQLAlchemy + `get_db_protheus()`. Usa `DATABASE_URL` do config.
+
+### `app/core/auth.py` → `templates/shared/standalone/auth.py`
+`verify_api_key()` stub — aceita qualquer `X-API-Key` header.
+
+### `app/modules/iam/base.py` → `templates/shared/standalone/iam_base.py`
+Stub local: `metadata`, `reg`, `IamBase`. Substitui dependência do GrindX.
+
+### `shared/exceptions/base.py` → `templates/shared/standalone/shared_exceptions.py`
+`NotFoundError(resource, identifier)` e `ConflictError`.
+
+### `shared/schemas/base.py` → `templates/shared/standalone/shared_schemas.py`
+`ErrorResponse`, `MessageResponse`, `PaginatedResponse[T]`.
+
+### `.env.example` → `templates/shared/standalone/env_example`
+Template com `DATABASE_URL`. Substitua `{module_name}` no nome do banco.
+
+### `.gitignore` → `templates/shared/standalone/gitignore`
+Exclui `__pycache__/`, `.env`, `.pytest_cache/`, `dist/`, `*.db`, IDEs.
+
+### `frontend/shared/core.css` → `templates/shared/frontend/shared/core.css`
+Variáveis CSS (`--primary`, `--bg-card`, `--border-color`, etc.) para standalone sem o monorepo.
+
+### `frontend/shared/app.js` → `templates/shared/frontend/shared/app.js`
+Stub vazio — no GrindX fornece `window.grindx.session`, no standalone é vazio.
+
+**Fluxo de import no router (dual-context):**
+- GrindX: `app.database.get_db` + `app.auth.dependencies.get_current_user`
+- Standalone: `app.core.database_protheus.get_db_protheus` + `app.core.auth.verify_api_key`
+- `shared.*` e `app.modules.iam.*` resolvidos localmente no standalone
 
 ## 1. Backend — Criar Todos os Arquivos
 
@@ -251,6 +322,7 @@ Use templates:
 **Regras JS:**
 - NUNCA importar bibliotecas externas (React, Vue, jQuery, Axios)
 - NUNCA usar TypeScript — apenas JS puro
+- `API_BASE`: relativa no GrindX (`/{route_api}`), absoluta no standalone (`http://localhost:7000/{route_api}`)
 - `_fetch()` com detecção de contexto: `window.grindx.session` (JWT) vs `API_KEY`
 - `downloadFromUrl()` para PDF/binários com fallback para `?api_key=` (standalone)
 - Eventos via delegated event bubbling no container pai
@@ -274,11 +346,15 @@ Substitua `{table_name}`, `{schema_name}`.
 
 Use templates em `templates/shared/support/`:
 - **`run_tests.ps1`** → `templates/shared/support/run_tests.ps1` — script para rodar testes com `GRINDX_PACKAGES`
-- **`requirements.txt`** → `templates/shared/support/requirements.txt` — pytest, sqlalchemy, pydantic, structlog, fastapi
+- **`requirements.txt`** → `templates/shared/support/requirements.txt` — pytest, sqlalchemy, pydantic, structlog, fastapi, uvicorn, alembic, python-dotenv
 - **`pytest.ini`** → `templates/shared/support/pytest.ini` — config testpaths
-- **`Makefile`** → `templates/shared/support/Makefile` — targets: test, test-unit, test-integration, package, export, dry-run, import, clean, help
+- **`Makefile`** → `templates/shared/support/Makefile` — targets: test, test-unit, test-integration, dev-backend, dev-frontend, package, export, dry-run, import, clean, help
 
-Substitua `{module_name}`, `{entity_name}`.
+Arquivos standalone (ver seção 1.0):
+- **`.env.example`** → `templates/shared/standalone/env_example` — template DATABASE_URL
+- **`.gitignore`** → `templates/shared/standalone/gitignore` — exclui __pycache__, .env, .pytest_cache, dist
+
+Substitua `{module_name}`, `{entity_name}`, `{frontend_prefix}`.
 
 ## 6. Manifesto (`module.json`)
 
@@ -326,10 +402,14 @@ $env:GRINDX_PACKAGES = "D:\\_Projetos\\GrindX\\packages"
 python -m pytest app/modules/{module_name}/tests/ -v
 # Esperado: 10+ testes PASS
 
-# 3. Gerar pacote .zip
+# 3. Rodar standalone (sem GrindX)
+make dev-backend      # FastAPI em http://localhost:7000
+make dev-frontend     # Frontend estatico em http://localhost:7080
+
+# 4. Gerar pacote .zip
 make package
 
-# 4. Importar no GrindX
+# 5. Importar no GrindX
 make import
 # Via API: POST /v1/import/{module_name}
 # Via frontend: Gestão → Importar Módulos
@@ -354,14 +434,16 @@ pytest tests/ -k {module_name} -v
 - [ ] **Tech Stack definido**: Padrão GrindX (HTML puro + CSS puro + Vanilla JS + PostgreSQL)
 - [ ] **Frontend prefix definido**: Prefixo abreviado para sub-módulos (ex: `gp`)
 - [ ] **Frontend tabs definido**: Array de abas com name, url, menu_icone, order
+- [ ] **Standalone prerequisites**: `app/__init__.py`, `app/main.py`, `app/core/` (config, database_protheus, auth), `app/modules/iam/base.py`, `shared/` (exceptions, schemas), `.env.example`, `.gitignore`
 - [ ] Backend: base, model, schemas, repository, service, router + __init__.py
 - [ ] **Router dual-context**: try/except para `get_db`/`get_current_user` (GrindX) vs `get_db_protheus`/`verify_api_key` (standalone)
 - [ ] **Frontend dual-context**: `_fetch()` e `downloadFromUrl()` com detecção `window.grindx.session` + `index.html` inclui `app.js`
 - [ ] **PDF opcional**: se módulo gera PDF, instalar `xhtml2pdf` no venv do GrindX
 - [ ] Tests: conftest.py, unit tests (mocked repo), integration tests (SQLite)
 - [ ] Migration: Alembic migration file (PostgreSQL)
-- [ ] Support: requirements.txt, pytest.ini, run_tests.ps1, Makefile
+- [ ] Support: requirements.txt (com python-dotenv), pytest.ini, run_tests.ps1, Makefile (com dev-backend/dev-frontend)
 - [ ] Testes passam: `pytest app/modules/{module_name}/tests/ -v`
+- [ ] Dev server funciona: `make dev-backend` sobe em http://localhost:7000
 - [ ] `module.json` criado na raiz do standalone com `frontend_tabs` array
 - [ ] `export.py`: usa `STANDALONE_ROOT` para paths de frontend, migration e dist
 - [ ] `export.py`: `--dry-run` simula sem alterar GrindX

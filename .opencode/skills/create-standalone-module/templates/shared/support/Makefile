@@ -5,7 +5,7 @@
 MODULE := {module_name}
 ENTITY := {entity_name}
 
-.PHONY: test test-unit test-integration package export dry-run clean help
+.PHONY: test test-unit test-integration dev-backend dev-frontend package export dry-run clean help
 
 # ==========================================
 # Testes
@@ -19,6 +19,20 @@ test-unit:
 
 test-integration:
 	@python -m pytest app/modules/$(MODULE)/tests/ -v --tb=short -k "integration"
+
+# ==========================================
+# Desenvolvimento
+# ==========================================
+
+dev-backend:
+	@echo "Iniciando API FastAPI (uvicorn)..."
+	@cd app/modules/$(MODULE) && cmd /c "set PYTHONPATH=../../..&& uvicorn app.main:app --reload --port 7000"
+	@echo "API rodando em http://localhost:7000"
+
+dev-frontend:
+	@echo "Iniciando servidor frontend estatico..."
+	@cd frontend/{frontend_prefix}_* && python -m http.server 7080
+	@echo "Frontend em http://localhost:7080"
 
 # ==========================================
 # Empacotamento & Exportação
@@ -72,6 +86,8 @@ help:
 	@echo   make test             Roda todos os testes
 	@echo   make test-unit        Roda apenas testes unitarios
 	@echo   make test-integration Roda apenas testes de integracao
+	@echo   make dev-backend      Inicia API FastAPI (porta 7000)
+	@echo   make dev-frontend     Inicia frontend estatico (porta 7080)
 	@echo   make package          Gera o zip para importacao
 	@echo   make dry-run          Simula a geracao do zip
 	@echo   make export           Exporta direto para o GrindX (CLI)
