@@ -171,7 +171,7 @@ def unregister_routes(dry_run: bool = False):
         return
     content = main_py.read_text(encoding="utf-8")
     lines = content.splitlines(keepends=True)
-    new_lines = [l for l in lines if ROUTER_IMPORT not in l and ROUTER_REGISTER not in l]
+    new_lines = [l for l in lines if "{module_name}" not in l]
     if len(new_lines) == len(lines):
         logger.info("Rotas nao registradas nada a fazer")
         return
@@ -183,22 +183,25 @@ def unregister_routes(dry_run: bool = False):
 
 
 def unregister_dependency(dry_run: bool = False):
+    import re
+
     deps_py = GRINDX_API / "app" / "auth" / "dependencies.py"
     if not deps_py.exists():
         return
     content = deps_py.read_text(encoding="utf-8")
-    marker = "# --- Versões vinculadas das permissões ---"
-    block_start = content.find(f"from app.modules.{module_name}.repositories")
-    if block_start == -1:
+    # Encontra bloco: do primeiro import do modulo ate a linha do marker
+    pattern = re.compile(
+        rf"(from app\.modules\.{module_name}\.[^\n]*\n.*?)(\n?# --- Vers.oes vinculadas)",
+        re.DOTALL,
+    )
+    match = pattern.search(content)
+    if not match:
         logger.info("Dependency nao registrada nada a fazer")
         return
-    block_end = content.find(marker, block_start)
-    if block_end == -1:
-        block_end = len(content)
     if dry_run:
         logger.info("[DRY-RUN] Removeria block de dependencies.py")
     else:
-        new_content = content[:block_start] + content[block_end:]
+        new_content = content[:match.start()] + content[match.start(2):]
         deps_py.write_text(new_content, encoding="utf-8")
         logger.info("Dependency removida de dependencies.py")
 
