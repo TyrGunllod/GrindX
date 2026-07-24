@@ -16,6 +16,10 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    if "{table_name}" in inspector.get_table_names(schema="{schema_name}"):
+        return
     op.create_table(
         "{table_name}",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
