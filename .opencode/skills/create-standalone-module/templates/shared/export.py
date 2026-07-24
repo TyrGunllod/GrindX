@@ -1,11 +1,8 @@
 """
-export.py — Exporta o módulo {entity_name} para o sistema GrindX.
+export.py — Exporta o modulo PopModelo para o sistema GrindX.
 
 Uso:
-    python -m app.modules.{module_name}.export [--dry-run] [--grindx-root PATH]
-
-Sem --dry-run, copia arquivos e registra.
-Com --dry-run, apenas exibe o que seria feito.
+    python -m app.modules.pop_modelos.export [--dry-run] [--grindx-root PATH]
 """
 
 import argparse
@@ -19,9 +16,9 @@ import structlog
 
 logger = structlog.get_logger(__name__)
 
-MODULE_NAME = "{entity_name}"
+MODULE_NAME = "PopModelo"
 MODULE_SRC = Path(__file__).parent
-STANDALONE_ROOT = MODULE_SRC.parent.parent.parent  # raiz do modulo-{module_name}/
+STANDALONE_ROOT = MODULE_SRC.parent.parent.parent
 
 def _find_grindx_root():
     current = Path(__file__).resolve().parent
@@ -32,22 +29,22 @@ def _find_grindx_root():
     return None
 
 GRINDX_ROOT = _find_grindx_root() or (STANDALONE_ROOT.parent / "GrindX")
-# postgres: "api-postgres" | sqlserver: "api-sqlserver"
 GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
 GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
 FRONTEND_SRC = STANDALONE_ROOT / "frontend"
 MIGRATION_SRC = STANDALONE_ROOT / "migration"
 
-ROUTER_IMPORT = "from app.modules.{module_name}.routers.{module_name}_router import router as {module_name}_router"
-ROUTER_REGISTER = "app.include_router({module_name}_router)"
+ROUTER_IMPORT = "from app.modules.pop_modelos.routers.pop_modelos_router import router as pop_modelos_router"
+ROUTER_REGISTER = "app.include_router(pop_modelos_router)"
 
 
 def copy_backend(dry_run: bool = False):
-    dest = GRINDX_API / "app" / "modules" / "{module_name}"
+    dest = GRINDX_API / "app" / "modules" / "pop_modelos"
     if dry_run:
         logger.info("[DRY-RUN] Copiaria %s -> %s", MODULE_SRC, dest)
     else:
-        if dest.exists(): shutil.rmtree(dest)
+        if dest.exists():
+            shutil.rmtree(dest)
         shutil.copytree(MODULE_SRC, dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
         logger.info("Backend copiado")
 
@@ -55,12 +52,13 @@ def copy_backend(dry_run: bool = False):
 def copy_frontend(dry_run: bool = False):
     dest_base = GRINDX_FRONTEND / "modules"
     if dry_run:
-        logger.info("[DRY-RUN] Copiaria sub-modulos de %s -> %s", FRONTEND_SRC, dest_base)
+        logger.info("[DRY-RUN] Copiaria %s -> %s", FRONTEND_SRC, dest_base)
     else:
         for sub in FRONTEND_SRC.iterdir():
             if sub.is_dir():
                 dest = dest_base / sub.name
-                if dest.exists(): shutil.rmtree(dest)
+                if dest.exists():
+                    shutil.rmtree(dest)
                 shutil.copytree(sub, dest)
                 logger.info("Frontend copiado: %s -> %s", sub.name, dest)
             elif sub.is_file():
@@ -73,9 +71,6 @@ def copy_migration(dry_run: bool = False):
     import re
 
     dest = GRINDX_API / "alembic" / "versions"
-    if dry_run:
-        logger.info("[DRY-RUN] Copiaria migrations de %s -> %s", MIGRATION_SRC, dest)
-        return
 
     # Escanear prefixo numerico dos arquivos de migration do GrindX
     last_num = 0
@@ -99,22 +94,22 @@ def copy_migration(dry_run: bool = False):
     # Se MIGRATION_SRC nao existe (rodando dentro do GrindX), procura migration
     # ja copiada no dest e renomeia/atualiza in-place
     if not MIGRATION_SRC.exists() or not list(MIGRATION_SRC.glob("*.py")):
-        for old_file in dest.glob("*_{module_name}*.py"):
+        for old_file in dest.glob("*_pop_modelos*.py"):
             content = old_file.read_text(encoding="utf-8")
             old_rev = re.search(r'revision\s*=\s*"(\d+)"', content)
             if old_rev and old_rev.group(1) == next_rev:
                 logger.info("Migration ja esta com revision %s, pulando", next_rev)
                 return
+            if dry_run:
+                logger.info("[DRY-RUN] Renomearia %s para %s (revision %s, down_revision %s)", old_file.name, next_rev + "_criar_tabela_pop_modelos.py", next_rev, last_rev)
+                return
             content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{next_rev}"', content)
             content = re.sub(r'down_revision\s*=\s*[^#\n]+', f'down_revision = "{last_rev}"', content)
             new_name = re.sub(r'^\d+', next_rev, old_file.name)
             dest_path = dest / new_name
-            if dry_run:
-                logger.info("[DRY-RUN] Renomearia %s -> %s", old_file.name, new_name)
-            else:
-                old_file.rename(dest_path)
-                dest_path.write_text(content, encoding="utf-8")
-                logger.info("Migration renomeada: %s -> %s (revision %s, down_revision %s)", old_file.name, new_name, next_rev, last_rev)
+            old_file.rename(dest_path)
+            dest_path.write_text(content, encoding="utf-8")
+            logger.info("Migration renomeada: %s -> %s (revision %s, down_revision %s)", old_file.name, new_name, next_rev, last_rev)
         return
 
     for f in MIGRATION_SRC.glob("*.py"):
@@ -124,7 +119,7 @@ def copy_migration(dry_run: bool = False):
         new_name = re.sub(r'^\d+', next_rev, f.name)
         dest_path = dest / new_name
         if dry_run:
-            logger.info("[DRY-RUN] Criaria %s", dest_path)
+            logger.info("[DRY-RUN] Criaria %s (revision %s, down_revision %s)", dest_path, next_rev, last_rev)
         else:
             dest_path.write_text(content, encoding="utf-8")
             logger.info("Migration %s copiada como %s (revision %s, down_revision %s)", f.name, new_name, next_rev, last_rev)
@@ -134,16 +129,19 @@ def register_routes(dry_run: bool = False):
     main_py = GRINDX_API / "app" / "main.py"
     content = main_py.read_text(encoding="utf-8")
     if ROUTER_IMPORT in content:
-        logger.info("Rotas já registradas")
+        logger.info("Rotas ja registradas")
         return
     lines = content.splitlines(keepends=True)
     last_import = last_include = None
     for i, line in enumerate(lines):
-        if "from app." in line and "import router as" in line: last_import = i
-        if "app.include_router(" in line: last_include = i
+        if "from app." in line and "import router as" in line:
+            last_import = i
+        if "app.include_router(" in line:
+            last_include = i
     if last_import is not None:
         lines.insert(last_import + 1, ROUTER_IMPORT + "\n")
-        if last_include is not None and last_include >= last_import: last_include += 1
+        if last_include is not None and last_include >= last_import:
+            last_include += 1
     if last_include is not None:
         lines.insert(last_include + 1, ROUTER_REGISTER + "\n")
     if dry_run:
@@ -155,18 +153,20 @@ def register_routes(dry_run: bool = False):
 
 def register_dependency(dry_run: bool = False):
     deps_py = GRINDX_API / "app" / "auth" / "dependencies.py"
+    if not deps_py.exists():
+        return
     content = deps_py.read_text(encoding="utf-8")
     marker = "# --- Versões vinculadas das permissões ---"
     factory = (
-        "from app.modules.{module_name}.repositories.{module_name}_repository import {entity_name}Repository\n"
-        "from app.modules.{module_name}.services.{module_name}_service import {entity_name}Service\n\n\n"
-        "def get_{module_name}_service(db: Session = Depends(get_db)) -> {entity_name}Service:\n"
-        '    """Factory para o {entity_name}Service."""\n'
-        "    repository = {entity_name}Repository(db)\n"
-        "    return {entity_name}Service(repository)\n\n\n"
+        "from app.modules.pop_modelos.repositories.pop_modelos_repository import PopModeloRepository\n"
+        "from app.modules.pop_modelos.services.pop_modelos_service import PopModeloService\n\n\n"
+        "def get_pop_modelos_service(db: Session = Depends(get_db)) -> PopModeloService:\n"
+        '    """Factory para o PopModeloService."""\n'
+        "    repository = PopModeloRepository(db)\n"
+        "    return PopModeloService(repository)\n\n\n"
         f"{marker}\n"
     )
-    if "get_{module_name}_service" in content:
+    if "get_pop_modelos_service" in content:
         logger.info("Dependency já registrada")
         return
     if dry_run:
@@ -178,17 +178,19 @@ def register_dependency(dry_run: bool = False):
 
 def register_alembic_import(dry_run: bool = False):
     env_py = GRINDX_API / "alembic" / "env.py"
+    if not env_py.exists():
+        return
     content = env_py.read_text(encoding="utf-8")
-    line = "from app.modules.{module_name}.models.{module_name} import {entity_name}  # noqa: F401"
+    line = "from app.modules.pop_modelos.models.pop_modelos import PopModelo  # noqa: F401"
     if line in content:
-        logger.info("Import já registrado")
+        logger.info("Alembic import já registrado")
         return
     marker = "from app.modules.portal.models.portal import Aba, Modulo  # noqa: F401"
     if dry_run:
         logger.info("[DRY-RUN] alembic/env.py alterado")
     else:
         env_py.write_text(content.replace(marker, marker + "\n" + line), encoding="utf-8")
-        logger.info("Import registrado")
+        logger.info("Alembic import registrado")
 
 
 def run_migrations(dry_run: bool = False):
@@ -199,11 +201,8 @@ def run_migrations(dry_run: bool = False):
         result = subprocess.run(cmd, cwd=GRINDX_API, capture_output=True, text=True, check=False)
         if result.returncode != 0:
             logger.error("Migration falhou", stderr=result.stderr)
-            raise RuntimeError(f"Migration error: {result.stderr}")
+            raise RuntimeError("Migration error: %s" % result.stderr)
         logger.info("Migrations executadas")
-
-
-# --- Unregister / Uninstall ---
 
 
 def unregister_routes(dry_run: bool = False):
@@ -212,7 +211,7 @@ def unregister_routes(dry_run: bool = False):
         return
     content = main_py.read_text(encoding="utf-8")
     lines = content.splitlines(keepends=True)
-    new_lines = [l for l in lines if "{module_name}" not in l]
+    new_lines = [l for l in lines if "pop_modelos" not in l]
     if len(new_lines) == len(lines):
         logger.info("Rotas nao registradas nada a fazer")
         return
@@ -230,10 +229,10 @@ def unregister_dependency(dry_run: bool = False):
     if not deps_py.exists():
         return
     content = deps_py.read_text(encoding="utf-8")
-    # Encontra bloco: do primeiro import do modulo ate a linha do marker
+    # Encontra bloco: do primeiro import pop_modelos ate a linha do marker
     pattern = re.compile(
-        rf"(from app\.modules\.{module_name}\.[^\n]*\n.*?)(\n?# --- Vers.oes vinculadas)",
-        re.DOTALL,
+        r"(from app\.modules\.pop_modelos\.[^\n]*\n.*?)(\n?# --- Vers.oes vinculadas)",
+        re.DOTALL
     )
     match = pattern.search(content)
     if not match:
@@ -252,7 +251,7 @@ def unregister_alembic_import(dry_run: bool = False):
     if not env_py.exists():
         return
     content = env_py.read_text(encoding="utf-8")
-    line = f"from app.modules.{module_name}.models.{module_name} import {entity_name}  # noqa: F401"
+    line = "from app.modules.pop_modelos.models.pop_modelos import PopModelo  # noqa: F401"
     if line not in content:
         logger.info("Alembic import nao registrado nada a fazer")
         return
@@ -264,7 +263,7 @@ def unregister_alembic_import(dry_run: bool = False):
 
 
 def remove_backend(dry_run: bool = False):
-    dest = GRINDX_API / "app" / "modules" / "{module_name}"
+    dest = GRINDX_API / "app" / "modules" / "pop_modelos"
     if not dest.exists():
         return
     if dry_run:
@@ -276,15 +275,14 @@ def remove_backend(dry_run: bool = False):
 
 def remove_frontend(dry_run: bool = False):
     dest_base = GRINDX_FRONTEND / "modules"
-    for sub in FRONTEND_SRC.iterdir():
-        if sub.is_dir():
-            dest = dest_base / sub.name
-            if dest.exists():
-                if dry_run:
-                    logger.info("[DRY-RUN] Removeria %s", dest)
-                else:
-                    shutil.rmtree(dest)
-                    logger.info("Frontend removido: %s", dest)
+    for sub in ["pop_modelos"]:
+        dest = dest_base / sub
+        if dest.exists():
+            if dry_run:
+                logger.info("[DRY-RUN] Removeria %s", dest)
+            else:
+                shutil.rmtree(dest)
+                logger.info("Frontend removido: %s", dest)
 
 
 def remove_migration(dry_run: bool = False):
@@ -294,7 +292,7 @@ def remove_migration(dry_run: bool = False):
             content = f.read_text(encoding="utf-8")
         except Exception:
             continue
-        if "{module_name}" in content:
+        if "pop_modelos" in content:
             if dry_run:
                 logger.info("[DRY-RUN] Removeria %s", f)
             else:
@@ -303,7 +301,6 @@ def remove_migration(dry_run: bool = False):
 
 
 def uninstall(dry_run: bool = False):
-    """Remove módulo do GrindX: desregistra rotas, remove arquivos."""
     unregister_routes(dry_run)
     unregister_dependency(dry_run)
     unregister_alembic_import(dry_run)
@@ -314,112 +311,63 @@ def uninstall(dry_run: bool = False):
 
 
 def package(dry_run: bool = False):
-    """Empacota o módulo em um .zip com module.json para distribuição.
-
-    IMPORTANTE: O frontend no zip deve ser `frontend/custos/...`, NÃO `frontend/modules/custos/`.
-    O GrindX importer coloca os arquivos de frontend em `modules/`, então se o zip
-    tiver `frontend/modules/custos/`, o resultado será `modules/frontend/modules/custos/` (caminho errado).
-    """
-    module_dir = MODULE_SRC
-    frontend_dir = FRONTEND_SRC
-    migration_dir = MIGRATION_SRC
     dist_dir = STANDALONE_ROOT / "dist"
-    zip_path = dist_dir / f"modulo-{MODULE_NAME.lower()}.zip"
-
+    zip_path = dist_dir / "modulo-pop_modelos.zip"
     if dry_run:
         logger.info("[DRY-RUN] Criaria %s com:", zip_path)
         logger.info("  - module.json")
-        logger.info("  - app/modules/%s/", MODULE_NAME)
+        logger.info("  - app/modules/pop_modelos/")
         logger.info("  - frontend/")
         logger.info("  - migration/")
         return
-
     dist_dir.mkdir(parents=True, exist_ok=True)
-
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
-        manifest_path = STANDALONE_ROOT / "module.json"
-        if manifest_path.exists():
-            zf.write(manifest_path, "module.json")
-
-        # Backend: mantém app/modules/{module_name}/ no zip
-        for file in module_dir.rglob("*"):
-            if file.is_file() and "__pycache__" not in file.parts and not file.name.endswith(".pyc"):
-                arcname = str(file.relative_to(STANDALONE_ROOT))
-                zf.write(file, arcname)
-
-        if frontend_dir.exists():
-            for file in frontend_dir.rglob("*"):
-                if file.is_file():
-                    # Remove prefixo 'modules/' para evitar path duplicado no importer
-                    # frontend/modules/gp_dashboard/ → frontend/gp_dashboard/
-                    rel = file.relative_to(frontend_dir)
-                    parts = list(rel.parts)
-                    if parts and parts[0] == "modules":
-                        parts = parts[1:]
-                    arcname = str(Path("frontend") / Path(*parts))
-                    zf.write(file, arcname)
-
-        # Incluir migration/ se existir (postgres apenas)
-        if migration_dir.exists():
-            for file in migration_dir.glob("*.py"):
-                zf.write(file, f"migration/{file.name}")
-
-    logger.info("Pacote criado: %s", zip_path)
+        manifest = STANDALONE_ROOT / "module.json"
+        if manifest.exists():
+            zf.write(manifest, "module.json")
+        for f in MODULE_SRC.rglob("*"):
+            if f.is_file() and "__pycache__" not in f.parts and not f.name.endswith(".pyc"):
+                arcname = str(f.relative_to(STANDALONE_ROOT))
+                zf.write(f, arcname)
+        for f in FRONTEND_SRC.rglob("*"):
+            if f.is_file():
+                arcname = str(f.relative_to(STANDALONE_ROOT))
+                zf.write(f, arcname)
+        for f in MIGRATION_SRC.glob("*.py"):
+            zf.write(f, "migration/" + f.name)
+    logger.info("Zip gerado: %s", zip_path)
 
 
-def export(dry_run: bool = False):
-    """Exporta módulo para o GrindX.
-
-    Se GRINDX_API aponta para api-sqlserver (módulos read-only de ERP),
-    pula migration, dependency factory e alembic import.
-    """
-    logger.info("Exportando módulo %s", MODULE_NAME, dry_run=dry_run)
-    copy_backend(dry_run)
-    copy_frontend(dry_run)
-    is_sqlserver = "sqlserver" in str(GRINDX_API).lower()
-    if not is_sqlserver:
-        copy_migration(dry_run)
-    register_routes(dry_run)
-    if not is_sqlserver:
-        register_dependency(dry_run)
-        register_alembic_import(dry_run)
-        run_migrations(dry_run)
-    logger.info("Módulo exportado com sucesso")
+def main():
+    parser = argparse.ArgumentParser(description="Exporta modulo PopModelo para o GrindX")
+    parser.add_argument("--dry-run", action="store_true", help="Apenas exibe o que seria feito")
+    parser.add_argument("--grindx-root", type=str, help="Caminho para a raiz do GrindX")
+    parser.add_argument("action", nargs="?", default="export", choices=["export", "package", "uninstall"], help="Acao a executar")
+    args = parser.parse_args()
+    dry = args.dry_run
+    if args.grindx_root:
+        global GRINDX_ROOT, GRINDX_API, GRINDX_FRONTEND
+        GRINDX_ROOT = Path(args.grindx_root)
+        GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
+        GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
+    if args.action == "package":
+        package(dry)
+        return
+    if args.action == "uninstall":
+        uninstall(dry)
+        return
+    copy_backend(dry)
+    copy_frontend(dry)
+    copy_migration(dry)
+    register_routes(dry)
+    register_dependency(dry)
+    register_alembic_import(dry)
+    if not dry:
+        run_migrations(dry)
+        logger.info("Exportacao concluida com sucesso!")
+    else:
+        logger.info("[DRY-RUN] Exportacao simulada concluida")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=f"Ferramentas do módulo {MODULE_NAME}")
-    subparsers = parser.add_subparsers(dest="command", help="Comando a executar")
-
-    # export
-    export_parser = subparsers.add_parser("export", help="Exporta para o GrindX")
-    export_parser.add_argument("--dry-run", action="store_true", help="Apenas simula")
-    export_parser.add_argument("--grindx-root", default=None, help="Raiz do GrindX")
-
-    # package
-    pkg_parser = subparsers.add_parser("package", help="Empacota como .zip")
-    pkg_parser.add_argument("--dry-run", action="store_true", help="Apenas simula")
-
-    # uninstall
-    uninstall_parser = subparsers.add_parser("uninstall", help="Remove módulo do GrindX")
-    uninstall_parser.add_argument("--dry-run", action="store_true", help="Apenas simula")
-    uninstall_parser.add_argument("--grindx-root", default=None, help="Raiz do GrindX")
-
-    args = parser.parse_args()
-
-    if args.command == "package":
-        package(dry_run=args.dry_run)
-    elif args.command == "export":
-        if getattr(args, "grindx_root", None):
-            global GRINDX_ROOT, GRINDX_API, GRINDX_FRONTEND
-            GRINDX_ROOT = Path(args.grindx_root)
-            GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
-            GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
-        export(dry_run=args.dry_run)
-    elif args.command == "uninstall":
-        if getattr(args, "grindx_root", None):
-            global GRINDX_ROOT, GRINDX_API, GRINDX_FRONTEND
-            GRINDX_ROOT = Path(args.grindx_root)
-            GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
-            GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
-        uninstall(dry_run=args.dry_run)
+    main()
