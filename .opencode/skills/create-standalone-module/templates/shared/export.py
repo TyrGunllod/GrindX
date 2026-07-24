@@ -40,6 +40,9 @@ ROUTER_REGISTER = "app.include_router(pop_modelos_router)"
 
 def copy_backend(dry_run: bool = False):
     dest = GRINDX_API / "app" / "modules" / "pop_modelos"
+    if MODULE_SRC.resolve() == dest.resolve():
+        logger.info("Backend ja esta no destino, pulando copia")
+        return
     if dry_run:
         logger.info("[DRY-RUN] Copiaria %s -> %s", MODULE_SRC, dest)
     else:
@@ -54,6 +57,9 @@ def copy_frontend(dry_run: bool = False):
     if dry_run:
         logger.info("[DRY-RUN] Copiaria %s -> %s", FRONTEND_SRC, dest_base)
     else:
+        if not FRONTEND_SRC.exists():
+            logger.info("Frontend source nao encontrado, pulando copia")
+            return
         for sub in FRONTEND_SRC.iterdir():
             if sub.is_dir():
                 dest = dest_base / sub.name
