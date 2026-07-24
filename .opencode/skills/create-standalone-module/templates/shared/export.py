@@ -143,6 +143,109 @@ def run_migrations(dry_run: bool = False):
         logger.info("Migrations executadas")
 
 
+# --- Unregister / Uninstall ---
+
+
+def unregister_routes(dry_run: bool = False):
+    main_py = GRINDX_API / "app" / "main.py"
+    if not main_py.exists():
+        return
+    content = main_py.read_text(encoding="utf-8")
+    lines = content.splitlines(keepends=True)
+    new_lines = [l for l in lines if ROUTER_IMPORT not in l and ROUTER_REGISTER not in l]
+    if len(new_lines) == len(lines):
+        logger.info("Rotas nao registradas nada a fazer")
+        return
+    if dry_run:
+        logger.info("[DRY-RUN] Removeria rotas de main.py")
+    else:
+        main_py.write_text("".join(new_lines), encoding="utf-8")
+        logger.info("Rotas removidas de main.py")
+
+
+def unregister_dependency(dry_run: bool = False):
+    deps_py = GRINDX_API / "app" / "auth" / "dependencies.py"
+    if not deps_py.exists():
+        return
+    content = deps_py.read_text(encoding="utf-8")
+    marker = "# --- Versões vinculadas das permissões ---"
+    block_start = content.find(f"from app.modules.{module_name}.repositories")
+    if block_start == -1:
+        logger.info("Dependency nao registrada nada a fazer")
+        return
+    block_end = content.find(marker, block_start)
+    if block_end == -1:
+        block_end = len(content)
+    if dry_run:
+        logger.info("[DRY-RUN] Removeria block de dependencies.py")
+    else:
+        new_content = content[:block_start] + content[block_end:]
+        deps_py.write_text(new_content, encoding="utf-8")
+        logger.info("Dependency removida de dependencies.py")
+
+
+def unregister_alembic_import(dry_run: bool = False):
+    env_py = GRINDX_API / "alembic" / "env.py"
+    if not env_py.exists():
+        return
+    content = env_py.read_text(encoding="utf-8")
+    line = f"from app.modules.{module_name}.models.{module_name} import {entity_name}  # noqa: F401"
+    if line not in content:
+        logger.info("Alembic import nao registrado nada a fazer")
+        return
+    if dry_run:
+        logger.info("[DRY-RUN] Removeria import de alembic/env.py")
+    else:
+        env_py.write_text(content.replace(line + "\n", ""), encoding="utf-8")
+        logger.info("Alembic import removido")
+
+
+def remove_backend(dry_run: bool = False):
+    dest = GRINDX_API / "app" / "modules" / "{module_name}"
+    if not dest.exists():
+        return
+    if dry_run:
+        logger.info("[DRY-RUN] Removeria %s", dest)
+    else:
+        shutil.rmtree(dest)
+        logger.info("Backend removido: %s", dest)
+
+
+def remove_frontend(dry_run: bool = False):
+    dest_base = GRINDX_FRONTEND / "modules"
+    for sub in FRONTEND_SRC.iterdir():
+        if sub.is_dir():
+            dest = dest_base / sub.name
+            if dest.exists():
+                if dry_run:
+                    logger.info("[DRY-RUN] Removeria %s", dest)
+                else:
+                    shutil.rmtree(dest)
+                    logger.info("Frontend removido: %s", dest)
+
+
+def remove_migration(dry_run: bool = False):
+    dest = GRINDX_API / "alembic" / "versions"
+    for f in dest.glob("*.py"):
+        if "{module_name}" in f.name.lower():
+            if dry_run:
+                logger.info("[DRY-RUN] Removeria %s", f)
+            else:
+                f.unlink()
+                logger.info("Migration removida: %s", f.name)
+
+
+def uninstall(dry_run: bool = False):
+    """Remove módulo do GrindX: desregistra rotas, remove arquivos."""
+    unregister_routes(dry_run)
+    unregister_dependency(dry_run)
+    unregister_alembic_import(dry_run)
+    remove_backend(dry_run)
+    remove_frontend(dry_run)
+    remove_migration(dry_run)
+    logger.info("Modulo removido do GrindX")
+
+
 def package(dry_run: bool = False):
     """Empacota o módulo em um .zip com module.json para distribuição.
 
@@ -230,6 +333,11 @@ if __name__ == "__main__":
     pkg_parser = subparsers.add_parser("package", help="Empacota como .zip")
     pkg_parser.add_argument("--dry-run", action="store_true", help="Apenas simula")
 
+    # uninstall
+    uninstall_parser = subparsers.add_parser("uninstall", help="Remove módulo do GrindX")
+    uninstall_parser.add_argument("--dry-run", action="store_true", help="Apenas simula")
+    uninstall_parser.add_argument("--grindx-root", default=None, help="Raiz do GrindX")
+
     args = parser.parse_args()
 
     if args.command == "package":
@@ -241,3 +349,10 @@ if __name__ == "__main__":
             GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
             GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
         export(dry_run=args.dry_run)
+    elif args.command == "uninstall":
+        if getattr(args, "grindx_root", None):
+            global GRINDX_ROOT, GRINDX_API, GRINDX_FRONTEND
+            GRINDX_ROOT = Path(args.grindx_root)
+            GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
+            GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
+        uninstall(dry_run=args.dry_run)
