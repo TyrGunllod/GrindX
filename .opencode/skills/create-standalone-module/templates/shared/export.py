@@ -195,7 +195,7 @@ def register_alembic_import(dry_run: bool = False):
     if not env_py.exists():
         return
     content = env_py.read_text(encoding="utf-8")
-    line = "from app.modules.pop_modelos.models.pop_modelos import PopModelo  # noqa: F401"
+    line = "from app.modules.pop_modelos.models.pop_modelo import PopModelo  # noqa: F401"
     if line in content:
         logger.info("Alembic import já registrado")
         return
@@ -225,39 +225,52 @@ def unregister_routes(dry_run: bool = False):
         return
     content = main_py.read_text(encoding="utf-8")
     lines = content.splitlines(keepends=True)
+    removed_imports = [l.strip() for l in lines if "pop_modelos" in l and "from app." in l]
+    removed_routers = [l.strip() for l in lines if "pop_modelos" in l and "include_router" in l]
     new_lines = [l for l in lines if "pop_modelos" not in l]
     if len(new_lines) == len(lines):
-        logger.info("Rotas nao registradas nada a fazer")
+        logger.info("Rotas nao registradas em main.py")
         return
     if dry_run:
-        logger.info("[DRY-RUN] Removeria rotas de main.py")
+        logger.info("[DRY-RUN] Removeria de main.py: %d linhas", len(lines) - len(new_lines))
     else:
         main_py.write_text("".join(new_lines), encoding="utf-8")
-        logger.info("Rotas removidas de main.py")
+        logger.info("Removido de main.py: import=%s, include=%s", removed_imports, removed_routers)
 
 
 def unregister_dependency(dry_run: bool = False):
-    import re
-
     deps_py = GRINDX_API / "app" / "auth" / "dependencies.py"
     if not deps_py.exists():
         return
     content = deps_py.read_text(encoding="utf-8")
-    # Encontra bloco: do primeiro import pop_modelos ate a linha do marker
-    pattern = re.compile(
-        r"(from app\.modules\.pop_modelos\.[^\n]*\n.*?)(\n?# --- Vers.oes vinculadas)",
-        re.DOTALL
-    )
-    match = pattern.search(content)
-    if not match:
-        logger.info("Dependency nao registrada nada a fazer")
+    # Remove linhas que contem pop_modelos e o bloco de funcoes vinculadas
+    lines = content.splitlines(keepends=True)
+    new_lines = []
+    skip = False
+    removed = []
+    for l in lines:
+        if "pop_modelos" in l:
+            removed.append(l.strip())
+            skip = True
+            continue
+        if skip:
+            if l.strip() == "" or l.strip().startswith("#") or l.strip().startswith("def "):
+                skip = False
+                if l.strip().startswith("def ") and "pop_modelos" not in l:
+                    continue
+                if l.strip() != "":
+                    new_lines.append(l)
+                continue
+            continue
+        new_lines.append(l)
+    if len(new_lines) == len(lines):
+        logger.info("Dependency nao registrada em dependencies.py")
         return
     if dry_run:
-        logger.info("[DRY-RUN] Removeria block de dependencies.py")
+        logger.info("[DRY-RUN] Removeria de dependencies.py: %s", removed)
     else:
-        new_content = content[:match.start()] + content[match.start(2):]
-        deps_py.write_text(new_content, encoding="utf-8")
-        logger.info("Dependency removida de dependencies.py")
+        deps_py.write_text("".join(new_lines), encoding="utf-8")
+        logger.info("Removido de dependencies.py: %s", removed)
 
 
 def unregister_alembic_import(dry_run: bool = False):
@@ -265,15 +278,17 @@ def unregister_alembic_import(dry_run: bool = False):
     if not env_py.exists():
         return
     content = env_py.read_text(encoding="utf-8")
-    line = "from app.modules.pop_modelos.models.pop_modelos import PopModelo  # noqa: F401"
-    if line not in content:
-        logger.info("Alembic import nao registrado nada a fazer")
+    lines = content.splitlines(keepends=True)
+    removed = [l.strip() for l in lines if "pop_modelos" in l]
+    new_lines = [l for l in lines if "pop_modelos" not in l]
+    if len(new_lines) == len(lines):
+        logger.info("Alembic import nao registrado em env.py")
         return
     if dry_run:
-        logger.info("[DRY-RUN] Removeria import de alembic/env.py")
+        logger.info("[DRY-RUN] Removeria de env.py: %s", removed)
     else:
-        env_py.write_text(content.replace(line + "\n", ""), encoding="utf-8")
-        logger.info("Alembic import removido")
+        env_py.write_text("".join(new_lines), encoding="utf-8")
+        logger.info("Removido de env.py: %s", removed)
 
 
 def remove_backend(dry_run: bool = False):
