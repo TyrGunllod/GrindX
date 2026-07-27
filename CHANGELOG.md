@@ -2,6 +2,84 @@
 
 <!-- version list -->
 
+## v1.66.0 (2026-07-27)
+
+### Bug Fixes
+
+- 3-tier API_BASE detection in script.js template
+  ([`a9de52b`](https://github.com/TyrGunllod/GrindX/commit/a9de52b29c731939f15c37d00dbaaea10f499e7c))
+
+- Add B1_MSBLQL = '2' filter to Protheus product queries
+  ([`1b458c0`](https://github.com/TyrGunllod/GrindX/commit/1b458c05f8901e089b004675fa740ab6f9683919))
+
+- Dry-run shows migration scan in template
+  ([`27af114`](https://github.com/TyrGunllod/GrindX/commit/27af1149e2cca524e136c7431c091c0e3d10e4ff))
+
+- Dynamic GrindX root + logging in template
+  ([`fac05d1`](https://github.com/TyrGunllod/GrindX/commit/fac05d194ea3b5d83e0cb861bf2ff49fde3b4b67))
+
+- Encrypt existing plaintext data in migration
+  ([`1191870`](https://github.com/TyrGunllod/GrindX/commit/119187025adda76bfcee394b866ab16e17baa58f))
+
+- Guard copy_backend/copy_frontend in template
+  ([`60b77fe`](https://github.com/TyrGunllod/GrindX/commit/60b77fe261480c10b99a8e542be7958da1a57efb))
+
+- Guard theme.apply() against null document.body in standalone stub
+  ([`ae8d6a2`](https://github.com/TyrGunllod/GrindX/commit/ae8d6a225b2f972f27b432adb72674063dc7c3d0))
+
+- Handle re-export from GrindX by renaming existing migration in template
+  ([`310eed4`](https://github.com/TyrGunllod/GrindX/commit/310eed44ac3e7d57fa5b143066f4b2b0bc7b1fe7))
+
+- Handle source migration without numeric prefix in template
+  ([`9f33505`](https://github.com/TyrGunllod/GrindX/commit/9f335053df4d134df529f92b2c93af63680b08f9))
+
+- Idempotent migration in template
+  ([`509cbc6`](https://github.com/TyrGunllod/GrindX/commit/509cbc63bdd09749178d9dba2b20ee643ee83d77))
+
+- Model filename uses entity_name_lower instead of module_name
+  ([`6fff300`](https://github.com/TyrGunllod/GrindX/commit/6fff300e7185082bdd5c018687bc9800aac32547))
+
+- Port-based API_BASE detection in template
+  ([`61da9c4`](https://github.com/TyrGunllod/GrindX/commit/61da9c40d08a640c06493b7636c0d8a48d6bb1ba))
+
+- Remove hardcoded API_BASE_URL from standalone stubs template
+  ([`75f4423`](https://github.com/TyrGunllod/GrindX/commit/75f44231ffc9e4eadb42d5d50dbad363c956eed3))
+
+- Robust unregister in template
+  ([`504f0da`](https://github.com/TyrGunllod/GrindX/commit/504f0da65861f54b0fb2d950537bc44ab2004905))
+
+- Robust unregister using regex in template
+  ([`8648d23`](https://github.com/TyrGunllod/GrindX/commit/8648d237a6d6eb466429ad2175b9a54aec013f8d))
+
+- Scan migration prefix from filenames in template
+  ([`e33a5a3`](https://github.com/TyrGunllod/GrindX/commit/e33a5a3cf6580f5f02fb1ea21242e71cff274a26))
+
+### Chores
+
+- Rename migration file and adjust Makefile/style
+  ([`7b3f9e9`](https://github.com/TyrGunllod/GrindX/commit/7b3f9e918498d5c5469cf14b25bb4b4cd746ba2c))
+
+### Features
+
+- Add aprovador column to usuarios table
+  ([`ff5345e`](https://github.com/TyrGunllod/GrindX/commit/ff5345ece72763ce4bdac2e48686cdd194a3d070))
+
+- Add uninstall command to export.py template
+  ([`55e87d2`](https://github.com/TyrGunllod/GrindX/commit/55e87d2dadb0a5e9cd2df81c60a1d6bbf34627ed))
+
+- Auto-detect next revision in copy_migration template
+  ([`1bec1c4`](https://github.com/TyrGunllod/GrindX/commit/1bec1c4dd804470a0745143321357abfd745086b))
+
+- GrindX-style page-header in templates (vertical stack, fluid h1, subtitle)
+  ([`c3500c4`](https://github.com/TyrGunllod/GrindX/commit/c3500c4ef83de0d3fd3b196b951951896cdae9a0))
+
+- Migration_start_number parameter + copy_migration respects source revision
+  ([`4e95b95`](https://github.com/TyrGunllod/GrindX/commit/4e95b95bb85a7083fb05b367ecc45077d4f2115f))
+
+- Update frontend templates with GrindX skin architecture
+  ([`e5ffacd`](https://github.com/TyrGunllod/GrindX/commit/e5ffacdef737f645c3b26103e8f09d7cb277a700))
+
+
 ## v1.65.1 (2026-07-03)
 
 ### Bug Fixes
