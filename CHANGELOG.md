@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.66.1 (2026-07-27)
+
+### Bug Fixes
+
+- Module import migration prefix at 100 and remove cleanup writes
+  ([`1605b1a`](https://github.com/TyrGunllod/GrindX/commit/1605b1a945c13a001479a14b3cd52e4fad3b1a47))
+
+
 ## v1.66.0 (2026-07-27)
 
 ### Bug Fixes
