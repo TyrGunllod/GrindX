@@ -15,11 +15,10 @@
 
     var GRINDX_CONFIG = {
         DEFAULT_LANG: 'pt-BR',
-        SUPPORTED_LANGS: ['pt-BR', 'en-US', 'es-ES'],
-        API_BASE_URL: window.GRINDX_CONFIG?.API_BASE_URL || (window.location.protocol + '//' + window.location.hostname + ':8002/v1')
+        SUPPORTED_LANGS: ['pt-BR', 'en-US', 'es-ES']
     };
 
-    // StorageManager
+    // StorageManager — localStorage com cache
     var cache = {};
     var storage = {
         get: function(key, fallback) {
@@ -29,17 +28,25 @@
             cache[key] = resolved;
             return resolved;
         },
-        set: function(key, value) { localStorage.setItem(key, value); cache[key] = value; },
-        remove: function(key) { localStorage.removeItem(key); delete cache[key]; },
+        set: function(key, value) {
+            localStorage.setItem(key, value);
+            cache[key] = value;
+        },
+        remove: function(key) {
+            localStorage.removeItem(key);
+            delete cache[key];
+        },
         getJson: function(key, fallback) {
             var val = this.get(key);
             if (!val) return fallback;
             try { return JSON.parse(val); } catch(e) { return fallback; }
         },
-        setJson: function(key, value) { this.set(key, JSON.stringify(value)); }
+        setJson: function(key, value) {
+            this.set(key, JSON.stringify(value));
+        }
     };
 
-    // SessionManager
+    // SessionManager — tokens JWT
     var session = {
         getToken: function() { return storage.get('access_token'); },
         setTokens: function(tokens) {
@@ -55,7 +62,7 @@
         }
     };
 
-    // ThemeManager
+    // ThemeManager — dark/light mode
     var theme = {
         theme: storage.get('grindx_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
         toggle: function() {
