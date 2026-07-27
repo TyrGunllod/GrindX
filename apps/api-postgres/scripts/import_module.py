@@ -287,6 +287,36 @@ def merge_requirements(import_dir: Path, skip_install: bool = False) -> None:
         )
 
 
+def _module_in_file_content(filepath: Path, module_name: str) -> bool:
+    """Verifica se o módulo é mencionado no conteúdo do arquivo."""
+    try:
+        return module_name.lower() in filepath.read_text(encoding="utf-8").lower()
+    except Exception:
+        return False
+
+
+def _get_last_native_revision(dest_dir: Path) -> str | None:
+    """Retorna o revision ID da última migration nativa (prefixo < 100)."""
+    last_rev = None
+    last_num = 0
+    for f in dest_dir.glob("*.py"):
+        m = re.match(r"^(\d+)_", f.name)
+        if not m:
+            continue
+        num = int(m.group(1))
+        if num >= 100:
+            continue
+        if num > last_num:
+            content = f.read_text(encoding="utf-8")
+            rev_match = re.search(
+                r"revision\s*[=:]\s*(?:str\s*=\s*)?\"([^\"]+)\"", content
+            )
+            if rev_match:
+                last_rev = rev_match.group(1)
+                last_num = num
+    return last_rev
+
+
 def copy_migration(import_dir: Path) -> None:
     src_dir = import_dir / "migration"
     api_dir = _get_api_dir()
@@ -296,14 +326,72 @@ def copy_migration(import_dir: Path) -> None:
         logger.warning("Diretório migration não encontrado: %s", src_dir)
         return
 
-    for f in src_dir.glob("*.py"):
-        if f.name == "__init__.py":
-            continue
-        dest_path = dest_dir / f.name
-        if dest_path.exists():
-            logger.warning("Migration já existe, sobrescrevendo: %s", dest_path)
-        shutil.copy2(f, dest_path)
-        logger.info("Migration copiada: %s -> %s", f, dest_path)
+    migration_files = sorted(
+        [f for f in src_dir.glob("*.py") if f.name != "__init__.py"]
+    )
+    if not migration_files:
+        logger.warning("Nenhum arquivo de migration em %s", src_dir)
+        return
+
+    last_rev = _get_last_native_revision(dest_dir)
+    if not last_rev:
+        logger.error("Nenhuma migration nativa encontrada para encadear")
+        return
+
+    manifest = json.loads((import_dir / "module.json").read_text(encoding="utf-8"))
+    module_name = manifest["module_name"]
+    start_num = int(manifest.get("migration_start_number", 100))
+
+    highest_module = 99
+    for f in dest_dir.glob("*.py"):
+        m = re.match(r"^(\d{3,})_", f.name)
+        if m:
+            num = int(m.group(1))
+            if num >= 100 and num > highest_module:
+                highest_module = num
+
+    actual_start = max(start_num, highest_module + 1)
+
+    for f in dest_dir.glob("*.py"):
+        m = re.match(r"^\d{3,}_", f.name)
+        if m:
+            content = f.read_text(encoding="utf-8")
+            if module_name.lower() in content.lower():
+                f.unlink()
+                logger.info("Migration removida para reimport: %s", f.name)
+
+    prev_rev = last_rev
+    for i, f in enumerate(migration_files):
+        content = f.read_text(encoding="utf-8")
+        rev_num = actual_start + i
+        rev = str(rev_num).zfill(max(3, len(str(rev_num))))
+
+        content = re.sub(
+            r'revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*"[^"]*"',
+            f'revision: str = "{rev}"',
+            content,
+        )
+        content = re.sub(
+            r"down_revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*[^#\n]+",
+            f'down_revision: str | None = "{prev_rev}"',
+            content,
+        )
+
+        name = f.name
+        name = re.sub(r"^\d+_", "", name)
+        new_name = f"{rev}_{name}"
+
+        dest_path = dest_dir / new_name
+        dest_path.write_text(content, encoding="utf-8")
+        logger.info(
+            "Migration copiada: %s -> %s (revision %s, down_revision %s)",
+            f.name,
+            new_name,
+            rev,
+            prev_rev,
+        )
+
+        prev_rev = rev
 
 
 def register_router(manifest: dict, force: bool, main_py: Path | None = None) -> None:
@@ -780,6 +868,7 @@ def _clean_main_py(main_py: Path, module_name: str, steps: list) -> None:
         final_lines.append(line)
 
     if router_vars:
+        main_py.write_text("".join(final_lines), encoding="utf-8")
         steps.append(
             f"Rotas removidas de {main_py.name}: {router_vars} (restart necessário)"
         )
@@ -812,8 +901,9 @@ def remove_module(module_name: str) -> dict:
                         if len(parts) >= 2:
                             frontend_dirs.append(parts[1])
                     tables = m.get("tables", [])
-                    if tables or list(
-                        (api_dir / "alembic" / "versions").glob(f"*{module_name}*")
+                    if tables or any(
+                        _module_in_file_content(f, module_name)
+                        for f in (api_dir / "alembic" / "versions").glob("*.py")
                     ):
                         has_migrations = True
                 except Exception:
@@ -847,11 +937,11 @@ def remove_module(module_name: str) -> dict:
             if not api_dir.exists():
                 continue
             for f in sorted((api_dir / "alembic" / "versions").glob("*"), reverse=True):
-                if module_name in f.name:
+                if module_name in f.name or _module_in_file_content(f, module_name):
                     f.unlink()
                     steps.append(f"Migration removida: {f.name}")
 
-    # Clean dependencies.py (api-postgres only, non-blocking — não escreve arquivo)
+    # Clean dependencies.py (api-postgres only)
     deps_py = (
         monorepo_root / "apps" / "api-postgres" / "app" / "auth" / "dependencies.py"
     )
@@ -872,11 +962,10 @@ def remove_module(module_name: str) -> dict:
         )
         content_clean = re.sub(r"\n{3,}", "\n\n", content_clean)
         if len(content_clean) != orig_len:
-            steps.append(
-                "Dependencies limpas em auth/dependencies.py (restart necessário)"
-            )
+            deps_py.write_text(content_clean, encoding="utf-8")
+            steps.append("Dependencies limpas em auth/dependencies.py")
 
-    # Clean alembic/env.py (api-postgres only, non-blocking)
+    # Clean alembic/env.py (api-postgres only)
     env_py = monorepo_root / "apps" / "api-postgres" / "alembic" / "env.py"
     if env_py.exists():
         content = env_py.read_text(encoding="utf-8")
@@ -886,7 +975,8 @@ def remove_module(module_name: str) -> dict:
             if not line.strip().startswith(f"from app.modules.{module_name}.")
         ]
         if len(lines) != len(content.splitlines(keepends=True)):
-            steps.append("Imports removidos de alembic/env.py (restart necessário)")
+            env_py.write_text("".join(lines), encoding="utf-8")
+            steps.append("Imports removidos de alembic/env.py")
 
     if not steps:
         logger.warning("Nada encontrado para remover: %s", module_name)

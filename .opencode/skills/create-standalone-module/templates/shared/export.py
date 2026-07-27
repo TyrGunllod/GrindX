@@ -74,69 +74,146 @@ def copy_frontend(dry_run: bool = False):
 
 
 def copy_migration(dry_run: bool = False):
+    import json
     import re
 
     dest = GRINDX_API / "alembic" / "versions"
 
-    # Escanear prefixo numerico dos arquivos de migration do GrindX
-    last_num = 0
-    last_rev = "000"
-    if dest.exists():
-        files = list(dest.glob("*.py"))
-        logger.info("Diretorio de migrations: %s (%d arquivos .py)", dest, len(files))
-        for f in files:
-            m = re.match(r"^(\d+)", f.name)
-            if m:
-                n = int(m.group(1))
-                logger.info("  Encontrado: %s (prefixo %d)", f.name, n)
-                if n > last_num:
-                    last_num = n
-                    last_rev = m.group(1)
-    else:
+    if not dest.exists():
         logger.warning("Diretorio de migrations nao encontrado: %s", dest)
-
-    next_rev = str(last_num + 1).zfill(3)
-
-    # Se MIGRATION_SRC nao existe (rodando dentro do GrindX), procura migration
-    # ja copiada no dest e renomeia/atualiza in-place
-    if not MIGRATION_SRC.exists() or not list(MIGRATION_SRC.glob("*.py")):
-        for old_file in dest.glob("*_pop_modelos*.py"):
-            content = old_file.read_text(encoding="utf-8")
-            old_rev = re.search(r'revision\s*=\s*"(\d+)"', content)
-            if old_rev and old_rev.group(1) == next_rev:
-                logger.info("Migration ja esta com revision %s, pulando", next_rev)
-                return
-            if dry_run:
-                logger.info("[DRY-RUN] Renomearia %s para %s (revision %s, down_revision %s)", old_file.name, next_rev + "_criar_tabela_pop_modelos.py", next_rev, last_rev)
-                return
-            content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{next_rev}"', content)
-            content = re.sub(r'down_revision\s*=\s*[^#\n]+', f'down_revision = "{last_rev}"', content)
-            new_name = re.sub(r'^\d+', next_rev, old_file.name)
-            dest_path = dest / new_name
-            old_file.rename(dest_path)
-            dest_path.write_text(content, encoding="utf-8")
-            logger.info("Migration renomeada: %s -> %s (revision %s, down_revision %s)", old_file.name, new_name, next_rev, last_rev)
         return
 
-    for f in MIGRATION_SRC.glob("*.py"):
-        content = f.read_text(encoding="utf-8")
-        src_rev_match = re.search(r'revision\s*=\s*"(\d+)"', content)
-        src_rev = int(src_rev_match.group(1)) if src_rev_match else 0
-        # Se a revision da fonte for maior que a ultima existente, mantem
-        use_rev = str(src_rev).zfill(3) if src_rev > last_num else next_rev
-        down = last_rev if src_rev > last_num else last_rev
-        content = re.sub(r'revision\s*=\s*"[^"]*"', f'revision = "{use_rev}"', content)
-        content = re.sub(r'down_revision\s*=\s*[^#\n]+', f'down_revision = "{down}"', content)
-        if re.match(r'^\d+', f.name):
-            new_name = re.sub(r'^\d+', use_rev, f.name)
-        else:
-            new_name = use_rev + "_" + f.name
-        dest_path = dest / new_name
-        if dry_run:
-            logger.info("[DRY-RUN] Criaria %s (revision %s, down_revision %s)", dest_path, use_rev, down)
-        else:
+    # Read migration_start_number from module.json
+    manifest_path = MODULE_SRC / "module.json"
+    start_num = 100
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            start_num = int(manifest.get("migration_start_number", 100))
+        except Exception:
+            pass
+
+    # Find the last native revision (prefix < 100)
+    last_rev = None
+    last_num = 0
+    for f in dest.glob("*.py"):
+        m = re.match(r"^(\d+)_", f.name)
+        if not m:
+            continue
+        num = int(m.group(1))
+        if num >= 100:
+            continue
+        if num > last_num:
+            content = f.read_text(encoding="utf-8")
+            rev_match = re.search(
+                r'revision\s*[=:]\s*(?:str\s*=\s*)?\"([^\"]+)\"', content
+            )
+            if rev_match:
+                last_rev = rev_match.group(1)
+                last_num = num
+
+    if not last_rev:
+        logger.error("Nenhuma migration nativa encontrada para encadear")
+        return
+
+    # Find highest module migration number (>= 100)
+    highest_module = 99
+    for f in dest.glob("*.py"):
+        m = re.match(r"^(\d{3,})_", f.name)
+        if m:
+            num = int(m.group(1))
+            if num >= 100 and num > highest_module:
+                highest_module = num
+
+    actual_start = max(start_num, highest_module + 1)
+
+    # Remove existing migrations for this module (re-import)
+    module_name = MODULE_NAME.lower()
+    for f in dest.glob("*.py"):
+        m = re.match(r"^\d{3,}_", f.name)
+        if m:
+            try:
+                content = f.read_text(encoding="utf-8")
+                if module_name in content.lower():
+                    if dry_run:
+                        logger.info("[DRY-RUN] Removeria %s", f)
+                    else:
+                        f.unlink()
+                        logger.info("Migration removida para reexport: %s", f.name)
+            except Exception:
+                pass
+
+    # If MIGRATION_SRC exists (standalone dev), process from source
+    if MIGRATION_SRC.exists() and list(MIGRATION_SRC.glob("*.py")):
+        migration_files = sorted(
+            [f for f in MIGRATION_SRC.glob("*.py") if f.name != "__init__.py"]
+        )
+        prev_rev = last_rev
+        for i, f in enumerate(migration_files):
+            content = f.read_text(encoding="utf-8")
+            rev_num = actual_start + i
+            rev = str(rev_num).zfill(max(3, len(str(rev_num))))
+
+            content = re.sub(
+                r'revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*"[^"]*"',
+                f'revision: str = "{rev}"',
+                content,
+            )
+            content = re.sub(
+                r'down_revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*[^#\n]+',
+                f'down_revision: str | None = "{prev_rev}"',
+                content,
+            )
+
+            name = f.name
+            name = re.sub(r"^\d+_", "", name)
+            new_name = f"{rev}_{name}"
+
+            dest_path = dest / new_name
+            if dry_run:
+                logger.info("[DRY-RUN] Criaria %s (revision %s, down_revision %s)", dest_path, rev, prev_rev)
+            else:
+                dest_path.write_text(content, encoding="utf-8")
+                logger.info("Migration %s copiada como %s (revision %s, down_revision %s)", f.name, new_name, rev, prev_rev)
+
+            prev_rev = rev
+    else:
+        # Processing already-copied migrations (rename in-place)
+        for old_file in dest.glob(f"*_{module_name}*.py"):
+            content = old_file.read_text(encoding="utf-8")
+            old_rev = re.search(r'revision\s*[=:]\s*(?:str\s*=\s*)?\"(\d+)\"', content)
+            if old_rev:
+                old_rev_val = int(old_rev.group(1))
+                if old_rev_val >= 100 and old_rev_val == actual_start:
+                    logger.info("Migration ja esta com revision %d, pulando", actual_start)
+                    return
+            if dry_run:
+                logger.info("[DRY-RUN] Renomearia %s", old_file.name)
+                return
+
+            new_rev_num = actual_start
+            rev = str(new_rev_num).zfill(max(3, len(str(new_rev_num))))
+
+            content = re.sub(
+                r'revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*"[^"]*"',
+                f'revision: str = "{rev}"',
+                content,
+            )
+            content = re.sub(
+                r'down_revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*[^#\n]+',
+                f'down_revision: str | None = "{last_rev}"',
+                content,
+            )
+
+            new_name = re.sub(r"^\d+_", f"{rev}_", old_file.name)
+            dest_path = dest / new_name
+            if dry_run:
+                logger.info("[DRY-RUN] Renomearia %s -> %s", old_file.name, new_name)
+                return
+
+            old_file.rename(dest_path)
             dest_path.write_text(content, encoding="utf-8")
-            logger.info("Migration %s copiada como %s (revision %s, down_revision %s)", f.name, new_name, use_rev, down)
+            logger.info("Migration renomeada: %s -> %s (revision %s, down_revision %s)", old_file.name, new_name, rev, last_rev)
 
 
 def register_routes(dry_run: bool = False):
