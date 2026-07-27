@@ -37,6 +37,17 @@ class UsersController extends window.grindx.controllers.BaseController {
                 `
             },
             {
+                dataLabel: 'Aprovador',
+                render: user => `
+                    <span class="badge ${user.aprovador ? 'badge-success' : 'badge-muted'}" 
+                          style="cursor:pointer" 
+                          onclick="window.usersController.toggleUserAprovador('${user.id}', ${!user.aprovador})" 
+                          title="${user.aprovador ? 'Clique para remover aprovador' : 'Clique para tornar aprovador'}">
+                        ${user.aprovador ? 'Sim' : 'Não'}
+                    </span>
+                `
+            },
+            {
                 dataLabel: 'Ações',
                 className: 'text-right',
                 render: user => `
@@ -59,7 +70,7 @@ class UsersController extends window.grindx.controllers.BaseController {
 
         if (!this.requireAuth('../../index.html')) {
             console.error('Token não encontrado no LocalStorage!');
-            this.userTable.renderEmpty('Sessão expirada. Faça login novamente.', 4);
+            this.userTable.renderEmpty('Sessão expirada. Faça login novamente.', 6);
             return;
         }
 
@@ -278,7 +289,7 @@ class UsersController extends window.grindx.controllers.BaseController {
     async loadUsers() {
         this.tableBody.innerHTML = `
             <tr>
-                <td colspan="5"></td>
+                <td colspan="6"></td>
             </tr>
         `;
         const loadingCell = this.tableBody.querySelector('td');
@@ -291,10 +302,10 @@ class UsersController extends window.grindx.controllers.BaseController {
                 this.users = result.items;
                 this.renderTableOrEmpty();
             } else {
-                this.userTable.renderEmpty('Nenhum usuário encontrado.', 5);
+                this.userTable.renderEmpty('Nenhum usuário encontrado.', 6);
             }
         } catch (err) {
-            this.userTable.renderEmpty(window.grindx.components.LoadingSpinner.toUserMessage(err), 5);
+            this.userTable.renderEmpty(window.grindx.components.LoadingSpinner.toUserMessage(err), 6);
         }
     }
 
@@ -437,6 +448,17 @@ class UsersController extends window.grindx.controllers.BaseController {
         }
     }
 
+    async toggleUserAprovador(id, novoValor) {
+        try {
+            const updatedUser = await window.grindx.api.put(`/usuarios/${id}`, { aprovador: novoValor });
+            this.upsertUser(updatedUser);
+            this.renderTableOrEmpty();
+            this.showToast(`Aprovador ${novoValor ? 'ativado' : 'desativado'} com sucesso.`, 'success');
+        } catch (err) {
+            this.showToast(err.message || 'Erro ao alterar aprovador.', 'error');
+        }
+    }
+
     upsertUser(user) {
         if (!user?.id) return;
         const index = this.users.findIndex(item => String(item.id) === String(user.id));
@@ -452,7 +474,7 @@ class UsersController extends window.grindx.controllers.BaseController {
             this.renderTable(this.users);
             return;
         }
-        this.userTable.renderEmpty('Nenhum usuário encontrado.', 5);
+        this.userTable.renderEmpty('Nenhum usuário encontrado.', 6);
     }
 
     resetForm() {

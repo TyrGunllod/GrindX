@@ -37,6 +37,7 @@ class UsuarioUpdate(BaseModel):
     email: Optional[EmailStr] = None
     role: Optional[str] = None
     ativo: Optional[bool] = None
+    aprovador: Optional[bool] = None
     password: Optional[str] = None
     theme_preference: Optional[str] = None
     layout_preference: Optional[str] = None
@@ -61,6 +62,7 @@ class UsuarioUpdate(BaseModel):
 
 class UsuarioResponse(UsuarioBase):
     id: int
+    aprovador: bool = False
     theme_preference: Optional[str] = None
     layout_preference: Optional[str] = None
     layout_mobile_preference: Optional[str] = None

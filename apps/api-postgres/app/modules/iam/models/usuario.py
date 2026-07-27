@@ -105,6 +105,9 @@ class Usuario(IamBase):
     ativo: Mapped[bool] = mapped_column(
         default=True, nullable=False, comment="Se o usuário está ativo"
     )
+    aprovador: Mapped[bool] = mapped_column(
+        default=False, nullable=False, comment="Se o usuário é aprovador de documentos"
+    )
     empresa_id: Mapped[int | None] = mapped_column(
         Integer,
         ForeignKey("org.empresas.id", ondelete="SET NULL"),
