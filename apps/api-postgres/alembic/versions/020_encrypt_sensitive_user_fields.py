@@ -32,9 +32,7 @@ def _encrypt_existing_data():
     for col_name in SENSITIVE_COLS:
         col = getattr(usuarios.c, col_name)
         rows = conn.execute(
-            sa.select(usuarios.c.id, col).where(
-                col.isnot(None), col.notlike("enc:%")
-            )
+            sa.select(usuarios.c.id, col).where(col.isnot(None), col.notlike("enc:%"))
         ).fetchall()
 
         for row in rows:

@@ -124,7 +124,7 @@ venv:
 
 migrate:
 	@echo "Rodando migracoes no PostgreSQL..."
-	cd apps/api-postgres && $(PP_APP) $(VENV_PY) manage_db.py upgrade head
+	cd apps/api-postgres && $(PP_APP) $(VENV_PY) manage_db.py upgrade heads
 
 seed:
 	@echo "Populando banco de dados inicial..."
