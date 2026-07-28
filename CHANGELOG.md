@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.67.1 (2026-07-28)
+
+### Bug Fixes
+
+- Remove_module dependencies regex handles any indentation
+  ([`5121d5a`](https://github.com/TyrGunllod/GrindX/commit/5121d5aae6aadc89ca7539fdd59c07f9e3f8d0d0))
+
+
 ## v1.67.0 (2026-07-28)
 
 ### Features
