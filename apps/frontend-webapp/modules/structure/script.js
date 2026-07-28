@@ -68,6 +68,11 @@ class StructureController extends window.grindx.controllers.BaseController {
             label: 'Aba Destino'
         }));
         window.grindx.components.FormField.appendFields(this.moduloForm, moduleFields);
+        this.moduloForm.appendChild(window.grindx.components.FormField.createIconSelect({
+            id: 'modIcone',
+            label: 'Ícone do Módulo',
+            value: 'fas fa-cube'
+        }));
 
         const urlGroup = document.createElement('div');
         urlGroup.className = 'form-group';
@@ -325,10 +330,11 @@ class StructureController extends window.grindx.controllers.BaseController {
             }
             const roleMinima = this._val('modRoleMinima') || 'operador';
             const ordem = parseInt(this._val('modOrdem')) || 0;
+            const icone = this._val('modIcone') || 'fas fa-cube';
             try {
                 await window.grindx.api.request(`/portal/modulos/${this.currentModuloId}`, {
                     method: 'PUT',
-                    params: { nome, aba_id: abaId, role_minima: roleMinima, ordem }
+                    params: { nome, aba_id: abaId, role_minima: roleMinima, ordem, icone }
                 });
                 await this.loadStructure();
                 this.toastSuccess('Módulo salvo com sucesso.');

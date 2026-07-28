@@ -38,6 +38,40 @@
             'fas fa-user-graduate', 'fas fa-phone', 'fas fa-envelope',
             'fas fa-comment', 'fas fa-comment-dots', 'fas fa-bell',
         ],
+        alert: [
+            'fas fa-bell', 'fas fa-bell-slash', 'fas fa-exclamation-triangle',
+            'fas fa-exclamation-circle', 'fas fa-radiation-alt',
+            'fas fa-skull-crossbones',
+        ],
+        business: [
+            'fas fa-briefcase', 'fas fa-building', 'fas fa-landmark',
+            'fas fa-coins', 'fas fa-handshake', 'fas fa-file-invoice-dollar',
+            'fas fa-receipt', 'fas fa-balance-scale',
+        ],
+        charts: [
+            'fas fa-chart-line', 'fas fa-chart-bar', 'fas fa-chart-pie',
+            'fas fa-chart-area', 'fas fa-diagram-project', 'fas fa-table',
+        ],
+        communication: [
+            'fas fa-comments', 'fas fa-envelope', 'fas fa-envelope-open-text',
+            'fas fa-phone', 'fas fa-paper-plane', 'fas fa-inbox',
+            'fas fa-address-book',
+        ],
+        editing: [
+            'fas fa-edit', 'fas fa-pen-to-square', 'fas fa-pencil',
+            'fas fa-eraser', 'fas fa-highlighter', 'fas fa-clipboard',
+            'fas fa-clipboard-list', 'fas fa-signature',
+        ],
+        logistics: [
+            'fas fa-truck', 'fas fa-truck-fast', 'fas fa-box',
+            'fas fa-boxes-stacked', 'fas fa-warehouse', 'fas fa-pallet',
+            'fas fa-barcode', 'fas fa-tasks',
+        ],
+        maps: [
+            'fas fa-map', 'fas fa-location-dot', 'fas fa-map-pin',
+            'fas fa-compass', 'fas fa-globe', 'fas fa-globe-americas',
+            'fas fa-road', 'fas fa-route',
+        ],
     };
 
     const ICON_OPTIONS = Object.values(ICON_CATEGORIES).flat();

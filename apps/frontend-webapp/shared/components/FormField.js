@@ -41,7 +41,7 @@
         container.style.cssText = 'max-height: 320px; overflow-y: auto; margin-top: 0.5rem; border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; padding: 8px;';
 
         const categories = window.grindx.constants.ICON_CATEGORIES;
-        const labels = { coding: 'Coding', devices: 'Devices', design: 'Design', files: 'Files', users: 'Users' };
+        const labels = { coding: 'Coding', devices: 'Devices', design: 'Design', files: 'Files', users: 'Users', alert: 'Alert', business: 'Business', charts: 'Charts', communication: 'Communication', editing: 'Editing', logistics: 'Logistics', maps: 'Maps' };
 
         Object.entries(categories).forEach(([cat, icons]) => {
             const header = document.createElement('div');

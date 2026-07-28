@@ -307,6 +307,7 @@ def atualizar_modulo(
     aba_id: int,
     role_minima: str | None = None,
     ordem: int | None = None,
+    icone: str | None = None,
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
 ):
@@ -319,6 +320,8 @@ def atualizar_modulo(
         mod.role_minima = role_minima
     if ordem is not None:
         mod.ordem = ordem
+    if icone is not None:
+        mod.icone = icone
     db.commit()
     db.refresh(mod)
     invalidate(_portal_cache, _portal_lock, "abas:active")
