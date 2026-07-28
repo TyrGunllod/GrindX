@@ -955,7 +955,7 @@ def remove_module(module_name: str) -> dict:
             flags=re.MULTILINE,
         )
         content_clean = re.sub(
-            rf"^def get_{re.escape(module_name)}_.*?(?:\n(?:  |\t).*)*\n?",
+            rf"^def get_{re.escape(module_name)}_.*?(?:\n[ \t]+.*)*\n?",
             "",
             content_clean,
             flags=re.MULTILINE,
