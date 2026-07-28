@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.67.0 (2026-07-28)
+
+### Features
+
+- Icon selector for modules and 7 new icon categories
+  ([`7c3e39c`](https://github.com/TyrGunllod/GrindX/commit/7c3e39cfb209221a2851dcd3b15c9397ad7710ba))
+
+
 ## v1.66.1 (2026-07-27)
 
 ### Bug Fixes
