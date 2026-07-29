@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.68.0 (2026-07-29)
+
+### Features
+
+- Expand icon categories to 20 icons each (12 categories, 240 total)
+  ([`a048ee9`](https://github.com/TyrGunllod/GrindX/commit/a048ee9ea221df5d5af9f6759bbecfccfbfaad34))
+
+
 ## v1.67.3 (2026-07-29)
 
 ### Bug Fixes
