@@ -300,7 +300,13 @@ Use templates:
 **Regras HTML:**
 - HTML5 semântico, zero dependências externas (sem CDN, sem bibliotecas)
 - `<meta name="viewport" content="width=device-width, initial-scale=1.0">` obrigatório
-- Incluir `<script src="../../shared/app.js"></script>` no `<head>` para `window.grindx.session`
+- Ordem de scripts obrigatória: **`config.js` → `app.js` → `script.js`**. O `config.js` define `window.GRINDX_CONFIG.API_BASE_URL` que `app.js` consome. O `script.js` (com `defer`) carrega por último.
+- Incluir no `<head>`:
+  ```html
+  <script src="../../shared/config.js"></script>
+  <script src="../../shared/app.js"></script>
+  <script src="script.js" defer></script>
+  ```
 - Modais com `role="dialog"`, `aria-modal="true"`, `aria-labelledby`
 - `data-label` em `<td>` para CSS mobile
 
@@ -326,7 +332,16 @@ Use templates:
 **Regras JS:**
 - NUNCA importar bibliotecas externas (React, Vue, jQuery, Axios)
 - NUNCA usar TypeScript — apenas JS puro
-- `API_BASE`: relativa no GrindX (`/{route_api}`), absoluta no standalone (`http://localhost:7000/{route_api}`)
+- **API URL via `window.GRINDX_CONFIG.API_BASE_URL`**: o monorepo define em `shared/config.js` (incluído antes de `app.js`). Padrão: `{protocol}//{hostname}:8002/v1`. Pode ser sobrescrito injetando `window.__GRINDX_API_URL` no nginx/CSP.
+- **O `config.js` do módulo** (em `shared/config.js`) define o fallback standalone. Ele detecta o contexto por porta (`7080` → backend standalone `:7000`, senão → `:8002`) e respeita `window.__GRINDX_API_URL` se injetado.
+- **No `script.js`**, use o dual-context pattern:
+  ```js
+  const API_BASE = (function(){
+    if (window.GRINDX_CONFIG?.API_BASE_URL)
+      return window.GRINDX_CONFIG.API_BASE_URL + '/meu-endpoint';
+    return 'http://localhost:7000/v1/meu-endpoint';
+  })();
+  ```
 - `_fetch()` com detecção de contexto: `window.grindx.session` (JWT) vs `API_KEY`
 - `downloadFromUrl()` para PDF/binários com fallback para `?api_key=` (standalone)
 - Eventos via delegated event bubbling no container pai
