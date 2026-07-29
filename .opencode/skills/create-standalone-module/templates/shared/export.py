@@ -319,35 +319,37 @@ def unregister_dependency(dry_run: bool = False):
     deps_py = GRINDX_API / "app" / "auth" / "dependencies.py"
     if not deps_py.exists():
         return
+    import re
+
     content = deps_py.read_text(encoding="utf-8")
-    # Remove linhas que contem pop_modelos e o bloco de funcoes vinculadas
-    lines = content.splitlines(keepends=True)
-    new_lines = []
-    skip = False
-    removed = []
-    for l in lines:
-        if "pop_modelos" in l:
-            removed.append(l.strip())
-            skip = True
-            continue
-        if skip:
-            if l.strip() == "" or l.strip().startswith("#") or l.strip().startswith("def "):
-                skip = False
-                if l.strip().startswith("def ") and "pop_modelos" not in l:
-                    continue
-                if l.strip() != "":
-                    new_lines.append(l)
-                continue
-            continue
-        new_lines.append(l)
-    if len(new_lines) == len(lines):
-        logger.info("Dependency nao registrada em dependencies.py")
-        return
-    if dry_run:
-        logger.info("[DRY-RUN] Removeria de dependencies.py: %s", removed)
-    else:
-        deps_py.write_text("".join(new_lines), encoding="utf-8")
-        logger.info("Removido de dependencies.py: %s", removed)
+    orig_len = len(content)
+    module_name = "pop_modelos"
+    # Remove imports do modulo
+    content_clean = re.sub(
+        rf"^from app\.modules\.{re.escape(module_name)}\..*\n?",
+        "",
+        content,
+        flags=re.MULTILINE,
+    )
+    # Remove factories geradas pelo register_dependency (prefixo get_{module_name}_)
+    content_clean = re.sub(
+        rf"^def get_{re.escape(module_name)}_.*?(?:\n[ \t]+.*)*\n?",
+        "",
+        content_clean,
+        flags=re.MULTILINE,
+    )
+    # Fallback: remove qualquer linha restante que referencie o modulo
+    lines = content_clean.splitlines(keepends=True)
+    module_path_prefix = f"app.modules.{module_name}"
+    lines = [line for line in lines if module_path_prefix not in line]
+    content_clean = "".join(lines)
+    content_clean = re.sub(r"\n{3,}", "\n\n", content_clean)
+    if len(content_clean) != orig_len:
+        if dry_run:
+            logger.info("[DRY-RUN] Limparia dependencies.py")
+        else:
+            deps_py.write_text(content_clean, encoding="utf-8")
+            logger.info("Dependencies limpas em auth/dependencies.py")
 
 
 def unregister_alembic_import(dry_run: bool = False):
@@ -406,6 +408,35 @@ def remove_migration(dry_run: bool = False):
                 logger.info("Migration removida: %s", f.name)
 
 
+def clean_requirements_txt(dry_run: bool = False):
+    req_file = GRINDX_API / "requirements.txt"
+    if not req_file.exists():
+        return
+    content = req_file.read_text(encoding="utf-8")
+    marker = "# === Modulo pop_modelos ==="
+    if marker not in content:
+        return
+    lines = content.splitlines(keepends=True)
+    cleaned = []
+    skip = False
+    for line in lines:
+        if line.strip() == marker:
+            skip = True
+            continue
+        if skip:
+            if line.strip().startswith("#") or not line.strip():
+                skip = False
+                continue
+            skip = False
+            continue
+        cleaned.append(line)
+    if dry_run:
+        logger.info("[DRY-RUN] Limparia requirements.txt")
+    else:
+        req_file.write_text("".join(cleaned))
+        logger.info("Dependencias removidas do requirements.txt")
+
+
 def uninstall(dry_run: bool = False):
     unregister_routes(dry_run)
     unregister_dependency(dry_run)
@@ -413,6 +444,7 @@ def uninstall(dry_run: bool = False):
     remove_backend(dry_run)
     remove_frontend(dry_run)
     remove_migration(dry_run)
+    clean_requirements_txt(dry_run)
     logger.info("Modulo removido do GrindX")
 
 
@@ -455,7 +487,7 @@ def main():
         global GRINDX_ROOT, GRINDX_API, GRINDX_FRONTEND
         GRINDX_ROOT = Path(args.grindx_root)
         GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"
-        GRINDX_FRONTEND = GRINDX_ROOT / "packages" / "frontend-webapp"
+        GRINDX_FRONTEND = GRINDX_ROOT / "apps" / "frontend-webapp"
     if args.action == "package":
         package(dry)
         return
