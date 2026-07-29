@@ -7,8 +7,12 @@
 .page-header { display: flex; flex-direction: column; align-items: flex-start; flex-wrap: wrap; gap: var(--space-2); }
 .page-header h1 { margin: 0; font-size: clamp(1.5rem, 5vw, 2.5rem); font-weight: 700; }
 .page-header p { padding: 0.75rem 0; }
+.header-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .mb-8 { margin-bottom: var(--space-8); }
 .text-muted { color: var(--text-muted); }
+
+.filters-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.filters-row .form-control { flex: 1; min-width: 180px; }
 
 /* Form */
 .form-group { display: flex; flex-direction: column; gap: var(--space-1); margin-bottom: var(--space-3); }
@@ -23,6 +27,7 @@
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--focus-ring); }
+textarea.form-control { width: 100%; resize: vertical; min-height: 60px; word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap; tab-size: 3; }
 
 /* Responsive table */
 .table-responsive {

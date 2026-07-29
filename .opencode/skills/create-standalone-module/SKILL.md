@@ -139,6 +139,7 @@ Project_Management/modulo-{module_name}/
 │   └── ...
 ├── migration/
 │   └── {revision}_{table_name}.py              # Templates/postgres/migration.py
+├── AGENTS.md                                   # Templates/shared/AGENTS.md
 ├── .env.example                                # Templates/shared/standalone/env_example
 ├── .gitignore                                  # Templates/shared/standalone/gitignore
 ├── Makefile, requirements.txt, pytest.ini, run_tests.ps1  # Templates/shared/support/*
@@ -357,6 +358,9 @@ Arquivos standalone (ver seção 1.0):
 - **`.env.example`** → `templates/shared/standalone/env_example` — template DATABASE_URL
 - **`.gitignore`** → `templates/shared/standalone/gitignore` — exclui __pycache__, .env, .pytest_cache, dist
 
+Documentacao:
+- **`AGENTS.md`** → `templates/shared/AGENTS.md` — regras padrao para agentes de IA (preencher com detalhes do modulo)
+
 Substitua `{module_name}`, `{entity_name}`, `{frontend_prefix}`.
 
 ## 6. Manifesto (`module.json`)
@@ -445,6 +449,7 @@ pytest tests/ -k {module_name} -v
 - [ ] Tests: conftest.py, unit tests (mocked repo), integration tests (SQLite)
 - [ ] Migration: Alembic migration file (PostgreSQL)
 - [ ] Support: requirements.txt (com python-dotenv), pytest.ini, run_tests.ps1, Makefile (com dev-backend/dev-frontend)
+- [ ] `AGENTS.md` criado na raiz do modulo com regras para agentes de IA
 - [ ] Testes passam: `pytest app/modules/{module_name}/tests/ -v`
 - [ ] Dev server funciona: `make dev-backend` sobe em http://localhost:7000
 - [ ] `module.json` criado na raiz do standalone com `frontend_tabs` array

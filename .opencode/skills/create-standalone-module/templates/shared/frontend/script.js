@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded',function(){
   if(e.target.matches('.secao-input')){var v=e.target.value.trim(),cb=e.target.parentElement.querySelector('.secao-clear');cb.style.display=v?'':'none';}
  });
  document.getElementById('btn-add-secao').addEventListener('click',function(){var c=document.getElementById('secoes-opcionais'),cnt=c.querySelectorAll('.secao-opcional-item').length;if(cnt<15)addSecao(cnt+1);});
- document.getElementById('modal-editor').addEventListener('click',function(e){if(e.target.id==='modal-editor')closeModal();});
  document.getElementById('btn-pick-icon').addEventListener('click',_toggleIconPicker);
  document.getElementById('f-icone').addEventListener('input',function(){document.getElementById('icon-preview').innerHTML='<i class=\"'+this.value+'\"></i>';});
  document.getElementById('search-input').addEventListener('input',function(e){
