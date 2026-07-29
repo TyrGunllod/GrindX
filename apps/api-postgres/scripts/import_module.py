@@ -41,6 +41,8 @@ logger = structlog.get_logger(__name__)
 
 BACKUP_DIRNAME = ".backup"
 
+MODULOS_SISTEMA = {"iam", "org", "portal"}
+
 
 def _snake_to_pascal(name: str) -> str:
     return name.replace("_", " ").title().replace(" ", "")
@@ -874,8 +876,45 @@ def _clean_main_py(main_py: Path, module_name: str, steps: list) -> None:
         )
 
 
+def _clean_requirements_txt(module_name: str, api_dir: Path) -> bool:
+    """Remove entradas do módulo no requirements.txt."""
+    req_file = api_dir / "requirements.txt"
+    if not req_file.exists():
+        return False
+
+    content = req_file.read_text(encoding="utf-8")
+    marker = f"# === Módulo {module_name} ==="
+    if marker not in content:
+        return False
+
+    lines = content.splitlines(keepends=True)
+    cleaned = []
+    skip = False
+    for line in lines:
+        if line.strip() == marker:
+            skip = True
+            continue
+        if skip:
+            if line.strip().startswith("#") or not line.strip():
+                skip = False
+                continue
+            skip = False
+            continue
+        cleaned.append(line)
+
+    req_file.write_text("".join(cleaned), encoding="utf-8")
+    return True
+
+
 def remove_module(module_name: str) -> dict:
     """Remove um módulo importado, limpando todos os registros."""
+    if module_name in MODULOS_SISTEMA:
+        return {
+            "success": False,
+            "steps": [],
+            "error": f"Módulo de sistema '{module_name}' não pode ser removido",
+        }
+
     monorepo_root = _get_monorepo_root()
     steps = []
 
@@ -900,11 +939,7 @@ def remove_module(module_name: str) -> dict:
                         parts = url.split("/")
                         if len(parts) >= 2:
                             frontend_dirs.append(parts[1])
-                    tables = m.get("tables", [])
-                    if tables or any(
-                        _module_in_file_content(f, module_name)
-                        for f in (api_dir / "alembic" / "versions").glob("*.py")
-                    ):
+                    if m.get("tables", []):
                         has_migrations = True
                 except Exception:
                     pass
@@ -914,6 +949,20 @@ def remove_module(module_name: str) -> dict:
 
         # Clean main.py (roda mesmo se backend nao existir, pra limpar residuos)
         _clean_main_py(api_dir / "app" / "main.py", module_name, steps)
+
+    # Scan migrations independente de module.json (cobre migracoes orfas)
+    versions_dirs = [
+        api_dir / "alembic" / "versions"
+        for sub_api in ["api-postgres", "api-sqlserver"]
+        if (api_dir := monorepo_root / "apps" / sub_api).exists()
+    ]
+    if not has_migrations:
+        has_migrations = any(
+            _module_in_file_content(f, module_name)
+            for versions_dir in versions_dirs
+            if versions_dir.exists()
+            for f in versions_dir.glob("*.py")
+        )
 
     # Frontend dirs (independente do backend)
     frontend_base = _get_frontend_dir() / "modules"
@@ -932,11 +981,10 @@ def remove_module(module_name: str) -> dict:
 
     # Migration
     if has_migrations:
-        for sub_api in ["api-postgres", "api-sqlserver"]:
-            api_dir = monorepo_root / "apps" / sub_api
-            if not api_dir.exists():
+        for versions_dir in versions_dirs:
+            if not versions_dir.exists():
                 continue
-            for f in sorted((api_dir / "alembic" / "versions").glob("*"), reverse=True):
+            for f in sorted(versions_dir.glob("*"), reverse=True):
                 if module_name in f.name or _module_in_file_content(f, module_name):
                     f.unlink()
                     steps.append(f"Migration removida: {f.name}")
@@ -948,18 +996,27 @@ def remove_module(module_name: str) -> dict:
     if deps_py.exists():
         content = deps_py.read_text(encoding="utf-8")
         orig_len = len(content)
+        # Remove imports do modulo
         content_clean = re.sub(
             rf"^from app\.modules\.{re.escape(module_name)}\..*\n?",
             "",
             content,
             flags=re.MULTILINE,
         )
+        # Remove factories geradas pelo register_dependency (prefixo get_{module_name}_)
         content_clean = re.sub(
             rf"^def get_{re.escape(module_name)}_.*?(?:\n[ \t]+.*)*\n?",
             "",
             content_clean,
             flags=re.MULTILINE,
         )
+        # Fallback: remove qualquer linha restante que referencie o modulo
+        lines = content_clean.splitlines(keepends=True)
+        before_fallback = len(lines)
+        module_path_prefix = f"app.modules.{module_name}"
+        lines = [line for line in lines if module_path_prefix not in line]
+        if len(lines) != before_fallback:
+            content_clean = "".join(lines)
         content_clean = re.sub(r"\n{3,}", "\n\n", content_clean)
         if len(content_clean) != orig_len:
             deps_py.write_text(content_clean, encoding="utf-8")
@@ -977,6 +1034,11 @@ def remove_module(module_name: str) -> dict:
         if len(lines) != len(content.splitlines(keepends=True)):
             env_py.write_text("".join(lines), encoding="utf-8")
             steps.append("Imports removidos de alembic/env.py")
+
+    # Clean requirements.txt (api-postgres only)
+    api_postgres_dir = monorepo_root / "apps" / "api-postgres"
+    if _clean_requirements_txt(module_name, api_postgres_dir):
+        steps.append("Dependencias removidas do requirements.txt")
 
     if not steps:
         logger.warning("Nada encontrado para remover: %s", module_name)

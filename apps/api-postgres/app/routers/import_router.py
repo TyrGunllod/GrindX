@@ -417,6 +417,17 @@ def remove_module(
     except Exception as e:
         logger.warning("Erro ao remover vinculo do modulo '%s': %s", module_name, e)
 
+    # Invalida cache do portal
+    try:
+        from app.core.cache import _portal_cache, _portal_lock, invalidate
+
+        invalidate(_portal_cache, _portal_lock, "abas:active")
+        if "steps" not in result:
+            result["steps"] = []
+        result["steps"].append("Cache do portal invalidado")
+    except Exception as e:
+        logger.warning("Erro ao invalidar cache do portal: %s", e)
+
     if not result.get("success"):
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
