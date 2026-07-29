@@ -333,7 +333,7 @@ def unregister_dependency(dry_run: bool = False):
     )
     # Remove factories geradas pelo register_dependency (prefixo get_{module_name}_)
     content_clean = re.sub(
-        rf"^def get_{re.escape(module_name)}_.*?(?:\n[ \t]+.*)*\n?",
+        rf"^def get_{re.escape(module_name)}_.*(?:\n[ \t]+.*)*\n?",
         "",
         content_clean,
         flags=re.MULTILINE,
