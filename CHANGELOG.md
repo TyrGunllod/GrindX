@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.68.1 (2026-07-29)
+
+### Bug Fixes
+
+- Regex factory removal uses greedy .* instead of non-greedy .*? to prevent partial matches
+  ([`273a432`](https://github.com/TyrGunllod/GrindX/commit/273a43292c9a08ab790fad1ff5079536e72d208c))
+
+
 ## v1.68.0 (2026-07-29)
 
 ### Features
