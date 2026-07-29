@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.67.3 (2026-07-29)
+
+### Bug Fixes
+
+- Sync export.py template with monorepo remove_module improvements
+  ([`efb8a0a`](https://github.com/TyrGunllod/GrindX/commit/efb8a0a8adca9b33f11a240a08c35c5bb2b2f4b2))
+
+
 ## v1.67.2 (2026-07-29)
 
 ### Bug Fixes
