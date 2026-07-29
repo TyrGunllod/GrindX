@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.67.2 (2026-07-29)
+
+### Bug Fixes
+
+- Robust module removal with fallback cleanup, requirements.txt, cache invalidation, system guard
+  ([`fbb140c`](https://github.com/TyrGunllod/GrindX/commit/fbb140c95abd177672ac69b5774f1c8af2d6754d))
+
+### Chores
+
+- Update skill templates and AGENTS.md
+  ([`ef6412b`](https://github.com/TyrGunllod/GrindX/commit/ef6412b266c1ce5344751853c95df421c318d8f0))
+
+
 ## v1.67.1 (2026-07-28)
 
 ### Bug Fixes
