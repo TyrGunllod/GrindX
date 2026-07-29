@@ -63,16 +63,6 @@ class StructureController extends window.grindx.controllers.BaseController {
         }));
 
         this.moduloForm.innerHTML = '';
-        this.moduloForm.appendChild(window.grindx.components.FormField.createSelect({
-            id: 'modAbaId',
-            label: 'Aba Destino'
-        }));
-        window.grindx.components.FormField.appendFields(this.moduloForm, moduleFields);
-        this.moduloForm.appendChild(window.grindx.components.FormField.createIconSelect({
-            id: 'modIcone',
-            label: 'Ícone do Módulo',
-            value: 'fas fa-cube'
-        }));
 
         const urlGroup = document.createElement('div');
         urlGroup.className = 'form-group';
@@ -87,6 +77,12 @@ class StructureController extends window.grindx.controllers.BaseController {
         `;
         this.moduloForm.appendChild(urlGroup);
 
+        this.moduloForm.appendChild(window.grindx.components.FormField.createSelect({
+            id: 'modAbaId',
+            label: 'Aba Destino'
+        }));
+        window.grindx.components.FormField.appendFields(this.moduloForm, moduleFields);
+
         const roleGroup = document.createElement('div');
         roleGroup.className = 'form-group';
         roleGroup.innerHTML = `
@@ -99,6 +95,12 @@ class StructureController extends window.grindx.controllers.BaseController {
             <small class="form-hint">Perfil mínimo necessário para acessar este módulo.</small>
         `;
         this.moduloForm.appendChild(roleGroup);
+
+        this.moduloForm.appendChild(window.grindx.components.FormField.createIconSelect({
+            id: 'modIcone',
+            label: 'Ícone do Módulo',
+            value: 'fas fa-cube'
+        }));
 
         this._createPickerModal();
     }
