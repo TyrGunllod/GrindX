@@ -99,13 +99,9 @@ def validate_manifest(import_dir: Path) -> dict:
     with open(manifest_path, encoding="utf-8") as f:
         manifest = json.load(f)
 
-    required = [
-        "module_name",
-        "entity_name",
-        "schema_name",
-        "route_prefix",
-        "menu_label",
-    ]
+    required = ["module_name", "entity_name", "menu_label"]
+    if not manifest.get("frontend_only"):
+        required += ["schema_name", "route_prefix"]
     missing = [k for k in required if k not in manifest]
     if missing:
         raise ValueError(f"Campos obrigatórios ausentes no module.json: {missing}")
