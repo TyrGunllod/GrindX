@@ -216,3 +216,58 @@ class TestImportFrontendOnly:
         assert "Módulo frontend-only importado — sem migrações" in steps
         assert "Migrações agendadas em segundo plano" not in steps
         mock_bg.assert_not_called()
+
+    def test_scan_frontend_only_importado_como_ja_importado(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        import pathlib
+
+        _criar_zip_manifest(
+            tmp_path,
+            "pop_viz",
+            {
+                "module_name": "pop_viz",
+                "entity_name": "PopViz",
+                "frontend_only": True,
+                "menu_label": "Visualizador POP",
+            },
+        )
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+
+        phantom_backend = (
+            tmp_path / "apps" / "api-postgres" / "app" / "modules" / "pop_viz"
+        )
+        phantom_backend.mkdir(parents=True)
+        (phantom_backend / "module.json").write_text(
+            json.dumps({"module_name": "pop_viz", "frontend_only": True}),
+            encoding="utf-8",
+        )
+        frontend_mod = tmp_path / "apps" / "frontend-webapp" / "modules" / "pop_viz"
+        frontend_mod.mkdir(parents=True)
+        (frontend_mod / "index.html").write_text("<html></html>", encoding="utf-8")
+
+        real_resolve = pathlib.Path.resolve
+
+        def _fake_resolve(path_obj, strict=False):
+            if "import_router.py" in str(path_obj):
+                return pathlib.Path(
+                    tmp_path
+                    / "apps"
+                    / "api-postgres"
+                    / "app"
+                    / "routers"
+                    / "import_router.py"
+                )
+            return real_resolve(path_obj, strict=strict)
+
+        monkeypatch.setattr(pathlib.Path, "resolve", _fake_resolve)
+
+        response = client.get("/v1/import/scan", headers=auth_headers)
+        assert response.status_code == 200
+        modules = response.json()["modules"]
+        found = [m for m in modules if m["slug"] == "pop_viz"]
+        assert len(found) == 1
+        assert found[0]["ja_importado"] is True
+        assert found[0]["pode_remover"] is True
