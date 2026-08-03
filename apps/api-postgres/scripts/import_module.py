@@ -816,7 +816,8 @@ def import_module(
         steps.append("Menu registrado")
         _tick = _log_step("register_menu", _tick)
 
-        if target_api != "sqlserver":
+        is_frontend_only = manifest.get("frontend_only", False)
+        if target_api != "sqlserver" and not is_frontend_only:
             if skip_migrations:
                 steps.append("Migração adiada (executada em segundo plano)")
             else:
@@ -829,6 +830,8 @@ def import_module(
                         "Migration falhou (tabelas podem já existir): %s", str(e)
                     )
                     steps.append(f"Migration ignorada: {str(e)[:100]}")
+        elif is_frontend_only:
+            steps.append("Módulo frontend-only — sem migrações")
         else:
             steps.append("Módulo sqlserver — sem migrações necessárias")
 
