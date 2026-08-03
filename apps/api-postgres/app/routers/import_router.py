@@ -350,13 +350,16 @@ def import_module(
             zip_path.unlink(missing_ok=True)
             logger.info("Zip removido após importação: %s", zip_path.name)
             steps = result_data.get("steps", [])
-            if target_api != "sqlserver":
+            frontend_only = manifest_data.get("frontend_only", False)
+            if target_api != "sqlserver" and not frontend_only:
                 threading.Thread(
                     target=_run_migrations_background,
                     args=(module_name,),
                     daemon=True,
                 ).start()
                 steps.append("Migrações agendadas em segundo plano")
+            elif frontend_only:
+                steps.append("Módulo frontend-only importado — sem migrações")
             else:
                 steps.append("Módulo sqlserver importado — sem migrações")
             logger.info("Import de '%s' concluído", module_name)

@@ -174,3 +174,45 @@ class TestImportSqlServer:
         assert response.status_code == 200, response.text
         _, _, call_kwargs = mock_import.mock_calls[0]
         assert call_kwargs["target_api"] == "postgres"
+
+
+class TestImportFrontendOnly:
+    def test_import_frontend_only_nao_agenda_migracoes(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        from unittest.mock import patch
+
+        _criar_zip_manifest(
+            tmp_path,
+            "pop_viz",
+            {
+                "module_name": "pop_viz",
+                "entity_name": "PopViz",
+                "frontend_only": True,
+                "menu_label": "Visualizador POP",
+                "frontend_tabs": [
+                    {
+                        "name": "Visualizador POP",
+                        "url": "modules/pop_viz/index.html",
+                    }
+                ],
+            },
+        )
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+
+        with (
+            patch("scripts.import_module.import_module") as mock_import,
+            patch("app.routers.import_router._run_migrations_background") as mock_bg,
+        ):
+            mock_import.return_value = {"success": True, "steps": ["ok"]}
+            response = client.post(
+                "/v1/import/pop_viz?force=true", headers=auth_headers
+            )
+
+        assert response.status_code == 200, response.text
+        steps = response.json()["steps"]
+        assert "Módulo frontend-only importado — sem migrações" in steps
+        assert "Migrações agendadas em segundo plano" not in steps
+        mock_bg.assert_not_called()
