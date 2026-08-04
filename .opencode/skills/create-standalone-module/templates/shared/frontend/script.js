@@ -14,6 +14,7 @@ async function apiFetch(url,options){
 }
 var api={listar:function(){return apiFetch(API_BASE+'?page_size=100')},criar:function(d){return apiFetch(API_BASE,{method:'POST',body:JSON.stringify(d)})},atualizar:function(i,d){return apiFetch(API_BASE+'/'+i,{method:'PUT',body:JSON.stringify(d)})},excluir:function(i){return apiFetch(API_BASE+'/'+i,{method:'DELETE'})}};
 function showToast(m,t){t=t||'success';var c=document.getElementById('toast-container'),to=document.createElement('div');to.className='toast toast-'+t;to.textContent=m;c.appendChild(to);setTimeout(function(){if(to.parentNode)to.remove()},3000);}
+function setBadgeVersao(){var el=document.getElementById('viz-version');if(!el)return;var v=window.{module_upper}_VERSION;if(!v){el.style.display='none';return;}el.textContent='v'+v;el.setAttribute('aria-label','Versao do modulo v'+v);}
 function openModal(m){
  editingId=m?m.id:null;document.getElementById('modal-title').textContent=m?'Editar Modelo':'Novo Modelo';
  document.getElementById('form-id').value=m?m.id:'';
@@ -63,5 +64,6 @@ document.addEventListener('DOMContentLoaded',function(){
   var f=modelos.filter(function(m){return(m.codigo&&m.codigo.toLowerCase().indexOf(t)>=0)||(m.nome&&m.nome.toLowerCase().indexOf(t)>=0)||(m.prefixo&&m.prefixo.toLowerCase().indexOf(t)>=0);});
   var g=document.getElementById('lista-modelos');if(!f.length){g.innerHTML='<p style="text-align:center;color:var(--text-muted)">Nenhum resultado.</p>';}else{var o=modelos;modelos=f;render();modelos=o;}
  });
- load();
+  load();
+  setBadgeVersao();
 });

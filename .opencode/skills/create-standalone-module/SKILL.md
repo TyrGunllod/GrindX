@@ -76,6 +76,7 @@ Baseado na escolha do Tech Stack:
 - `{frontend_tabs}` — array de abas
 - `{menu_description}` — subtítulo do header
 - `{migration_start_number}` — número inicial da migration (3 dígitos, padrão 100)
+- `{module_upper}` — `{module_name}` em MAIÚSCULAS (ex: pop_viz → POP_VIZ); usado no global JS de versão (`window.{module_upper}_VERSION`)
 
 ## Directory Structure
 
@@ -134,9 +135,13 @@ Project_Management/modulo-{module_name}/
 │   │   ├── index.html, script.js, style.css    # Templates/shared/frontend/*
 │   │   ├── shared/
 │   │   │   ├── core.css                         # Templates/shared/frontend/shared/core.css
-│   │   │   └── app.js                           # Templates/shared/frontend/shared/app.js
+│   │   │   ├── app.js                           # Templates/shared/frontend/shared/app.js
+│   │   │   └── version.js                       # Templates/shared/frontend/shared/version.js
 │   │   └── (style.css importa shared/core.css)
 │   └── ...
+├── scripts/
+│   └── version.py                               # Templates/shared/scripts/version.py
+├── CHANGELOG.md                                 # Gerado por scripts/version.py
 ├── migration/
 │   └── {revision}_{table_name}.py              # Templates/postgres/migration.py
 ├── AGENTS.md                                   # Templates/shared/AGENTS.md
@@ -296,6 +301,8 @@ Use template: `templates/shared/frontend/style.css`
 Use templates:
 - `templates/shared/frontend/index.html` — estrutura HTML
 - `templates/shared/frontend/script.js` — JS com API calls + dual-context auth
+- `templates/shared/frontend/style.css` — estilos do módulo
+- `templates/shared/frontend/shared/version.js` — global `window.{module_upper}_VERSION` (badge de versão; substitua `{module_upper}`)
 
 **Regras HTML:**
 - HTML5 semântico, zero dependências externas (sem CDN, sem bibliotecas)
@@ -367,7 +374,21 @@ Use templates em `templates/shared/support/`:
 - **`run_tests.ps1`** → `templates/shared/support/run_tests.ps1` — script para rodar testes com `GRINDX_PACKAGES`
 - **`requirements.txt`** → `templates/shared/support/requirements.txt` — pytest, sqlalchemy, pydantic, structlog, fastapi, uvicorn, alembic, python-dotenv
 - **`pytest.ini`** → `templates/shared/support/pytest.ini` — config testpaths
-- **`Makefile`** → `templates/shared/support/Makefile` — targets: test, test-unit, test-integration, dev-backend, dev-frontend, package, export, dry-run, import, clean, help
+- **`Makefile`** → `templates/shared/support/Makefile` — targets: test, test-unit, test-integration, dev-backend, dev-frontend, package, export, dry-run, import, clean, version, version-dry-run, help
+
+## 5.5 Versionamento (obrigatório)
+
+> Gerado por `templates/shared/scripts/version.py` — mesmo padrão do `pop_viz`.
+
+- **`scripts/version.py`** → `templates/shared/scripts/version.py` — gera a próxima versão semver a partir de conventional commits (`BREAKING`/`feat!:` → MAJOR, `feat:` → MINOR, demais → PATCH). Atualiza `module.json` + `CHANGELOG.md` + **todas** as `frontend/*/shared/version.js` (glob por aba). Flags: `--dry-run`, `--no-tag`; exit 2 em erro de git. Ignora commits de release (`docs: registrar changelog`).
+- **`scripts/version.py`** usa o placeholder `{module_upper}` para o global JS (`window.{module_upper}_VERSION`).
+- **`CHANGELOG.md`** — criado na primeira execução; formatação por tipo de commit.
+- **Frontend badge**: cada `frontend/*/index.html` carrega `shared/version.js` (antes de `script.js`), inclui `<span id="viz-version">` no header e `script.js` chama `setBadgeVersao()` (`templates/shared/frontend/*` já contém esses trechos). `style.css` esconde o badge em `@media print`.
+
+**Fluxo de release em duas etapas** (a tag deve ficar no commit que contém o CHANGELOG):
+1. `python scripts/version.py --no-tag` — atualiza `module.json` + `shared/version.js` + `CHANGELOG.md`
+2. Commitar esses artefatos e então criar a tag `git tag vX.Y.Z`
+⚠️ O padrão `make version` cria a tag no commit atual, ANTES do commit dos artefatos — `git checkout vX.Y.Z` não conteria o changelog.
 
 Arquivos standalone (ver seção 1.0):
 - **`.env.example`** → `templates/shared/standalone/env_example` — template DATABASE_URL
@@ -464,7 +485,10 @@ pytest tests/ -k {module_name} -v
 - [ ] Tests: conftest.py, unit tests (mocked repo), integration tests (SQLite)
 - [ ] Migration: Alembic migration file (PostgreSQL)
 - [ ] Support: requirements.txt (com python-dotenv), pytest.ini, run_tests.ps1, Makefile (com dev-backend/dev-frontend)
+- [ ] Versionamento: `scripts/version.py` + targets `version`/`version-dry-run` no Makefile
+- [ ] Badge de versão: `shared/version.js` em cada aba frontend, `<span id="viz-version">` no header, `setBadgeVersao()` em `script.js`, `.viz-version` em `style.css`
 - [ ] `AGENTS.md` criado na raiz do modulo com regras para agentes de IA
+- [ ] `AGENTS.md` documenta o fluxo de release em duas etapas (`--no-tag` → commit → `git tag vX.Y.Z`)
 - [ ] Testes passam: `pytest app/modules/{module_name}/tests/ -v`
 - [ ] Dev server funciona: `make dev-backend` sobe em http://localhost:7000
 - [ ] `module.json` criado na raiz do standalone com `frontend_tabs` array

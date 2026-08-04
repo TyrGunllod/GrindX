@@ -5,7 +5,7 @@
 MODULE := {module_name}
 ENTITY := {entity_name}
 
-.PHONY: test test-unit test-integration dev-backend dev-frontend package export dry-run clean help
+.PHONY: test test-unit test-integration dev-backend dev-frontend package export dry-run import clean version version-dry-run help
 
 # ==========================================
 # Testes
@@ -69,6 +69,16 @@ import: package
 	@echo   Frontend: Gestao -> Importar Modulos -> $(ENTITY) -> Importar
 
 # ==========================================
+# Versionamento (conventional commits)
+# ==========================================
+
+version-dry-run:
+	@python scripts/version.py --dry-run
+
+version:
+	@python scripts/version.py
+
+# ==========================================
 # Utilitários
 # ==========================================
 
@@ -92,6 +102,8 @@ help:
 	@echo   make dry-run          Simula a geracao do zip
 	@echo   make export           Exporta direto para o GrindX (CLI)
 	@echo   make import           Gera zip + copia para import/ do GrindX
+	@echo   make version-dry-run  Simula a proxima versao sem alterar arquivos
+	@echo   make version          Gera proxima versao + changelog + tag git
 	@echo   make clean            Limpa caches e __pycache__
 	@echo   make help             Exibe esta ajuda
 	@echo
