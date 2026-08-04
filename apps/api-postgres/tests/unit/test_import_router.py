@@ -309,7 +309,8 @@ class TestImportFrontendOnly:
             return found[0] if found else None
 
         _add_frontend_only_dir()
-        assert _scan_instalados() is None or _scan_instalados()["pode_remover"] is False
+        entry = _scan_instalados()
+        assert entry is None or entry["pode_remover"] is False
 
         phantom_backend = (
             tmp_path / "apps" / "api-postgres" / "app" / "modules" / "pop_viz"
