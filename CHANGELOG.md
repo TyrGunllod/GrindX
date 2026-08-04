@@ -2,6 +2,60 @@
 
 <!-- version list -->
 
+## v1.69.0 (2026-08-04)
+
+### Bug Fixes
+
+- Prefix router variable names with module_name to prevent collisions between modules with same
+  router filenames
+  ([`bce3284`](https://github.com/TyrGunllod/GrindX/commit/bce3284d1840949efdce4be05f0ac3a238828a4d))
+
+- **import**: Create phantom module dir for frontend-only import
+  ([`493a8df`](https://github.com/TyrGunllod/GrindX/commit/493a8df0da56fa2861be6f4d8ecadf196cdd5ee5))
+
+- **import**: Skip backend registration for frontend-only modules
+  ([`5e3d5d1`](https://github.com/TyrGunllod/GrindX/commit/5e3d5d151f5197a5d4016bb893d9d134554c40fd))
+
+### Documentation
+
+- Spec de importacao de modulos frontend-only
+  ([`99571b2`](https://github.com/TyrGunllod/GrindX/commit/99571b291c0e3acbc3a8e234592573933431e545))
+
+- Update create-standalone-module skill with GRINDX_CONFIG.API_BASE_URL pattern
+  ([`0470211`](https://github.com/TyrGunllod/GrindX/commit/04702111a1453f2a7e1a28cb233991bdfc05edf9))
+
+- **import**: Document frontend_only flag
+  ([`530eb34`](https://github.com/TyrGunllod/GrindX/commit/530eb34321eac17a5ce164ac665e4f07a2190dcc))
+
+### Features
+
+- Integra sistema de versao na skill create-standalone-module
+  ([`2adfc3d`](https://github.com/TyrGunllod/GrindX/commit/2adfc3d271bbd428ea91bbfd99f5c3f84d428f1d))
+
+- Reorder module form fields - URL first, icon last
+  ([`766c254`](https://github.com/TyrGunllod/GrindX/commit/766c254fea4551b6a09f3671205b4fa6d75159db))
+
+- **import**: Accept frontend-only manifest without schema/route
+  ([`8630c61`](https://github.com/TyrGunllod/GrindX/commit/8630c61d9cfcaa975e906c750b1dc8f582c7d1dc))
+
+- **import**: Skip background migrations for frontend-only in router
+  ([`817dbaa`](https://github.com/TyrGunllod/GrindX/commit/817dbaa46d9b2d6c2ad709863ac3a0797afba135))
+
+- **import**: Skip migrations for frontend-only modules
+  ([`c466c27`](https://github.com/TyrGunllod/GrindX/commit/c466c27ae5230f91614f2ce505fc2fcec2843e49))
+
+### Testing
+
+- **import**: Align router tests with module_name prefix
+  ([`d681fad`](https://github.com/TyrGunllod/GrindX/commit/d681fadb859f18740bb42f3d8810ede16dc0c113))
+
+- **import**: Guard instalados removal for frontend-only
+  ([`bcd4e24`](https://github.com/TyrGunllod/GrindX/commit/bcd4e245c41b714ce90c7295ff17a88cd0b6e9ea))
+
+- **import**: Guard scan detection for frontend-only modules
+  ([`e379c6d`](https://github.com/TyrGunllod/GrindX/commit/e379c6df48cba0c3d3fcac10ac416b33fa14a62c))
+
+
 ## v1.68.1 (2026-07-29)
 
 ### Bug Fixes
