@@ -132,10 +132,10 @@ class TestRegisterRouter:
 
         content = main_py.read_text(encoding="utf-8")
         assert (
-            "from app.modules.projetos.routers.projetos_router import router as projetos_router"
+            "from app.modules.projetos.routers.projetos_router import router as projetos_projetos_router"
             in content
         )
-        assert "app.include_router(projetos_router)" in content
+        assert "app.include_router(projetos_projetos_router)" in content
 
     def test_generates_correct_import_path_different_module(self, main_py, tmp_path):
         _mock_api_dir(tmp_path, "financeiro", router_files=["financeiro_router"])
@@ -145,10 +145,10 @@ class TestRegisterRouter:
 
         content = main_py.read_text(encoding="utf-8")
         assert (
-            "from app.modules.financeiro.routers.financeiro_router import router as financeiro_router"
+            "from app.modules.financeiro.routers.financeiro_router import router as financeiro_financeiro_router"
             in content
         )
-        assert "app.include_router(financeiro_router)" in content
+        assert "app.include_router(financeiro_financeiro_router)" in content
 
     def test_multiple_routers(self, main_py, tmp_path):
         _mock_api_dir(
@@ -160,15 +160,15 @@ class TestRegisterRouter:
 
         content = main_py.read_text(encoding="utf-8")
         assert (
-            "from app.modules.projetos.routers.projeto_router import router as projeto_router"
+            "from app.modules.projetos.routers.projeto_router import router as projetos_projeto_router"
             in content
         )
         assert (
-            "from app.modules.projetos.routers.tarefa_router import router as tarefa_router"
+            "from app.modules.projetos.routers.tarefa_router import router as projetos_tarefa_router"
             in content
         )
-        assert "app.include_router(projeto_router)" in content
-        assert "app.include_router(tarefa_router)" in content
+        assert "app.include_router(projetos_projeto_router)" in content
+        assert "app.include_router(projetos_tarefa_router)" in content
 
     def test_no_routers_dir_returns_early(self, main_py, tmp_path):
         _mock_api_dir(tmp_path, "projetos")
@@ -204,7 +204,9 @@ class TestRegisterRouter:
         include_lines = [
             i for i, line in enumerate(lines) if "app.include_router(" in line
         ]
-        assert "app.include_router(projetos_router)" in lines[include_lines[-1]]
+        assert (
+            "app.include_router(projetos_projetos_router)" in lines[include_lines[-1]]
+        )
 
     def test_idempotent_when_already_registered(self, main_py, tmp_path):
         _mock_api_dir(tmp_path, "projetos", router_files=["projetos_router"])
@@ -216,11 +218,11 @@ class TestRegisterRouter:
         content = main_py.read_text(encoding="utf-8")
         assert (
             content.count(
-                "from app.modules.projetos.routers.projetos_router import router as projetos_router"
+                "from app.modules.projetos.routers.projetos_router import router as projetos_projetos_router"
             )
             == 1
         )
-        assert content.count("app.include_router(projetos_router)") == 1
+        assert content.count("app.include_router(projetos_projetos_router)") == 1
 
     def test_matches_new_style_imports_for_position(self, tmp_path):
         """When main.py already has a new-style module import, find the last one."""
@@ -514,10 +516,10 @@ class TestImportFlow:
             import_mod.register_router(manifest, main_py=main_py, force=False)
             content_main = main_py.read_text()
             assert (
-                "from app.modules.projeto.routers.projeto_router import router as projeto_router"
+                "from app.modules.projeto.routers.projeto_router import router as projeto_projeto_router"
                 in content_main
             )
-            assert "app.include_router(projeto_router)" in content_main
+            assert "app.include_router(projeto_projeto_router)" in content_main
 
             # 2. Register dependency
             import_mod.register_dependency(manifest, force=False, deps_py=deps_py)

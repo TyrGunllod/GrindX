@@ -78,10 +78,10 @@ def test_register_router_sqlserver_adds_import_and_include(tmp_path):
     import_module.register_router_sqlserver(manifest, force=True, main_py=main_py)
     content = main_py.read_text(encoding="utf-8")
     assert (
-        "from app.modules.custo.routers.custo_produto_router import router as custo_produto_router"
+        "from app.modules.custo.routers.custo_produto_router import router as custo_custo_produto_router"
         in content
     )
-    assert "app.include_router(custo_produto_router)" in content
+    assert "app.include_router(custo_custo_produto_router)" in content
 
 
 def test_register_router_sqlserver_idempotent(tmp_path):
@@ -109,11 +109,11 @@ def test_register_router_sqlserver_idempotent(tmp_path):
     content = main_py.read_text(encoding="utf-8")
     assert (
         content.count(
-            "from app.modules.custo.routers.custo_produto_router import router as custo_produto_router"
+            "from app.modules.custo.routers.custo_produto_router import router as custo_custo_produto_router"
         )
         == 1
     )
-    assert content.count("app.include_router(custo_produto_router)") == 1
+    assert content.count("app.include_router(custo_custo_produto_router)") == 1
 
 
 def test_copy_frontend_skips_shared(tmp_path):
