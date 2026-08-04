@@ -81,3 +81,56 @@ def test_import_module_frontend_only_nao_roda_migrations(
     assert result["success"] is True
     mock_run_migrations.assert_not_called()
     assert any("sem migrações" in step for step in result["steps"])
+
+
+@patch("scripts.import_module._get_monorepo_root")
+@patch("scripts.import_module.run_migrations")
+def test_import_module_frontend_only_e2e_cria_phantom_dir(
+    mock_run_migrations, mock_get_monorepo_root, tmp_path
+):
+    """Import real de frontend-only deve criar o phantom dir e copiar o frontend."""
+    mock_get_monorepo_root.return_value = tmp_path
+
+    import_dir = tmp_path / "import_src"
+    import_dir.mkdir()
+    (import_dir / "module.json").write_text(
+        json.dumps(
+            {
+                "module_name": "pop_viz",
+                "entity_name": "PopViz",
+                "frontend_only": True,
+                "menu_label": "Visualizador POP",
+                "frontend_tabs": [{"name": "V", "url": "modules/pop_viz/index.html"}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    frontend_dir = import_dir / "frontend" / "pop_viz"
+    frontend_dir.mkdir(parents=True)
+    (frontend_dir / "index.html").write_text("<html></html>", encoding="utf-8")
+
+    result = import_module.import_module(
+        "pop_viz",
+        import_dir,
+        force=True,
+        dry_run=False,
+        skip_migrations=True,
+        skip_install=True,
+    )
+
+    assert result["success"] is True
+    phantom = (
+        tmp_path
+        / "apps"
+        / "api-postgres"
+        / "app"
+        / "modules"
+        / "pop_viz"
+        / "module.json"
+    )
+    assert phantom.exists()
+    copied = (
+        tmp_path / "apps" / "frontend-webapp" / "modules" / "pop_viz" / "index.html"
+    )
+    assert copied.exists()
+    mock_run_migrations.assert_not_called()

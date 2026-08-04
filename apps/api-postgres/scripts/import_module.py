@@ -398,12 +398,12 @@ def register_router(manifest: dict, force: bool, main_py: Path | None = None) ->
     if main_py is None:
         main_py = api_dir / "app" / "main.py"
 
-    content = main_py.read_text(encoding="utf-8")
-
     routers_dir = api_dir / "app" / "modules" / module_name / "routers"
     if not routers_dir.exists():
         logger.warning("Diretório de routers não encontrado: %s", routers_dir)
         return
+
+    content = main_py.read_text(encoding="utf-8")
 
     router_files = [
         f.stem for f in routers_dir.glob("*_router.py") if f.stem != "__init__"
@@ -530,13 +530,13 @@ def register_dependency(
     if deps_py is None:
         deps_py = api_dir / "app" / "auth" / "dependencies.py"
 
-    content = deps_py.read_text(encoding="utf-8")
-
     repos_dir = api_dir / "app" / "modules" / module_name / "repositories"
     svcs_dir = api_dir / "app" / "modules" / module_name / "services"
     if not repos_dir.exists() or not svcs_dir.exists():
         logger.warning("Diretório de repositories/services não encontrado")
         return
+
+    content = deps_py.read_text(encoding="utf-8")
 
     repo_files = [
         f.stem for f in repos_dir.glob("*_repository.py") if f.stem != "__init__"
@@ -609,12 +609,12 @@ def register_alembic_import(
     if env_py is None:
         env_py = api_dir / "alembic" / "env.py"
 
-    content = env_py.read_text(encoding="utf-8")
-
     models_dir = api_dir / "app" / "modules" / module_name / "models"
     if not models_dir.exists():
         logger.warning("Diretório de models não encontrado: %s", models_dir)
         return
+
+    content = env_py.read_text(encoding="utf-8")
 
     model_files = [f.stem for f in models_dir.glob("*.py") if f.stem != "__init__"]
 
@@ -771,6 +771,7 @@ def import_module(
                 manifest_dest = (
                     api_dir / "app" / "modules" / module_name / "module.json"
                 )
+                manifest_dest.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(manifest_src, manifest_dest)
         steps.append("Backend copiado")
         _tick = _log_step("copy_backend", _tick)
