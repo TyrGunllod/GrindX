@@ -271,3 +271,56 @@ class TestImportFrontendOnly:
         assert len(found) == 1
         assert found[0]["ja_importado"] is True
         assert found[0]["pode_remover"] is True
+
+    def test_scan_frontend_only_instalados_pode_remover_segundo_phantom_dir(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        import pathlib
+
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+        real_resolve = pathlib.Path.resolve
+
+        def _fake_resolve(path_obj, strict=False):
+            if "import_router.py" in str(path_obj):
+                return pathlib.Path(
+                    tmp_path
+                    / "apps"
+                    / "api-postgres"
+                    / "app"
+                    / "routers"
+                    / "import_router.py"
+                )
+            return real_resolve(path_obj, strict=strict)
+
+        monkeypatch.setattr(pathlib.Path, "resolve", _fake_resolve)
+
+        def _add_frontend_only_dir():
+            frontend_mod = tmp_path / "apps" / "frontend-webapp" / "modules" / "pop_viz"
+            frontend_mod.mkdir(parents=True, exist_ok=True)
+            (frontend_mod / "index.html").write_text("<html></html>", encoding="utf-8")
+
+        def _scan_instalados():
+            response = client.get("/v1/import/scan", headers=auth_headers)
+            assert response.status_code == 200
+            instalados = response.json()["instalados"]
+            found = [m for m in instalados if m["slug"] == "pop_viz"]
+            return found[0] if found else None
+
+        _add_frontend_only_dir()
+        assert _scan_instalados() is None or _scan_instalados()["pode_remover"] is False
+
+        phantom_backend = (
+            tmp_path / "apps" / "api-postgres" / "app" / "modules" / "pop_viz"
+        )
+        phantom_backend.mkdir(parents=True, exist_ok=True)
+        (phantom_backend / "module.json").write_text(
+            json.dumps({"module_name": "pop_viz", "frontend_only": True}),
+            encoding="utf-8",
+        )
+
+        entry = _scan_instalados()
+        assert entry is not None
+        assert entry["pode_remover"] is True
+        assert entry["ja_importado"] is True
