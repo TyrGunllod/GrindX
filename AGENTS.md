@@ -139,6 +139,13 @@ Módulos read-only (consultas a tabelas do Protheus) usam `target_api: "sqlserve
 - `frontend/shared/` é ignorado durante a cópia (já existe no monorepo)
 - `python scripts/import_module.py {nome} --import-dir={tmp} --target-api=sqlserver`
 
+### Módulos frontend-only
+
+Módulos sem backend (reutilizam endpoints de outros módulos) usam `frontend_only: true` no `module.json`:
+- Dispensam `schema_name`/`route_prefix` na validação
+- Não executam migrações (nem o agendamento em background no router POST)
+- Pasta de frontend com nome idêntico ao `module_name`
+
 ## Docs Sync
 
 Sempre atualizar `README.md`, `docs/API.md`, `docs/DATABASE.md`, `docs/SETUP.md`, `docs/README.md` e este `AGENTS.md` ao alterar código relevante.

@@ -219,16 +219,37 @@ Para módulos SQL Server (read-only), adicione `target_api: "sqlserver"`:
 }
 ```
 
+Para módulos **frontend-only** (sem backend — só HTML/CSS/JS, reutilizando endpoints de outro módulo), adicione `frontend_only: true`:
+
+```json
+{
+  "module_name": "pop_viz",
+  "entity_name": "PopViz",
+  "version": "1.0.0",
+  "frontend_only": true,
+  "frontend_tabs": [
+    {"name": "Visualizador POP", "url": "modules/pop_viz/index.html"}
+  ],
+  "menu_label": "Visualizador POP",
+  "menu_icone": "folder",
+  "role_minima": "leitura",
+  "dependencies": ["pop_docs"]
+}
+```
+
+Módulos frontend-only **dispensam** `schema_name`/`route_prefix` e **não rodam migrações**. A pasta de frontend deve ter o **mesmo nome** do `module_name` (ex: `pop_viz`, não `pop-viz`) — o scan e a remoção dependem desse nome idêntico.
+
 | Campo | Obrigatório | Descrição |
 |-------|-------------|-----------|
 | `module_name` | Sim | Nome técnico em snake_case |
 | `entity_name` | Sim | Nome da entidade em PascalCase |
-| `schema_name` | Sim | Schema do banco (`org`, `catalogo`, `portal`, `custo`) |
-| `route_prefix` | Sim | Prefixo da URL da API |
+| `schema_name` | Sim* | Schema do banco (`org`, `catalogo`, `portal`, `custo`) — exceto frontend-only (`frontend_only: true`) |
+| `route_prefix` | Sim* | Prefixo da URL da API — exceto frontend-only (`frontend_only: true`) |
 | `frontend_url` | Sim* | Caminho do HTML no frontend (ou `frontend_tabs`) |
 | `frontend_tabs` | Sim* | Lista de abas com `name`, `url`, `menu_icone`, `order` |
 | `menu_label` | Sim | Rótulo no menu lateral |
 | `target_api` | Não | API alvo: `"postgres"` (default) ou `"sqlserver"` |
+| `frontend_only` | Não | Marca o módulo como frontend-only — dispensa `schema_name`/`route_prefix` e pula migrações (default: `false`) |
 | `version` | Não | Versão do módulo (semver) |
 | `table_name` | Não | Nome da tabela (null para read-only) |
 | `route_tag` | Não | Tag no Swagger |
@@ -237,6 +258,7 @@ Para módulos SQL Server (read-only), adicione `target_api: "sqlserver"`:
 | `dependencies` | Não | Lista de módulos dependentes |
 
 > `*` Obrigatório: `frontend_url` OU `frontend_tabs`.
+> `*` `schema_name` e `route_prefix` são obrigatórios, exceto quando `frontend_only: true`.
 
 ---
 
@@ -399,7 +421,7 @@ Para sobrescrever um módulo já importado, use `?force=true` na API.
 
 ### "Campos obrigatórios ausentes no module.json"
 
-O `module.json` não contém todos os campos obrigatórios. Verifique se o zip foi gerado com `make package` (não manualmente).
+O `module.json` não contém todos os campos obrigatórios. Verifique se o zip foi gerado com `make package` (não manualmente). Para módulos frontend-only, o erro só ocorre se `frontend_only: true` estiver ausente.
 
 ### "Router já registrado em main.py"
 
