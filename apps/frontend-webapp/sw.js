@@ -1,4 +1,4 @@
-const CACHE = 'grindx-v1';
+const CACHE = 'grindx-v2';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -44,6 +44,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
+
+    if (url.origin !== self.location.origin) {
+        return;
+    }
 
     if (STATIC_ASSETS.includes(url.pathname)) {
         event.respondWith(
