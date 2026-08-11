@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.69.1 (2026-08-11)
+
+### Bug Fixes
+
+- Skip cross-origin requests in service worker
+  ([`a0a5f82`](https://github.com/TyrGunllod/GrindX/commit/a0a5f82bf62535724b3de70182a5ff081670bfbd))
+
+
 ## v1.69.0 (2026-08-04)
 
 ### Bug Fixes
