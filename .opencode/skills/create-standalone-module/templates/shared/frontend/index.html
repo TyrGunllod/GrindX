@@ -4,25 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{menu_label}</title>
-    <link rel="stylesheet" href="shared/core.css">
+    <link rel="stylesheet" href="/shared/core.css">
     <link rel="stylesheet" href="style.css">
-    <script src="shared/config.js"></script>
-    <script src="shared/app.js"></script>
-    <script src="shared/version.js"></script>
+    <script src="/shared/config.js"></script>
+    <script src="/shared/app.js"></script>
+    <script src="version.js"></script>
     <script src="script.js" defer></script>
 </head>
 <body>
     <div class="page-container module-page" id="app">
         <header class="page-header mb-8">
             <div>
-                <h1>{menu_label}</h1>
+                <div class="page-header-container">
+                    <h1>{menu_label}</h1>
+                    <span class="viz-version" id="viz-version" aria-label="Versao do modulo"></span>
+                </div>
                 <p class="text-muted">{menu_description}</p>
             </div>
             <div class="header-actions">
-                <button class="btn btn-primary" id="btn-novo">
-                    <i class="fas fa-plus"></i> <span class="hide-mobile">Novo</span>
-                </button>
-                <span class="viz-version" id="viz-version" aria-label="Versao do modulo"></span>
+                <button class="btn btn-primary" id="btn-novo">+ Novo {entity_name}</button>
             </div>
         </header>
 

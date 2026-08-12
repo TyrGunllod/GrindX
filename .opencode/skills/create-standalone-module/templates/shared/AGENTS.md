@@ -58,11 +58,11 @@ Documente os comandos principais: inicialização, execução de serviços, test
 - CI pipeline: push → lint + testes + release (se aplicável)
 - **Versionamento**: `python scripts/version.py` (ou `make version`) gera a próxima versão semver a partir de conventional commits:
   - `BREAKING CHANGE` / `feat!: ...` → MAJOR; `feat:` → MINOR; demais → PATCH
-  - Atualiza `module.json` + `CHANGELOG.md` + todas as `frontend/*/shared/version.js`
+  - Atualiza `module.json` + todos as `frontend/*/version.js`
   - Cria a tag `vX.Y.Z`; use `--dry-run` (simula) e `--no-tag` (não cria tag)
   - Commits de release (`docs: registrar changelog`) são ignorados pelo script
 - **Fluxo de release em duas etapas** (a tag deve ficar no commit que contém o CHANGELOG):
-  1. `python scripts/version.py --no-tag` — atualiza `module.json` + `shared/version.js` + `CHANGELOG.md`
+  1. `python scripts/version.py --no-tag` — atualiza `module.json` + `frontend/*/version.js` + `CHANGELOG.md`
   2. Commitar esses artefatos e então criar a tag `git tag vX.Y.Z`
   - ⚠️ O padrão `make version` cria a tag no commit atual, ANTES do commit dos artefatos — `git checkout vX.Y.Z` não conteria o changelog
 

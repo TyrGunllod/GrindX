@@ -133,11 +133,11 @@ Project_Management/modulo-{module_name}/
 ├── frontend/
 │   ├── {frontend_prefix}_{tab1}/
 │   │   ├── index.html, script.js, style.css    # Templates/shared/frontend/*
-│   │   ├── shared/
+│   │   ├── version.js                           # Templates/shared/frontend/version.js (raiz do frontend)
+│   │   ├── shared/                              # fallback APENAS standalone — NÃO copiado no export
 │   │   │   ├── core.css                         # Templates/shared/frontend/shared/core.css
-│   │   │   ├── app.js                           # Templates/shared/frontend/shared/app.js
-│   │   │   └── version.js                       # Templates/shared/frontend/shared/version.js
-│   │   └── (style.css importa shared/core.css)
+│   │   │   └── app.js                           # Templates/shared/frontend/shared/app.js
+│   │   └── (style.css importa /shared/core.css; HTML carrega /shared/config.js, /shared/app.js)
 │   └── ...
 ├── scripts/
 │   └── version.py                               # Templates/shared/scripts/version.py
@@ -303,6 +303,25 @@ Use templates:
 - `templates/shared/frontend/script.js` — JS com API calls + dual-context auth
 - `templates/shared/frontend/style.css` — estilos do módulo
 - `templates/shared/frontend/shared/version.js` — global `window.{module_upper}_VERSION` (badge de versão; substitua `{module_upper}`)
+
+**Estrutura padrão do header da página (obrigatória em todo módulo):**
+```html
+<header class="page-header mb-8">
+    <div>
+        <div class="page-header-container">
+            <h1>{menu_label}</h1>
+            <span class="viz-version" id="viz-version" aria-label="Versao do modulo"></span>
+        </div>
+        <p class="text-muted">{menu_description}</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-primary" id="btn-novo">+ Novo {entity_name}</button>
+    </div>
+</header>
+```
+- `h1` e o badge `viz-version` ficam lado a lado dentro de `.page-header-container`
+- A descrição (`{menu_description}`) fica abaixo do container, dentro do mesmo `<div>`
+- `.page-header-container` é definido no `core.css` (ver abaixo); não duplicar no style.css do módulo
 
 **Regras HTML:**
 - HTML5 semântico, zero dependências externas (sem CDN, sem bibliotecas)

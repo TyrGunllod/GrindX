@@ -11,8 +11,8 @@ Regras de bump:
     fix:/refactor:/perf:/docs:/style:/build:/ci:/chore:/test: -> PATCH
     sem tag git -> primeira release: usa module.json.version (agrupa todos os commits)
 
-A versao e gravada em TODAS as abas do frontend: cada frontend/*/shared/version.js
-expoe o mesmo global `window.{module_upper}_VERSION`.
+A versao e gravada em TODAS as abas do frontend: cada frontend/*/version.js
+expose o mesmo global `window.{module_upper}_VERSION`.
 """
 
 import argparse
@@ -25,7 +25,7 @@ from pathlib import Path
 
 STANDALONE_ROOT = Path(__file__).resolve().parent.parent
 MODULE_JSON = STANDALONE_ROOT / "module.json"
-VERSION_JS_FILES = sorted((STANDALONE_ROOT / "frontend").glob("*/shared/version.js"))
+VERSION_JS_FILES = sorted((STANDALONE_ROOT / "frontend").glob("version.js"))
 CHANGELOG = STANDALONE_ROOT / "CHANGELOG.md"
 
 MODULE_VAR = "{module_upper}"

@@ -17,6 +17,7 @@ import structlog
 logger = structlog.get_logger(__name__)
 
 MODULE_NAME = "PopModelo"
+EXCLUDE_DIRS = {"shared"}
 MODULE_SRC = Path(__file__).parent
 STANDALONE_ROOT = MODULE_SRC.parent.parent.parent
 
@@ -61,6 +62,9 @@ def copy_frontend(dry_run: bool = False):
             logger.info("Frontend source nao encontrado, pulando copia")
             return
         for sub in FRONTEND_SRC.iterdir():
+            if sub.name in EXCLUDE_DIRS:
+                logger.info("Pulando pasta excluída: %s", sub.name)
+                continue
             if sub.is_dir():
                 dest = dest_base / sub.name
                 if dest.exists():
@@ -465,10 +469,14 @@ def package(dry_run: bool = False):
             zf.write(manifest, "module.json")
         for f in MODULE_SRC.rglob("*"):
             if f.is_file() and "__pycache__" not in f.parts and not f.name.endswith(".pyc"):
+                if any(part in EXCLUDE_DIRS for part in f.parts):
+                    continue
                 arcname = str(f.relative_to(STANDALONE_ROOT))
                 zf.write(f, arcname)
         for f in FRONTEND_SRC.rglob("*"):
             if f.is_file():
+                if any(part in EXCLUDE_DIRS for part in f.parts):
+                    continue
                 arcname = str(f.relative_to(STANDALONE_ROOT))
                 zf.write(f, arcname)
         for f in MIGRATION_SRC.glob("*.py"):
