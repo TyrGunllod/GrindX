@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.70.0 (2026-08-12)
+
+### Features
+
+- **skill**: Padrao de header page-header-container nos modulos
+  ([`2f0e500`](https://github.com/TyrGunllod/GrindX/commit/2f0e500de5cb6f60524eaaa28f4e64650e01fe0f))
+
+
 ## v1.69.1 (2026-08-11)
 
 ### Bug Fixes
