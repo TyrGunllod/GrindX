@@ -460,9 +460,9 @@ input, select, textarea, button, a, .nav-link, .nav-dropdown-item,
 
 .page-header-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 230%;
+    width: 100%;
+	 gap: 550px;
 }
 
 .justify-end { justify-content: flex-end; }

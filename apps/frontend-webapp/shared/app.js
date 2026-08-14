@@ -113,7 +113,9 @@ const TRANSLATIONS = {
         pass: 'Senha',
         logout: 'Sair',
         save: 'Salvar',
-        cancel: 'Cancelar'
+        cancel: 'Cancelar',
+        inactivity_warning: 'Sua sessão será encerrada em 60 segundos',
+        inactivity_logout: 'Sua sessão foi encerrada. Volte para o login.'
     },
     'en-US': {
         login: 'Login',
