@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v1.71.0 (2026-08-14)
+
+### Documentation
+
+- Add import module frontend-only plan
+  ([`3b33ac2`](https://github.com/TyrGunllod/GrindX/commit/3b33ac28c82dded4cd205c361c2b08bbfc266ca7))
+
+- Sync documentation with current project state
+  ([`ee57085`](https://github.com/TyrGunllod/GrindX/commit/ee570859dfe9f0ae14af53c577caad7b9a2fee1f))
+
+### Features
+
+- **frontend**: Automatic logout on user inactivity
+  ([`5602b52`](https://github.com/TyrGunllod/GrindX/commit/5602b525204255fe87d8b18d975e67e4d3bc355c))
+
+
 ## v1.70.0 (2026-08-12)
 
 ### Features
