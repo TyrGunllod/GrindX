@@ -1,4 +1,4 @@
-<!-- title: API Reference — GrindX | updated: 2026-06-10 -->
+<!-- title: API Reference — GrindX | updated: 2026-08-14 -->
 
 # API Reference — GrindX
 
@@ -15,7 +15,7 @@ A maioria dos endpoints exige token JWT no header:
 Authorization: Bearer <access_token>
 ```
 
-**Endpoints públicos** (não exigem autenticação): `/health`, `/v1/auth/token`, `/v1/auth/forgot-password`.
+**Endpoints públicos** (não exigem autenticação): `/health`, `/v1/auth/token`, `/v1/auth/forgot-password`, `/v1/cbo/{codigo}`, `/v1/cep/{cep}` e todos os endpoints da `api-sqlserver` (que não valida JWT).
 
 ### `POST /v1/auth/token`
 
@@ -113,7 +113,7 @@ Gera uma senha temporária e envia por e-mail. Não requer auth.
 { "username": "admin" }
 ```
 
-**Response 200:** `{ "message": "Senha temporária enviada para o e-mail cadastrado" }`
+**Response 200:** `{ "message": "Nova senha enviada para o e-mail cadastrado." }`
 
 **Response 503:** Retornado se o envio de e-mail falhar.
 
@@ -123,21 +123,31 @@ Gera uma senha temporária e envia por e-mail. Não requer auth.
 
 ### `GET /health`
 
-Verifica se a API está respondendo. Não exige autenticação.
+Verifica se a API está respondendo e a conectividade com o banco. Não exige autenticação.
 
 **Response 200:**
 
 ```json
-{ "status": "ok", "service": "GrindX API Postgres", "version": "0.1.0" }
+{
+  "status": "healthy",
+  "service": "ERP API Postgres",
+  "version": "1.69.1",
+  "database": { "postgres": "connected" },
+  "timestamp": "2026-08-14T12:00:00Z"
+}
 ```
+
+**Response 503:** Retornado quando o banco está `disconnected`/`degraded` ou faltam tabelas críticas — `status` passa a `"degraded"`, `database.postgres` reflete o estado e `details` traz `missing_tables`/`error`.
 
 ---
 
 ## Usuários
 
+Endpoints de gestão de usuários. Requerem perfil `operador` (ou superior). Apenas a criação/edição de usuários com perfil `admin` exige role `admin`.
+
 ### `GET /v1/usuarios/`
 
-Lista todos os usuários (paginado, filtrável por role). Requer perfil `admin`.
+Lista todos os usuários (paginado, filtrável por role). Requer perfil `operador` (ou superior).
 
 **Query params:** `page` (default 1), `page_size` (default 20), `role` (opcional)
 
@@ -163,7 +173,7 @@ Lista todos os usuários (paginado, filtrável por role). Requer perfil `admin`.
 
 ### `POST /v1/usuarios/`
 
-Cria um novo usuário. Requer perfil `admin`.
+Cria um novo usuário. Requer perfil `operador` (ou superior).
 
 **Body:**
 
@@ -181,23 +191,23 @@ Cria um novo usuário. Requer perfil `admin`.
 
 ### `GET /v1/usuarios/{id}`
 
-Retorna um usuário pelo ID. Requer perfil `admin`.
+Retorna um usuário pelo ID. Requer perfil `operador` (ou superior).
 
 ### `PUT /v1/usuarios/{id}`
 
-Atualiza dados de um usuário. Requer perfil `admin`.
+Atualiza dados de um usuário. Requer perfil `operador` (ou superior).
 
 ### `DELETE /v1/usuarios/{id}`
 
-Desativa (soft-delete) um usuário. Requer perfil `admin`.
+Desativa (soft-delete) um usuário. Requer perfil `operador` (ou superior).
 
 ### `GET /v1/usuarios/{id}/modulos`
 
-Lista os módulos permitidos para um usuário. Requer `admin`.
+Lista os módulos permitidos para um usuário. Requer `operador` (ou superior).
 
 ### `PUT /v1/usuarios/{id}/modulos`
 
-Substitui a lista de módulos permitidos de um usuário. Requer `admin`.
+Substitui a lista de módulos permitidos de um usuário. Requer `operador` (ou superior).
 
 ---
 
@@ -246,6 +256,23 @@ Retorna a estrutura completa de abas e módulos para o menu lateral.
         "slug": "usuarios"
       }
     ]
+  }
+]
+```
+
+### `GET /v1/portal/modules/available`
+
+Lista os módulos disponíveis para vínculo em abas. Requer `admin`.
+
+**Response 200:**
+```json
+[
+  {
+    "slug": "estoque",
+    "nome": "Estoque",
+    "url": "/modules/estoque/index.html",
+    "ja_vinculado": true,
+    "aba_vinculada": "Logística"
   }
 ]
 ```
@@ -307,7 +334,7 @@ Remove um módulo. Requer `admin`.
 
 ## Temas / Skins
 
-Endpoints para gerenciar o sistema de skins visuais por empresa. O `company_id` é obtido automaticamente do token JWT do usuário logado. Requer perfil `admin`.
+Endpoints para gerenciar o sistema de skins visuais por empresa. O `company_id` é obtido automaticamente do token JWT do usuário logado. A maioria exige perfil `admin`; `GET /v1/themes/active` aceita qualquer usuário autenticado.
 
 ### `GET /v1/themes/active`
 
@@ -396,13 +423,28 @@ Lista os templates de skin pré-configurados disponíveis.
 
 Upload de logo para o tema (multipart/form-data). Tipos aceitos: jpeg, png, svg, gif. Máximo 5MB.
 
-### `POST /v1/themes/fonts/upload`
+### `POST /v1/themes/fonts-icons/upload`
 
-Upload de arquivos de fonte (multipart/form-data, ZIP contendo arquivos .ttf/.woff/.woff2). Extrai o nome da família tipográfica via opentype.js e salva como arquivo no servidor.
+Upload de um único arquivo de fonte ou ícone (multipart/form-data). Não é ZIP. Tipos aceitos: `.ttf`, `.otf`, `.woff`, `.woff2`. Máximo 5MB.
+
+**Form fields:**
+- `file` (obrigatório) — arquivo da fonte ou ícone
+- `type` (`font` | `icon`, default `font`) — define o destino (`fonts/` ou `icons/`)
+
+**Response 200:**
+```json
+{ "url": "/uploads/fonts/uuid.ttf", "type": "font" }
+```
 
 ### `GET /v1/themes/{id}/history`
 
 Retorna o histórico de alterações de um tema.
+
+### `GET /v1/themes/{theme_id}/original-snapshot`
+
+Retorna o snapshot do tema no momento da criação. Requer `admin`.
+
+**Response 200:** Objeto do snapshot original (igual ao tema criado) ou **404** se não encontrado.
 
 ### `POST /v1/themes/from-template`
 
@@ -422,7 +464,7 @@ Cria um tema a partir de um template existente.
 
 ## Produtos Protheus (api-sqlserver)
 
-Endpoints read-only da `api-sqlserver` para consulta de produtos na tabela `SB1010` do Protheus. Requerem token JWT (válido da `api-postgres`).
+Endpoints read-only da `api-sqlserver` para consulta de produtos na tabela `SB1010` do Protheus. **Não validam token JWT** — a `api-sqlserver` não implementa autenticação, portanto são públicos.
 
 Base URL: `http://localhost:8001/v1/produtos`
 
@@ -452,42 +494,110 @@ Busca produtos pela descrição (`B1_DESC`). Mínimo **4 caracteres**. Usa `LIKE
 
 ---
 
+## Consultas Públicas (Proxies)
+
+Proxies para APIs externas sem CORS, evitando bloqueios do navegador no frontend. Não exigem autenticação. Os dados são repassados de forma transparente (proxy pass-through).
+
+### `GET /v1/cbo/{codigo}`
+
+Consulta a descrição de um código CBO via `https://sistemas.unasus.gov.br/ws_cbo/cbo.php`.
+
+**Response 200:** Corpo bruto retornado pela API upstream (`text/xml`).
+
+**502:** Erro ao consultar a API de CBO.
+
+### `GET /v1/cep/{cep}`
+
+Consulta o endereço de um CEP via `https://opencep.com/v1/{cep}`.
+
+**Response 200:** Corpo bruto (`application/json`) com os dados do endereço.
+
+**502:** Erro ao consultar a API de CEP.
+
+---
+
 ## Importação de Módulos
 
-Endpoints para escanear e importar módulos frontend a partir de arquivos ZIP. Requer perfil `admin`.
+Endpoints para escanear e importar módulos frontend a partir de zips disponíveis no diretório de importação. Requer perfil `admin`.
 
-### `POST /v1/import/scan`
+### `GET /v1/import/scan`
 
-Escaneia um arquivo ZIP de módulo e retorna metadados encontrados no manifest.
-
-**Body (multipart/form-data):**
-- `file`: arquivo .zip contendo o módulo
+Escaneia o diretório de importação (zips `.zip` disponíveis) e os módulos já instalados. Não recebe arquivo multipart.
 
 **Response 200:**
 ```json
 {
-  "name": "meu-modulo",
-  "version": "1.0.0",
-  "description": "Descrição do módulo",
-  "slug": "meu-modulo",
-  "frontend_dir": "modules/meu-modulo/",
-  "has_migration": false,
-  "has_api": true,
-  "api_module": "app.modules.meu_modulo"
+  "modules": [
+    {
+      "slug": "meu-modulo",
+      "module_name": "meu-modulo",
+      "entity_name": "MeuModulo",
+      "version": "1.0.0",
+      "menu_label": "Meu Módulo",
+      "schema_name": "org",
+      "target_api": "postgres",
+      "ja_importado": false,
+      "pode_remover": true
+    }
+  ],
+  "instalados": [
+    {
+      "slug": "estoque",
+      "module_name": "estoque",
+      "entity_name": "Estoque",
+      "version": "1.0.0",
+      "menu_label": "Estoque",
+      "schema_name": "org",
+      "target_api": "postgres",
+      "ja_importado": true,
+      "pode_remover": true
+    }
+  ]
 }
 ```
 
-### `POST /v1/import/{slug}`
+- `modules` — zips disponíveis no diretório de importação (com manifest válido)
+- `instalados` — módulos já instalados (frontend/backend existentes no monorepo)
 
-Importa (instala) um módulo previamente escaneado.
+### `POST /v1/import/{module_name}`
 
-**Path params:** `slug` — slug do módulo retornado pelo scan
+Importa (instala) um módulo a partir do zip `{module_name}.zip` no diretório de importação.
+
+**Path params:** `module_name` — nome do módulo (fuzzy match no arquivo `.zip`)
+
+**Query params:** `force` (boolean, default `true`) — sobrescreve o módulo se já existir
 
 **Response 200:**
 ```json
 {
-  "message": "Módulo 'meu-modulo' importado com sucesso",
-  "slug": "meu-modulo",
-  "frontend_dir": "modules/meu-modulo/"
+  "success": true,
+  "message": "Importação concluída com sucesso",
+  "steps": [
+    "Backend copiado",
+    "Frontend copiado",
+    "Migração aplicada"
+  ],
+  "error": null
 }
 ```
+
+### `DELETE /v1/import/{module_name}`
+
+Remove um módulo importado (backend, frontend e vínculo com aba).
+
+**Path params:** `module_name` — nome do módulo a remover
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Módulo 'meu-modulo' removido com sucesso",
+  "steps": [
+    "Backend removido",
+    "Vínculo com aba removido do banco"
+  ],
+  "error": null
+}
+```
+
+**404:** Módulo não encontrado para remoção.

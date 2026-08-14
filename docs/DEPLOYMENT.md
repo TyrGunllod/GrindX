@@ -1,4 +1,4 @@
-<!-- title: Deploy — GrindX | updated: 2026-06-17 -->
+<!-- title: Deploy — GrindX | updated: 2026-08-14 -->
 
 # Deploy — GrindX
 
@@ -6,7 +6,7 @@
 
 ## Estratégia de Deploy
 
-O GrindX foi projetado para rodar em containers. O `podman-compose.yml` na raiz orquestra os serviços.
+O GrindX foi projetado para rodar em containers. O `compose.yaml` na raiz orquestra os serviços.
 
 Fluxo:
 
@@ -20,7 +20,7 @@ push para main
     → semantic release (versionamento automático)
   → build das imagens
   → deploy no servidor
-  → make migrate (alembic upgrade head)
+  → make migrate (manage_db.py upgrade heads — no host)
   → restart dos containers
 ```
 
@@ -40,10 +40,7 @@ Workflow único em `.github/workflows/release.yml` — executa em push para `mai
 
 ### Secrets do GitHub
 
-| Secret | Descrição |
-|--------|-----------|
-| `SQLSERVER_PASSWORD` | Senha do usuário SQL Server (testes reais) |
-| `PROD_SECRET_KEY` | Chave JWT de produção |
+O workflow usa apenas `GITHUB_TOKEN` (com permissões `contents`, `issues` e `pull-requests`) — **não** usa secrets externos. O job `test-api-sqlserver` roda com SQLite via `DB_URL_OVERRIDE=sqlite:///:memory:` (sem SQL Server real), e a chave JWT dos testes é fixa no próprio workflow (`SECRET_KEY` literal de CI) — não há `SQLSERVER_PASSWORD` nem `PROD_SECRET_KEY`.
 
 ---
 
@@ -76,7 +73,7 @@ SECRET_KEY=<chave-aleatoria-32-chars-min-entropia-3.5>
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_DAYS=7
 APP_NAME="ERP API Postgres"
-APP_VERSION=1.19.0
+APP_VERSION=1.69.1
 DEBUG=false
 ENVIRONMENT=production
 LOG_LEVEL=INFO
@@ -86,7 +83,7 @@ RATE_LIMIT_WINDOW_SECONDS=60
 
 # SMTP (recuperação de senha)
 SMTP_HOST=smtp.seuprovedor.com
-SMTP_PORT=587
+SMTP_PORT=2525
 SMTP_USER=seu@email.com
 SMTP_PASS=senha_real
 SMTP_USE_TLS=true
@@ -110,7 +107,7 @@ DB_PASSWORD=<senha-real>
 DB_DRIVER=ODBC Driver 17 for SQL Server
 SECRET_KEY=<mesma-chave-da-api-postgres>
 APP_NAME="ERP API SQL Server"
-APP_VERSION=1.19.0
+APP_VERSION=1.69.1
 DEBUG=false
 ENVIRONMENT=production
 ENABLE_CACHE=false
@@ -146,13 +143,15 @@ make logs
 make down
 ```
 
-O `podman-compose.yml` define três serviços:
+O `compose.yaml` define três serviços:
 
 | Serviço | Porta host | Imagem |
 |---------|-----------|--------|
-| `frontend` | 8101 (host) → 80 (container) | nginx:alpine (estático) |
-| `api-sqlserver` | 8001 | python:3.12-slim |
-| `api-postgres` | 8002 | python:3.12-slim |
+| `frontend` | 8101:80, 443:443, 8001:8001, 8002:8002 | nginx:alpine (estático) |
+| `api-sqlserver` | — (nenhuma; usa `network_mode: container:grindx-frontend`) | python:3.12-slim |
+| `api-postgres` | — (nenhuma; usa `network_mode: container:grindx-frontend`) | python:3.12-slim |
+
+As APIs **não expõem portas próprias** no host — elas publicam via `network_mode: "container:grindx-frontend"` (compartilham a rede/portas do frontend) e rodam com `user: "1001:1001"`. Env files ficam na **raiz do repositório** (`.env.postgres` e `.env.sqlserver`).
 
 O pacote `packages/` é copiado para a imagem (`/app/packages/`) e sobrescrito por bind mount em `compose.yaml` (`./packages:/app/packages:z`) para facilitar o desenvolvimento. Em produção standalone (sem compose), o `shared` já está embutido na imagem. O frontend é servido via Nginx oficial com cache de assets e gzip.
 
@@ -164,8 +163,9 @@ Os containers rodam com usuário não-root (UID 1001) e health checks configurad
 
 Configurado via `pyproject.toml` (raiz) — `python-semantic-release` com parser **angular**.
 
-- A versão é definida em `APP_VERSION` em cada `config.py` (atualmente `1.36.1`)
-- O build hook `scripts/update_frontend_version.py` sincroniza `apps/frontend-webapp/version.json`
+- A versão é definida em `APP_VERSION` em cada `config.py` (atualmente `1.69.1`)
+- A sincronização é feita via `version_variables` no `pyproject.toml`, que atualiza 3 arquivos: ambos `config.py` (`apps/api-postgres` e `apps/api-sqlserver`) + `apps/frontend-webapp/version.json`
+- `scripts/update_frontend_version.py` é um utilitário manual para sync do `version.json` — **não** é um hook de build
 - O CI gera automaticamente: bump de versão, changelog, tag e release no GitHub
 
 ---
@@ -180,23 +180,27 @@ Content-Security-Policy:
   script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
   style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
   img-src 'self' data: blob: http://localhost:8002 https://ui-avatars.com;
-   connect-src 'self' http://localhost:8001 http://127.0.0.1:8001 http://localhost:8002 http://127.0.0.1:8002;
+  connect-src 'self' http://localhost:8001 http://127.0.0.1:8001 http://localhost:8002 http://127.0.0.1:8002 https://localhost:8002 https://127.0.0.1:8002;
   font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
 ```
 
-A API é acessada via same-origin (`/v1/`) em produção, eliminando CORS. Em desenvolvimento, o `config.js` detecta a porta `8101` e usa `http://localhost:8002/v1` diretamente.
+> O `connect-src` do nginx.conf inclui as variantes HTTP **e** HTTPS de `localhost:8002` e `127.0.0.1:8002`.
+
+A API é acessada via same-origin (`/v1/`) em produção, eliminando CORS. Em desenvolvimento, o `config.js` constrói a URL da API como `${protocol}//${hostname}:8002/v1` — sem detecção de porta 8101 (ou usa `window.__GRINDX_API_URL` quando injetado via deploy/proxy).
 
 ### Volumes no compose.yaml
 
-Os paths usam `${PWD}` (portátil entre WSL e Linux nativo):
+Os paths usam `${HOME:-.}` (resolvido a partir de `$HOME`, com fallback `.`) — **não** `${PWD}`:
 
 ```yaml
 volumes:
-  - ${PWD}/apps/frontend-webapp/modules:/usr/share/nginx/html/modules
   - ${HOME:-.}/Containers/volumes/grindx/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro,z
+  - ./.certs:/etc/nginx/certs:ro,z
 ```
 
-Para desenvolvimento (hot-reload nos módulos), mantenha o volume de `modules`. Para produção sem importador, pode remover o volume de módulos do frontend (os módulos já estão na imagem).
+As APIs montam `.env.postgres`/`.env.sqlserver` (na raiz) em `/app/.env` e `./packages` em `/app/packages`.
+
+Os módulos do frontend já vêm embutidos na imagem (pasta `modules/` do Dockerfile); não há volume para `modules` no compose padrão.
 
 Para ambientes que exigem SSL, adicione um nginx externo apontando para o container:
 
@@ -232,7 +236,7 @@ O frontend já aplica CSP, security headers e cache de assets. A API é acessada
 - [ ] Migrações aplicadas: `make migrate`
 - [ ] Dados iniciais populados: `make seed` (apenas na primeira vez)
 - [ ] SSL/HTTPS ativo via reverse proxy
-- [ ] Health checks respondendo: `/v1/health` em cada API
+- [ ] Health checks respondendo: `GET /health` (sem prefixo `/v1`) em cada API
 - [ ] Rate limiting ativo (100 requests/min por padrão)
 - [ ] Pacote `packages/` presente no diretório do deploy (copiado por `make deploy`)
 - [ ] Cache TTLCache operacional (15 min TTL para temas/usuários/portal)

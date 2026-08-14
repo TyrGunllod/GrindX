@@ -1,4 +1,4 @@
-<!-- title: Guia de Instalação — GrindX | updated: 2026-06-22 -->
+<!-- title: Guia de Instalação — GrindX | updated: 2026-08-14 -->
 
 # Guia de Instalação — GrindX
 
@@ -55,14 +55,14 @@ copy .env.example .env
 Editar `.env` com seus valores reais:
 
 ```env
-DATABASE_URL=postgresql+psycopg://postgres:SUA_SENHA@localhost:5432/grindxdb
+DATABASE_URL=postgresql+psycopg://postgres:SUA_SENHA@localhost:5432/grindx
 SECRET_KEY=chave-secreta-forte-com-pelo-menos-32-caracteres
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_DAYS=7
 
 # SMTP/Email (opcional — necessário para "Esqueceu a senha?")
 SMTP_HOST=127.0.0.1
-SMTP_PORT=1025
+SMTP_PORT=2525
 SMTP_USER=
 SMTP_PASS=
 SMTP_USE_TLS=false
@@ -121,7 +121,7 @@ make dev-postgres
 make dev-sqlserver
 
 # Terminal 3 — frontend (porta 8101)
-python -m http.server 8101 --directory apps/frontend-webapp
+make dev-frontend
 ```
 
 Acessar: `http://localhost:8101`
@@ -140,8 +140,8 @@ Acessar: `http://localhost:8101`
 
 ```powershell
 # Da raiz do projeto
-make test-postgres       # 190 testes — api-postgres
-make test-sqlserver      # 11 testes — api-sqlserver
+make test-postgres       # 197 testes — api-postgres
+make test-sqlserver      # 17 testes — api-sqlserver
 make test-shared         # 26 testes — RBAC shared
 make test-root           # 24 testes de integração do monorepo
 make test-all            # todos de uma vez (obrigatório antes de push)
@@ -155,7 +155,7 @@ Os testes usam SQLite in-memory — não precisam de PostgreSQL real rodando.
 
 ## 7. Migrações de Banco (Alembic)
 
-Os modelos foram reorganizados em **4 schemas de domínio** (`iam`, `portal`, `catalogo`, `org`) dentro de `app/modules/`. Todas as bases compartilham um único `registry()` e `MetaData()`, com schema definido via `__table_args__` herdado.
+Os modelos foram reorganizados em **3 schemas de domínio** (`iam`, `portal`, `org`) dentro de `app/modules/`. Todas as bases compartilham um único `registry()` e `MetaData()`, com schema definido via `__table_args__` herdado.
 
 ```powershell
 cd apps/api-postgres
@@ -199,9 +199,33 @@ make up      # sobe todos os serviços
 make down    # para os serviços
 make logs    # ver logs em tempo real
 
-# Primeira vez
-docker exec grindx-api-postgres alembic upgrade head
-docker exec grindx-api-postgres python seed.py
+# Primeira vez — migrações e seed rodam no HOST via PYTHONPATH
+# (a imagem da api-postgres NÃO contém alembic/ nem seed.py; docker exec alembic/seed não funciona)
+set PYTHONPATH=..\..\packages   # Windows
+PYTHONPATH=../../packages        # Linux/WSL
+make migrate   # equivale a: manage_db.py upgrade heads
+make seed
+```
+
+### Estrutura do compose.yaml
+
+O `compose.yaml` (na raiz — **não existe** `podman-compose.yml`) define 3 serviços:
+
+| Serviço | Portas expostas | Observação |
+|---------|-----------------|------------|
+| `frontend` (nginx) | `8101:80`, `443:443`, `8001:8001`, `8002:8002` | publica todas as portas |
+| `api-sqlserver` | — (nenhuma) | usa `network_mode: "container:grindx-frontend"`, `user: "1001:1001"` |
+| `api-postgres` | — (nenhuma) | usa `network_mode: "container:grindx-frontend"`, `user: "1001:1001"` |
+
+As APIs não expõem portas próprias no host — elas compartilham a rede do container `grindx-frontend`. Os env files ficam na **raiz do repositório**: `.env.postgres` e `.env.sqlserver`. O compose também monta `./.certs` (certificados nginx) e `./packages` (bind mount).
+
+### Volumes no compose.yaml
+
+Os paths de volume usam `${HOME:-.}` (resolvido a partir de `$HOME`, com fallback `.`) para compatibilidade com WSL e Linux. **Não** usar `${PWD}`. Exemplo:
+
+```yaml
+volumes:
+  - ${HOME:-.}/Containers/volumes/grindx/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro,z
 ```
 
 ### Deploy para produção
@@ -221,15 +245,6 @@ podman load -i grindx-frontend-*.tar
 podman load -i grindx-api-sqlserver-*.tar
 podman load -i grindx-api-postgres-*.tar
 podman-compose up -d
-```
-
-### Volumes no compose.yaml
-
-Os paths de volume usam `${PWD}` (diretório atual ao rodar o compose) para compatibilidade com WSL e Linux. Exemplo:
-
-```yaml
-volumes:
-  - ${PWD}/apps/frontend-webapp/modules:/usr/share/nginx/html/modules
 ```
 
 ---
@@ -253,7 +268,7 @@ volumes:
 
 > As **Abas** suportam `parent_id` para aninhamento hierárquico (sub-abas). Ao cadastrar uma aba, é possível definir uma aba pai para criar sub-menus.
 
-Ver [`ARCHITECTURE_PORTAL.md`](../apps/frontend-webapp/ARCHITECTURE_PORTAL.md) para o guia completo.
+Ver [`ARCHITECTURE_PORTAL.md`](ARCHITECTURE_PORTAL.md) para o guia completo.
 
 ---
 

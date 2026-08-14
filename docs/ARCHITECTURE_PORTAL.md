@@ -1,4 +1,4 @@
-<!-- title: Arquitetura do Portal Modular — GrindX | updated: 2026-05-20 -->
+<!-- title: Arquitetura do Portal Modular — GrindX | updated: 2026-08-14 -->
 
 # Arquitetura do Portal Modular (Frontend)
 
@@ -11,8 +11,8 @@ Este documento descreve o sistema de micro-módulos do GrindX e como estender o 
 O Portal funciona como um **Shell (Host)**. Ele não contém a lógica de negócio das páginas, mas sim o "esqueleto" (Menu Lateral, Topbar, Autenticação).
 
 O dashboard suporta dois modos de layout, configuráveis por empresa via tema:
-- **sidebar** (padrão): menu lateral fixo à esquerda, viewport ao lado
-- **topbar**: menu horizontal no topo, viewport ocupando largura total
+- **topbar** (padrão): menu horizontal no topo, viewport ocupando largura total
+- **sidebar**: menu lateral fixo à esquerda, viewport ao lado
 
 A escolha do layout é persistida no banco (`company_themes.layout_mode`) e aplicada automaticamente pelo `skinLoader` ao carregar o tema ativo.
 
@@ -123,6 +123,6 @@ await window.grindx.api.request('/portal/abas', {
 
 ## Como Criar um Novo Módulo
 
-1. Criar pasta em `packages/frontend-webapp/modules/nome-do-modulo/`
+1. Criar pasta em `apps/frontend-webapp/modules/nome-do-modulo/`
 2. Criar `index.html` e `script.js`
 3. Cadastrar a URL no menu de **Gestão de Estrutura** dentro do portal

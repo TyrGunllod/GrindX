@@ -35,18 +35,23 @@ O importador executa steps automaticamente. O fluxo depende do campo `target_api
 1. Valida o `module.json`
 2. Faz backup dos arquivos que serão modificados
 3. Copia o backend para `app/modules/{module_name}/`
-4. Copia o frontend para `modules/{module_name}/`
-5. Copia migrations para `alembic/versions/`
-6. Registra as rotas em `main.py`
-7. Registra a dependency factory em `auth/dependencies.py`
-8. Registra o import do model em `alembic/env.py`
-9. Executa `alembic upgrade head` e registra no menu
+4. Mescla os requirements do módulo
+5. Copia o frontend para `modules/{module_name}/`
+6. Copia migrations para `alembic/versions/`
+7. Registra as rotas em `main.py`
+8. Registra a dependency factory em `auth/dependencies.py`
+9. Registra o import do model em `alembic/env.py`
+10. Registra no menu
+11. Agenda a migração `alembic upgrade head` em **segundo plano**
+
+> A migração roda em background — o script registra `"Migração adiada (executada em segundo plano)"` e o router adiciona `"Migrações agendadas em segundo plano"`.
 
 **Para módulos SQL Server (`target_api: "sqlserver"`):**
 - Copia o backend para `apps/api-sqlserver/app/modules/{module_name}/`
 - Registra as rotas no `main.py` do api-sqlserver
 - **Pula** migration, dependency factory e alembic/env.py (não aplicável)
 - **Pula** `alembic upgrade head` (sem schema para gerenciar)
+- **Pula** o backup (`backup_existing` retorna `None` — "backup desnecessário")
 
 ---
 
@@ -281,10 +286,10 @@ Copy-Item modulo-*\dist\modulo-*.zip D:\_Projetos\GrindX\import\
 ### 2. Escanear módulos disponíveis
 
 ```bash
-curl -H "Authorization: Bearer <token>" http://localhost:8000/v1/import/scan
+curl -X GET -H "Authorization: Bearer <token>" http://localhost:8002/v1/import/scan
 ```
 
-Resposta:
+O `scan` é um endpoint **GET** e retorna `{modules: [...], instalados: [...]}`, cada item com os campos `slug`, `module_name`, `entity_name`, `version`, `menu_label`, `schema_name`, `target_api`, `ja_importado` e `pode_remover`:
 ```json
 {
   "modules": [
@@ -296,7 +301,8 @@ Resposta:
       "menu_label": "Projetos",
       "schema_name": "org",
       "target_api": "postgres",
-      "ja_importado": false
+      "ja_importado": false,
+      "pode_remover": true
     },
     {
       "slug": "custo",
@@ -306,9 +312,11 @@ Resposta:
       "menu_label": "Custo Produto",
       "schema_name": "custo",
       "target_api": "sqlserver",
-      "ja_importado": false
+      "ja_importado": false,
+      "pode_remover": true
     }
-  ]
+  ],
+  "instalados": []
 }
 ```
 
@@ -316,16 +324,17 @@ Resposta:
 
 ```bash
 curl -X POST -H "Authorization: Bearer <token>" \
-  http://localhost:8000/v1/import/projeto
+  http://localhost:8002/v1/import/projeto
 ```
 
-Para sobrescrever um módulo já importado:
+O parâmetro `force` **tem default `true`** — reimportar sempre sobrescreve por padrão. Para uma reimportação sem sobrescrever, use `?force=false`:
+
 ```bash
 curl -X POST -H "Authorization: Bearer <token>" \
-  "http://localhost:8000/v1/import/projeto?force=true"
+  "http://localhost:8002/v1/import/projeto?force=false"
 ```
 
-Resposta (sucesso):
+Resposta (sucesso — ~11 etapas para módulos PostgreSQL):
 ```json
 {
   "success": true,
@@ -334,16 +343,29 @@ Resposta (sucesso):
     "Manifesto validado",
     "Backup concluído",
     "Backend copiado",
+    "Requirements mesclados",
     "Frontend copiado",
     "Migration copiada",
     "Router registrado",
-    "Dependency registrada",
+    "Dependency registrado em dependencies.py",
     "Import do model registrado no alembic/env.py",
-    "Migrations executadas",
-    "Menu registrado"
+    "Menu registrado",
+    "Migração adiada (executada em segundo plano)"
   ]
 }
 ```
+
+> A migração Alembic roda **em segundo plano**; o router adiciona a etapa `"Migrações agendadas em segundo plano"`. Para módulos `sqlserver`, o backup é **pulado** (`backup_existing` retorna `None` — "backup desnecessário").
+
+#### Executar o script importador diretamente
+
+O script real fica em `apps/api-postgres/scripts/import_module.py`. A partir de `apps/api-postgres`:
+
+```powershell
+python scripts/import_module.py {nome} --import-dir={tmp} --target-api=sqlserver --force
+```
+
+Para remover um módulo importado, use `--remove` (o endpoint `DELETE /v1/import/{module_name}` também remove).
 
 ---
 
@@ -354,7 +376,7 @@ Resposta (sucesso):
 3. O módulo aparece na lista com status "Não importado"
 4. Clique no módulo → expande o card com detalhes
 5. Clique em **Importar** → confirma no modal
-6. O log das 9 etapas aparece em tempo real
+6. O log das ~11 etapas aparece em tempo real
 
 ---
 
@@ -379,7 +401,7 @@ Para módulos com dependências, importe nesta ordem:
 ### 1. Verificar rotas registradas
 
 ```bash
-curl -H "Authorization: Bearer <token>" http://localhost:8000/v1/projetos
+curl -H "Authorization: Bearer <token>" http://localhost:8002/v1/projetos
 ```
 
 ### 2. Verificar menu
@@ -388,7 +410,7 @@ O módulo deve aparecer no menu lateral do portal.
 
 ### 3. Verificar frontend
 
-Acesse `http://localhost:8000/modules/projeto/index.html`
+Acesse `http://localhost:8101/modules/projeto/index.html`
 
 ### 4. Verificar migration
 
@@ -413,7 +435,7 @@ import/.backup/{module_name}_{timestamp}/
 └── env.py
 ```
 
-Para sobrescrever um módulo já importado, use `?force=true` na API.
+Para remover um módulo importado, use `DELETE /v1/import/{module_name}` (admin) ou rode o script com `--remove`. Reimportar sobrescreve por padrão (`force` tem default `true`).
 
 ---
 
@@ -425,7 +447,7 @@ O `module.json` não contém todos os campos obrigatórios. Verifique se o zip f
 
 ### "Router já registrado em main.py"
 
-O módulo já foi importado anteriormente. Use `?force=true` para sobrescrever.
+O módulo já foi importado anteriormente. Reimportar já sobrescreve por padrão (`force` tem default `true`). Para não sobrescrever, use `?force=false`.
 
 ### "Migration falhou"
 
@@ -464,5 +486,5 @@ make package
 make test
 
 # Importar via API (depois de copiar o zip)
-curl -X POST -H "Authorization: Bearer <token>" http://localhost:8000/v1/import/projeto
+curl -X POST -H "Authorization: Bearer <token>" http://localhost:8002/v1/import/projeto
 ```

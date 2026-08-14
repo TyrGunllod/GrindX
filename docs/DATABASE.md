@@ -1,4 +1,4 @@
-<!-- title: Banco de Dados — GrindX | updated: 2026-06-10 -->
+<!-- title: Banco de Dados — GrindX | updated: 2026-08-14 -->
 
 # Banco de Dados — GrindX
 
@@ -16,14 +16,15 @@
 
 ## Arquitetura Multi-Schema
 
-Os modelos são organizados em **4 schemas de domínio** no PostgreSQL, cada um com seu próprio `DeclarativeBase`:
+Os modelos são organizados em **3 schemas de domínio** no PostgreSQL, cada um com seu próprio `DeclarativeBase`:
 
 | Schema | Base | Domínio |
 |--------|------|---------|
 | `iam` | `IamBase` | Autenticação, usuários, perfis |
 | `portal` | `PortalBase` | Navegação dinâmica (abas, módulos) |
-| `catalogo` | `CatalogoBase` | Produtos, catálogo |
 | `org` | `OrgBase` | Empresa, temas, organização |
+
+**Não existe schema `catalogo` como módulo** — não há `CatalogoBase`, nem `app/modules/catalogo/`, nem model `Produto`. A tabela `produtos` foi criada pela migration `001_initial_schema` no schema `public`, sem model/ORM correspondente, e é consultada via `api-sqlserver` (`protheus_router`). O schema `catalogo` é apenas criado vazio pelo seed (sem tabelas nem modelos).
 
 Todas as bases compartilham um único `registry()` e `MetaData()`, com schema definido via `__table_args__` herdado. Isso permite chaves estrangeiras entre schemas (ex: `usuario_modulos` em `iam` referenciando `portal_modulos` em `portal`).
 
@@ -39,10 +40,6 @@ app/modules/
 │   ├── base.py           # PortalBase
 │   └── models/
 │       └── portal.py     # Aba, Modulo
-├── catalogo/
-│   ├── base.py           # CatalogoBase
-│   └── models/
-│       └── produto.py    # Produto
 └── org/
     ├── base.py           # OrgBase
     └── models/
@@ -71,11 +68,32 @@ Gerencia autenticação e controle de acesso.
 | `temp_password_hash` | String(255) nullable | Hash bcrypt da senha temporária |
 | `expires_at` | DateTime(tz) nullable | Expiração da senha temporária |
 | `theme_preference` | String(10) nullable | `light`, `dark` ou null (sistema) |
+| `layout_preference` | String(10) nullable | Layout preferido no desktop |
+| `layout_mobile_preference` | String(10) nullable | Layout preferido no mobile |
+| `codigo` | String(20) nullable | Código funcional (ex: matrícula) |
+| `cbo` | String(20) nullable | Código Brasileiro de Ocupação |
+| `departamento` | String(100) nullable | Departamento do usuário |
+| `cargo` | String(100) nullable | Cargo do usuário |
+| `classificacao` | String(50) nullable | Classificação do usuário |
+| `cpf` | String(255) nullable | CPF (criptografado desde a migration 020) |
+| `rg` | String(255) nullable | RG (criptografado desde a migration 020) |
+| `salario` | String(255) nullable | Salário (criptografado desde a migration 020) |
+| `endereco` | String(255) nullable | Endereço (criptografado desde a migration 020) |
+| `numero` | String(20) nullable | Número do endereço |
+| `bairro` | String(100) nullable | Bairro |
+| `cidade` | String(100) nullable | Cidade |
+| `uf` | String(2) nullable | Unidade federativa |
+| `cep` | String(20) nullable | CEP |
+| `telefone` | String(255) nullable | Telefone (criptografado desde a migration 020) |
+| `celular` | String(255) nullable | Celular (criptografado desde a migration 020) |
 | `role` | String(20) | `admin`, `operador` ou `leitura` |
 | `ativo` | Boolean | Se pode fazer login |
+| `aprovador` | String(50) nullable | Identificador do aprovador |
 | `empresa_id` | Integer FK → `org.empresas` (nullable) | Empresa do usuário |
 | `criado_em` | DateTime(tz) | Data de criação |
 | `atualizado_em` | DateTime(tz) | Última atualização |
+
+Índices: `ix_usuarios_username`, `ix_usuarios_role`, `ix_usuarios_ativo`, `ix_usuarios_empresa_id`. Únicos em `username` e `email`.
 
 ### Schema `iam` — UsuarioModulo (tabela associativa)
 
@@ -88,19 +106,9 @@ Gerencia permissão de módulos por usuário (M2M entre Usuario ↔ Modulo).
 | `concedido_em` | DateTime(tz) | Data da concessão |
 | `concedido_por_id` | Integer FK → `iam.usuarios` (nullable) | Quem concedeu |
 
-### Schema `catalogo` — Produto
+### Tabela `public` — produtos
 
-Gerencia o catálogo transacional.
-
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| `id` | Integer PK | Identificador |
-| `nome` | String(100) | Nome do produto |
-| `descricao` | String(500) (nullable) | Descrição |
-| `preco` | Numeric(10,2) | Preço unitário |
-| `ativo` | Boolean | Se está disponível |
-| `criado_em` | DateTime(tz) | Data de criação |
-| `atualizado_em` | DateTime(tz) | Última atualização |
+A tabela `produtos` foi criada pela migration `001_initial_schema` no schema `public`, **sem model/ORM**. Ela não pertence a nenhum `DeclarativeBase` e é consultada via `api-sqlserver` (`protheus_router`), que não valida JWT (endpoints públicos).
 
 ### Schema `portal` — Aba
 
@@ -128,7 +136,10 @@ Relationship: `parent` → Aba, `children` → List[Aba]
 | `url` | String(255) | Caminho relativo do HTML |
 | `icone` | String(50) (nullable) | Nome do ícone |
 | `role_minima` | String(20) | Role mínima para acesso (admin, operador, leitura) |
+| `ordem` | Integer (default 0) | Posição dentro da aba |
 | `ativo` | Boolean | Se aparece no menu |
+
+Índices: `ix_portal_modulos_aba_id` (composto com `ordem` via `ix_portal_modulos_aba_id_ordem` desde a migration 012).
 
 ### Schema `org` — Empresa
 
@@ -173,12 +184,14 @@ Histórico de alterações de tema para auditoria.
 |-------|------|-----------|
 | `id` | Integer PK | Identificador |
 | `theme_id` | Integer FK → `org.company_themes` | Tema alterado |
-| `company_id` | Integer FK → `org.empresas` | Empresa |
+| `company_id` | Integer (sem FK) | Empresa |
 | `action` | String | Tipo de ação (`created`, `updated`, `activated`, `deleted`) |
-| `performed_by` | Integer FK → `iam.usuarios` (nullable) | Usuário que realizou a ação |
+| `performed_by` | Integer (sem FK, nullable) | Usuário que realizou a ação |
 | `theme_snapshot` | JSON | Estado completo do tema após a ação |
 | `changes` | JSON (nullable) | Diff das alterações (apenas em `updated`) |
 | `criado_em` | DateTime(tz) | Data da alteração |
+
+> Apenas `theme_id` possui Foreign Key. `company_id` e `performed_by` são colunas `Integer` comuns, sem FK — a integridade referencial é responsabilidade da aplicação.
 
 ### Schema `org` — Projeto, Recurso, Tarefa, RegistroTarefa
 
@@ -233,15 +246,26 @@ As migrações ficam em `apps/api-postgres/alembic/versions/`.
 | Arquivo | Descrição |
 |---------|-----------|
 | `001_initial_schema` | Criação inicial: `usuarios`, `produtos` (schema `public`) |
-| `002_add_usuario_modulos` | Adiciona `portal_abas`, `portal_modulos`, `usuario_modulos` |
+| `002_add_usuario_modulos` | Adiciona `portal_abas`, `portal_modulos`, `usuario_modulos`; cria `parent_id` + FK `fk_aba_parent` em `portal_abas` |
 | `003_add_empresa_and_theme` | Adiciona `empresas`, `company_themes`, `empresa_id` em `usuarios` |
-| `004_add_theme_history` | Adiciona `theme_history` |
-| `005_add_aba_parent_id` | Adiciona `parent_id` em `portal_abas` |
+| `004_add_theme_history` | Adiciona `theme_history` + índices `ix_theme_history_*` |
+| `005_add_aba_parent_id` | No-op (`pass`) — `parent_id` e a FK `fk_aba_parent` já foram criados na migration 002 |
 | `006_add_temp_password_fields` | Adiciona `temp_password_hash`, `expires_at` em `usuarios` |
-| `007_add_org_schema_tables` | Cria schema `org` com `projetos`, `recursos`, `tarefas`, `registros_tarefas` |
-| `008_add_performance_indexes` | Índices B-tree para performance |
+| `007_add_org_schema_tables` | Cria schema `org` com `projetos`, `recursos`, `tarefas`, `registros_tarefas` + índices `ix_org_projetos_nome`, `ix_org_tarefas_titulo`/`projeto_id`/`responsavel_id`, `ix_org_registros_tarefas_tarefa_id`/`autor_id` |
+| `008_add_performance_indexes` | Índices B-tree: `ix_company_themes_company_active`, `ix_usuarios_role`, `ix_usuarios_ativo`, `ix_usuarios_empresa_id`, `ix_portal_modulos_aba_id` |
 | `009_add_layout_mode` | Adiciona `layout_mode` em `company_themes` |
 | `010_add_theme_preference` | Adiciona `theme_preference` em `usuarios` |
+| `011_add_layout_preference` | Adiciona `layout_preference` em `usuarios` |
+| `012_add_modulo_ordem` | Adiciona `ordem` em `portal_modulos` + índice composto `ix_portal_modulos_aba_id_ordem` |
+| `013_add_profile_fields` | Adiciona campos de perfil em `usuarios` |
+| `014_add_numero_field` | Adiciona `numero` em `usuarios` |
+| `015_add_classificacao_field` | Adiciona `classificacao` em `usuarios` |
+| `016_add_telefone_celular_fields` | Adiciona `telefone`, `celular` em `usuarios` |
+| `017_add_rg_salario_fields` | Adiciona `rg`, `salario` em `usuarios` |
+| `018_add_layout_mobile_preference` | Adiciona `layout_mobile_preference` em `usuarios` |
+| `019_add_bairro_cidade_uf_fields` | Adiciona `bairro`, `cidade`, `uf` em `usuarios` |
+| `020_encrypt_sensitive_user_fields` | Criptografa `cpf`, `rg`, `salario`, `endereco`, `telefone`, `celular` e altera para `String(255)` |
+| `021_add_aprovador_to_usuarios` | Adiciona `aprovador` em `usuarios` |
 
 ---
 
@@ -253,11 +277,12 @@ make seed
 
 Cria (idempotente):
 
+- Schemas `iam`, `portal`, `org` e `catalogo` (vazio, sem tabelas) + `create_all`
 - Empresa `GrindX` com dominio `grindx.local`
-- Usuário `admin` / `admin123` com role `admin` — vinculado à GrindX
-- Skin "Padrão GrindX" com tema azul claro/escuro e fontes Barlow Condensed + DM Sans
-- Abas: `Principal` e `Gestão`
-- Módulos: `Dashboard`, `Usuários`, `Módulos & Abas`, `Skins`, `Importar Módulos`
+- Usuário `admin` / `admin123` (e-mail `admin@erp.com.br`) com role `admin` — vinculado à GrindX
+- Skin "Padrão GrindX" com `layout_mode` `topbar`
+- Abas: `Principal` (ordem 0), `R. HUMANOS` (ordem 50) e `Gestão` (ordem 100)
+- Módulos: `Dashboard` (home), `Usuários` (users), `Administradores` (admins, role admin), `Módulos & Abas` (structure), `Skins` (admin-skins), `Importar Módulos` (importer)
 
 ---
 

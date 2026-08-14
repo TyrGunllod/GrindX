@@ -1,4 +1,4 @@
-<!-- title: GrindX — Resumo Executivo | updated: 2026-06-17 -->
+<!-- title: GrindX — Resumo Executivo | updated: 2026-08-14 -->
 
 # GrindX — Resumo Executivo
 
@@ -6,7 +6,7 @@
 
 ## Status Atual
 
-Projeto em desenvolvimento ativo — funcionalidades principais implementadas e rodando. 251+ testes automatizados, CI/CD com semantic release, deploy via containers Podman.
+Projeto em desenvolvimento ativo — funcionalidades principais implementadas e rodando. 264 testes automatizados (api-postgres 197, api-sqlserver 17, shared 26, root 24), CI/CD com semantic release, deploy via containers Podman.
 
 ---
 
@@ -19,13 +19,11 @@ Monorepo Python + Vanilla JS. Dois backends FastAPI independentes compartilhando
 ## Funcionalidades
 
 - **Sub-abas (nested menu):** navegação hierárquica dinâmica gerenciada pelo banco
-- **Dual layout:** sidebar (padrão) e topbar, selecionável por empresa via tema
+- **Dual layout:** topbar (padrão) e sidebar, selecionável por empresa via tema
 - **Forgot-password:** fluxo completo de recuperação de senha com envio de email
 - **Skin system:** temas visuais customizáveis por empresa com persistência
 - **Troca de senha:** alteração de senha pelo próprio usuário logado
-- **Geração de PDF:** módulo de custos com xhtml2pdf no api-postgres
-- **Módulo de custos:** consulta a produtos e cálculo de custos no api-sqlserver
-- **Zero Drift:** sistema de checkpoint para grounding de sessão
+- **Geração de PDF:** (pendente — xhtml2pdf está em requirements.txt mas não é usado; não há módulo de custos implementado)
 
 ---
 
@@ -49,7 +47,6 @@ python -m http.server 8101 --directory apps/frontend-webapp
 | Usuário | Senha | Perfil |
 |---------|-------|--------|
 | `admin` | `admin123` | Administrador |
-| `operador` | `operador123` | Operador |
 
 ---
 
@@ -75,4 +72,4 @@ Portal de entrada: [`docs/README.md`](docs/README.md)
 | `docs/DEPLOYMENT.md` | Deploy + CI/CD |
 | `docs/DATABASE.md` | Schema, modelos, migrações |
 | `docs/SECURITY.md` | JWT, RBAC, middlewares |
-| `apps/frontend-webapp/ARCHITECTURE_PORTAL.md` | Como criar novos módulos |
+| `docs/ARCHITECTURE_PORTAL.md` | Como criar novos módulos |

@@ -24,7 +24,7 @@ Estas regras causam falha de CI, bug sutil ou retrabalho quando ignoradas. Revis
 ## Monorepo Structure
 
 - `apps/api-postgres/` — FastAPI principal (porta 8002), JWT + RBAC, PostgreSQL via Alembic
-- `apps/api-sqlserver/` — FastAPI somente leitura (porta 8001), valida tokens do api-postgres
+- `apps/api-sqlserver/` — FastAPI somente leitura (porta 8001), endpoints públicos sem JWT
 - `apps/frontend-webapp/` — Portal vanilla JS (porta 8101), módulos via iframe, zero frameworks
 - `packages/shared/` — Pacote Python compartilhado (security, schemas, exceptions, error codes)
 - `tests/` — Testes de integração do monorepo (raiz)
@@ -93,13 +93,13 @@ Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 —
 
 ## Architecture — Non-obvious
 
-- **api-sqlserver** é read-only (`allow_methods=["GET"]` no CORS); só tem `health_router` e `cliente_router`
+- **api-sqlserver** é read-only (`allow_methods=["GET"]` no CORS); só tem `health_router` e `protheus_router`
 - **Schemas PostgreSQL**: `iam`, `portal`, `org` — definidos em testes/seed. Módulos implementados: `iam`, `org`, `portal` (em `app/modules/`)
 - **Frontend**: `shared/core.css` (tokens CSS), `shared/app.js` (UIFactory), `shared/skinLoader.js` (temas); módulos standalone em `modules/` com `index.html`, `script.js`, `style.css`
 - **Design system**: Glassmorphism, `var(--...)` para tudo, nunca cores/fontes fixas
 - **compose.yaml**: ambas as APIs usam `network_mode: "container:grindx-frontend"` (compartilham rede do nginx)
 - **Containerização**: Podman (não Docker), `podman-compose.yml` — no Windows requer `podman machine` com conexão rootful
-- **Volumes no WSL**: `compose.yaml` usa `${PWD}` para paths de volume (não `./` relativo). Projeto deve estar clonado dentro do filesystem WSL (`~/...`), não em `/mnt/c/...`
+- **Volumes no WSL**: `compose.yaml` usa `${HOME:-.}` para paths de volume (não `./` relativo, nem `${PWD}`). Projeto deve estar clonado dentro do filesystem WSL (`~/...`), não em `/mnt/c/...`
 - **Ordem de scripts nos módulos**: `config.js` → `app.js` → `apiService.js` → `baseController.js` → `script.js`. `config.js` deve ser incluído em TODO `index.html` de módulo
 - **CSP no nginx**: `style-src` inclui `https://fonts.googleapis.com` (Google Fonts); `connect-src` inclui `http://localhost:8002 http://127.0.0.1:8002`
 - **API URL no frontend** (`config.js`): sempre constroi `http://{hostname}:8002/v1`. Em producao com proxy, `window.__GRINDX_API_URL` pode ser injetado para sobrescrever
@@ -137,7 +137,7 @@ Módulos read-only (consultas a tabelas do Protheus) usam `target_api: "sqlserve
 - Migration, dependency factory e alembic import são **pulados**
 - `target_api` pode ser sobrescrito via CLI: `--target-api=sqlserver`
 - `frontend/shared/` é ignorado durante a cópia (já existe no monorepo)
-- `python scripts/import_module.py {nome} --import-dir={tmp} --target-api=sqlserver`
+- `python scripts/import_module.py {nome} --import-dir={tmp} --target-api=sqlserver` (executado a partir de `apps/api-postgres/`, onde está `scripts/import_module.py`)
 
 ### Módulos frontend-only
 

@@ -1,4 +1,4 @@
-<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-06-22 -->
+<!-- title: GrindX — Sistema de Gestão Integrado | updated: 2026-08-14 -->
 
 # GrindX — Sistema de Gestão Integrado (Monorepo)
 
@@ -8,7 +8,7 @@ O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado e
 
 ## Status do Projeto
 
-Projeto em desenvolvimento ativo. Funcionalidades principais implementadas e funcionais (autenticação JWT + RBAC, CRUD de usuários, portal modular com shell, skin system com dual layout, importação de módulos). CI/CD, testes automatizados (251) e documentação acompanham o desenvolvimento.
+Projeto em desenvolvimento ativo. Funcionalidades principais implementadas e funcionais (autenticação JWT + RBAC, CRUD de usuários, portal modular com shell, skin system com dual layout, importação de módulos). CI/CD, testes automatizados (264) e documentação acompanham o desenvolvimento.
 
 ---
 
@@ -19,13 +19,14 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 ### Backend
 
 - **`api-postgres` (porta 8002):** API principal em FastAPI. Gerencia autenticação JWT, RBAC, usuários, temas/skins, estrutura do portal e importação de módulos.
-- **`api-sqlserver` (porta 8001):** API somente leitura para integração com bases SQL Server legadas (Protheus). Endpoints: `/health`, `/v1/produtos/por-codigo`, `/v1/produtos/por-descricao`. Valida tokens JWT emitidos pela `api-postgres`.
+- **`api-sqlserver` (porta 8001):** API somente leitura para integração com bases SQL Server legadas (Protheus). Endpoints: `/health`, `/v1/produtos/por-codigo`, `/v1/produtos/por-descricao`. Endpoints públicos (sem validação JWT).
 - **`shared`:** Pacote Python compartilhado entre as APIs — segurança, schemas e exceções.
 
 ### Frontend
 
 - **Portal Modular (porta 8101):** Shell que gerencia navegação e carrega módulos via iframe isolado. **PWA-ready** (service worker, manifest com ícones 192x192 e 512x512, `display: standalone`). Preparado para reverse proxy (nginx) com same-origin API, CSP estático e HTTPS.
-- **Módulos:** `home`, `users`, `structure`, `admin-skins`, `importer`, `profile` — cada um é standalone e testável independentemente.
+- **Módulos:** `admin-skins`, `admins`, `home`, `importer`, `profile`, `structure`, `users` — cada um é standalone e testável independentemente.
+- **Inatividade:** `shared/inactivity.js` — sistema de inatividade com logout automático.
 - **Design System:** Glassmorphism + tokens CSS + `UIFactory` para consistência absoluta.
 
 ---
@@ -94,12 +95,12 @@ Acesse frontend em `https://localhost:8443` e API em `https://localhost:8002/v1/
 
 ## Testes
 
-Suite com 270+ testes cobrindo unitários, integração e validação do monorepo.
+Suite com 264 testes cobrindo unitários, integração e validação do monorepo.
 
 | Pacote | Testes | Cobertura |
 |--------|--------|-----------|
-| `api-postgres` | 190 | Auth, RBAC, temas, usuários, portal, segurança, cache, importação, PDF |
-| `api-sqlserver` | 20 | Health check, clientes e consulta de produtos Protheus |
+| `api-postgres` | 197 | Auth, RBAC, temas, usuários, portal, segurança, cache, importação, PDF |
+| `api-sqlserver` | 17 | Health check e consulta de produtos Protheus |
 | `shared` | 26 | Permissões RBAC |
 | `tests/` (raiz) | 24 | Validação de pacotes e JWT cross-API |
 
@@ -117,8 +118,8 @@ make test-all         # todos os pacotes
 
 Workflow único em `.github/workflows/release.yml`:
 
-- **`test-api-postgres`** — 190 testes com SQLite in-memory, cobertura mínima 70%
-- **`test-api-sqlserver`** — testes de integração com SQL Server
+- **`test-api-postgres`** — 197 testes com SQLite in-memory, cobertura mínima 70%
+- **`test-api-sqlserver`** — testes com SQLite via `DB_URL_OVERRIDE`
 - **`test-root`** — testes do monorepo (depende dos dois anteriores)
 - **`lint`** — `ruff check` + `ruff format --check` em `packages/` e `apps/`
 - **`release`** — `python-semantic-release` com publicação no GitHub (apenas push para `main`)
@@ -176,28 +177,28 @@ GrindX/
 │   │   │   ├── auth/          # JWT — router, service, dependencies
 │   │   │   ├── core/          # config, exceptions, logging, versioning, cache
 │   │   │   ├── middleware/    # rate limit, request id, security headers
-│   │   │   ├── modules/       # Modelos por schema (iam, portal, catalogo, org)
+│   │   │   ├── modules/       # Modelos por schema (iam, portal, org)
 │   │   │   ├── models/        # Re-export shims (compatibilidade)
 │   │   │   ├── repositories/
-│   │   │   ├── routers/       # auth, health, portal, theme, usuario, import
+│   │   │   ├── routers/       # auth, health, portal, proxies, theme, usuario, import
 │   │   │   ├── schemas/
-│   │   │   └── services/      # email, produto, usuario, theme
-│   │   ├── alembic/           # 10 migrações do banco
-│   │   ├── tests/             # 178 testes
+│   │   │   └── services/      # email, theme, usuario
+│   │   ├── alembic/           # 21 migrações do banco
+│   │   ├── tests/             # 197 testes
 │   │   └── ...
 │   ├── api-sqlserver/         # API somente leitura (SQL Server)
 │   │   ├── app/
 │   │   │   ├── auth/          # Validação JWT (sem emissão)
 │   │   │   ├── core/
 │   │   │   ├── middleware/
-│   │   │   ├── routers/       # cliente, health
+│   │   │   ├── routers/       # protheus, health
 │   │   │   └── services/
 │   │   ├── tests/
 │   │   └── ...
 │   └── frontend-webapp/       # Portal Frontend
 │       ├── index.html         # Login
 │       ├── dashboard.html     # Shell principal
-│       ├── modules/           # home, users, structure, admin-skins, importer, profile
+│       ├── modules/           # admin-skins, admins, home, importer, profile, structure, users
 │       └── shared/            # Design System + Core Framework
 ├── packages/
 │   └── shared/                # Pacote Python compartilhado
