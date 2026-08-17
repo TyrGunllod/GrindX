@@ -1,16 +1,19 @@
 """Testes unitários para o AuditService."""
+
 import time
 
+from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
 
 from app.audit.service import AuditService
 from app.models.usuario import Usuario
-from shared.security.jwt import gerar_hash_senha
 
 
 def _mkuser(db: Session) -> Usuario:
     u = Usuario(
-        username="aud", email="aud@x.com", nome_completo="Aud",
+        username="aud",
+        email="aud@x.com",
+        nome_completo="Aud",
         senha_hash=gerar_hash_senha("x"),
     )
     db.add(u)
@@ -21,8 +24,12 @@ def _mkuser(db: Session) -> Usuario:
 def test_registrar_audit(db_session: Session):
     svc = AuditService(db_session)
     log = svc.registrar_audit(
-        user_id=1, entidade="Usuario", entidade_id=2, acao="update",
-        campos_alterados=["email"], ip="10.0.0.1",
+        user_id=1,
+        entidade="Usuario",
+        entidade_id=2,
+        acao="update",
+        campos_alterados=["email"],
+        ip="10.0.0.1",
     )
     db_session.commit()
     db_session.refresh(log)

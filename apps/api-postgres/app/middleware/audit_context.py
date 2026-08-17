@@ -22,8 +22,9 @@ class AuditContextMiddleware(BaseHTTPMiddleware):
         auth_header = request.headers.get("Authorization", "")
         if auth_header.startswith("Bearer "):
             try:
-                from app.core.config import settings
                 from shared.security.jwt import verificar_jwt
+
+                from app.core.config import settings
 
                 payload = verificar_jwt(auth_header[7:], settings.SECRET_KEY)
                 user_id = int(payload.sub)

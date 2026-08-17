@@ -1,11 +1,12 @@
 """Testes de integração para a API de auditoria e sessões."""
+
 from fastapi.testclient import TestClient
+from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
 
 from app.audit.context import audit_ip, audit_user_id
 from app.audit.models import Sessao
 from app.models.usuario import Usuario
-from shared.security.jwt import gerar_hash_senha
 
 
 def _criar_usuario(db: Session, username: str, role: str = "admin") -> Usuario:

@@ -31,7 +31,9 @@ class AuditLog(OrgBase):
     )
 
     def __repr__(self) -> str:
-        return f"<AuditLog(id={self.id}, entidade='{self.entidade}', acao='{self.acao}')>"
+        return (
+            f"<AuditLog(id={self.id}, entidade='{self.entidade}', acao='{self.acao}')>"
+        )
 
 
 class Sessao(OrgBase):

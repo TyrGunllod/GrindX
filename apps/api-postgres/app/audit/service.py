@@ -65,9 +65,7 @@ class AuditService:
         self.db.refresh(sessao)
         return sessao
 
-    def fechar_sessao(
-        self, user_id: int, motivo: str = "logout"
-    ) -> Sessao | None:
+    def fechar_sessao(self, user_id: int, motivo: str = "logout") -> Sessao | None:
         """Fecha a sessão aberta mais recente do usuário.
 
         Args:

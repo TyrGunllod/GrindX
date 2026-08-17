@@ -1,4 +1,5 @@
 """Testes unitários para os modelos de auditoria."""
+
 from sqlalchemy.orm import Session
 
 from app.audit.models import AuditLog, Sessao
@@ -6,8 +7,12 @@ from app.audit.models import AuditLog, Sessao
 
 def test_create_audit_log(db_session: Session):
     log = AuditLog(
-        user_id=1, entidade="Usuario", entidade_id=3,
-        acao="update", campos_alterados=["email", "role"], ip="127.0.0.1",
+        user_id=1,
+        entidade="Usuario",
+        entidade_id=3,
+        acao="update",
+        campos_alterados=["email", "role"],
+        ip="127.0.0.1",
     )
     db_session.add(log)
     db_session.commit()

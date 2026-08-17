@@ -1,4 +1,5 @@
 """Testes unitários para o contexto de auditoria da requisição."""
+
 from fastapi.testclient import TestClient
 
 from app.audit.context import audit_ip, audit_user_id

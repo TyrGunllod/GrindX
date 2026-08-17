@@ -1,12 +1,13 @@
 """Testes unitários para os listeners de auditoria automática."""
+
 import pytest
+from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
 
 from app.audit.context import audit_ip, audit_user_id
 from app.audit.models import AuditLog
 from app.audit.service import AuditService
 from app.models.usuario import Usuario
-from shared.security.jwt import gerar_hash_senha
 
 
 def _usuario(**kwargs) -> Usuario:
