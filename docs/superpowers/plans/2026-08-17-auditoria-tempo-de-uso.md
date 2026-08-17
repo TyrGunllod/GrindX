@@ -14,7 +14,7 @@
 
 **Files:**
 - Create: `apps/api-postgres/app/audit/models.py`
-- Create: `apps/api-postgres/alembic/versions/022_add_audit_tables.py` (revision `a1b2c3d4e5f6`, down_revision `8ec10f792d4b`)
+- Create: `apps/api-postgres/alembic/versions/022_add_audit_tables.py` (revision `f49af6b8a8d4`, down_revision `8ec10f792d4b`)
 - Modify: `apps/api-postgres/app/models/__init__.py`
 - Modify: `apps/api-postgres/alembic/env.py`
 - Test: `apps/api-postgres/tests/unit/test_models_audit.py`
@@ -129,7 +129,7 @@ Create `apps/api-postgres/alembic/versions/022_add_audit_tables.py`:
 ```python
 """add audit_logs and sessoes tables
 
-Revision ID: a1b2c3d4e5f6
+Revision ID: f49af6b8a8d4
 Revises: 8ec10f792d4b
 Create Date: 2026-08-17 12:00:00.000000
 
@@ -139,7 +139,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-revision: str = "a1b2c3d4e5f6"
+revision: str = "f49af6b8a8d4"
 down_revision: Union[str, None] = "8ec10f792d4b"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
