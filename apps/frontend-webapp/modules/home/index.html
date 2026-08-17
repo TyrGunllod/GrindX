@@ -14,11 +14,24 @@
 <body class="module-page">
     <div class="welcome-card animate-in">
         <i class="fas fa-rocket" style="font-size: 48px; color: var(--primary); margin-bottom: 24px;"></i>
-        <h1>Bem-vindo ao GrindX</h1>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+            <h1>Bem-vindo ao GrindX</h1>
+            <span class="viz-version" id="viz-version" aria-label="Versão do sistema"></span>
+        </div>
         <p>Este é o seu novo centro de controle modular. Utilize o menu lateral ou superior para navegar entre as funcionalidades disponíveis.</p>
     </div>
     <script src="../../shared/config.js"></script>
     <script src="../../shared/app.js"></script>
     <script src="../../shared/inactivity.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var el = document.getElementById('viz-version');
+            if (!el || !window.grindx?.version) return;
+            window.grindx.version.get(function (v) {
+                if (v) { el.textContent = v; el.setAttribute('aria-label', 'Versão do sistema ' + v); }
+                else { el.style.display = 'none'; }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -127,6 +127,13 @@ raise CredenciaisInvalidasError()
 - **Cache**: cachetools TTLCache (15 min TTL) para temas, usuários e portal
 - **Índices**: 5 B-tree via migração Alembic (company_themes composite, usuarios role/ativo/empresa_id, portal_modulos aba_id)
 
+## Version Badge nos Módulos
+
+- **Módulos padrão** do monorepo não geram versão própria: exibem a **versão do sistema** (mesma da tela de login, vinda de `version.json` → `window.grindx.version.get()`)
+- **Módulos standalone/importados** geram a própria versão (`window.{MODULE}_VERSION` via `scripts/version.py` da skill)
+- Badge: `<span class="viz-version" id="viz-version">` dentro de `.page-header-container` no header; CSS `.viz-version` em `shared/core.css`
+- Controllers que herdam de `BaseController` chamam `this.setBadgeVersao()` no `init()` (definido em `shared/baseController.js`); módulos IIFE (ex.: `profile`) ou estáticos (ex.: `home`) definem a própria chamada
+
 ## New Modules
 
 Usar `.opencode/skills/create-standalone-module/SKILL.md` — cobre backend + frontend + testes + migration + export.

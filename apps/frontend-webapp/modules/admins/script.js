@@ -58,6 +58,7 @@ class AdminsController extends window.grindx.controllers.BaseController {
             return;
         }
 
+        this.setBadgeVersao();
         this.populateRoleSelect();
         this.bindEvents();
         await this.loadUsers();
