@@ -91,3 +91,89 @@ def test_audit_sessoes_inclui_username(client: TestClient, db_session: Session):
     assert data["total"] >= 1
     item = next(i for i in data["items"] if i["user_id"] == u.id)
     assert item["usuario_username"] == "sess1"
+
+
+def test_sessoes_persistem_entre_requisicoes():
+    """Login/logout devem commitar a sessao (visivel em nova conexao).
+
+    Simula producao: cada requisicao usa uma conexao/transacao propria.
+    Sem commit, a sessao aberta no login nao aparece para outra conexao.
+    """
+    import uuid
+
+    from fastapi.testclient import TestClient
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+
+    from app.database import get_db
+    from app.main import app
+    from app.modules.iam.base import IamBase
+
+    _translate = {"iam": None, "portal": None, "catalogo": None, "org": None}
+    engine = create_engine(
+        f"sqlite:///file:audit_persist_{uuid.uuid4().hex}?mode=memory&cache=shared&uri=true",
+        connect_args={"check_same_thread": False},
+    )
+    with engine.execution_options(schema_translate_map=_translate).connect() as conn:
+        IamBase.metadata.create_all(conn)
+
+    Factory = sessionmaker(
+        bind=engine.execution_options(schema_translate_map=_translate)
+    )
+
+    def _override_get_db():
+        s = Factory()
+        try:
+            yield s
+        finally:
+            s.close()
+
+    app.dependency_overrides[get_db] = _override_get_db
+    client = TestClient(app)
+    try:
+        sess_a = Factory()
+        u = Usuario(
+            username="persist",
+            email="persist@x.com",
+            nome_completo="Persist",
+            senha_hash=gerar_hash_senha("senha123"),
+            role="admin",
+        )
+        sess_a.add(u)
+        sess_a.commit()
+        user_id = u.id
+        sess_a.close()
+
+        resp = client.post(
+            "/v1/auth/token",
+            json={"username": "persist", "password": "senha123"},
+        )
+        assert resp.status_code == 200, resp.text
+        token = resp.json()["access_token"]
+
+        sess_b = Factory()
+        try:
+            sessoes = sess_b.query(Sessao).filter(Sessao.user_id == user_id).all()
+            assert len(sessoes) == 1, "login deve commitar a sessao aberta"
+            assert sessoes[0].logout_at is None
+
+            sess_b.rollback()
+            resp_logout = client.post(
+                "/v1/auth/logout",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            assert resp_logout.status_code == 200, resp_logout.text
+
+            sessao = sess_b.query(Sessao).filter(Sessao.user_id == user_id).first()
+            assert sessao is not None
+            assert sessao.logout_at is not None, "logout deve commitar o fechamento"
+            assert sessao.duracao_segundos is not None
+        finally:
+            sess_b.close()
+    finally:
+        app.dependency_overrides.clear()
+        with engine.execution_options(
+            schema_translate_map=_translate
+        ).connect() as conn:
+            IamBase.metadata.drop_all(conn)
+        engine.dispose()

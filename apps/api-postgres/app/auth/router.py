@@ -62,6 +62,7 @@ def login(
         usuario = db.query(Usuario).filter(Usuario.username == dados.username).first()
         if usuario:
             AuditService(db).abrir_sessao(usuario.id, ip=client_ip)
+        db.commit()
         logger.info(
             "login_sucesso",
             username=dados.username,
@@ -242,6 +243,7 @@ def logout(
 ):
     """Encerra a sessão do usuário autenticado."""
     AuditService(db).fechar_sessao(int(current_user.sub), motivo="logout")
+    db.commit()
     logger.info(
         "logout_sucesso",
         usuario_id=int(current_user.sub),
