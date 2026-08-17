@@ -461,8 +461,9 @@ input, select, textarea, button, a, .nav-link, .nav-dropdown-item,
 .page-header-container {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
-    gap: 550px;
+    gap: var(--space-3, 0.75rem);
 }
 
 .viz-version {
