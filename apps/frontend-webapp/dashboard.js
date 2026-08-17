@@ -629,6 +629,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
     }
 
     logout() {
+        if (window.grindx.serverLogout) {
+            window.grindx.serverLogout.notify();
+        }
         window.grindx.session.clear();
         window.location.href = 'index.html';
     }

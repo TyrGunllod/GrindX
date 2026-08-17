@@ -122,6 +122,9 @@
                 this.onLogout();
                 return;
             }
+            if (globalScope.grindx && globalScope.grindx.serverLogout) {
+                globalScope.grindx.serverLogout.notify();
+            }
             if (this.session && this.session.clear) {
                 this.session.clear();
             }

@@ -202,3 +202,25 @@ test('sem onLogout, limpa sessão e redireciona para index.html', () => {
     assert.equal(cleared, true);
     assert.equal(win.location.href, 'index.html');
 });
+
+test('sem onLogout, com serverLogout disponível, notifica o servidor', () => {
+    const win = fakeWindow();
+    win.self = {};
+    win.top = {};
+    win.location = { origin: 'http://localhost:8101', href: '' };
+
+    let notified = false;
+    globalThis.grindx = { serverLogout: { notify: () => { notified = true; } } };
+
+    const session = { clear: () => {} };
+    const tracker = new InactivityTracker({
+        window: win,
+        document: fakeDoc(),
+        autoInit: false,
+        session
+    });
+
+    tracker.handleLogout();
+    assert.equal(notified, true, 'deve notificar o servidor no logout por inatividade');
+    delete globalThis.grindx;
+});
