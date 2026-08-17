@@ -61,10 +61,10 @@ def test_audit_sessoes_requer_admin(client: TestClient, db_session: Session):
 
 
 def test_audit_logs_lista_para_admin(client: TestClient, db_session: Session):
-    _criar_usuario(db_session, "admin1")
+    admin = _criar_usuario(db_session, "admin1")
     headers = _token(client, "admin1")
 
-    audit_user_id.set(1)
+    audit_user_id.set(admin.id)
     audit_ip.set("127.0.0.1")
     try:
         _criar_usuario(db_session, "outro")
@@ -77,3 +77,17 @@ def test_audit_logs_lista_para_admin(client: TestClient, db_session: Session):
     data = resp.json()
     assert data["total"] >= 1
     assert data["items"][0]["entidade"] == "Usuario"
+    assert data["items"][0]["user_id"] == admin.id
+    assert data["items"][0]["usuario_username"] == "admin1"
+
+
+def test_audit_sessoes_inclui_username(client: TestClient, db_session: Session):
+    u = _criar_usuario(db_session, "sess1")
+    headers = _token(client, "sess1")
+
+    resp = client.get("/v1/audit/sessoes", headers=headers)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total"] >= 1
+    item = next(i for i in data["items"] if i["user_id"] == u.id)
+    assert item["usuario_username"] == "sess1"

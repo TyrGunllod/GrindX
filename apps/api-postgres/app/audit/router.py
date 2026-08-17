@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.audit.models import AuditLog, Sessao
 from app.auth.dependencies import require_role
 from app.database import get_db
+from app.models.usuario import Usuario
 from app.schemas.audit import AuditLogResponse, SessaoResponse
 
 logger = structlog.get_logger(__name__)
@@ -29,13 +30,19 @@ def listar_logs(
 ):
     """Lista os logs de auditoria (mais recentes primeiro)."""
     total = db.query(AuditLog).count()
-    items = (
-        db.query(AuditLog)
+    rows = (
+        db.query(AuditLog, Usuario.username)
+        .outerjoin(Usuario, Usuario.id == AuditLog.user_id)
         .order_by(AuditLog.criado_em.desc(), AuditLog.id.desc())
         .offset((page - 1) * page_size)
         .limit(page_size)
         .all()
     )
+    items = []
+    for log, username in rows:
+        item = AuditLogResponse.model_validate(log)
+        item.usuario_username = username
+        items.append(item)
     return PaginatedResponse(
         items=items,
         total=total,
@@ -59,13 +66,19 @@ def listar_sessoes(
 ):
     """Lista as sessões de uso (mais recentes primeiro)."""
     total = db.query(Sessao).count()
-    items = (
-        db.query(Sessao)
+    rows = (
+        db.query(Sessao, Usuario.username)
+        .outerjoin(Usuario, Usuario.id == Sessao.user_id)
         .order_by(Sessao.login_at.desc(), Sessao.id.desc())
         .offset((page - 1) * page_size)
         .limit(page_size)
         .all()
     )
+    items = []
+    for sessao, username in rows:
+        item = SessaoResponse.model_validate(sessao)
+        item.usuario_username = username
+        items.append(item)
     return PaginatedResponse(
         items=items,
         total=total,
