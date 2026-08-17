@@ -22,6 +22,7 @@ from sqlalchemy.orm import Session
 from app.audit.service import AuditService
 from app.auth.dependencies import get_auth_service, get_current_user
 from app.auth.service import AuthService
+from app.core.network import get_client_ip
 from app.database import get_db
 from app.models.usuario import Usuario
 from app.schemas.usuario import (
@@ -56,7 +57,7 @@ def login(
     auth_service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     """Emite tokens JWT para um usuário autenticado."""
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = get_client_ip(request) or "unknown"
     try:
         result = auth_service.autenticar(dados.username, dados.password)
         usuario = db.query(Usuario).filter(Usuario.username == dados.username).first()
@@ -99,7 +100,7 @@ def refresh(
     auth_service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     """Renova os tokens JWT usando um refresh token válido."""
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = get_client_ip(request) or "unknown"
     try:
         result = auth_service.refresh_token(dados.refresh_token)
         logger.info(

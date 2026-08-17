@@ -7,6 +7,7 @@ from shared.schemas.base import PaginatedResponse
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import require_role_or_higher
+from app.core.network import get_client_ip
 from app.database import get_db
 from app.models.usuario import Usuario, UsuarioModulo
 from app.schemas.usuario import (
@@ -57,7 +58,7 @@ def criar_usuario(
         raise HTTPException(403, "Apenas administradores podem criar usuários admin.")
     service = UsuarioService(db)
     result = service.criar_usuario(schema, empresa_id=current_user.company_id)
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = get_client_ip(request) or "unknown"
     logger.info(
         "usuario_criado",
         usuario_id=result.id,

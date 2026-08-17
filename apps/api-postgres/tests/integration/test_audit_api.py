@@ -5,7 +5,7 @@ from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
 
 from app.audit.context import audit_ip, audit_user_id
-from app.audit.models import Sessao
+from app.audit.models import AuditLog, Sessao
 from app.models.usuario import Usuario
 
 
@@ -177,3 +177,27 @@ def test_sessoes_persistem_entre_requisicoes():
         ).connect() as conn:
             IamBase.metadata.drop_all(conn)
         engine.dispose()
+
+
+def test_audit_registra_ip_real_via_x_forwarded_for(
+    client: TestClient, db_session: Session
+):
+    """O IP registrado na auditoria deve ser o real (X-Forwarded-For), não o do proxy."""
+    _criar_usuario(db_session, "adminxff")
+    headers = _token(client, "adminxff")
+    headers["X-Forwarded-For"] = "203.0.113.9, 10.0.0.1"
+
+    resp = client.post(
+        "/v1/usuarios",
+        headers=headers,
+        json={
+            "username": "comumxff",
+            "email": "comumxff@x.com",
+            "nome_completo": "Comum XFF",
+            "password": "senha123",
+        },
+    )
+    assert resp.status_code == 201, resp.text
+
+    logs = db_session.query(AuditLog).filter(AuditLog.ip == "203.0.113.9").all()
+    assert len(logs) >= 1

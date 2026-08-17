@@ -5,6 +5,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from app.audit.context import audit_ip, audit_user_id
+from app.core.network import get_client_ip
 
 
 class AuditContextMiddleware(BaseHTTPMiddleware):
@@ -17,7 +18,7 @@ class AuditContextMiddleware(BaseHTTPMiddleware):
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         user_id: int | None = None
-        ip: str | None = request.client.host if request.client else None
+        ip: str | None = get_client_ip(request)
 
         auth_header = request.headers.get("Authorization", "")
         if auth_header.startswith("Bearer "):
