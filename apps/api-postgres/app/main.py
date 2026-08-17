@@ -23,6 +23,7 @@ from app.auth.router import router as auth_router
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import setup_logging
+from app.middleware.audit_context import AuditContextMiddleware
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_id import RequestIdMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
@@ -88,6 +89,9 @@ app.add_middleware(
 
 # Request ID para rastreabilidade
 app.add_middleware(RequestIdMiddleware)
+
+# Contexto de auditoria (user_id/IP para logs de escrita)
+app.add_middleware(AuditContextMiddleware)
 
 # CORS
 app.add_middleware(
