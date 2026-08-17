@@ -267,6 +267,13 @@ class DashboardController extends window.grindx.controllers.BaseController {
                     trigger.setAttribute('aria-expanded', 'true');
                 }
             });
+
+            // Fecha a aba ao mover o mouse para fora (mesmo comportamento do dropdown do GrindX)
+            group.addEventListener('mouseleave', () => {
+                group.classList.remove('open');
+                const t = group.querySelector('.nav-group-trigger');
+                if (t) t.setAttribute('aria-expanded', 'false');
+            });
         });
 
         document.addEventListener('click', () => {
