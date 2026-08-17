@@ -1,0 +1,75 @@
+/* Módulo Auditoria — GrindX */
+
+.audit-card {
+    margin-bottom: var(--space-8, 2rem);
+    padding: var(--space-6, 1.5rem);
+    background: var(--skin-bg-card, #ffffff);
+    border: 1px solid var(--skin-border-color, #e2e8f0);
+    border-radius: var(--skin-radius-lg, 0.75rem);
+    box-shadow: var(--skin-shadow-card, 0 10px 25px rgba(0, 0, 0, 0.1));
+}
+
+.audit-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4, 1rem);
+    margin-bottom: var(--space-4, 1rem);
+    flex-wrap: wrap;
+}
+
+.audit-card-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--skin-text-main, #1e293b);
+}
+
+.audit-card-header h2 i {
+    margin-right: var(--space-2, 0.5rem);
+    color: var(--skin-primary, #00c2e0);
+}
+
+.audit-total {
+    font-size: 0.85rem;
+    color: var(--skin-text-muted, #64748b);
+    background: var(--skin-bg-main, #f8fafc);
+    border: 1px solid var(--skin-border-color, #e2e8f0);
+    border-radius: var(--skin-radius-md, 0.5rem);
+    padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+}
+
+.audit-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4, 1rem);
+    margin-top: var(--space-4, 1rem);
+    flex-wrap: wrap;
+}
+
+.audit-page-info {
+    color: var(--skin-text-muted, #64748b);
+    font-size: 0.85rem;
+}
+
+.campos-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1, 0.25rem);
+    max-width: 340px;
+}
+
+.campo-badge {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: var(--skin-radius-sm, 0.25rem);
+    background: var(--skin-bg-main, #f8fafc);
+    border: 1px solid var(--skin-border-color, #e2e8f0);
+    color: var(--skin-text-main, #1e293b);
+    white-space: nowrap;
+}
+
+.audit-pagination .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

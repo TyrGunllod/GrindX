@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrindX — Auditoria</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="module-page">
+    <div class="container animate-in">
+        <header class="page-header mb-8">
+            <div>
+                <h1>Auditoria</h1>
+                <p class="text-muted">Registro de alterações no banco e tempo de uso dos usuários.</p>
+            </div>
+        </header>
+
+        <section class="audit-card" aria-label="Registro de alterações">
+            <header class="audit-card-header">
+                <h2><i class="fas fa-clipboard-list"></i> Registro de Alterações</h2>
+                <span class="audit-total" id="logsTotal"></span>
+            </header>
+            <div class="table-responsive">
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th scope="col">Data</th>
+                            <th scope="col" class="hide-mobile">Usuário</th>
+                            <th scope="col">Entidade</th>
+                            <th scope="col">Ação</th>
+                            <th scope="col">Campos Alterados</th>
+                            <th scope="col" class="hide-mobile">IP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsBody"></tbody>
+                </table>
+            </div>
+            <footer class="audit-pagination">
+                <button class="btn btn-outline" id="logsPrev" aria-label="Página anterior de logs">
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span class="audit-page-info" id="logsPageInfo"></span>
+                <button class="btn btn-outline" id="logsNext" aria-label="Próxima página de logs">
+                    Próxima <i class="fas fa-chevron-right"></i>
+                </button>
+            </footer>
+        </section>
+
+        <section class="audit-card" aria-label="Tempo de uso">
+            <header class="audit-card-header">
+                <h2><i class="fas fa-clock"></i> Tempo de Uso</h2>
+                <span class="audit-total" id="sessoesTotal"></span>
+            </header>
+            <div class="table-responsive">
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th scope="col">Login</th>
+                            <th scope="col">Logout</th>
+                            <th scope="col">Duração</th>
+                            <th scope="col" class="hide-mobile">Usuário</th>
+                            <th scope="col" class="hide-mobile">IP</th>
+                            <th scope="col">Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessoesBody"></tbody>
+                </table>
+            </div>
+            <footer class="audit-pagination">
+                <button class="btn btn-outline" id="sessoesPrev" aria-label="Página anterior de sessões">
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span class="audit-page-info" id="sessoesPageInfo"></span>
+                <button class="btn btn-outline" id="sessoesNext" aria-label="Próxima página de sessões">
+                    Próxima <i class="fas fa-chevron-right"></i>
+                </button>
+            </footer>
+        </section>
+    </div>
+
+    <script src="../../shared/config.js"></script>
+    <script src="../../shared/app.js"></script>
+    <script src="../../shared/apiService.js"></script>
+    <script src="../../shared/baseController.js"></script>
+    <script src="../../shared/components/DataTable.js"></script>
+    <script src="../../shared/components/LoadingSpinner.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -291,6 +291,14 @@ def seed_database():
                 "icone": "fas fa-upload",
                 "role_minima": "admin",
             },
+            {
+                "aba": "Gestão",
+                "nome": "Auditoria",
+                "slug": "auditoria",
+                "url": "modules/auditoria/index.html",
+                "icone": "fas fa-history",
+                "role_minima": "admin",
+            },
         ]
 
         modulos_criados = 0
