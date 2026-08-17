@@ -120,6 +120,13 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 }
             });
 
+            // Fecha o dropdown ao mover o mouse para fora do botao/aba
+            document.querySelectorAll('.logo-clickable').forEach(logo => {
+                logo.addEventListener('mouseleave', () => {
+                    logo.classList.remove('open');
+                });
+            });
+
             document.querySelectorAll('[data-profile="true"]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
