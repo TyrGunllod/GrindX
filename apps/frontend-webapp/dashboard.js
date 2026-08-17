@@ -11,6 +11,23 @@ function debounce(fn, ms) {
   };
 }
 
+const DROPDOWN_CLOSE_DELAY_MS = 300;
+
+function cancelClose(el) {
+  if (el._closeTimer) {
+    clearTimeout(el._closeTimer);
+    el._closeTimer = null;
+  }
+}
+
+function scheduleClose(el, closeFn) {
+  cancelClose(el);
+  el._closeTimer = setTimeout(() => {
+    el._closeTimer = null;
+    closeFn();
+  }, DROPDOWN_CLOSE_DELAY_MS);
+}
+
 class DashboardController extends window.grindx.controllers.BaseController {
     constructor() {
         super();
@@ -120,11 +137,10 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 }
             });
 
-            // Fecha o dropdown ao mover o mouse para fora do botao/aba
+            // Fecha o dropdown ao mover o mouse para fora do botao/aba (com tolerancia de tempo)
             document.querySelectorAll('.logo-clickable').forEach(logo => {
-                logo.addEventListener('mouseleave', () => {
-                    logo.classList.remove('open');
-                });
+                logo.addEventListener('mouseenter', () => cancelClose(logo));
+                logo.addEventListener('mouseleave', () => scheduleClose(logo, () => logo.classList.remove('open')));
             });
 
             document.querySelectorAll('[data-profile="true"]').forEach(btn => {
@@ -268,12 +284,13 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 }
             });
 
-            // Fecha a aba ao mover o mouse para fora (mesmo comportamento do dropdown do GrindX)
-            group.addEventListener('mouseleave', () => {
+            // Fecha a aba ao mover o mouse para fora (mesmo comportamento do dropdown do GrindX, com tolerancia de tempo)
+            group.addEventListener('mouseenter', () => cancelClose(group));
+            group.addEventListener('mouseleave', () => scheduleClose(group, () => {
                 group.classList.remove('open');
                 const t = group.querySelector('.nav-group-trigger');
                 if (t) t.setAttribute('aria-expanded', 'false');
-            });
+            }));
         });
 
         document.addEventListener('click', () => {
