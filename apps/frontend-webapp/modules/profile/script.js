@@ -1,6 +1,19 @@
 (function initProfile() {
     let currentUser = {};
 
+    function setBadgeVersao() {
+        const el = document.getElementById('viz-version');
+        if (!el) return;
+        window.grindx.version.get((v) => {
+            if (v) {
+                el.textContent = v;
+                el.setAttribute('aria-label', `Versão do sistema ${v}`);
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    }
+
     function getUserData() {
         try {
             return window.parent.grindx?.session?.getUserProfile?.() || {};
@@ -434,11 +447,13 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
+        setBadgeVersao();
         setupEvents();
         loadProfile();
     });
 
     if (document.readyState !== 'loading') {
+        setBadgeVersao();
         setupEvents();
         loadProfile();
     }

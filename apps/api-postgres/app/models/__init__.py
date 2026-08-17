@@ -1,5 +1,6 @@
 """Re-exporta todos os modelos para manter compatibilidade com imports existentes."""
 
+from app.audit.models import AuditLog, Sessao  # noqa: F401
 from app.modules.iam.models.usuario import Usuario, UsuarioModulo  # noqa: F401
 from app.modules.org.models.empresa import Empresa  # noqa: F401
 from app.modules.org.models.theme import CompanyTheme  # noqa: F401

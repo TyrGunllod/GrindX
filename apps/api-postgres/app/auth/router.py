@@ -19,9 +19,12 @@ from shared.schemas.auth import (
 from shared.schemas.base import ErrorResponse
 from sqlalchemy.orm import Session
 
+from app.audit.service import AuditService
 from app.auth.dependencies import get_auth_service, get_current_user
 from app.auth.service import AuthService
+from app.core.network import get_client_ip
 from app.database import get_db
+from app.models.usuario import Usuario
 from app.schemas.usuario import (
     ChangePasswordRequest,
     ForgotPasswordRequest,
@@ -50,12 +53,17 @@ router = APIRouter(prefix="/v1/auth", tags=["Autenticação"])
 def login(
     dados: TokenRequest,
     request: Request,
+    db: Session = Depends(get_db),
     auth_service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     """Emite tokens JWT para um usuário autenticado."""
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = get_client_ip(request) or "unknown"
     try:
         result = auth_service.autenticar(dados.username, dados.password)
+        usuario = db.query(Usuario).filter(Usuario.username == dados.username).first()
+        if usuario:
+            AuditService(db).abrir_sessao(usuario.id, ip=client_ip)
+        db.commit()
         logger.info(
             "login_sucesso",
             username=dados.username,
@@ -92,7 +100,7 @@ def refresh(
     auth_service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     """Renova os tokens JWT usando um refresh token válido."""
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = get_client_ip(request) or "unknown"
     try:
         result = auth_service.refresh_token(dados.refresh_token)
         logger.info(
@@ -223,3 +231,22 @@ def change_password(
         dados.new_password,
     )
     return {"message": "Senha alterada com sucesso."}
+
+
+@router.post(
+    "/logout",
+    summary="Encerrar sessão",
+    description="Fecha a sessão aberta mais recente do usuário autenticado, registrando logout e duração de uso.",
+)
+def logout(
+    current_user: TokenPayload = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Encerra a sessão do usuário autenticado."""
+    AuditService(db).fechar_sessao(int(current_user.sub), motivo="logout")
+    db.commit()
+    logger.info(
+        "logout_sucesso",
+        usuario_id=int(current_user.sub),
+    )
+    return {"message": "Sessão encerrada."}

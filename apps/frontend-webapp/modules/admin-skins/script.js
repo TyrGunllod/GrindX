@@ -23,6 +23,7 @@ class AdminSkinsController extends window.grindx.controllers.BaseController {
 
     async init() {
         if (!this.requireAuth('../../index.html')) return;
+        this.setBadgeVersao();
         this.setupEvents();
         await this.loadSkins();
         await this.loadTemplates();

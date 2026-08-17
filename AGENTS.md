@@ -103,6 +103,9 @@ Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 —
 - **Ordem de scripts nos módulos**: `config.js` → `app.js` → `apiService.js` → `baseController.js` → `script.js`. `config.js` deve ser incluído em TODO `index.html` de módulo
 - **CSP no nginx**: `style-src` inclui `https://fonts.googleapis.com` (Google Fonts); `connect-src` inclui `http://localhost:8002 http://127.0.0.1:8002`
 - **API URL no frontend** (`config.js`): sempre constroi `http://{hostname}:8002/v1`. Em producao com proxy, `window.__GRINDX_API_URL` pode ser injetado para sobrescrever
+- **Auditoria**: `app/audit/` — `models.py` (`AuditLog`, `Sessao` em schema `org`, migration 022), `listeners.py` auto-audita INSERT/UPDATE/DELETE via `before_flush` (contexto por `ContextVar` do middleware `app/middleware/audit_context.py`), `service.py` (sessões), `router.py` (`GET /v1/audit/logs` e `/v1/audit/sessoes`, admin-only). Excluídos da auto-auditoria: `AuditLog`, `Sessao`, `ThemeHistory`. `POST /v1/auth/token` abre sessão; `POST /v1/auth/logout` fecha a mais recente (tiebreaker `id.desc()`)
+- **Logout server-side**: `shared/serverLogout.js` faz `POST /v1/auth/logout` fire-and-forget (`keepalive: true`, tolerante a falha) no logout manual e por inatividade — incluído no `dashboard.html` após `apiService.js` (módulos iframe rodam `inactivity.js` com `isIframe` e não o chamam)
+- **Módulo frontend `auditoria`**: `frontend_only: true`, consome `/v1/audit/*`; registro no `seed.py` (`modulos_seed`)
 
 ## Error Codes
 
@@ -123,6 +126,13 @@ raise CredenciaisInvalidasError()
 
 - **Cache**: cachetools TTLCache (15 min TTL) para temas, usuários e portal
 - **Índices**: 5 B-tree via migração Alembic (company_themes composite, usuarios role/ativo/empresa_id, portal_modulos aba_id)
+
+## Version Badge nos Módulos
+
+- **Módulos padrão** do monorepo não geram versão própria: exibem a **versão do sistema** (mesma da tela de login, vinda de `version.json` → `window.grindx.version.get()`)
+- **Módulos standalone/importados** geram a própria versão (`window.{MODULE}_VERSION` via `scripts/version.py` da skill)
+- Badge: `<span class="viz-version" id="viz-version">` dentro de `.page-header-container` no header; CSS `.viz-version` em `shared/core.css`
+- Controllers que herdam de `BaseController` chamam `this.setBadgeVersao()` no `init()` (definido em `shared/baseController.js`); módulos IIFE (ex.: `profile`) ou estáticos (ex.: `home`) definem a própria chamada
 
 ## New Modules
 

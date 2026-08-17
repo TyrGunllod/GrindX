@@ -254,6 +254,21 @@ const grindx = {
     i18n: new I18nManager(storage),
     ui: UIFactory,
     theme: new ThemeManager(storage),
+    version: {
+        get(cb) {
+            if (window.GRINDX_VERSION !== undefined) { cb(window.GRINDX_VERSION); return; }
+            fetch('/version.json')
+                .then((r) => r.json())
+                .then((data) => {
+                    window.GRINDX_VERSION = data.version || '';
+                    cb(window.GRINDX_VERSION);
+                })
+                .catch(() => {
+                    window.GRINDX_VERSION = '';
+                    cb('');
+                });
+        }
+    }
 };
 
 window.grindx = grindx;

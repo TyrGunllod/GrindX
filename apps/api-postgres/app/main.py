@@ -19,10 +19,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from app.audit.listeners import auditar_flush  # noqa: F401  (registra listeners)
+from app.audit.router import router as audit_router
 from app.auth.router import router as auth_router
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import setup_logging
+from app.middleware.audit_context import AuditContextMiddleware
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_id import RequestIdMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
@@ -89,6 +92,9 @@ app.add_middleware(
 # Request ID para rastreabilidade
 app.add_middleware(RequestIdMiddleware)
 
+# Contexto de auditoria (user_id/IP para logs de escrita)
+app.add_middleware(AuditContextMiddleware)
+
 # CORS
 app.add_middleware(
     CORSMiddleware,
@@ -128,6 +134,7 @@ app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 app.include_router(proxies_router)
 app.include_router(health_router)
 app.include_router(auth_router)
+app.include_router(audit_router)
 app.include_router(usuario_router)
 app.include_router(portal_router)
 app.include_router(theme_router)

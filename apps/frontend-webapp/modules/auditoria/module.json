@@ -1,0 +1,13 @@
+{
+  "module_name": "auditoria",
+  "entity_name": "Auditoria",
+  "version": "1.0.0",
+  "frontend_only": true,
+  "frontend_tabs": [
+    {"name": "Auditoria", "url": "modules/auditoria/index.html"}
+  ],
+  "menu_label": "Auditoria",
+  "menu_icone": "history",
+  "role_minima": "admin",
+  "description": "Módulo frontend de auditoria: logs de alterações no banco e tempo de uso (sessões). Somente leitura via GET /v1/audit/*."
+}

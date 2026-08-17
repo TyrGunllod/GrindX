@@ -33,6 +33,7 @@ class StructureController extends window.grindx.controllers.BaseController {
 
     async init() {
         if (!this.requireAuth('../../index.html')) return;
+        this.setBadgeVersao();
         this.setupForms();
         this.bindEvents();
         await this.loadStructure();

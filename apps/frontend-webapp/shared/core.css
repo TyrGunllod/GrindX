@@ -461,8 +461,23 @@ input, select, textarea, button, a, .nav-link, .nav-dropdown-item,
 .page-header-container {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
-	 gap: 550px;
+    gap: var(--space-3, 0.75rem);
+}
+
+.viz-version {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: var(--skin-radius-sm, 0.25rem);
+    padding: 0.2rem 0.6rem;
+    white-space: nowrap;
+    align-self: center;
+}
+
+@media print {
+    .viz-version { display: none; }
 }
 
 .justify-end { justify-content: flex-end; }

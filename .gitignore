@@ -87,6 +87,7 @@ apps/frontend-webapp/modules/*
 !apps/frontend-webapp/modules/users
 !apps/frontend-webapp/modules/admins
 !apps/frontend-webapp/modules/profile
+!apps/frontend-webapp/modules/auditoria
 
 # =========================
 # Containers

@@ -15,6 +15,19 @@
             return false;
         }
 
+        setBadgeVersao() {
+            const el = document.getElementById('viz-version');
+            if (!el) return;
+            window.grindx.version.get((v) => {
+                if (v) {
+                    el.textContent = v;
+                    el.setAttribute('aria-label', `Versão do sistema ${v}`);
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+        }
+
         toastSuccess(message) {
             window.grindx.components.LoadingSpinner.toast(message, 'success');
         }
