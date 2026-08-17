@@ -140,7 +140,7 @@ Acessar: `http://localhost:8101`
 
 ```powershell
 # Da raiz do projeto
-make test-postgres       # 197 testes — api-postgres
+make test-postgres       # 216 testes — api-postgres
 make test-sqlserver      # 17 testes — api-sqlserver
 make test-shared         # 26 testes — RBAC shared
 make test-root           # 24 testes de integração do monorepo

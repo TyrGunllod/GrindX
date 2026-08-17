@@ -25,8 +25,8 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 ### Frontend
 
 - **Portal Modular (porta 8101):** Shell que gerencia navegação e carrega módulos via iframe isolado. **PWA-ready** (service worker, manifest com ícones 192x192 e 512x512, `display: standalone`). Preparado para reverse proxy (nginx) com same-origin API, CSP estático e HTTPS.
-- **Módulos:** `admin-skins`, `admins`, `home`, `importer`, `profile`, `structure`, `users` — cada um é standalone e testável independentemente.
-- **Inatividade:** `shared/inactivity.js` — sistema de inatividade com logout automático.
+- **Módulos:** `admin-skins`, `admins`, `auditoria`, `home`, `importer`, `profile`, `structure`, `users` — cada um é standalone e testável independentemente.
+- **Inatividade:** `shared/inactivity.js` — sistema de inatividade com logout automático; `shared/serverLogout.js` notifica a API no logout manual e por inatividade (`POST /v1/auth/logout`).
 - **Design System:** Glassmorphism + tokens CSS + `UIFactory` para consistência absoluta.
 
 ---
@@ -180,11 +180,12 @@ GrindX/
 │   │   │   ├── modules/       # Modelos por schema (iam, portal, org)
 │   │   │   ├── models/        # Re-export shims (compatibilidade)
 │   │   │   ├── repositories/
-│   │   │   ├── routers/       # auth, health, portal, proxies, theme, usuario, import
+│   │   │   ├── routers/       # auth, health, portal, proxies, theme, usuario, import, audit
 │   │   │   ├── schemas/
 │   │   │   └── services/      # email, theme, usuario
-│   │   ├── alembic/           # 21 migrações do banco
-│   │   ├── tests/             # 197 testes
+│   │   ├── audit/             # Auditoria de alterações e sessões (models, service, listeners, router)
+│   │   ├── alembic/           # 22 migrações do banco
+│   │   ├── tests/             # 216 testes
 │   │   └── ...
 │   ├── api-sqlserver/         # API somente leitura (SQL Server)
 │   │   ├── app/
@@ -198,7 +199,7 @@ GrindX/
 │   └── frontend-webapp/       # Portal Frontend
 │       ├── index.html         # Login
 │       ├── dashboard.html     # Shell principal
-│       ├── modules/           # admin-skins, admins, home, importer, profile, structure, users
+│       ├── modules/           # admin-skins, admins, auditoria, home, importer, profile, structure, users
 │       └── shared/            # Design System + Core Framework
 ├── packages/
 │   └── shared/                # Pacote Python compartilhado

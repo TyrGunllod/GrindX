@@ -1,4 +1,4 @@
-<!-- title: API Reference — GrindX | updated: 2026-08-14 -->
+<!-- title: API Reference — GrindX | updated: 2026-08-17 -->
 
 # API Reference — GrindX
 
@@ -102,6 +102,14 @@ Altera a senha do usuário autenticado. Requer auth.
 ```
 
 **Response 200:** `{ "message": "Senha alterada com sucesso" }`
+
+### `POST /v1/auth/logout`
+
+Encerra a sessão do usuário autenticado. Fecha a sessão aberta mais recente do usuário, gravando `logout_at`, `duracao_segundos` e motivo `logout`. Requer auth.
+
+**Response 200:** `{ "message": "Sessão encerrada." }`
+
+O frontend chama esse endpoint (fire-and-forget, tolerante a falha) no logout manual e no logout por inatividade — ver `shared/serverLogout.js`.
 
 ### `POST /v1/auth/forgot-password`
 
@@ -459,6 +467,75 @@ Cria um tema a partir de um template existente.
 ```
 
 **Response 201:** Objeto do tema criado.
+
+---
+
+## Auditoria
+
+Endpoints de auditoria de alterações no banco e de tempo de uso (sessões). Requerem perfil `admin`. Somente leitura.
+
+**Como funciona:** toda escrita em banco (INSERT/UPDATE/DELETE) é auditada automaticamente via listener SQLAlchemy `before_flush` (`app/audit/listeners.py`) — grava `user_id`, entidade, ação e nomes dos campos alterados na mesma transação. Entidades excluídas da auto-auditoria: `audit_logs`, `sessoes` e `theme_history`. O contexto do request (usuário + IP) é propagado via `ContextVar` pelo middleware `app/middleware/audit_context.py`.
+
+### `GET /v1/audit/logs`
+
+Lista os logs de alterações no banco, mais recentes primeiro. Requer `admin`.
+
+**Query params:** `page` (default 1), `page_size` (default 20, máx 100)
+
+**Response 200:**
+
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "entidade": "CompanyTheme",
+      "entidade_id": 2,
+      "acao": "UPDATE",
+      "campos_alterados": ["name", "is_active"],
+      "ip": "127.0.0.1",
+      "criado_em": "2026-08-17T10:00:00Z"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "page_size": 20,
+  "total_pages": 1
+}
+```
+
+> `campos_alterados` guarda apenas os **nomes** dos campos alterados (sem valores). `acao` é `INSERT`, `UPDATE` ou `DELETE`.
+
+### `GET /v1/audit/sessoes`
+
+Lista os logins/logouts dos usuários (tempo de uso), mais recentes primeiro. Requer `admin`.
+
+**Query params:** `page` (default 1), `page_size` (default 20, máx 100)
+
+**Response 200:**
+
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "login_at": "2026-08-17T09:00:00Z",
+      "logout_at": "2026-08-17T10:30:00Z",
+      "duracao_segundos": 5400,
+      "ip": "127.0.0.1",
+      "logout_motivo": "logout"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "page_size": 20,
+  "total_pages": 1
+}
+```
+
+> `logout_motivo` é `logout` (manual), `inativo` (timeout de inatividade) ou `expirado` (reservado para fechamento forçado). Sessões sem `logout_at` estão abertas. Uma sessão é aberta a cada login em `POST /v1/auth/token`.
 
 ---
 

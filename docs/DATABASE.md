@@ -1,4 +1,4 @@
-<!-- title: Banco de Dados — GrindX | updated: 2026-08-14 -->
+<!-- title: Banco de Dados — GrindX | updated: 2026-08-17 -->
 
 # Banco de Dados — GrindX
 
@@ -47,6 +47,8 @@ app/modules/
         ├── theme.py      # CompanyTheme
         └── theme_history.py  # ThemeHistory
 ```
+
+Os modelos de auditoria (`AuditLog`, `Sessao`) ficam em `app/audit/models.py`, também usando `OrgBase` (schema `org`).
 
 Os arquivos em `app/models/*.py` foram mantidos como **re-export shims** para compatibilidade com código existente (repositories, routers, seed).
 
@@ -193,6 +195,41 @@ Histórico de alterações de tema para auditoria.
 
 > Apenas `theme_id` possui Foreign Key. `company_id` e `performed_by` são colunas `Integer` comuns, sem FK — a integridade referencial é responsabilidade da aplicação.
 
+### Schema `org` — AuditLog
+
+Auditoria automática de alterações no banco. A cada INSERT/UPDATE/DELETE via ORM, o listener `before_flush` (`app/audit/listeners.py`) grava uma linha na **mesma transação**, com o contexto do request (usuário + IP) propagado via `ContextVar`.
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | Integer PK | Identificador |
+| `user_id` | Integer FK → `iam.usuarios.id` (ondelete CASCADE, nullable) | Usuário que executou a ação |
+| `entidade` | String(100) | Nome da classe/entidade alterada |
+| `entidade_id` | Integer (nullable) | ID da linha alterada |
+| `acao` | String(20) | `INSERT`, `UPDATE` ou `DELETE` |
+| `campos_alterados` | JSON | Nomes dos campos alterados (sem valores) |
+| `ip` | String(45) (nullable) | IP do request (IPv4 ou IPv6) |
+| `criado_em` | DateTime(tz) | Data da alteração |
+
+Índices: `ix_audit_logs_user_id`, `ix_audit_logs_criado_em`, `ix_audit_logs_entidade_id` (composto `entidade` + `entidade_id`).
+
+> Entidades **excluídas** da auto-auditoria: `audit_logs`, `sessoes` e `theme_history` (este último já tem histórico próprio).
+
+### Schema `org` — Sessao
+
+Rastreamento de tempo de uso (login/logout por usuário). Uma linha é criada a cada login em `POST /v1/auth/token`; o logout (`POST /v1/auth/logout` ou inatividade) fecha a sessão aberta mais recente.
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | Integer PK | Identificador |
+| `user_id` | Integer FK → `iam.usuarios.id` (ondelete CASCADE) | Usuário da sessão |
+| `login_at` | DateTime(tz) | Entrada |
+| `logout_at` | DateTime(tz) (nullable) | Saída (null = sessão aberta) |
+| `duracao_segundos` | Integer (nullable) | Preenchido no logout |
+| `ip` | String(45) (nullable) | IP do login |
+| `logout_motivo` | String(20) (nullable) | `logout` (manual), `inativo` (timeout) ou `expirado` (reservado) |
+
+Índices: `ix_sessoes_user_id`, `ix_sessoes_login_at`.
+
 ### Schema `org` — Projeto, Recurso, Tarefa, RegistroTarefa
 
 Tabelas criadas pela migration `007_add_org_schema_tables` para gestão de projetos. **Não possuem model class** — existem apenas no banco via SQL puro na migração.
@@ -266,6 +303,7 @@ As migrações ficam em `apps/api-postgres/alembic/versions/`.
 | `019_add_bairro_cidade_uf_fields` | Adiciona `bairro`, `cidade`, `uf` em `usuarios` |
 | `020_encrypt_sensitive_user_fields` | Criptografa `cpf`, `rg`, `salario`, `endereco`, `telefone`, `celular` e altera para `String(255)` |
 | `021_add_aprovador_to_usuarios` | Adiciona `aprovador` em `usuarios` |
+| `022_add_audit_tables` | Cria `org.audit_logs` e `org.sessoes` para auditoria de alterações e tempo de uso |
 
 ---
 
@@ -282,7 +320,7 @@ Cria (idempotente):
 - Usuário `admin` / `admin123` (e-mail `admin@erp.com.br`) com role `admin` — vinculado à GrindX
 - Skin "Padrão GrindX" com `layout_mode` `topbar`
 - Abas: `Principal` (ordem 0), `R. HUMANOS` (ordem 50) e `Gestão` (ordem 100)
-- Módulos: `Dashboard` (home), `Usuários` (users), `Administradores` (admins, role admin), `Módulos & Abas` (structure), `Skins` (admin-skins), `Importar Módulos` (importer)
+- Módulos: `Dashboard` (home), `Usuários` (users), `Administradores` (admins, role admin), `Módulos & Abas` (structure), `Skins` (admin-skins), `Importar Módulos` (importer), `Auditoria` (auditoria, role admin)
 
 ---
 
