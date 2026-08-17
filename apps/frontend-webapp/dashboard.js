@@ -309,6 +309,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
 
                 this.topbarNav.querySelectorAll('.nav-dropdown-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
+                document.body.dataset.activeModule = item.dataset.module || '';
 
                 this.topbarNav.querySelectorAll('.nav-group-topbar').forEach(g => g.classList.remove('has-active'));
                 item.closest('.nav-group-topbar')?.classList.add('has-active');
@@ -422,6 +423,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         e.preventDefault();
         this.mainNav.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         link.classList.add('active');
+        document.body.dataset.activeModule = link.dataset.module || '';
 
         // Atualizar título no topo
         const moduleName = link.querySelector('span').textContent;
@@ -700,6 +702,7 @@ class DashboardController extends window.grindx.controllers.BaseController {
         viewport.innerHTML = '';
         viewport.appendChild(iframe);
         document.getElementById('activeModuleTitle').textContent = 'Meu Perfil';
+        document.body.dataset.activeModule = 'profile';
         iframe.addEventListener('load', () => {
             this.showLoader(false);
             this.applySkinToIframe(iframe);
