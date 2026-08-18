@@ -324,7 +324,9 @@ Use templates:
 - `h1` e o badge `viz-version` ficam lado a lado dentro de `.page-header-container`
 - A descrição (`{menu_description}`) fica abaixo do container, dentro do mesmo `<div>`
 - A área de botões usa `class="actions-group"` com `style="margin-top: var(--space-4);"` — nunca `header-actions` (não existe no monorepo)
-- `.page-header-container` é definido no `core.css` e usa `justify-content: space-between` (badge sempre à direita, responsivo, sem `gap` fixo); não duplicar no style.css do módulo
+- `.page-header-container` é definido no `core.css` e usa `justify-content: space-between` (h1 à esquerda, badge à direita), `width: 100%` e `gap: var(--space-3, 0.75rem)` — responsivo, sem `gap` fixo; não duplicar no style.css do módulo
+- `.viz-version` também é definido no `core.css` com `white-space: nowrap` — o número da versão nunca quebra internamente e o badge permanece visível quando a página é reduzida
+- Como `.page-header` usa `flex-direction: column; align-items: flex-start`, o primeiro `<div>` filho precisa de `width: 100%` (regra `.page-header > div { width: 100%; }` no `style.css`) para o `.page-header-container` ocupar a largura total e o badge ir ao **extremo direito**
 
 **Regras HTML:**
 - HTML5 semântico, zero dependências externas (sem CDN, sem bibliotecas)
@@ -504,7 +506,7 @@ pytest tests/ -k {module_name} -v
 - [ ] Migration: Alembic migration file (PostgreSQL)
 - [ ] Support: requirements.txt (com python-dotenv), pytest.ini, run_tests.ps1, Makefile (com dev-backend/dev-frontend)
 - [ ] Versionamento: `scripts/version.py` + targets `version`/`version-dry-run` no Makefile
-- [ ] Badge de versão: `version.js` na raiz de cada aba frontend, `<span id="viz-version">` no header, `setBadgeVersao()` em `script.js`, `.viz-version` em `style.css`
+- [ ] Badge de versão: `version.js` na raiz de cada aba frontend, `<span id="viz-version">` no header, `setBadgeVersao()` em `script.js` (`.viz-version` e `.page-header-container` vêm do `core.css` — não duplicar no `style.css`)
 - [ ] `AGENTS.md` criado na raiz do modulo com regras para agentes de IA
 - [ ] `AGENTS.md` documenta o fluxo de release em duas etapas (`--no-tag` → commit → `git tag vX.Y.Z`)
 - [ ] Testes passam: `pytest app/modules/{module_name}/tests/ -v`
