@@ -2,10 +2,10 @@
 # GrindX — Makefile Unificado (Win/Linux)
 # ==========================================
 
-.PHONY: venv build up down logs images \
-        dev-postgres dev-sqlserver dev-frontend dev-https dev-all dev-kill-port dev-external \
+.PHONY: venv venv-agente build up down logs images \
+        dev-postgres dev-sqlserver dev-frontend dev-agente dev-https dev-all dev-kill-port dev-external \
         migrate seed \
-        test-postgres test-sqlserver test-shared test-root test-all \
+        test-postgres test-sqlserver test-shared test-root test-agente test-all \
         lint format clean volumes deploy
 
 # ==========================================
@@ -62,6 +62,10 @@ else
 	$(PY) -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0
 endif
 
+dev-agente:
+	@echo "Iniciando Agente IA na porta 8003..."
+	cd apps/agente-ia && $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8003
+
 dev-https:
 ifeq ($(OS),Windows_NT)
 	@echo "Iniciando servidores com HTTPS..."
@@ -77,6 +81,7 @@ ifeq ($(OS),Windows_NT)
 	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/api-postgres; $$env:PYTHONPATH=(Get-Item ..\..\packages).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002'"
 	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/api-sqlserver; $$env:PYTHONPATH=(Get-Item ..\..\packages).FullName; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001'"
 	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd $(CURDIR); $(PY) -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0'"
+	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/agente-ia; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8003'"
 	@echo "Acesse: http://localhost:8101"
 else
 	@echo "Subindo todos os servicos GrindX..."
@@ -84,6 +89,7 @@ else
 	@echo "  make dev-postgres"
 	@echo "  make dev-sqlserver"
 	@echo "  make dev-frontend"
+	@echo "  make dev-agente"
 	@echo "Acesse: http://localhost:8101"
 endif
 
@@ -118,6 +124,12 @@ venv:
 	cd apps/api-sqlserver && $(VENV_PY) -m pip install -r requirements.txt
 	@echo "Venus criados com sucesso!"
 
+venv-agente:
+	@echo "=== Criando venv para agente-ia ==="
+	cd apps/agente-ia && $(PY) -m venv .venv
+	cd apps/agente-ia && $(VENV_PY) -m pip install --upgrade pip
+	cd apps/agente-ia && $(VENV_PY) -m pip install -r requirements-dev.txt
+
 # ==========================================
 # Banco de Dados
 # ==========================================
@@ -150,7 +162,11 @@ test-root:
 	@echo "Executando testes da raiz do monorepo..."
 	$(PP_ROOT) $(VENV_PY) -m pytest tests/ -v --tb=short
 
-test-all: test-postgres test-sqlserver test-shared test-root
+test-agente:
+	@echo "Executando testes do Agente IA..."
+	cd apps/agente-ia && $(VENV_PY) -m pytest tests/ -v --tb=short
+
+test-all: test-postgres test-sqlserver test-shared test-root test-agente
 
 # ==========================================
 # Lint e Formatação

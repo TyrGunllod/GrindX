@@ -34,14 +34,17 @@ Estas regras causam falha de CI, bug sutil ou retrabalho quando ignoradas. Revis
 
 ```powershell
 make venv              # cria .venv e instala requirements das duas APIs
+make venv-agente       # cria .venv do agente-ia e instala deps (torch incluso)
 make dev-postgres      # uvicorn porta 8002 (Win: scripts/dev-postgres.ps1)
 make dev-sqlserver     # uvicorn porta 8001 (Win: scripts/dev-sqlserver.ps1)
 make dev-frontend      # http.server porta 8101 (Win: scripts/dev-frontend.ps1)
+make dev-agente        # uvicorn porta 8003 (agente de IA / RAG)
 make dev-all           # todos (terminais separados via pwsh no Windows)
 make dev-kill-port     # Win: remove portproxy rules nas portas dev (req admin)
 make migrate           # alembic upgrade head
 make seed              # popula dados iniciais
 make test-all          # pytest de todas as APIs + shared + raiz
+make test-agente       # pytest do agente-ia
 make lint              # ruff check --fix . && ruff check .
 make format            # ruff format packages/ apps/
 make build             # podman-compose build
