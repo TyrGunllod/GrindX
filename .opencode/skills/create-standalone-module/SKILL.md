@@ -440,6 +440,8 @@ Use template: `templates/sqlserver/module.json` (inclui `target_api: "sqlserver"
 Use template: `templates/shared/export.py`
 Substitua `{module_name}`, `{entity_name}`.
 
+**Nomenclatura do zip** — o `package()` nomeia o zip com a versão lida do `module.json`: `dist/modulo-{pasta_do_modulo}-v{version}.zip` (ex: `modulo-pop_docs-v1.0.0.zip`); sem versão no manifest → `modulo-{pasta_do_modulo}.zip`. Mesmo padrão do `pop_docs` (`_zip_filename`). A importação no GrindX usa o `module_name` do manifest (o fallback fuzzy `*{module_name}*.zip` aceita o nome com versão).
+
 ### Adaptação para `target_api`
 
 | Configuração | `postgres` (padrão) | `sqlserver` |
