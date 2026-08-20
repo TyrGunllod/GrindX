@@ -146,7 +146,7 @@ Módulos read-only (consultas a tabelas do Protheus) usam `target_api: "sqlserve
 - Router registrado no `main.py` do api-sqlserver
 - Migration, dependency factory e alembic import são **pulados**
 - `target_api` pode ser sobrescrito via CLI: `--target-api=sqlserver`
-- `frontend/shared/` é ignorado durante a cópia (já existe no monorepo)
+- O fallback `shared/` (frontend + Python) vive na raiz do módulo standalone e é **excluído no export** e **ignorado durante a cópia** (o monorepo tem os `shared` padrão)
 - `python scripts/import_module.py {nome} --import-dir={tmp} --target-api=sqlserver` (executado a partir de `apps/api-postgres/`, onde está `scripts/import_module.py`)
 
 ### Módulos frontend-only
