@@ -467,7 +467,7 @@ td strong {
         max-height: 95vh;
     }
 
-    #userModal .modal-scroll {
+    #userModal .modal-content {
         padding: 0;
     }
 
