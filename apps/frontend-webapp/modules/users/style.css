@@ -121,21 +121,6 @@ td strong {
 /* ==========================================
    PERMISSIONS MODAL
    ========================================== */
-#permissoesModal .modal-card {
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-}
-
-#permissoesModal #permissoesContent {
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
-}
-
-#permissoesModal .modal-footer {
-    flex-shrink: 0;
-}
 .perm-container {
     display: flex;
     flex-direction: column;
@@ -287,21 +272,13 @@ td strong {
 /* ==========================================
    USER FORM MODAL (Profile Card Layout)
    ========================================== */
-#userModal .modal-card-wide {
-    max-width: 720px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
+@media (min-width: 768px) {
+    #userModal .modal-card-wide {
+        max-width: 720px;
+    }
 }
 
-#userModal .modal-scroll {
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
-    padding: 0;
-}
-
-#userModal .modal-scroll .profile-card {
+#userModal .modal-content .profile-card {
     padding: 20px 24px;
     border-radius: 0;
     border-left: none;
@@ -310,7 +287,7 @@ td strong {
     background: transparent;
 }
 
-#userModal .modal-scroll .profile-card h2 {
+#userModal .modal-content .profile-card h2 {
     font-size: 1.05rem;
     margin: 0 0 18px;
     color: var(--text-main);
@@ -319,12 +296,12 @@ td strong {
     gap: 8px;
 }
 
-#userModal .modal-scroll .profile-card h2 i {
+#userModal .modal-content .profile-card h2 i {
     color: var(--primary);
     font-size: 1.15rem;
 }
 
-#userModal .modal-scroll .field-divider {
+#userModal .modal-content .field-divider {
     margin: 16px 0;
     border: none;
     border-top: 1px solid var(--border-color);
