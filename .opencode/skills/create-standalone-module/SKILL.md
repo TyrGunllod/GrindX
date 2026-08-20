@@ -24,7 +24,7 @@ Antes dos parâmetros do módulo, **sempre pergunte qual padrão de frontend e b
 - Se escolher **(A2)**, mesmo frontend, SQL Server com raw SQL (sem ORM/Alembic). Exporta para `api-sqlserver`.
 - Se escolher **(B)**, pergunte detalhadamente e adapte os templates.
 
-> **Pasta `shared` do frontend**: o módulo referencia `/shared/core.css`, `/shared/config.js` e `/shared/app.js` (caminho absoluto a partir da raiz da webapp). No GrindX isso usa a **`shared` padrão**; a pasta `shared/` dentro do frontend é **apenas fallback standalone** (para `make dev-frontend`) e **não é copiada** no export/package. O `version.js` é específico do módulo e fica na **raiz** de cada frontend (carregado como `version.js`).
+> **Pasta `shared` na raiz do módulo**: o módulo referencia `/shared/core.css`, `/shared/config.js` e `/shared/app.js` (caminho absoluto a partir da raiz da webapp). No GrindX isso usa a **`shared` padrão** (`apps/frontend-webapp/shared/`); no **standalone**, o fallback (`core.css`, `config.js`, `app.js`) vive na pasta **`shared/` da raiz do módulo**, **coexistindo** com o pacote Python (`__init__.py`, `exceptions/`, `schemas/`). Toda a pasta `shared/` é **apenas fallback standalone** — o `export.py` a exclui do zip e o `make dev-frontend` serve a **raiz do módulo** (não a pasta de cada aba). O `version.js` é específico do módulo e fica na **raiz** de cada frontend (carregado como `version.js`).
 
 ## Parameter Questionnaire
 
@@ -126,6 +126,7 @@ Project_Management/modulo-{module_name}/
 │           └── README.md
 ├── shared/
 │   ├── __init__.py
+│   ├── core.css, config.js, app.js             # Fallback frontend (raiz) — Templates/shared/standalone/shared/*
 │   ├── exceptions/
 │   │   ├── __init__.py
 │   │   └── base.py                             # Templates/shared/standalone/shared_exceptions.py
@@ -136,10 +137,7 @@ Project_Management/modulo-{module_name}/
 │   ├── {frontend_prefix}_{tab1}/
 │   │   ├── index.html, script.js, style.css    # Templates/shared/frontend/*
 │   │   ├── version.js                           # Templates/shared/frontend/version.js (raiz do frontend)
-│   │   ├── shared/                              # fallback APENAS standalone — NÃO copiado no export/package
-│   │   │   ├── core.css                         # Templates/shared/frontend/shared/core.css
-│   │   │   └── app.js                           # Templates/shared/frontend/shared/app.js
-│   │   └── (style.css importa /shared/core.css)
+│   │   └── (style.css importa /shared/core.css — shared na raiz do módulo)
 │   └── ...
 ├── scripts/
 │   └── version.py                               # Templates/shared/scripts/version.py
@@ -196,11 +194,16 @@ Template com `DATABASE_URL`. Substitua `{module_name}` no nome do banco.
 ### `.gitignore` → `templates/shared/standalone/gitignore`
 Exclui `__pycache__/`, `.env`, `.pytest_cache/`, `dist/`, `*.db`, IDEs.
 
-### `frontend/shared/core.css` → `templates/shared/frontend/shared/core.css`
-Variáveis CSS (`--primary`, `--bg-card`, `--border-color`, etc.) para standalone sem o monorepo. **Apenas fallback standalone** — no GrindX o módulo usa a `shared` padrão em `/shared/core.css` e a `shared/` do módulo **não é copiada** no export.
+### `shared/core.css` → `templates/shared/standalone/shared/core.css`
+Variáveis CSS (`--primary`, `--bg-card`, `--border-color`, etc.) + padrão de modal (header/footer fixos, `.modal-content`, bottom-sheet mobile) para standalone sem o monorepo. **Apenas fallback standalone** — no GrindX o módulo usa a `shared` padrão em `/shared/core.css` e a `shared/` da raiz do módulo **não é copiada** no export.
 
-### `frontend/shared/app.js` → `templates/shared/frontend/shared/app.js`
-Stub vazio — no GrindX fornece `window.grindx.session`, no standalone é vazio. **Apenas fallback standalone**, não é copiada no export.
+### `shared/config.js` → `templates/shared/standalone/shared/config.js`
+Define `window.GRINDX_CONFIG.API_BASE_URL` para standalone. **Apenas fallback standalone**, não é copiado no export.
+
+### `shared/app.js` → `templates/shared/standalone/shared/app.js`
+Stub vazio — no GrindX fornece `window.grindx.session`, no standalone é vazio. **Apenas fallback standalone**, não é copiado no export.
+
+> **Atenção `make dev-frontend`:** serve a **raiz do módulo** (não a pasta de cada aba), pois `/shared/...` resolve para `{module_root}/shared/`. Isso expõe o código Python do backend via HTTP — aceitável em ambiente de desenvolvimento standalone.
 
 **Fluxo de import no router (dual-context):**
 - GrindX: `app.database.get_db` + `app.auth.dependencies.get_current_user`
@@ -296,7 +299,7 @@ Use template: `templates/shared/frontend/style.css`
 - Usar exclusivamente `var(--...)` para cores, fontes, espaçamentos — nunca cores fixas
 - CSS base = mobile; `@media (min-width: 768px)` para desktop
 - Tabelas viram cards no mobile: use `data-label` nos `<td>` para `::before`
-- Modal usa `modal-overlay` + `modal-card` (NÃO `<dialog>` nativo)
+- Modal usa `modal-overlay` + `modal-card` (NÃO `<dialog>` nativo); elemento central com `class="modal-content"` (header/footer fixos, scroll só no meio — layout vem do `core.css`)
 - Testar visualmente com pelo menos 2 skins antes de exportar
 
 ### 3.2 `index.html` e `script.js`
@@ -352,8 +355,8 @@ Use templates:
       <h3 id="modal-title">Título</h3>
       <button class="btn-icon" id="close-modal" aria-label="Fechar">&times;</button>
     </header>
-    <form id="form-id" class="grid grid-md-2">
-      <!-- campos do formulário -->
+    <form id="form-id" class="modal-content grid grid-md-2">
+      <!-- campos do formulário — container central, scroll próprio -->
     </form>
     <footer class="modal-footer flex justify-end gap-2">
       <button type="button" class="btn" id="btn-cancel">Cancelar</button>
@@ -362,6 +365,8 @@ Use templates:
   </div>
 </div>
 ```
+
+> **Padrão de modal (obrigatório):** o elemento central (form, lista, div) recebe a classe `modal-content`. O `core.css` cuida do layout — `.modal-card` flex column, header/footer com `flex-shrink:0` (nunca somem), `.modal-content` com scroll próprio (`overflow-y:auto`), e bottom-sheet full-width em `<768px`. **Não duplicar** `max-height`/`overflow` no `style.css` do módulo; apenas `max-width`/padding específicos, em media query `@media (min-width: 768px)`.
 
 **Regras JS:**
 - NUNCA importar bibliotecas externas (React, Vue, jQuery, Axios)
