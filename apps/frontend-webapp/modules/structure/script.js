@@ -519,7 +519,7 @@ class StructureController extends window.grindx.controllers.BaseController {
                     <h3>Selecionar Módulo</h3>
                     <input type="text" id="pickerSearch" class="form-control" placeholder="Buscar módulo..." style="max-width: 260px;">
                 </header>
-                <div id="pickerList" class="picker-list"></div>
+                <div id="pickerList" class="picker-list modal-content"></div>
                 <footer class="modal-footer flex justify-end gap-2 mt-4">
                     <button class="btn btn-secondary" id="btnCancelPicker">Cancelar</button>
                 </footer>
