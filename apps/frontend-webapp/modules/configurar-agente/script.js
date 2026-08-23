@@ -27,20 +27,14 @@ class ConfigurarAgenteController extends window.grindx.controllers.BaseControlle
     async loadModules() {
         const select = document.getElementById('moduleSelect');
         try {
-            const menu = await window.grindx.api.get('/portal/menu');
+            const modules = await window.grindx.api.get('/portal/modules/available');
             select.innerHTML = '<option value="">Selecione o módulo...</option>';
-            const seen = new Set();
-            const addOption = (m) => {
-                if (!m || !m.slug || seen.has(m.slug)) return;
-                seen.add(m.slug);
+            (modules || []).forEach((m) => {
+                if (!m || !m.slug) return;
                 const opt = document.createElement('option');
                 opt.value = m.slug;
                 opt.textContent = m.nome;
                 select.appendChild(opt);
-            };
-            (menu || []).forEach((aba) => {
-                (aba.modulos || []).forEach(addOption);
-                (aba.children || []).forEach((child) => (child.modulos || []).forEach(addOption));
             });
         } catch (e) {
             select.innerHTML = '<option value="">Erro ao carregar módulos</option>';
