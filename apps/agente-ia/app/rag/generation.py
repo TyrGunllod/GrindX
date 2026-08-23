@@ -1,10 +1,15 @@
 """Geração de respostas com o LLM (via OpenCode Zen)."""
 
+import time
+
 import httpx
 
 from app.core.config import settings
 from app.core.exceptions import GenerationError
 from app.rag.types import ChunkResult
+
+_MAX_RETRIES = 3
+_RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
 SYSTEM_PROMPT = (
     "Você é o assistente de manual do ERP GrindX. "
@@ -25,6 +30,33 @@ def build_context(chunks: list[ChunkResult]) -> str:
     )
 
 
+def _post_with_retry(url: str, payload: dict, headers: dict, timeout: int):
+    """Faz a chamada HTTP com retentativas em erros transitórios (429/5xx)."""
+    last_status = None
+    last_error: Exception | None = None
+    for attempt in range(_MAX_RETRIES):
+        try:
+            response = httpx.post(url, json=payload, headers=headers, timeout=timeout)
+            last_status = response.status_code
+            if response.status_code in _RETRYABLE_STATUS and attempt < _MAX_RETRIES - 1:
+                time.sleep(2**attempt)
+                continue
+            response.raise_for_status()
+            return response
+        except httpx.HTTPError as exc:
+            last_error = exc
+            if attempt < _MAX_RETRIES - 1:
+                time.sleep(2**attempt)
+                continue
+            break
+
+    if last_status == 429:
+        raise GenerationError(
+            "Limite de requisições atingido (429). Aguarde alguns instantes e tente novamente."
+        )
+    raise GenerationError(str(last_error) if last_error else "Falha ao gerar resposta.")
+
+
 def generate(
     question: str,
     chunks: list[ChunkResult],
@@ -33,7 +65,7 @@ def generate(
     model: str | None = None,
     timeout: int | None = None,
 ) -> str:
-    """Gera a resposta via DeepSeek com base no contexto recuperado."""
+    """Gera a resposta via LLM com base no contexto recuperado."""
     if not chunks:
         return FALLBACK_ANSWER
 
@@ -56,16 +88,11 @@ def generate(
     }
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
 
-    try:
-        response = httpx.post(
-            f"{base_url}/chat/completions",
-            json=payload,
-            headers=headers,
-            timeout=timeout,
-        )
-        response.raise_for_status()
-    except httpx.HTTPError as exc:
-        raise GenerationError(str(exc)) from exc
-
+    response = _post_with_retry(
+        f"{base_url}/chat/completions",
+        payload,
+        headers,
+        timeout,
+    )
     data = response.json()
     return data["choices"][0]["message"]["content"].strip()

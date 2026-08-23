@@ -27,6 +27,8 @@ def test_build_context_formats_sources():
 
 def test_generate_calls_llm_api(monkeypatch):
     class FakeResponse:
+        status_code = 200
+
         def raise_for_status(self):
             return None
 
@@ -47,3 +49,37 @@ def test_generate_calls_llm_api(monkeypatch):
         timeout=10,
     )
     assert answer == "Resposta de teste"
+
+
+def test_generate_retries_on_429(monkeypatch):
+    calls = {"count": 0}
+
+    class RateLimitResponse:
+        status_code = 429
+
+    class SuccessResponse:
+        status_code = 200
+
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"choices": [{"message": {"content": "OK"}}]}
+
+    def fake_post(url, json=None, headers=None, timeout=None):
+        calls["count"] += 1
+        return RateLimitResponse() if calls["count"] == 1 else SuccessResponse()
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    monkeypatch.setattr(generation.time, "sleep", lambda s: None)
+
+    answer = generation.generate(
+        "pergunta",
+        [_chunk()],
+        api_key="key",
+        base_url="https://opencode.ai/zen/v1",
+        model="big-pickle",
+        timeout=10,
+    )
+    assert answer == "OK"
+    assert calls["count"] == 2

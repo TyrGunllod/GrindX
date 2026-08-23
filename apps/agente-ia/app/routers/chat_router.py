@@ -3,7 +3,7 @@
 import structlog
 from fastapi import APIRouter, HTTPException
 
-from app.core.exceptions import AgenteError
+from app.core.exceptions import AgenteError, GenerationError
 from app.core.logging import log_interaction
 from app.rag import embeddings, generation, retrieval, vectorstore
 from app.schemas import ChatRequest, ChatResponse, Source
@@ -23,6 +23,9 @@ def chat(request: ChatRequest) -> ChatResponse:
             search_fn=vectorstore.search,
         )
         answer = generation.generate(request.question, result.chunks)
+    except GenerationError as exc:
+        logger.error("Falha na geração da resposta", error=str(exc))
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     except AgenteError as exc:
         logger.error("Falha no pipeline do agente", error=str(exc))
         raise HTTPException(
