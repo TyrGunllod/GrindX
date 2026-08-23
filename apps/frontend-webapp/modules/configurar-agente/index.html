@@ -32,19 +32,23 @@
             </div>
 
             <div class="form-group">
-                <label for="fileInput">Arquivos de manual (.md ou .txt) — pode selecionar vários</label>
-                <input type="file" id="fileInput" class="form-control" accept=".md,.txt,text/markdown,text/plain" multiple>
-                <ul id="fileList" class="file-list"></ul>
+                <label for="filenameInput">Nome do manual (arquivo)</label>
+                <input type="text" id="filenameInput" class="form-control" placeholder="ex.: users.md">
             </div>
 
             <div class="form-group">
-                <label for="manualText">Ou cole o conteúdo do manual (para inserir um individual)</label>
-                <textarea id="manualText" class="form-control" rows="6" placeholder="Cole aqui o conteúdo em Markdown..."></textarea>
+                <label for="fileInput">Carregar arquivo (.md ou .txt) — opcional</label>
+                <input type="file" id="fileInput" class="form-control" accept=".md,.txt,text/markdown,text/plain">
+            </div>
+
+            <div class="form-group">
+                <label for="manualText">Conteúdo do manual</label>
+                <textarea id="manualText" class="form-control" rows="10" placeholder="Cole aqui o conteúdo em Markdown..."></textarea>
             </div>
 
             <div class="form-actions">
                 <button class="btn btn-primary" id="importBtn">
-                    <i class="fas fa-cloud-upload-alt"></i> Importar manuais
+                    <i class="fas fa-cloud-upload-alt"></i> Importar manual
                 </button>
             </div>
         </div>

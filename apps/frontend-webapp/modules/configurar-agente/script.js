@@ -21,8 +21,8 @@ class ConfigurarAgenteController extends window.grindx.controllers.BaseControlle
     }
 
     bindEvents() {
-        document.getElementById('importBtn').addEventListener('click', () => this.importManuais());
-        document.getElementById('fileInput').addEventListener('change', (e) => this.updateFileList(e));
+        document.getElementById('importBtn').addEventListener('click', () => this.importManual());
+        document.getElementById('fileInput').addEventListener('change', (e) => this.loadFileIntoForm(e));
     }
 
     async loadModules() {
@@ -49,48 +49,35 @@ class ConfigurarAgenteController extends window.grindx.controllers.BaseControlle
         }
     }
 
-    updateFileList(e) {
-        const list = document.getElementById('fileList');
-        const files = Array.from(e.target.files || []);
-        list.innerHTML = '';
-        files.forEach((f) => {
-            const li = document.createElement('li');
-            li.textContent = f.name;
-            list.appendChild(li);
-        });
+    async loadFileIntoForm(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const content = await this.readFile(file);
+        document.getElementById('filenameInput').value = file.name;
+        document.getElementById('manualText').value = content;
     }
 
-    async importManuais() {
+    async importManual() {
         const module = document.getElementById('moduleSelect').value;
-        const files = Array.from(document.getElementById('fileInput').files || []);
-        const textarea = document.getElementById('manualText').value.trim();
+        const filename = document.getElementById('filenameInput').value.trim();
+        const content = document.getElementById('manualText').value.trim();
 
         if (!module) { this.toastWarning('Selecione o módulo do ERP.'); return; }
-        if (!files.length && !textarea) {
-            this.toastWarning('Selecione ao menos um arquivo ou cole o conteúdo do manual.');
-            return;
-        }
-
-        const tasks = [];
-        if (textarea) {
-            tasks.push(this.ingest(module, 'manual-' + module + '.md', textarea));
-        }
-        files.forEach((f) => {
-            tasks.push(this.readFile(f).then((content) => this.ingest(module, f.name, content)));
-        });
+        if (!filename) { this.toastWarning('Informe o nome do manual.'); return; }
+        if (!content) { this.toastWarning('Informe o conteúdo do manual.'); return; }
 
         const btn = document.getElementById('importBtn');
         btn.disabled = true;
         try {
-            const settled = await Promise.allSettled(tasks);
-            const ok = settled.filter((s) => s.status === 'fulfilled').length;
-            const fail = settled.filter((s) => s.status === 'rejected').length;
-            this.toastSuccess(ok + ' manual(is) importado(s)' + (fail ? ', ' + fail + ' falha(s)' : '') + '.');
+            await this.ingest(module, filename, content);
+            this.toastSuccess('Manual "' + filename + '" importado.');
 
             document.getElementById('fileInput').value = '';
+            document.getElementById('filenameInput').value = '';
             document.getElementById('manualText').value = '';
-            document.getElementById('fileList').innerHTML = '';
             await this.loadIndexedManuals();
+        } catch (e) {
+            this.toastError(e);
         } finally {
             btn.disabled = false;
         }
