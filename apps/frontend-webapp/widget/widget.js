@@ -57,9 +57,10 @@
         bubble.className = 'grindx-ai-bubble';
         bubble.setAttribute('aria-hidden', 'true');
         const userName = getUserName();
+        const helpText = ' Eu sou o GrindX, e estou aqui para te ajudar, qualquer dúvida me pergunte!';
         bubble.textContent = userName
-            ? getGreeting() + ', ' + userName + '!'
-            : getGreeting() + '!';
+            ? getGreeting() + ', ' + userName + '!' + helpText
+            : getGreeting() + '!' + helpText;
         document.body.appendChild(bubble);
 
         let bubbleTimer = null;
