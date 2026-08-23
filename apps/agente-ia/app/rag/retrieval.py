@@ -1,4 +1,4 @@
-"""Camada de recuperação RAG: filtro estrito por módulo + fallback global."""
+"""Camada de recuperação RAG: busca restrita ao módulo atual."""
 
 from dataclasses import dataclass, field
 
@@ -26,7 +26,7 @@ def retrieve(
     threshold: float | None = None,
     top_k: int | None = None,
 ) -> RetrievalResult:
-    """Recupera chunks: primeiro filtrado por módulo, depois busca global."""
+    """Recupera chunks apenas do módulo atual (sem busca global)."""
     threshold = threshold if threshold is not None else settings.SIMILARITY_THRESHOLD
     top_k = top_k if top_k is not None else settings.TOP_K
 
@@ -36,8 +36,4 @@ def retrieve(
     if results and results[0].similarity >= threshold:
         return RetrievalResult(chunks=results, used_fallback=False)
 
-    global_results = search_fn(embedding, module=None, k=top_k)
-    if global_results and global_results[0].similarity >= threshold:
-        return RetrievalResult(chunks=global_results, used_fallback=True)
-
-    return RetrievalResult(chunks=[], used_fallback=True)
+    return RetrievalResult(chunks=[], used_fallback=False)

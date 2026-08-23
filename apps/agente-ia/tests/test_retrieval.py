@@ -32,7 +32,7 @@ def test_retrieve_finds_in_module_without_fallback():
     assert result.used_fallback is False
 
 
-def test_retrieve_falls_back_to_global_when_module_misses():
+def test_retrieve_only_searches_current_module():
     calls = []
 
     def embed_fn(texts):
@@ -50,9 +50,8 @@ def test_retrieve_falls_back_to_global_when_module_misses():
         threshold=0.35,
         top_k=3,
     )
-    assert result.has_answer is True
-    assert result.used_fallback is True
-    assert calls == ["estoque", None]
+    assert result.has_answer is False
+    assert calls == ["estoque"]
 
 
 def test_retrieve_returns_no_answer_when_below_threshold():
