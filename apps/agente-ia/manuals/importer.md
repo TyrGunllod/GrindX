@@ -1,64 +1,114 @@
 # Manual do Módulo Importar Módulos
 
-## Acesso ao Módulo
+O módulo **Importar Módulos** permite instalar e atualizar módulos do GrindX a partir de arquivos `.zip`, além de remover módulos já instalados. Nesta tela você encontra duas listas: os módulos **disponíveis para importar** e os módulos **já instalados**.
 
-Ao abrir o módulo **Importar Módulos**, o sistema verifica se você está autenticado. Caso não esteja logado, você é redirecionado para a tela de login. Somente usuários autenticados conseguem utilizar as funcionalidades desta tela.
+---
 
-Na parte superior da página, é exibido o título **Importar Módulos** com a descrição "Instale e atualize módulos via arquivos .zip.".
+## Tela Inicial (Importar Módulos)
 
-## Atualizar Lista de Módulos
+Ao abrir o módulo, você vê o cabeçalho com o título "Importar Módulos", a versão do sistema e duas tabelas principais. A tabela "Disponíveis para Importar" começa vazia, com a mensagem para clicar em **Atualizar**. A tabela "Módulos Instalados" é carregada automaticamente ao entrar na tela.
 
-No topo da página, há o botão **Atualizar** (ícone de seta circular). Ao clicar, o sistema escaneia a pasta de importação do servidor e atualiza as duas tabelas da tela:
+### Botões do cabeçalho
 
-- **Disponíveis para Importar**: módulos encontrados na pasta de importação.
-- **Módulos Instalados**: módulos já instalados no sistema.
+- **Atualizar** (ícone de seta circular) — escaneia a pasta de importação do servidor e atualiza a lista "Disponíveis para Importar" com os módulos encontrados.
 
-Se não houver nenhum módulo disponível, a tabela exibe a mensagem "Nenhum módulo disponível. Coloque um .zip na pasta import/ do servidor.".
+---
 
 ## Disponíveis para Importar
 
-Esta seção lista os módulos que estão na pasta de importação e ainda podem ser instalados ou removidos. A tabela contém as colunas:
+Esta tabela lista os módulos que estão na pasta de importação do servidor e ainda não foram importados (ou que foram importados, mas aparecem para controle). Use o botão **Atualizar** no cabeçalho para carregar esta lista.
 
-- **Módulo**: nome do módulo.
-- **Versão**: versão do módulo.
-- **Schema**: identificador do schema do módulo.
-- **Status**: pode ser **Importado** (badge verde) ou **Novo** (badge cinza/azulado).
-- **Ações**: botão disponível conforme o status do módulo.
+### Colunas e campos
 
-Para cada módulo **Novo**, é exibido o botão **Importar** (ícone de download). Para cada módulo **Importado**, é exibido o botão **Remover** (ícone de lixeira).
+- **Módulo** — nome do módulo disponível.
+- **Versão** — versão do módulo no arquivo `.zip`.
+- **Schema** — nome do banco/schema que o módulo utiliza.
+- **Status** — indica o estado do módulo:
+  - **Importado** (selo verde) — o módulo já foi instalado.
+  - **Novo** (selo azul) — o módulo ainda não foi instalado.
+- **Ações** — botão de ação de cada linha (ver abaixo).
 
-## Importar um Módulo
+### Botões da tabela
 
-Para importar um módulo:
+- **Importar** (ícone de seta para baixo) — abre a janela de confirmação para instalar o módulo da linha. Aparece apenas quando o módulo ainda não foi importado.
+- **Remover** (ícone de lixeira) — abre a janela de confirmação para remover o módulo da linha. Aparece apenas quando o módulo já foi importado.
 
-1. Clique em **Atualizar** para escanear a pasta de importação.
-2. Na tabela **Disponíveis para Importar**, localize o módulo desejado com status **Novo**.
-3. Clique no botão **Importar**.
-4. Uma janela é aberta exibindo o nome do módulo e a mensagem "Confirme para importar este módulo.".
-5. Clique em **Importar** para confirmar ou em **Cancelar** para desistir.
+### Mensagens possíveis
 
-Durante a importação, o botão muda para **Importando...** e é exibida uma lista de etapas com marcações de sucesso (✓). Ao final, é mostrada a mensagem "Módulo importado com sucesso!" e a tela é atualizada automaticamente.
+- **"Nenhum módulo disponível. Coloque um .zip na pasta import/ do servidor."** — exibida quando não há nenhum arquivo `.zip` na pasta de importação. Para resolver, adicione o arquivo do módulo na pasta indicada no servidor e clique em **Atualizar**.
 
-Se o servidor precisar reiniciar para concluir a importação, o sistema exibe "Aguardando servidor reiniciar..." e verifica o status periodicamente até confirmar que o módulo foi importado. Caso o servidor não responda dentro do tempo limite, aparece a mensagem "Timeout: servidor não respondeu. Recarregue a página.".
-
-## Remover um Módulo
-
-Para remover um módulo já importado:
-
-1. Na tabela **Disponíveis para Importar**, localize o módulo com status **Importado**.
-2. Clique no botão **Remover**.
-3. Uma janela é aberta exibindo o nome do módulo e a mensagem "Tem certeza que deseja remover este módulo? Os arquivos backend e frontend serão deletados.".
-4. Clique em **Remover** para confirmar ou em **Cancelar** para desistir.
-
-Durante a remoção, o botão muda para **Removendo...** e é exibida uma lista de etapas. Ao final, é mostrada a mensagem "Módulo removido com sucesso!" e a tela é atualizada automaticamente. Em caso de falha, a mensagem de erro é exibida e o botão volta ao estado normal.
+---
 
 ## Módulos Instalados
 
-Esta seção lista os módulos que já estão instalados no sistema. A tabela contém as colunas:
+Esta tabela mostra os módulos que já estão instalados no sistema. Ela é carregada automaticamente ao entrar na tela.
 
-- **Módulo**: nome do módulo instalado.
-- **Versão**: versão instalada.
-- **API**: o tipo de banco de dados utilizado pelo módulo, exibido como **SQL Server** ou **PostgreSQL**.
-- **Ações**: botão **Remover** para os módulos que podem ser removidos, ou o rótulo **Padrão** (badge) para módulos que não podem ser removidos.
+### Colunas e campos
 
-O botão **Remover** desta tabela abre a mesma janela de confirmação de remoção descrita na seção "Remover um Módulo".
+- **Módulo** — nome do módulo instalado.
+- **Versão** — versão instalada do módulo.
+- **API** — plataforma do banco de dados usada pelo módulo (por exemplo, "SQL Server" ou "PostgreSQL").
+- **Ações** — botão ou selo de cada linha (ver abaixo).
+
+### Botões e indicadores da tabela
+
+- **Remover** (ícone de lixeira) — abre a janela de confirmação para remover o módulo instalado. Aparece apenas para módulos que podem ser removidos.
+- **Padrão** (selo azul) — indica que o módulo é padrão do sistema e não pode ser removido. Nesses casos, nenhum botão é exibido.
+
+### Mensagens possíveis
+
+- **"Nenhum módulo instalado."** — exibida quando ainda não há módulos instalados.
+- **"Carregando módulos instalados..."** — exibida momentaneamente enquanto a lista é carregada.
+
+---
+
+## Janela: Importar Módulo
+
+Abre ao clicar no botão **Importar** de um módulo na tabela "Disponíveis para Importar". É usada para confirmar a instalação do módulo.
+
+### Como preencher
+
+- **Módulo** — campo somente leitura que mostra o nome do módulo que será importado. Não é editável.
+- **Confirmação** — leia a mensagem de confirmação exibida.
+
+### Botões da janela
+
+- **Cancelar** — fecha a janela sem importar nada.
+- **Importar** — confirma a operação e inicia a instalação do módulo. Durante o processo, o botão muda para **Importando...** e fica desabilitado até terminar.
+- **X** (no canto superior direito) — fecha a janela sem realizar a operação.
+
+### Resultado da importação
+
+Após clicar em **Importar**, é exibido um registro (log) do progresso, com um passo marcado com "✓" para cada etapa concluída. Ao final:
+
+- **"Módulo importado com sucesso!"** — a instalação foi concluída e a janela fecha automaticamente, recarregando as listas.
+- **"Aguardando servidor reiniciar..."** — o servidor precisa reiniciar para concluir a instalação. Aguarde a mensagem mudar para "Módulo importado com sucesso!".
+- **"Timeout: servidor não respondeu. Recarregue a página."** — o servidor demorou demais para responder. Recarregue a página e tente novamente.
+
+---
+
+## Janela: Remover Módulo
+
+Abre ao clicar no botão **Remover** de um módulo (na tabela "Disponíveis para Importar" ou "Módulos Instalados"). É usada para confirmar a exclusão do módulo.
+
+### Como preencher
+
+- **Módulo** — campo somente leitura que mostra o nome do módulo que será removido. Não é editável.
+- **Aviso** — leia a mensagem de aviso: os arquivos do módulo (backend e frontend) serão apagados.
+
+### Botões da janela
+
+- **Cancelar** — fecha a janela sem remover nada.
+- **Remover** — confirma a operação e apaga o módulo. Durante o processo, o botão muda para **Removendo...** e fica desabilitado até terminar.
+- **X** (no canto superior direito) — fecha a janela sem realizar a operação.
+
+### Resultado da remoção
+
+- **"Módulo removido com sucesso!"** — a remoção foi concluída e a janela fecha automaticamente, recarregando as listas.
+- **"Falha: ..."** — ocorreu um erro e o módulo não foi removido. O botão **Remover** volta a ficar disponível para nova tentativa.
+
+---
+
+## Permissões
+
+Este módulo exige autenticação: ao acessar a tela sem estar autenticado, o usuário é redirecionado para a tela de login do sistema. As ações de importar e remover só ficam disponíveis para módulos em que a opção correspondente é apresentada (módulos "Padrão" não exibem o botão de remoção).

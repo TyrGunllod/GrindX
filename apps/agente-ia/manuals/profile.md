@@ -1,86 +1,123 @@
 # Manual do Módulo Meu Perfil
 
-O módulo **Meu Perfil** permite que o usuário visualize e edite seus dados pessoais, altere a senha e ajuste as preferências de aparência do sistema.
+O módulo **Meu Perfil** permite que você visualize e edite seus dados pessoais, altere sua senha e personalize suas preferências de exibição (tema e layout). Tudo o que você altera aqui vale apenas para a sua própria conta de usuário.
 
-## Visão Geral da Tela
-
-Ao abrir o módulo, o usuário vê o título "Meu Perfil" com o subtítulo "Gerencie seus dados pessoais e preferências." e, ao lado do título, o número da versão do sistema.
-
-A tela é dividida em duas áreas principais:
-
-1. **Meus Dados** — um cartão com o formulário de dados pessoais.
-2. **Configurações** — um cartão com dois botões: **Alterar Senha** e **Preferências**.
+---
 
 ## Meus Dados
 
-Este cartão exibe os dados do usuário carregados automaticamente ao abrir o módulo.
+Esta é a tela principal do módulo. Nela você vê e edita suas informações pessoais e profissionais. Ao entrar no módulo, seus dados atuais são carregados automaticamente.
 
-Alguns campos são somente leitura e não podem ser editados:
+Alguns campos aparecem **preenchidos e bloqueados** (não podem ser editados), pois são gerenciados pela administração do sistema. Os demais podem ser editados por você.
 
-- **Nome de Usuário**
-- **Perfil** (mostra o tipo de acesso: Administrador, Operador ou Leitura)
-- **Nome Completo**
-- **Cargo** (preenchido automaticamente ao consultar o C.B.O.)
-- **Endereço, Bairro, Cidade e UF** (preenchidos automaticamente ao consultar o CEP)
+### Campos de identificação (somente leitura)
 
-Os demais campos podem ser editados pelo usuário:
+- **Nome de Usuário** — seu login de acesso ao sistema. Não pode ser alterado por você.
+- **Perfil** — o nível de permissão da sua conta. Pode aparecer como **Administrador**, **Operador**, **Leitura** ou **Usuário**. Este campo é informativo e não pode ser alterado por você.
+- **Nome Completo** — seu nome cadastrado. Não pode ser alterado por você.
 
-- **Código**
-- **C.B.O** (com botão de busca)
-- **Salário Base**
-- **Departamento**
-- **Classificação** (lista de opções: Junior, Pleno, Senior, I, II, III, IV e V)
-- **CPF**
-- **RG**
-- **Nº**
-- **CEP** (com botão de busca)
-- **Telefone**
-- **Celular**
-- **E-mail** (obrigatório)
+### Campos profissionais
 
-Os campos CPF, RG, CEP, Telefone e Celular são formatados automaticamente (máscara) quando o usuário sai do campo. O salário é exibido no formato brasileiro (por exemplo, 1.234,56).
+- **Código** — seu código de funcionário (matrícula). Preencha com o código informado pela empresa, caso esteja vazio.
+- **C.B.O** — código da Classificação Brasileira de Ocupações do seu cargo. Digite o código e use o botão de busca (lupa) para preencher o cargo automaticamente (veja abaixo).
+- **Salário Base** — seu salário. Digite apenas números; o valor é formatado automaticamente com separador de milhar e vírgula decimal (ex.: `2500,00`).
+- **Departamento** — nome do departamento ao qual você pertence.
+- **Cargo** — descrição da sua função. É preenchido automaticamente ao consultar o C.B.O; por isso não pode ser digitado manualmente.
+- **Classificação** — seu nível de classificação. Selecione uma das opções: **Junior**, **Pleno**, **Senior**, **I**, **II**, **III**, **IV** ou **V**.
 
-Para salvar as alterações, o usuário clica no botão **Salvar** no final do cartão. Ao salvar com sucesso, aparece a mensagem "Dados salvos com sucesso!". Caso o e-mail informado já esteja em uso, uma mensagem de erro é exibida abaixo do campo E-mail.
+### Campos de documentos
 
-## Consulta de C.B.O
+- **CPF** — seu CPF. Digite apenas números; a máscara `000.000.000-00` é aplicada automaticamente ao sair do campo.
+- **RG** — seu RG. Digite apenas números; a máscara é aplicada automaticamente ao sair do campo.
 
-Ao lado do campo C.B.O existe um botão de busca (ícone de lupa). Ao clicar nele (ou ao sair do campo após digitar o código), o sistema consulta o código informado e preenche automaticamente o campo **Cargo** com a descrição correspondente.
+### Campos de endereço
 
-Se o código não for encontrado, o usuário vê a mensagem "CBO não encontrado."
+- **Endereço** — nome da rua/logradouro. É preenchido automaticamente ao consultar o CEP; por isso não pode ser digitado manualmente.
+- **Nº** — número da residência. Este campo é preenchido por você.
+- **CEP** — seu CEP. Digite apenas números; a máscara `00000-000` é aplicada automaticamente. Ao sair do campo (ou clicar na lupa), o sistema preenche endereço, bairro, cidade e UF.
+- **Bairro** — preenchido automaticamente pela consulta de CEP; não editável.
+- **Cidade** — preenchida automaticamente pela consulta de CEP; não editável.
+- **UF** — preenchida automaticamente pela consulta de CEP; não editável.
 
-## Consulta de CEP
+### Campos de contato
 
-Ao lado do campo CEP existe um botão de busca (ícone de lupa). Ao clicar nele (ou ao sair do campo após digitar um CEP válido), o sistema preenche automaticamente os campos **Endereço**, **Bairro**, **Cidade** e **UF**.
+- **Telefone** — seu telefone fixo. Digite apenas números; a máscara `(00) 0000-0000` é aplicada automaticamente.
+- **Celular** — seu celular. Digite apenas números; a máscara `(00) 00000-0000` é aplicada automaticamente.
+- **E-mail** — seu e-mail de contato. Campo obrigatório. Se estiver vazio ou inválido, o sistema exibe uma mensagem de erro ao salvar.
 
-Se o CEP não for encontrado, o usuário vê a mensagem "CEP não encontrado."
+### Botões desta tela
+
+- **Buscar CBO** (ícone de lupa ao lado do campo C.B.O) — consulta o código de C.B.O digitado e preenche automaticamente o campo **Cargo** com a descrição da ocupação. Se o código não for encontrado, exibe a mensagem "CBO não encontrado.".
+- **Buscar CEP** (ícone de lupa ao lado do campo CEP) — consulta o CEP digitado e preenche automaticamente os campos **Endereço**, **Bairro**, **Cidade** e **UF**. Se o CEP não for encontrado, exibe a mensagem "CEP não encontrado.".
+- **Salvar** — grava todas as alterações feitas nos campos editáveis. Ao clicar, o botão mostra "Salvando..." e, ao concluir, exibe a mensagem "Dados salvos com sucesso!". Se o e-mail estiver inválido, o erro é exibido logo abaixo do campo E-mail.
+
+> Dica: pressionar **Enter** dentro de um campo avança para o próximo campo do formulário. Ao pressionar Enter no campo C.B.O ou CEP, a respectiva consulta é executada automaticamente.
+
+---
+
+## Configurações
+
+Esta tela dá acesso às opções de segurança e personalização da sua conta. Ela contém dois botões.
+
+### Botões desta tela
+
+- **Alterar Senha** — abre a janela para trocar a sua senha de acesso (veja a seção "Alterar Senha").
+- **Preferências** — abre a janela para definir o tema e o layout do sistema (veja a seção "Preferências").
+
+---
 
 ## Alterar Senha
 
-Ao clicar no botão **Alterar Senha** (no cartão Configurações), abre-se uma janela com três campos:
+Janela usada para trocar a sua senha de acesso. Para abri-la, clique no botão **Alterar Senha** na tela **Configurações**. Para fechar sem salvar, clique em **Cancelar** ou clique fora da janela.
 
-1. **Senha Atual**
-2. **Nova Senha** (mínimo de 6 caracteres)
-3. **Confirmar Nova Senha**
+### Como preencher
 
-O usuário deve preencher os três campos e clicar em **Salvar**.
+1. **Senha Atual** — digite a senha que você usa atualmente para entrar no sistema.
+2. **Nova Senha** — digite a nova senha que deseja usar. Deve ter no mínimo 6 caracteres.
+3. **Confirmar Nova Senha** — digite novamente a nova senha, exatamente igual à anterior.
 
-O sistema valida as informações:
+Regras de validação:
+- Todos os três campos são obrigatórios. Se algum estiver vazio, aparece a mensagem "Preencha todos os campos de senha.".
+- A **Nova Senha** deve ser igual à **Confirmar Nova Senha**. Se não conferirem, aparece "Nova senha e confirmação não conferem.".
+- A **Nova Senha** deve ter no mínimo 6 caracteres. Caso contrário, aparece "Nova senha deve ter no mínimo 6 caracteres.".
 
-- Se algum campo estiver vazio, exibe "Preencha todos os campos de senha."
-- Se a nova senha não tiver ao menos 6 caracteres, exibe "Nova senha deve ter no mínimo 6 caracteres."
-- Se a confirmação não for igual à nova senha, exibe "Nova senha e confirmação não conferem."
-- Se a senha atual estiver incorreta, exibe uma mensagem de erro.
+### Botões desta janela
 
-Após salvar com sucesso, a janela fecha e a página é atualizada. Para desistir, o usuário clica em **Cancelar** ou clica fora da janela.
+- **Salvar** — valida os campos e envia a troca de senha. Ao concluir com sucesso, a janela é fechada e a página é recarregada. Se a senha atual estiver incorreta, o erro é exibido dentro da própria janela.
+- **Cancelar** — fecha a janela sem realizar nenhuma alteração.
+
+---
 
 ## Preferências
 
-Ao clicar no botão **Preferências** (no cartão Configurações), abre-se uma janela com as seguintes opções:
+Janela usada para personalizar a aparência do sistema. Para abri-la, clique no botão **Preferências** na tela **Configurações**. Para fechar sem salvar, clique em **Cancelar** ou clique fora da janela.
 
-- **Tema**: escolher entre **Claro** e **Escuro**.
-- **Layout Desktop**: escolher entre **Topbar** e **Sidebar**.
-- **Layout Celular / Tablet**: escolher entre **Topbar** e **Sidebar** — aplicado automaticamente em telas menores que 768px.
+### Como preencher
 
-O usuário clica na opção desejada (ela fica destacada) e, em seguida, clica em **Salvar**. As preferências são aplicadas imediatamente e a página é atualizada.
+1. **Tema** — escolha o esquema de cores do sistema:
+   - **Claro** — aplica o tema com fundo claro.
+   - **Escuro** — aplica o tema com fundo escuro.
+   Apenas uma das duas opções pode ficar selecionada por vez; a selecionada fica destacada.
 
-Para desistir, o usuário clica em **Cancelar** ou clica fora da janela.
+2. **Layout Desktop** — escolha como a navegação aparece no computador:
+   - **Topbar** — menu de navegação na parte superior.
+   - **Sidebar** — menu de navegação na lateral.
+   Apenas uma opção pode ficar selecionada por vez.
+
+3. **Layout Celular / Tablet** — escolha como a navegação aparece em telas menores:
+   - **Topbar** — menu na parte superior.
+   - **Sidebar** — menu na lateral.
+   Esta preferência é aplicada automaticamente em telas com menos de 768px de largura.
+
+### Botões desta janela
+
+- **Salvar** — grava o tema e os layouts escolhidos. Ao concluir, a janela é fechada e a página é recarregada para aplicar as novas preferências.
+- **Cancelar** — fecha a janela sem salvar nenhuma alteração.
+
+---
+
+## Resumo de permissões
+
+- A edição dos dados e preferências aplica-se apenas à sua própria conta.
+- Campos como **Nome de Usuário**, **Perfil**, **Nome Completo**, **Cargo**, **Endereço**, **Bairro**, **Cidade** e **UF** são preenchidos automaticamente ou gerenciados pela administração e não podem ser alterados diretamente por você.
+- O campo **Perfil** exibe seu nível de acesso (**Administrador**, **Operador**, **Leitura** ou **Usuário**) apenas de forma informativa.

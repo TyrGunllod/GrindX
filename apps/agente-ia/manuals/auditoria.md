@@ -1,62 +1,59 @@
 # Manual do Módulo Auditoria
 
-O módulo **Auditoria** permite acompanhar, em modo somente leitura, tudo o que acontece no sistema: as alterações feitas nos registros e o tempo de uso de cada usuário.
+O módulo **Auditoria** do GrindX permite visualizar o histórico de alterações feitas no sistema e o tempo de uso de cada usuário. É um módulo **somente de leitura** (consulta): aqui não se cria, edita nem exclui nada.
 
-## Acesso ao Módulo
+A tela é dividida em duas áreas (cards):
 
-Para acessar, é necessário estar autenticado no sistema. Se o usuário não tiver uma sessão ativa, ele é redirecionado para a tela de login.
-
-Ao abrir o módulo, o topo da página exibe o título **Auditoria**, a versão do sistema e a descrição: *"Registro de alterações no banco e tempo de uso dos usuários."*
-
-Logo abaixo, são apresentadas duas seções:
-
-1. **Registro de Alterações** — mostra as mudanças feitas nos dados do sistema.
-2. **Tempo de Uso** — mostra as sessões de login e logout dos usuários.
+- **Registro de Alterações** — mostra tudo o que foi inserido, alterado ou excluído no banco de dados.
+- **Tempo de Uso** — mostra as sessões de login e logout dos usuários, com a duração de cada uma.
 
 ## Registro de Alterações
 
-Esta seção lista as alterações realizadas nos registros do sistema. No cabeçalho, à direita, aparece o total de registros encontrados (por exemplo, "120 registro(s)").
+Esta seção lista o histórico de mudanças realizadas no sistema, organizadas em uma tabela com as colunas descritas abaixo. Os registros aparecem em ordem, com os mais recentes primeiro.
 
-Cada linha da tabela exibe:
+### Colunas da tabela
 
-- **Data** — data e hora em que a alteração foi feita.
-- **Usuário** — nome de usuário responsável pela alteração. Se o usuário não for identificado, aparece "—".
-- **Entidade** — o tipo de registro alterado (por exemplo, "Cliente"), acompanhado do número de identificação quando existir (por exemplo, "Cliente #42").
-- **Ação** — o tipo de operação realizada, exibido como um selo colorido:
+- **Data** — data e hora em que a alteração foi registrada.
+- **Usuário** — nome de usuário que fez a alteração. Quando o nome não está disponível, é mostrado o código do usuário precedido de `#`. Se não houver usuário associado, aparece `—`.
+- **Entidade** — o que foi alterado (tipo de registro), seguido do número de identificação. Exemplo: `Cliente #123`.
+- **Ação** — o tipo de mudança, exibido como uma etiqueta colorida:
   - **Inserção** (verde) — um novo registro foi criado.
   - **Alteração** (amarelo) — um registro existente foi modificado.
   - **Exclusão** (vermelho) — um registro foi removido.
-- **Campos Alterados** — os nomes dos campos que foram modificados, exibidos como etiquetas. Se nenhum campo foi alterado, aparece "—".
-- **IP** — o endereço de rede de onde a alteração foi feita.
+- **Campos Alterados** — lista dos campos que foram modificados, exibidos como etiquetas separadas. Se não houver campos informados, aparece `—`.
+- **IP** — endereço IP de onde a alteração foi feita. Se não houver informação, aparece `—`.
 
-### Paginação
+### Botões
 
-No rodapé da seção, há controles para navegar entre as páginas de resultados:
+- **Anterior** — volta para a página anterior de registros. Fica desativado quando já se está na primeira página.
+- **Próxima** — avança para a página seguinte de registros. Fica desativado quando já se está na última página.
 
-- **Anterior** — volta para a página anterior.
-- **Próxima** — avança para a próxima página.
-
-Entre os botões, é exibido o texto **"Página X de Y"** indicando a posição atual. O botão **Anterior** fica desabilitado na primeira página e o botão **Próxima** fica desabilitado na última.
+Entre os dois botões aparece a indicação **"Página X de Y"**, informando em qual página se está e o total de páginas disponíveis. No topo do card, ao lado do título, é exibido o **total de registros** (exemplo: `150 registro(s)`).
 
 ## Tempo de Uso
 
-Esta seção mostra quanto tempo cada usuário permaneceu conectado. No cabeçalho, à direita, aparece o total de sessões (por exemplo, "35 sessão(ões)").
+Esta seção mostra as sessões de uso dos usuários, ou seja, quando cada um entrou e saiu do sistema e quanto tempo ficou conectado.
 
-Cada linha da tabela exibe:
+### Colunas da tabela
 
 - **Login** — data e hora em que o usuário entrou no sistema.
-- **Logout** — data e hora em que o usuário saiu. Se a sessão ainda estiver ativa, aparece o selo **"Em uso"** (verde) no lugar da data.
-- **Duração** — tempo total da sessão, exibido de forma resumida:
-  - Horas e minutos quando a sessão durou mais de uma hora (ex.: "2h 15min").
-  - Minutos e segundos quando durou menos de uma hora (ex.: "12min 30s").
-  - Apenas segundos para sessões muito curtas (ex.: "45s").
-- **Usuário** — nome de usuário da sessão.
-- **IP** — endereço de rede de onde o usuário se conectou.
+- **Logout** — data e hora em que o usuário saiu. Se a sessão ainda estiver ativa, aparece a etiqueta verde **"Em uso"** no lugar da data.
+- **Duração** — tempo total da sessão, no formato:
+  - `Xh Xmin` quando durou uma hora ou mais;
+  - `Xmin Xs` quando durou menos de uma hora;
+  - `Xs` quando durou menos de um minuto.
+  - Se a duração não estiver disponível, aparece `—`.
+- **Usuário** — nome de usuário. Quando o nome não está disponível, é mostrado o código do usuário precedido de `#`.
+- **IP** — endereço IP usado na sessão. Se não houver informação, aparece `—`.
 - **Motivo** — o motivo do encerramento da sessão:
-  - **Logout** — o usuário saiu manualmente.
-  - **Inatividade** — a sessão foi encerrada por falta de atividade.
-  - **Sessão expirada** — a sessão expirou automaticamente.
+  - **Logout** — o usuário saiu normalmente.
+  - **Inatividade** — a sessão foi encerrada por inatividade.
+  - **Sessão expirada** — a sessão venceu.
+  - Se a sessão ainda estiver ativa (sem logout), aparece `—`.
 
-### Paginação
+### Botões
 
-Da mesma forma que na seção de alterações, o rodapé oferece os botões **Anterior** e **Próxima**, com o texto **"Página X de Y"** entre eles, para navegar pelos registros de sessões.
+- **Anterior** — volta para a página anterior de sessões. Fica desativado quando já se está na primeira página.
+- **Próxima** — avança para a página seguinte de sessões. Fica desativado quando já se está na última página.
+
+Entre os dois botões aparece a indicação **"Página X de Y"**. No topo do card, ao lado do título, é exibido o **total de sessões** (exemplo: `300 sessão(ões)`).

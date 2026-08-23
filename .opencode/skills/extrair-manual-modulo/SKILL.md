@@ -36,6 +36,8 @@ Aplicável quando há `module.json` e a pasta `frontend/` na raiz do projeto sta
 - **Somente a perspectiva do usuário final**: o que ele vê e faz em cada tela.
 - **NÃO incluir** detalhes técnicos: código, endpoints, classes, funções, nomes de arquivos JS, variáveis, CSS, migrations, banco de dados.
 - Focar em: telas, campos, botões, ações, fluxos, pré-requisitos de uso e permissões visíveis ao usuário.
+- **Descrever explicitamente cada botão e o que ele faz** (ex.: "Botão Salvar — grava o cadastro e fecha a janela."; "Botão Cancelar — descarta as alterações."). Nenhum botão visível pode ficar sem explicação.
+- **Para cada modal/janela, descrever como preencher**, campo a campo, na ordem em que aparecem.
 
 ## Passos
 
@@ -67,6 +69,9 @@ Aplicável quando há `module.json` e a pasta `frontend/` na raiz do projeto sta
 - Uma seção `##` por tela/funcionalidade (não por campo individual).
 - Em standalone, cada aba do `frontend/` vira uma seção `##` (ou subseções, se a aba tiver várias funcionalidades).
 - Descreva ações em ordem: "Acesse o menu X", "Preencha o campo Y", "Clique em Salvar".
+- Use subseções `###` para agrupar os campos de um formulário/modal (ex.: `### Dados Pessoais`).
+- **Liste os botões** de cada tela/modal com o que cada um faz, em uma lista curta (ex.: `- **Salvar** — grava e fecha.`). Isso é essencial para o agente responder "o que faz o botão X?".
+- **Explique o preenchimento** de cada modal: como abrir, e cada campo com o que deve ser informado.
 - Mencione permissões visíveis ("disponível somente para administradores") quando relevante ao uso.
 - Linguagem simples, direta e em português. Sem jargão técnico.
 

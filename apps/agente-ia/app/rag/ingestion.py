@@ -19,7 +19,7 @@ def _split_headings(text: str) -> list[tuple[str, str]]:
     current_lines: list[str] = []
 
     for line in lines:
-        match = re.match(r"^(#{1,6})\s+(.+)$", line.strip())
+        match = re.match(r"^(#{1,2})\s+(.+)$", line.strip())
         if match:
             if current_title is not None:
                 sections.append((current_title, "\n".join(current_lines).strip()))
@@ -37,7 +37,11 @@ def _split_headings(text: str) -> list[tuple[str, str]]:
 
 
 def chunk_markdown(text: str) -> list[Chunk]:
-    """Divide um documento Markdown em chunks, um por seção (título)."""
+    """Divide um documento Markdown em chunks, um por seção (H1/H2).
+
+    Sub-títulos (H3+) permanecem dentro do chunk da seção pai, para que
+    a explicação completa de uma tela/modal fique em um único chunk.
+    """
     return [
         Chunk(title=title, content=content)
         for title, content in _split_headings(text)

@@ -1,109 +1,129 @@
 # Manual do Módulo Módulos & Abas
 
-Este módulo permite gerenciar as **abas** do menu lateral do portal e os **módulos** que aparecem dentro delas. Aqui você cria, edita e exclui abas e módulos, além de definir a ordem de exibição e o perfil mínimo de acesso de cada módulo.
+Este manual descreve como usar a tela **Estrutura do Portal** (também chamada de "Módulos & Abas"), onde você organiza as abas do menu lateral e os módulos do sistema. Aqui você cria, edita, exclui e organiza abas e módulos que aparecem no menu do GrindX.
+
+> **Resumo das telas:**
+> 1. Tela principal "Estrutura do Portal" — lista de abas e módulos.
+> 2. Janela "Nova Aba / Editar Aba".
+> 3. Janela "Novo Módulo / Editar Módulo".
+> 4. Janela "Selecionar Módulo" (busca de arquivo de módulo).
+
+---
 
 ## Tela Principal — Estrutura do Portal
 
-Ao abrir o módulo, você vê o título **"Estrutura do Portal"** e a descrição *"Gerencie as abas do menu lateral e os módulos do sistema."*.
+É a primeira tela que você vê ao abrir o módulo. No topo há um cabeçalho com o título "Estrutura do Portal" e a descrição "Gerencie as abas do menu lateral e os módulos do sistema.".
 
-No topo, à direita, há dois botões:
+Logo abaixo do título ficam dois botões de criação:
 
-- **Nova Aba** — abre a tela para criar uma nova aba do menu.
-- **Novo Módulo** — abre a tela para criar um novo módulo.
+- **Nova Aba** — abre a janela para criar uma nova aba (grupo) no menu lateral.
+- **Novo Módulo** — abre a janela para criar um novo módulo (item de menu) dentro de uma aba.
 
-Logo abaixo, é exibida a estrutura atual do portal, organizada em cartões.
+Na área central, o sistema mostra a estrutura em formato de **cartões organizados em árvore**:
 
-## Visualização da Estrutura
+- Cada **aba** aparece como um cartão com o seu ícone e nome.
+- Abas dentro de outras abas (sub-abas) aparecem recuadas e com uma linha de destaque à esquerda.
+- Cada **módulo** aparece listado dentro da sua aba, mostrando o nome, o caminho (URL) e a ordem.
+- Os itens são exibidos ordenados pelo campo "Ordem".
 
-Cada **aba** é exibida em um cartão com:
+Se não houver nada cadastrado, aparece a mensagem "Nenhuma estrutura cadastrada.".
 
-- O **ícone** e o **nome** da aba no topo.
-- Os botões de **Editar** (ícone de lápis) e **Excluir** (ícone de lixeira) no canto do cartão.
-- A lista de **sub-abas** (abas aninhadas, mostradas com recuo à esquerda) e de **módulos** pertencentes à aba.
+### Ações em uma Aba (cartão)
 
-Cada **módulo** aparece como um item com:
+Dentro de cada cartão de aba, há botões de ação:
 
-- O **nome** do módulo.
-- A **URL** de acesso.
-- A **ordem** de exibição (quando definida).
-- Os botões de **Editar** (ícone de caneta) e **Excluir** (ícone de lixeira).
+- **Editar (ícone de lápis)** — abre a janela "Editar Aba" com os dados daquela aba preenchidos.
+- **Excluir (ícone de lixeira)** — exclui a aba **e todos os seus módulos**. Antes de excluir, o sistema pede confirmação. *Obs.: este botão não aparece para abas protegidas do sistema.*
 
-Observações importantes:
+### Ações em um Módulo (item da lista)
 
-- Abas e módulos **protegidos** pelo sistema não exibem o botão de **Excluir**, pois não podem ser removidos.
-- Módulos localizados dentro de uma aba protegida também não podem ser excluídos.
-- Se não houver nenhuma estrutura cadastrada, uma mensagem de "nenhuma estrutura cadastrada" é mostrada no lugar da lista.
+Ao lado de cada módulo, há botões de ação:
 
-## Criar Nova Aba
+- **Editar (ícone de caneta)** — abre a janela "Editar Módulo" com os dados daquele módulo preenchidos.
+- **Excluir (ícone de lixeira)** — exclui o módulo. Antes de excluir, o sistema pede confirmação. *Obs.: este botão não aparece para módulos protegidos do sistema.*
 
-1. Clique no botão **Nova Aba**.
-2. Na janela que abre, preencha os campos:
-   - **Nome da Aba** — obrigatório.
-   - **Ordem** — número que define a posição da aba no menu (padrão 0).
-   - **Ícone da Aba** — escolha um ícone na lista disponível.
-   - **Sub-aba de (opcional)** — selecione uma aba "pai" caso queira criar uma sub-aba; deixe em "Nenhuma (aba raiz)" para criar uma aba no nível principal.
-3. Clique em **Salvar Aba** para confirmar, ou em **Cancelar** para desistir.
+### Permissões visíveis
 
-Após salvar, a estrutura é atualizada e o menu lateral do portal é recarregado.
+- Abas e módulos considerados **protegidos** (essenciais para o sistema, como "Menu", "Gestão", "Usuários", "Módulos & Abas", "Dashboard", "Início") não mostram o botão de excluir. Se tentar excluir pela interface, o sistema avisa que o item é essencial e não pode ser removido.
 
-## Editar Aba
+---
 
-1. No cartão da aba desejada, clique no botão **Editar** (lápis).
-2. A mesma janela de cadastro é aberta, já preenchida com os dados atuais da aba.
-3. Altere os campos desejados e clique em **Salvar Aba**.
+## Janela — Nova Aba / Editar Aba
 
-## Excluir Aba
+Esta janela serve para criar uma nova aba ou editar uma aba existente.
 
-1. No cartão da aba, clique no botão **Excluir** (lixeira).
-2. O sistema pede confirmação: *"Excluir esta aba e todos os seus módulos?"*.
-3. Confirme para excluir a aba e todo o seu conteúdo.
+**Como abrir:**
+- Para **criar**: clique em **Nova Aba** no topo da tela principal.
+- Para **editar**: clique no ícone de **Editar (lápis)** do cartão da aba.
 
-Caso a aba seja essencial para o sistema (protegida), o botão de excluir não estará disponível.
+O título da janela muda conforme o caso: "Nova Aba" ou "Editar Aba".
 
-## Criar Novo Módulo
+### Campos
 
-1. Clique no botão **Novo Módulo**.
-2. Na janela que abre, preencha os campos:
-   - **URL do Arquivo** — obrigatório. Indica o caminho do módulo (ex.: `modules/home/index.html`). Ao lado, há o botão **Procurar módulo** (ícone de pasta) para selecionar um módulo já disponível no sistema.
-   - **Aba Destino** — selecione a aba onde o módulo aparecerá.
-   - **Nome do Módulo** — obrigatório.
-   - **Ordem** — número que define a posição do módulo dentro da aba (padrão 0).
-   - **Identificador (Slug)** — obrigatório. Identificador único do módulo.
-   - **Perfil Mínimo** — perfil mínimo necessário para acessar o módulo (veja a seção "Permissões e Perfil Mínimo").
-   - **Ícone do Módulo** — escolha um ícone (padrão: cubo).
-3. Clique em **Salvar Módulo** para confirmar, ou em **Cancelar** para desistir.
+- **Nome da Aba** — texto que identifica a aba no menu. **Obrigatório.**
+- **Ícone da Aba** — ícone exibido ao lado do nome no menu. Clique em um dos ícones da grade para selecionar; o ícone escolhido fica destacado e aparece uma prévia acima da grade.
+- **Ordem** — número que define a posição da aba em relação às outras (menor número = aparece primeiro). Se deixar vazio, usa o padrão 0.
+- **Sub-aba de (opcional)** — permite colocar esta aba dentro de outra aba (virar sub-aba). Selecione a aba "mãe" na lista, ou deixe em "Nenhuma (aba raiz)" para que seja uma aba principal.
 
-## Selecionar Módulo pelo Buscador
+### Botões
 
-Ao clicar no botão **Procurar módulo** (ícone de pasta), abre-se a janela **"Selecionar Módulo"**, que lista os módulos disponíveis no sistema.
+- **Cancelar** — fecha a janela sem salvar e descarta o que foi digitado.
+- **Salvar Aba** — valida os campos e grava a aba (cria nova ou atualiza a existente). Em seguida atualiza a lista e o menu lateral.
 
-- Há um campo de **busca** para filtrar a lista pelo nome ou pelo caminho.
-- Cada item mostra o **nome**, o **caminho** e um selo indicando se já está **vinculado** a alguma aba (com o nome da aba) ou **não vinculado**.
-- Clique em um módulo da lista para preencher automaticamente os campos de **URL**, **Nome** e **Identificador (Slug)** no formulário.
+Se algum campo obrigatório estiver vazio, ao clicar em **Salvar Aba** o campo é destacado e aparece a mensagem "Revise os campos destacados.".
 
-## Editar Módulo
+---
 
-1. No item do módulo desejado, clique no botão **Editar** (caneta).
-2. A janela de cadastro é aberta com os dados atuais.
-3. Você pode alterar o **Nome**, a **Aba Destino**, a **Ordem**, o **Perfil Mínimo** e o **Ícone**.
-4. Os campos **URL do Arquivo**, **Identificador (Slug)** e **Ícone** ficam bloqueados (somente leitura) durante a edição.
+## Janela — Novo Módulo / Editar Módulo
 
-Clique em **Salvar Módulo** para confirmar.
+Esta janela serve para criar um novo módulo (item de menu) ou editar um já existente.
 
-## Excluir Módulo
+**Como abrir:**
+- Para **criar**: clique em **Novo Módulo** no topo da tela principal.
+- Para **editar**: clique no ícone de **Editar (caneta)** do módulo desejado.
 
-1. No item do módulo, clique no botão **Excluir** (lixeira).
-2. O sistema pede confirmação: *"Excluir este módulo?"*.
-3. Confirme para excluir o módulo.
+O título da janela muda conforme o caso: "Novo Módulo" ou "Editar Módulo".
 
-Módulos protegidos, ou módulos dentro de abas protegidas, não exibem o botão de excluir.
+### Campos
 
-## Permissões e Perfil Mínimo
+- **URL do Arquivo** — caminho do arquivo do módulo (ex.: `modules/home/index.html`). **Obrigatório.** Ao lado do campo há o botão **Procurar módulo (pasta)** que abre a janela "Selecionar Módulo" para escolher um módulo já disponível.
+- **Aba Destino** — a aba onde o módulo vai aparecer no menu. **Obrigatório.**
+- **Nome do Módulo** — nome que aparece no menu. **Obrigatório.**
+- **Ordem** — número que define a posição do módulo dentro da aba (menor número = aparece primeiro). Se deixar vazio, usa 0.
+- **Identificador (Slug)** — código curto e único que identifica o módulo internamente. **Obrigatório**, com pelo menos 2 caracteres.
+- **Perfil Mínimo** — perfil de acesso necessário para o usuário enxergar este módulo. Opções: **Leitura**, **Operador** (padrão) e **Administrador**.
+- **Ícone do Módulo** — ícone exibido ao lado do nome no menu. Clique em um ícone da grade para selecionar. Padrão: cubo.
 
-Cada módulo possui um **Perfil Mínimo**, que determina qual perfil de usuário é necessário para acessá-lo. As opções são:
+### Botões
 
-- **Leitura** — perfil com acesso somente de visualização.
-- **Operador** — perfil de operação (padrão).
-- **Administrador** — perfil com acesso completo.
+- **Procurar módulo (pasta)** — abre a janela "Selecionar Módulo" para localizar e preencher automaticamente o arquivo, o nome e o identificador.
+- **Cancelar** — fecha a janela sem salvar e descarta o que foi digitado.
+- **Salvar Módulo** — valida os campos e grava o módulo (cria novo ou atualiza o existente). Em seguida atualiza a lista e o menu lateral.
 
-Um texto de apoio abaixo do campo explica que se trata do *"Perfil mínimo necessário para acessar este módulo"*.
+Se um campo obrigatório estiver vazio ou inválido, ao clicar em **Salvar Módulo** o campo é destacado e aparece a mensagem "Revise os campos destacados.".
+
+### Detalhes ao editar
+
+Ao **editar** um módulo, os campos **URL do Arquivo**, **Identificador (Slug)** e **Ícone do Módulo** ficam bloqueados (somente leitura), pois identificam o módulo. Você pode alterar apenas **Nome**, **Aba Destino**, **Perfil Mínimo** e **Ordem**.
+
+---
+
+## Janela — Selecionar Módulo
+
+Esta janela ajuda a localizar um módulo já disponível no sistema para vincular, sem precisar digitar o caminho do arquivo manualmente.
+
+**Como abrir:**
+- Na janela "Novo Módulo", clique no botão **Procurar módulo (pasta)**, ao lado do campo "URL do Arquivo".
+
+### Como usar
+
+1. A janela abre com a lista de módulos disponíveis. Cada item mostra o nome, o caminho (URL) e uma indicação de vínculo.
+2. Use o campo **Buscar módulo...** no topo para filtrar a lista por nome ou caminho (a busca filtra enquanto você digita).
+3. Cada item da lista pode ter duas situações:
+   - **Não vinculado** — módulo ainda não está em nenhuma aba; pode ser escolhido (ícone de "mais").
+   - **Vinculado em: (nome da aba)** — módulo que já está em uso em uma aba (ícone de "link").
+4. Clique no item desejado. Ao escolher, o sistema preenche automaticamente no formulário "Novo Módulo" os campos **URL do Arquivo**, **Nome do Módulo** e **Identificador (Slug)**.
+
+### Botões
+
+- **Cancelar** — fecha a janela sem selecionar nada.
