@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrindX — Configurar Agente</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="module-page">
+    <div class="container animate-in">
+        <header class="page-header mb-8">
+            <div>
+                <div class="page-header-container">
+                    <h1>Configurar Agente</h1>
+                    <span class="viz-version" id="viz-version" aria-label="Versão do sistema"></span>
+                </div>
+                <p class="text-muted">Cadastre os manuais de uso dos módulos para o assistente de IA.</p>
+            </div>
+        </header>
+
+        <!-- Importação de manuais -->
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-upload"></i> Importar manuais</h2>
+
+            <div class="form-group">
+                <label for="moduleSelect">Módulo do ERP</label>
+                <select id="moduleSelect" class="form-control">
+                    <option value="">Carregando módulos...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fileInput">Arquivos de manual (.md ou .txt) — pode selecionar vários</label>
+                <input type="file" id="fileInput" class="form-control" accept=".md,.txt,text/markdown,text/plain" multiple>
+                <ul id="fileList" class="file-list"></ul>
+            </div>
+
+            <div class="form-group">
+                <label for="manualText">Ou cole o conteúdo do manual (para inserir um individual)</label>
+                <textarea id="manualText" class="form-control" rows="6" placeholder="Cole aqui o conteúdo em Markdown..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" id="importBtn">
+                    <i class="fas fa-cloud-upload-alt"></i> Importar manuais
+                </button>
+            </div>
+        </div>
+
+        <!-- Manuais indexados -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <h2 class="card-title"><i class="fas fa-database"></i> Manuais indexados</h2>
+            <div class="table-responsive">
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th scope="col">Módulo</th>
+                            <th scope="col">Arquivo</th>
+                            <th scope="col">Seções</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manuaisBody">
+                        <tr><td colspan="3">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../shared/config.js"></script>
+    <script src="../../shared/app.js"></script>
+    <script src="../../shared/inactivity.js"></script>
+    <script src="../../shared/apiService.js"></script>
+    <script src="../../shared/baseController.js"></script>
+    <script src="../../shared/components/LoadingSpinner.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
