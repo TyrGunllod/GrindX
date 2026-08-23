@@ -7,8 +7,8 @@
     position: fixed;
     bottom: 16px;
     right: 16px;
-    width: 62px;
-    height: 118px;
+    width: 50px;
+    height: 94px;
     border: none;
     background: transparent;
     padding: 0;
@@ -174,8 +174,8 @@
 
 @media (max-width: 480px) {
     .grindx-ai-fab {
-        width: 46px;
-        height: 88px;
+        width: 37px;
+        height: 70px;
         bottom: 12px;
         right: 12px;
     }
