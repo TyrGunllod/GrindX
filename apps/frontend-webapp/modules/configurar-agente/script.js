@@ -22,7 +22,6 @@ class ConfigurarAgenteController extends window.grindx.controllers.BaseControlle
 
     bindEvents() {
         document.getElementById('importBtn').addEventListener('click', () => this.importManual());
-        document.getElementById('fileInput').addEventListener('change', (e) => this.loadFileIntoForm(e));
     }
 
     async loadModules() {
@@ -49,32 +48,21 @@ class ConfigurarAgenteController extends window.grindx.controllers.BaseControlle
         }
     }
 
-    async loadFileIntoForm(e) {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-        const content = await this.readFile(file);
-        document.getElementById('filenameInput').value = file.name;
-        document.getElementById('manualText').value = content;
-    }
-
     async importManual() {
         const module = document.getElementById('moduleSelect').value;
-        const filename = document.getElementById('filenameInput').value.trim();
-        const content = document.getElementById('manualText').value.trim();
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files && fileInput.files[0];
 
         if (!module) { this.toastWarning('Selecione o módulo do ERP.'); return; }
-        if (!filename) { this.toastWarning('Informe o nome do manual.'); return; }
-        if (!content) { this.toastWarning('Informe o conteúdo do manual.'); return; }
+        if (!file) { this.toastWarning('Selecione o arquivo do manual.'); return; }
 
         const btn = document.getElementById('importBtn');
         btn.disabled = true;
         try {
-            await this.ingest(module, filename, content);
-            this.toastSuccess('Manual "' + filename + '" importado.');
-
-            document.getElementById('fileInput').value = '';
-            document.getElementById('filenameInput').value = '';
-            document.getElementById('manualText').value = '';
+            const content = await this.readFile(file);
+            await this.ingest(module, file.name, content);
+            this.toastSuccess('Manual "' + file.name + '" importado.');
+            fileInput.value = '';
             await this.loadIndexedManuals();
         } catch (e) {
             this.toastError(e);
