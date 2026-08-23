@@ -21,6 +21,12 @@ EXCLUDE_DIRS = {"shared"}
 MODULE_SRC = Path(__file__).parent
 STANDALONE_ROOT = MODULE_SRC.parent.parent.parent
 
+
+def _zip_filename(version: str | None) -> str:
+    if version:
+        return f"modulo-pop_modelos-v{version}.zip"
+    return "modulo-pop_modelos.zip"
+
 def _find_grindx_root():
     current = Path(__file__).resolve().parent
     while current.parent != current:
@@ -454,7 +460,15 @@ def uninstall(dry_run: bool = False):
 
 def package(dry_run: bool = False):
     dist_dir = STANDALONE_ROOT / "dist"
-    zip_path = dist_dir / "modulo-pop_modelos.zip"
+    manifest = STANDALONE_ROOT / "module.json"
+
+    version = None
+    if manifest.exists():
+        import json
+        with open(manifest, encoding="utf-8") as f:
+            version = json.load(f).get("version")
+
+    zip_path = dist_dir / _zip_filename(version)
     if dry_run:
         logger.info("[DRY-RUN] Criaria %s com:", zip_path)
         logger.info("  - module.json")

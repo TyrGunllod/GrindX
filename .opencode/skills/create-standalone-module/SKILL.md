@@ -24,6 +24,8 @@ Antes dos parâmetros do módulo, **sempre pergunte qual padrão de frontend e b
 - Se escolher **(A2)**, mesmo frontend, SQL Server com raw SQL (sem ORM/Alembic). Exporta para `api-sqlserver`.
 - Se escolher **(B)**, pergunte detalhadamente e adapte os templates.
 
+> **Pasta `shared` do frontend**: o módulo referencia `/shared/core.css`, `/shared/config.js` e `/shared/app.js` (caminho absoluto a partir da raiz da webapp). No GrindX isso usa a **`shared` padrão**; a pasta `shared/` dentro do frontend é **apenas fallback standalone** (para `make dev-frontend`) e **não é copiada** no export/package. O `version.js` é específico do módulo e fica na **raiz** de cada frontend (carregado como `version.js`).
+
 ## Parameter Questionnaire
 
 Após definir o padrão de tech stack, pergunte ao usuário cada parâmetro abaixo.
@@ -134,10 +136,10 @@ Project_Management/modulo-{module_name}/
 │   ├── {frontend_prefix}_{tab1}/
 │   │   ├── index.html, script.js, style.css    # Templates/shared/frontend/*
 │   │   ├── version.js                           # Templates/shared/frontend/version.js (raiz do frontend)
-│   │   ├── shared/                              # fallback APENAS standalone — NÃO copiado no export
+│   │   ├── shared/                              # fallback APENAS standalone — NÃO copiado no export/package
 │   │   │   ├── core.css                         # Templates/shared/frontend/shared/core.css
 │   │   │   └── app.js                           # Templates/shared/frontend/shared/app.js
-│   │   └── (style.css importa /shared/core.css; HTML carrega /shared/config.js, /shared/app.js)
+│   │   └── (style.css importa /shared/core.css)
 │   └── ...
 ├── scripts/
 │   └── version.py                               # Templates/shared/scripts/version.py
@@ -195,10 +197,10 @@ Template com `DATABASE_URL`. Substitua `{module_name}` no nome do banco.
 Exclui `__pycache__/`, `.env`, `.pytest_cache/`, `dist/`, `*.db`, IDEs.
 
 ### `frontend/shared/core.css` → `templates/shared/frontend/shared/core.css`
-Variáveis CSS (`--primary`, `--bg-card`, `--border-color`, etc.) para standalone sem o monorepo.
+Variáveis CSS (`--primary`, `--bg-card`, `--border-color`, etc.) para standalone sem o monorepo. **Apenas fallback standalone** — no GrindX o módulo usa a `shared` padrão em `/shared/core.css` e a `shared/` do módulo **não é copiada** no export.
 
 ### `frontend/shared/app.js` → `templates/shared/frontend/shared/app.js`
-Stub vazio — no GrindX fornece `window.grindx.session`, no standalone é vazio.
+Stub vazio — no GrindX fornece `window.grindx.session`, no standalone é vazio. **Apenas fallback standalone**, não é copiada no export.
 
 **Fluxo de import no router (dual-context):**
 - GrindX: `app.database.get_db` + `app.auth.dependencies.get_current_user`
@@ -302,7 +304,7 @@ Use templates:
 - `templates/shared/frontend/index.html` — estrutura HTML
 - `templates/shared/frontend/script.js` — JS com API calls + dual-context auth
 - `templates/shared/frontend/style.css` — estilos do módulo
-- `templates/shared/frontend/shared/version.js` — global `window.{module_upper}_VERSION` (badge de versão; substitua `{module_upper}`)
+- `templates/shared/frontend/version.js` — global `window.{module_upper}_VERSION` (badge de versão; substitua `{module_upper}`)
 
 **Estrutura padrão do header da página (obrigatória em todo módulo):**
 ```html
@@ -314,25 +316,31 @@ Use templates:
         </div>
         <p class="text-muted">{menu_description}</p>
     </div>
-    <div class="header-actions">
+    <div class="actions-group" style="margin-top: var(--space-4);">
         <button class="btn btn-primary" id="btn-novo">+ Novo {entity_name}</button>
     </div>
 </header>
 ```
 - `h1` e o badge `viz-version` ficam lado a lado dentro de `.page-header-container`
 - A descrição (`{menu_description}`) fica abaixo do container, dentro do mesmo `<div>`
-- `.page-header-container` é definido no `core.css` (ver abaixo); não duplicar no style.css do módulo
+- A área de botões usa `class="actions-group"` com `style="margin-top: var(--space-4);"` — nunca `header-actions` (não existe no monorepo)
+- `.page-header-container` é definido no `core.css` e usa `justify-content: space-between` (h1 à esquerda, badge à direita), `width: 100%` e `gap: var(--space-3, 0.75rem)` — responsivo, sem `gap` fixo; não duplicar no style.css do módulo
+- `.viz-version` também é definido no `core.css` com `white-space: nowrap` — o número da versão nunca quebra internamente e o badge permanece visível quando a página é reduzida
+- Como `.page-header` usa `flex-direction: column; align-items: flex-start`, o primeiro `<div>` filho precisa de `width: 100%` (regra `.page-header > div { width: 100%; }` no `style.css`) para o `.page-header-container` ocupar a largura total e o badge ir ao **extremo direito**
 
 **Regras HTML:**
 - HTML5 semântico, zero dependências externas (sem CDN, sem bibliotecas)
 - `<meta name="viewport" content="width=device-width, initial-scale=1.0">` obrigatório
-- Ordem de scripts obrigatória: **`config.js` → `app.js` → `script.js`**. O `config.js` define `window.GRINDX_CONFIG.API_BASE_URL` que `app.js` consome. O `script.js` (com `defer`) carrega por último.
-- Incluir no `<head>`:
+- Incluir no `<head>` (caminho **absoluto** `/shared/...` = `shared` padrão do GrindX; `version.js` fica na **raiz** do frontend):
   ```html
-  <script src="../../shared/config.js"></script>
-  <script src="../../shared/app.js"></script>
+  <link rel="stylesheet" href="/shared/core.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="/shared/config.js"></script>
+  <script src="/shared/app.js"></script>
+  <script src="version.js"></script>
   <script src="script.js" defer></script>
   ```
+- Ordem: `config.js` → `app.js` → `version.js` → `script.js` (o `config.js` define `window.GRINDX_CONFIG.API_BASE_URL`; `version.js` define `window.{module_upper}_VERSION`)
 - Modais com `role="dialog"`, `aria-modal="true"`, `aria-labelledby`
 - `data-label` em `<td>` para CSS mobile
 
@@ -358,16 +366,7 @@ Use templates:
 **Regras JS:**
 - NUNCA importar bibliotecas externas (React, Vue, jQuery, Axios)
 - NUNCA usar TypeScript — apenas JS puro
-- **API URL via `window.GRINDX_CONFIG.API_BASE_URL`**: o monorepo define em `shared/config.js` (incluído antes de `app.js`). Padrão: `{protocol}//{hostname}:8002/v1`. Pode ser sobrescrito injetando `window.__GRINDX_API_URL` no nginx/CSP.
-- **O `config.js` do módulo** (em `shared/config.js`) define o fallback standalone. Ele detecta o contexto por porta (`7080` → backend standalone `:7000`, senão → `:8002`) e respeita `window.__GRINDX_API_URL` se injetado.
-- **No `script.js`**, use o dual-context pattern:
-  ```js
-  const API_BASE = (function(){
-    if (window.GRINDX_CONFIG?.API_BASE_URL)
-      return window.GRINDX_CONFIG.API_BASE_URL + '/meu-endpoint';
-    return 'http://localhost:7000/v1/meu-endpoint';
-  })();
-  ```
+- `API_BASE`: relativa no GrindX (`/{route_api}`), absoluta no standalone (`http://localhost:7000/{route_api}`)
 - `_fetch()` com detecção de contexto: `window.grindx.session` (JWT) vs `API_KEY`
 - `downloadFromUrl()` para PDF/binários com fallback para `?api_key=` (standalone)
 - Eventos via delegated event bubbling no container pai
@@ -399,13 +398,15 @@ Use templates em `templates/shared/support/`:
 
 > Gerado por `templates/shared/scripts/version.py` — mesmo padrão do `pop_viz`.
 
-- **`scripts/version.py`** → `templates/shared/scripts/version.py` — gera a próxima versão semver a partir de conventional commits (`BREAKING`/`feat!:` → MAJOR, `feat:` → MINOR, demais → PATCH). Atualiza `module.json` + `CHANGELOG.md` + **todas** as `frontend/*/shared/version.js` (glob por aba). Flags: `--dry-run`, `--no-tag`; exit 2 em erro de git. Ignora commits de release (`docs: registrar changelog`).
+> **Version badge: padrão vs standalone** — módulos **padrão** do monorepo (criados direto em `apps/frontend-webapp/modules/`) **não** geram versão própria: exibem a versão do sistema via `window.grindx.version.get()` (vinda de `version.json`), igual à tela de login. Apenas módulos **standalone/importados** geram a própria versão (`window.{module_upper}_VERSION` via `scripts/version.py`). Esta seção 5.5 aplica-se apenas a módulos standalone.
+
+- **`scripts/version.py`** → `templates/shared/scripts/version.py` — gera a próxima versão semver a partir de conventional commits (`BREAKING`/`feat!:` → MAJOR, `feat:` → MINOR, demais → PATCH). Atualiza `module.json` + `CHANGELOG.md` + **todas** as `frontend/*/version.js` (glob por aba, `version.js` na **raiz** de cada frontend). Flags: `--dry-run`, `--no-tag`; exit 2 em erro de git. Ignora commits de release (`docs: registrar changelog`).
 - **`scripts/version.py`** usa o placeholder `{module_upper}` para o global JS (`window.{module_upper}_VERSION`).
 - **`CHANGELOG.md`** — criado na primeira execução; formatação por tipo de commit.
-- **Frontend badge**: cada `frontend/*/index.html` carrega `shared/version.js` (antes de `script.js`), inclui `<span id="viz-version">` no header e `script.js` chama `setBadgeVersao()` (`templates/shared/frontend/*` já contém esses trechos). `style.css` esconde o badge em `@media print`.
+- **Frontend badge**: cada `frontend/*/index.html` carrega `version.js` (antes de `script.js`), inclui `<span id="viz-version">` no header e `script.js` chama `setBadgeVersao()` (`templates/shared/frontend/*` já contém esses trechos). `style.css` esconde o badge em `@media print`.
 
 **Fluxo de release em duas etapas** (a tag deve ficar no commit que contém o CHANGELOG):
-1. `python scripts/version.py --no-tag` — atualiza `module.json` + `shared/version.js` + `CHANGELOG.md`
+1. `python scripts/version.py --no-tag` — atualiza `module.json` + `version.js` + `CHANGELOG.md`
 2. Commitar esses artefatos e então criar a tag `git tag vX.Y.Z`
 ⚠️ O padrão `make version` cria a tag no commit atual, ANTES do commit dos artefatos — `git checkout vX.Y.Z` não conteria o changelog.
 
@@ -438,6 +439,8 @@ Use template: `templates/sqlserver/module.json` (inclui `target_api: "sqlserver"
 
 Use template: `templates/shared/export.py`
 Substitua `{module_name}`, `{entity_name}`.
+
+**Nomenclatura do zip** — o `package()` nomeia o zip com a versão lida do `module.json`: `dist/modulo-{pasta_do_modulo}-v{version}.zip` (ex: `modulo-pop_docs-v1.0.0.zip`); sem versão no manifest → `modulo-{pasta_do_modulo}.zip`. Mesmo padrão do `pop_docs` (`_zip_filename`). A importação no GrindX usa o `module_name` do manifest (o fallback fuzzy `*{module_name}*.zip` aceita o nome com versão).
 
 ### Adaptação para `target_api`
 
@@ -505,7 +508,7 @@ pytest tests/ -k {module_name} -v
 - [ ] Migration: Alembic migration file (PostgreSQL)
 - [ ] Support: requirements.txt (com python-dotenv), pytest.ini, run_tests.ps1, Makefile (com dev-backend/dev-frontend)
 - [ ] Versionamento: `scripts/version.py` + targets `version`/`version-dry-run` no Makefile
-- [ ] Badge de versão: `shared/version.js` em cada aba frontend, `<span id="viz-version">` no header, `setBadgeVersao()` em `script.js`, `.viz-version` em `style.css`
+- [ ] Badge de versão: `version.js` na raiz de cada aba frontend, `<span id="viz-version">` no header, `setBadgeVersao()` em `script.js` (`.viz-version` e `.page-header-container` vêm do `core.css` — não duplicar no `style.css`)
 - [ ] `AGENTS.md` criado na raiz do modulo com regras para agentes de IA
 - [ ] `AGENTS.md` documenta o fluxo de release em duas etapas (`--no-tag` → commit → `git tag vX.Y.Z`)
 - [ ] Testes passam: `pytest app/modules/{module_name}/tests/ -v`
@@ -513,6 +516,7 @@ pytest tests/ -k {module_name} -v
 - [ ] `module.json` criado na raiz do standalone com `frontend_tabs` array
 - [ ] `export.py`: usa `STANDALONE_ROOT` para paths de frontend, migration e dist
 - [ ] `export.py`: `--dry-run` simula sem alterar GrindX
+- [ ] `export.py`: **exclui a pasta `shared/` do módulo** da cópia e do zip (no GrindX usa-se a `shared` padrão em `/shared`)
 
 ### SQL Server (opção A2) — Diferenças
 

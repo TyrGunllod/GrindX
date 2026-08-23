@@ -2,6 +2,31 @@
 
 <!-- version list -->
 
+## v1.72.0 (2026-08-19)
+
+### Bug Fixes
+
+- Mover scripts do head para o fim do body no template do frontend (evita render blocking e quebra
+  do frontend)
+  ([`fce3add`](https://github.com/TyrGunllod/GrindX/commit/fce3addb63adeb857720f54411d86d17cacbd72e))
+
+### Documentation
+
+- Add spec and plan for fixed modal header/footer scroll pattern
+  ([`d35312b`](https://github.com/TyrGunllod/GrindX/commit/d35312b9702f3ed816018754c9e9ca558dc1ee25))
+
+- **skill**: Align module header/badge templates with monorepo CSS
+  ([`3c8de1c`](https://github.com/TyrGunllod/GrindX/commit/3c8de1cbdaaab73c6a8c207900ce7e83d5bbd015))
+
+- **skill**: Sync create-standalone-module with latest conventions
+  ([`7baf353`](https://github.com/TyrGunllod/GrindX/commit/7baf35328769ea37e0f6f3194e448ab05c72e1b5))
+
+### Features
+
+- Documentar e implementar a nomenclatura do zip com versao no template create-standalone-module
+  ([`8399398`](https://github.com/TyrGunllod/GrindX/commit/8399398d35e19611a53da7d878694d1b23940e11))
+
+
 ## v1.71.0 (2026-08-14)
 
 ### Documentation

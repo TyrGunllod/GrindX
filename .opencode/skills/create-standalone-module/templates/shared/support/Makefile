@@ -41,10 +41,10 @@ dev-frontend:
 package:
 	@python -m app.modules.$(MODULE).export package
 	@echo.
-	@echo Zip gerado: dist/modulo-$(MODULE).zip
+	@echo Zip gerado: dist/modulo-$(MODULE)-vX.Y.Z.zip (versao do module.json)
 	@echo Estrutura:
-	@python -c "import zipfile; [print('  ' + f) for f in zipfile.ZipFile('dist/modulo-$(MODULE).zip').namelist()[:10]]"
-	@python -c "import zipfile; n=len(zipfile.ZipFile('dist/modulo-$(MODULE).zip').namelist()); print(f'  ... ({n} arquivos total)')"
+	@for %%f in (dist/modulo-$(MODULE)-*.zip) do @python -c "import zipfile; [print('  ' + f) for f in zipfile.ZipFile('%%f').namelist()[:10]]"
+	@for %%f in (dist/modulo-$(MODULE)-*.zip) do @python -c "import zipfile; n=len(zipfile.ZipFile('%%f').namelist()); print(f'  ... ({n} arquivos total)')"
 
 dry-run:
 	@python -m app.modules.$(MODULE).export package --dry-run
@@ -62,7 +62,7 @@ export-dry:
 import: package
 	@echo.
 	@echo Copiando zip para import/ do GrindX...
-	@python -c "import shutil,os; os.makedirs('../GrindX/import',exist_ok=True); shutil.copy2('dist/modulo-$(MODULE).zip','../GrindX/import/'); print('Copiado para ../GrindX/import/modulo-$(MODULE).zip')"
+	@for %%f in (dist/modulo-$(MODULE)-*.zip) do @python -c "import shutil,os; os.makedirs('../GrindX/import',exist_ok=True); shutil.copy2('%%f','../GrindX/import/'); print('Copiado para ../GrindX/import/' + os.path.basename('%%f'))"
 	@echo.
 	@echo Proximo passo: importar via API ou frontend
 	@echo   API:  curl -X POST -H "Authorization: Bearer ^<token^>" "http://localhost:8000/v1/import/$(MODULE)?force=true"
