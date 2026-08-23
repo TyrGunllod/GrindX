@@ -18,10 +18,10 @@ class Settings(BaseSettings):
     AGENT_SCHEMA: str = "agente"
     AGENT_TABLE: str = "chunks"
 
-    # --- LLM (geração, via OpenCode Zen) ---
+    # --- LLM (geração, via DeepSeek) ---
     LLM_API_KEY: str = ""
-    LLM_BASE_URL: str = "https://opencode.ai/zen/v1"
-    LLM_MODEL: str = "big-pickle"
+    LLM_BASE_URL: str = "https://api.deepseek.com"
+    LLM_MODEL: str = "deepseek-chat"
     LLM_TIMEOUT_SECONDS: int = 60
 
     # --- Embeddings (modelo local) ---

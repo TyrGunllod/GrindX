@@ -1,4 +1,4 @@
-"""Geração de respostas com o LLM (via OpenCode Zen)."""
+"""Geração de respostas com o LLM (via DeepSeek)."""
 
 import time
 
