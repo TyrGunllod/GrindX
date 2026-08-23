@@ -34,7 +34,7 @@ O restante da tela é uma **tabela** com a lista de todos os usuários cadastrad
 
 ### Botões e ícones da tela principal
 
-- **+ Novo Usuário** (botão no canto superior direito) — abre a janela de **cadastro** de um novo usuário. Em telas pequenas, o texto some e fica só o ícone de "+".
+- **+ Novo Usuário** (botão no canto superior esquerdo) — abre a janela de **cadastro** de um novo usuário. Em telas pequenas, o texto some e fica só o ícone de "+".
 - **Selo de Status (Ativo / Inativo)** — clique nele para **ativar ou desativar** a pessoa. Ao passar o mouse, aparece a dica *"Clique para desativar"* (se estiver ativo) ou *"Clique para ativar"* (se estiver inativo). Veja o passo a passo na seção de status.
 - **Selo de Aprovador (Sim / Não)** — clique nele para **dar ou tirar** o papel de aprovador da pessoa. Ao passar o mouse, aparece a dica *"Clique para tornar aprovador"* ou *"Clique para remover aprovador"*. Veja mais na seção própria.
 - **Ícone de lápis (✏️)** — na coluna Ações. **Edita o usuário**: abre a mesma janela do cadastro, já preenchida com os dados atuais, para você alterar. A dica ao passar o mouse é *"Editar Usuário"*.
