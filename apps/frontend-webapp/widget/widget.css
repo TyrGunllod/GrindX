@@ -31,6 +31,42 @@
     transform: translateY(-2px) scale(1.04);
 }
 
+.grindx-ai-bubble {
+    position: fixed;
+    bottom: 55px;
+    right: 72px;
+    max-width: 220px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+    z-index: 8999;
+}
+
+.grindx-ai-bubble.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.grindx-ai-bubble::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -8px;
+    margin-top: -8px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent transparent transparent var(--bg-card);
+}
+
 .grindx-ai-panel {
     position: fixed;
     bottom: 96px;

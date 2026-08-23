@@ -15,6 +15,20 @@
         return document.body.dataset.activeModule || '';
     }
 
+    function getUserName() {
+        const profile = (window.grindx && window.grindx.session && window.grindx.session.getUserProfile)
+            ? window.grindx.session.getUserProfile()
+            : {};
+        return profile.nome_completo || profile.name || profile.username || profile.email || '';
+    }
+
+    function getGreeting() {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return 'Bom dia';
+        if (hour >= 12 && hour < 18) return 'Boa tarde';
+        return 'Boa noite';
+    }
+
     function createWidget() {
         const fab = document.createElement('button');
         fab.className = 'grindx-ai-fab';
@@ -38,6 +52,31 @@
 
         document.body.appendChild(fab);
         document.body.appendChild(panel);
+
+        const bubble = document.createElement('div');
+        bubble.className = 'grindx-ai-bubble';
+        bubble.setAttribute('aria-hidden', 'true');
+        const userName = getUserName();
+        bubble.textContent = userName
+            ? getGreeting() + ', ' + userName + '!'
+            : getGreeting() + '!';
+        document.body.appendChild(bubble);
+
+        let bubbleTimer = null;
+
+        function showBubble() {
+            if (panel.classList.contains('open')) return;
+            bubble.classList.add('show');
+            clearTimeout(bubbleTimer);
+            bubbleTimer = setTimeout(function () {
+                bubble.classList.remove('show');
+            }, 6000);
+        }
+
+        function hideBubble() {
+            clearTimeout(bubbleTimer);
+            bubble.classList.remove('show');
+        }
 
         const messages = panel.querySelector('.grindx-ai-messages');
         const field = panel.querySelector('.grindx-ai-field');
@@ -94,10 +133,14 @@
             if (e.key === 'Enter') ask(field.value);
         });
         fab.addEventListener('click', function () {
+            hideBubble();
             const open = panel.classList.toggle('open');
             panel.setAttribute('aria-hidden', String(!open));
             if (open) field.focus();
         });
+        fab.addEventListener('mouseenter', showBubble);
+        fab.addEventListener('mouseleave', hideBubble);
+        setTimeout(showBubble, 1500);
         closeBtn.addEventListener('click', function () {
             panel.classList.remove('open');
             panel.setAttribute('aria-hidden', 'true');
