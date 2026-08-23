@@ -1,4 +1,4 @@
-"""Geração de respostas com o DeepSeek (deepseek-chat)."""
+"""Geração de respostas com o LLM (via OpenCode Zen)."""
 
 import httpx
 
@@ -37,10 +37,10 @@ def generate(
     if not chunks:
         return FALLBACK_ANSWER
 
-    api_key = api_key or settings.DEEPSEEK_API_KEY
-    base_url = base_url or settings.DEEPSEEK_BASE_URL
-    model = model or settings.DEEPSEEK_MODEL
-    timeout = timeout or settings.DEEPSEEK_TIMEOUT_SECONDS
+    api_key = api_key or settings.LLM_API_KEY
+    base_url = base_url or settings.LLM_BASE_URL
+    model = model or settings.LLM_MODEL
+    timeout = timeout or settings.LLM_TIMEOUT_SECONDS
 
     payload = {
         "model": model,

@@ -25,7 +25,7 @@ def test_build_context_formats_sources():
     assert "Produtos > Novo" in context
 
 
-def test_generate_calls_deepseek(monkeypatch):
+def test_generate_calls_llm_api(monkeypatch):
     class FakeResponse:
         def raise_for_status(self):
             return None
@@ -42,8 +42,8 @@ def test_generate_calls_deepseek(monkeypatch):
         "como cadastrar?",
         [_chunk()],
         api_key="key",
-        base_url="https://api.deepseek.com",
-        model="deepseek-chat",
+        base_url="https://opencode.ai/zen/v1",
+        model="big-pickle",
         timeout=10,
     )
     assert answer == "Resposta de teste"

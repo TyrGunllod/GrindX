@@ -18,11 +18,11 @@ class Settings(BaseSettings):
     AGENT_SCHEMA: str = "agente"
     AGENT_TABLE: str = "chunks"
 
-    # --- DeepSeek (geração) ---
-    DEEPSEEK_API_KEY: str = ""
-    DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"
-    DEEPSEEK_MODEL: str = "deepseek-chat"
-    DEEPSEEK_TIMEOUT_SECONDS: int = 60
+    # --- LLM (geração, via OpenCode Zen) ---
+    LLM_API_KEY: str = ""
+    LLM_BASE_URL: str = "https://opencode.ai/zen/v1"
+    LLM_MODEL: str = "big-pickle"
+    LLM_TIMEOUT_SECONDS: int = 60
 
     # --- Embeddings (modelo local) ---
     EMBEDDING_MODEL: str = "paraphrase-multilingual-MiniLM-L12-v2"

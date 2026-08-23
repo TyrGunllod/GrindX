@@ -13,7 +13,7 @@ Assistente de IA (RAG) que responde perguntas sobre os manuais do ERP GrindX.
 
 ```bash
 pip install -r requirements.txt
-copy .env.example .env   # preencher DATABASE_URL e DEEPSEEK_API_KEY
+copy .env.example .env   # preencher DATABASE_URL e LLM_API_KEY
 uvicorn app.main:app --host 0.0.0.0 --port 8003
 ```
 
