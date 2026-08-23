@@ -2,6 +2,28 @@
 
 <!-- version list -->
 
+## v1.73.0 (2026-08-23)
+
+### Code Style
+
+- **frontend**: Reduce mascot size by 20%
+  ([`d4b5270`](https://github.com/TyrGunllod/GrindX/commit/d4b5270d1aa7852beb4491c855c6bb42f0a332dc))
+
+- **frontend**: Reduce mascot size by another 20%
+  ([`1dea5fe`](https://github.com/TyrGunllod/GrindX/commit/1dea5fed3ee0fa9d8655831174f16d42c502459d))
+
+### Features
+
+- **frontend**: Add intro message to mascot greeting
+  ([`12ad155`](https://github.com/TyrGunllod/GrindX/commit/12ad1558ebc3652e0fed6d9594180c553730d044))
+
+- **frontend**: Greeting bubble on mascot with user name
+  ([`e38830d`](https://github.com/TyrGunllod/GrindX/commit/e38830d4307cf76a04a01faf823878980fa7f005))
+
+- **frontend**: Use chibi image in chat panel header
+  ([`96f8457`](https://github.com/TyrGunllod/GrindX/commit/96f8457f1664a2f14f91a81b14f0bad3c3d8bba0))
+
+
 ## v1.72.0 (2026-08-19)
 
 ### Bug Fixes
