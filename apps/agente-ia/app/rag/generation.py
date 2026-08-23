@@ -17,7 +17,7 @@ SYSTEM_PROMPT = (
     "Não use conhecimento externo. "
     "Não cite fontes no texto da resposta — as fontes são exibidas separadamente "
     "na interface. "
-    'Se o contexto não cobrir a pergunta, responda exatamente: '
+    "Se o contexto não cobrir a pergunta, responda exatamente: "
     '"Não encontrei essa informação nos manuais disponíveis."'
 )
 
