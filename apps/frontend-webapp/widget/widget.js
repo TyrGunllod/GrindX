@@ -20,7 +20,7 @@
         fab.className = 'grindx-ai-fab';
         fab.type = 'button';
         fab.setAttribute('aria-label', 'Abrir assistente de IA');
-        fab.innerHTML = '<i class="fas fa-robot" aria-hidden="true"></i>';
+        fab.innerHTML = '<img src="widget/grindx_chibi.png" alt="Assistente GrindX" />';
 
         const panel = document.createElement('div');
         panel.className = 'grindx-ai-panel';
