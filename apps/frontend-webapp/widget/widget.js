@@ -27,7 +27,7 @@
         panel.setAttribute('aria-hidden', 'true');
         panel.innerHTML =
             '<div class="grindx-ai-panel-header">' +
-                '<span><i class="fas fa-robot" aria-hidden="true"></i> Assistente GrindX</span>' +
+                '<span><img src="widget/grindx_chibi.png" class="grindx-ai-header-img" alt="" /> Assistente GrindX</span>' +
                 '<button type="button" class="grindx-ai-close" aria-label="Fechar">&times;</button>' +
             '</div>' +
             '<div class="grindx-ai-messages"></div>' +

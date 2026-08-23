@@ -79,6 +79,13 @@
     gap: var(--space-2);
 }
 
+.grindx-ai-header-img {
+    width: 22px;
+    height: 22px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 .grindx-ai-panel-header i {
     color: var(--primary);
 }
