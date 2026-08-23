@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import String, Text, delete, select, text
+from sqlalchemy import String, Text, delete, func, select, text
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from app.core.config import settings
@@ -76,6 +76,21 @@ def list_modules() -> list[str]:
     stmt = select(Chunk.module).distinct().order_by(Chunk.module)
     with Session(get_engine()) as session:
         return list(session.scalars(stmt))
+
+
+def list_manuals() -> list[dict]:
+    """Agrupa os manuais indexados por módulo e arquivo, com contagem de chunks."""
+    stmt = (
+        select(Chunk.module, Chunk.filename, func.count())
+        .group_by(Chunk.module, Chunk.filename)
+        .order_by(Chunk.module, Chunk.filename)
+    )
+    with Session(get_engine()) as session:
+        rows = session.execute(stmt).all()
+    return [
+        {"module": module, "filename": filename, "chunks": count}
+        for module, filename, count in rows
+    ]
 
 
 def clear_module(module: str) -> int:

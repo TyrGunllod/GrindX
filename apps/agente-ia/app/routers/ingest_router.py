@@ -44,3 +44,8 @@ def ingest_manual(request: IngestRequest) -> IngestResponse:
 @router.get("/modulos")
 def list_modules() -> dict:
     return {"modules": vectorstore.list_modules()}
+
+
+@router.get("/manuais")
+def list_manuais() -> dict:
+    return {"manuais": vectorstore.list_manuals()}
