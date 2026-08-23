@@ -39,17 +39,35 @@ Aplicável quando há `module.json` e a pasta `frontend/` na raiz do projeto sta
 - **Descrever explicitamente cada botão e o que ele faz** (ex.: "Botão Salvar — grava o cadastro e fecha a janela."; "Botão Cancelar — descarta as alterações."). Nenhum botão visível pode ficar sem explicação.
 - **Para cada modal/janela, descrever como preencher**, campo a campo, na ordem em que aparecem.
 
+## Questionamentos antes de gerar
+
+Antes de escrever o manual, **faça perguntas ao solicitante** para alinhar o escopo e melhorar a qualidade das respostas do agente. Faça **uma pergunta de cada vez** e aguarde a resposta.
+
+Perguntas sugeridas (adapte ao contexto):
+
+1. **Quais perguntas o manual deve responder?** Ex.: "o que faz o botão X?", "como preencher o cadastro?", "como faço para aprovar?", "onde vejo o saldo?". Isso define o que priorizar.
+2. **Escopo:** o manual deve cobrir todas as telas/fluxos do módulo ou apenas alguns?
+3. **Nível de detalhe:** objetivo e direto, ou passo a passo detalhado (campo a campo)?
+4. **Público-alvo:** colaboradores iniciantes ou experientes? (ajusta tom e detalhamento)
+5. **Prioridades:** há alguma tela, modal ou fluxo para destacar? Algum a omitir?
+6. **Conteúdo existente:** já existe algum manual/texto do módulo para aproveitar ou ajustar?
+7. **Tom:** formal, informal ou mais técnico de negócio?
+
+Use as respostas para orientar a leitura do código e a escrita do manual.
+
 ## Passos
 
 1. Detecte o contexto (monorepo ou standalone).
 2. Identifique o módulo-alvo:
    - Monorepo: receba o `slug` (ex.: `users`, `home`, `configurar-agente`).
    - Standalone: leia o `module.json` para obter `module_name`/`menu_label` e liste as pastas em `frontend/`.
-3. Leia o `index.html` e o `script.js` de cada aba/tela (e `style.css` apenas para confirmar o que é visual).
-4. Identifique as funcionalidades de uso: cada tela, modal ou fluxo vira uma seção.
-5. Escreva o manual no local correto:
+3. **Faça os questionamentos** (seção "Questionamentos antes de gerar") para alinhar escopo, perguntas a responder e nível de detalhe.
+4. Leia o `index.html` e o `script.js` de cada aba/tela (e `style.css` apenas para confirmar o que é visual).
+5. Identifique as funcionalidades de uso: cada tela, modal ou fluxo vira uma seção.
+6. Escreva o manual no local correto:
    - Monorepo: `apps/agente-ia/manuals/<slug>.md`.
    - Standalone: **crie a pasta `manuals/` na raiz do standalone** (se não existir) e salve `manuals/<module_name>.md`.
+7. **Revise com o solicitante** (seção "Ajustes e revisão do manual") e ajuste até a aprovação.
 
 ## Estrutura do manual
 
@@ -74,6 +92,24 @@ Aplicável quando há `module.json` e a pasta `frontend/` na raiz do projeto sta
 - **Explique o preenchimento** de cada modal: como abrir, e cada campo com o que deve ser informado.
 - Mencione permissões visíveis ("disponível somente para administradores") quando relevante ao uso.
 - Linguagem simples, direta e em português. Sem jargão técnico.
+
+## Ajustes e revisão do manual
+
+Após gerar o manual, **apresente um resumo ao solicitante e pergunte se deseja ajustes**. Objetivo: garantir que o manual responda bem às perguntas esperadas e tenha o texto adequado.
+
+Pergunte (uma de cada vez):
+
+- O manual cobre as perguntas que você esperava? Falta alguma tela, fluxo ou botão?
+- Algum texto precisa ser ajustado (tom, clareza, nível de detalhe) para melhorar a resposta?
+- Há algo a remover (ex.: conteúdo fora do escopo ou permissões irrelevantes)?
+
+Ao receber o feedback:
+
+1. Ajuste o manual no mesmo arquivo de saída (Monorepo: `apps/agente-ia/manuals/<slug>.md`; Standalone: `manuals/<module_name>.md`).
+2. Releia o trecho ajustado para garantir que continua apenas na perspectiva do usuário final, sem detalhes técnicos.
+3. Confirme com o solicitante se o ajuste atendeu, repetindo o ciclo até a aprovação.
+
+**Lembre-se:** o manual alimenta o assistente de IA — o objetivo é que ele responda com precisão às perguntas que o solicitante indicar nos questionamentos.
 
 ## Saída
 
