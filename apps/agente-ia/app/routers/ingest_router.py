@@ -49,3 +49,9 @@ def list_modules() -> dict:
 @router.get("/manuais")
 def list_manuais() -> dict:
     return {"manuais": vectorstore.list_manuals()}
+
+
+@router.delete("/manuais")
+def remove_manual(module: str, filename: str) -> dict:
+    removed = vectorstore.delete_manual(module, filename)
+    return {"removed": removed}

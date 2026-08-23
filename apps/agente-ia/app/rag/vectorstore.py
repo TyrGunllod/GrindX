@@ -99,3 +99,13 @@ def clear_module(module: str) -> int:
         result = session.execute(delete(Chunk).where(Chunk.module == module))
         session.commit()
     return result.rowcount or 0
+
+
+def delete_manual(module: str, filename: str) -> int:
+    """Remove todos os chunks de um manual (módulo + arquivo)."""
+    with Session(get_engine()) as session:
+        result = session.execute(
+            delete(Chunk).where(Chunk.module == module, Chunk.filename == filename)
+        )
+        session.commit()
+    return result.rowcount or 0

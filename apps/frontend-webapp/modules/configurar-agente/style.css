@@ -98,3 +98,12 @@ td {
     font-size: 0.85rem;
     color: var(--text-main);
 }
+
+.danger-btn {
+    color: var(--danger, #ef4444);
+}
+
+.danger-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger, #ef4444);
+}

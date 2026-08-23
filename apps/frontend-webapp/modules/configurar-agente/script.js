@@ -135,7 +135,7 @@ class ConfigurarAgenteController extends window.grindx.controllers.BaseControlle
         const tbody = document.getElementById('manuaisBody');
         tbody.innerHTML = '';
         if (!manuais || !manuais.length) {
-            tbody.innerHTML = '<tr><td colspan="3" class="text-muted">' +
+            tbody.innerHTML = '<tr><td colspan="4" class="text-muted">' +
                 (emptyMsg || 'Nenhum manual indexado ainda.') + '</td></tr>';
             return;
         }
@@ -147,11 +147,36 @@ class ConfigurarAgenteController extends window.grindx.controllers.BaseControlle
             tdArquivo.textContent = m.filename;
             const tdChunks = document.createElement('td');
             tdChunks.textContent = m.chunks;
+            const tdAcoes = document.createElement('td');
+
+            const btn = document.createElement('button');
+            btn.className = 'btn-icon danger-btn';
+            btn.title = 'Remover manual';
+            btn.setAttribute('aria-label', 'Remover manual');
+            btn.innerHTML = '<i class="fas fa-trash" aria-hidden="true"></i>';
+            btn.addEventListener('click', () => this.deleteManual(m.module, m.filename));
+            tdAcoes.appendChild(btn);
+
             tr.appendChild(tdModulo);
             tr.appendChild(tdArquivo);
             tr.appendChild(tdChunks);
+            tr.appendChild(tdAcoes);
             tbody.appendChild(tr);
         });
+    }
+
+    async deleteManual(module, filename) {
+        if (!window.confirm('Remover o manual "' + filename + '" do módulo "' + module + '"?')) return;
+        try {
+            const url = this.agentUrl + '/v1/agente/manuais?module=' +
+                encodeURIComponent(module) + '&filename=' + encodeURIComponent(filename);
+            const resp = await fetch(url, { method: 'DELETE' });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            this.toastSuccess('Manual removido.');
+            await this.loadIndexedManuals();
+        } catch (e) {
+            this.toastError(e);
+        }
     }
 }
 
