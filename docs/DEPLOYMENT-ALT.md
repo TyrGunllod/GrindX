@@ -2,6 +2,8 @@
 
 # Deploy Alternativo — Agente de IA GrindX
 
+> **Passo a passo completo do Render:** veja [DEPLOYMENT-RENDER.md](DEPLOYMENT-RENDER.md).
+
 Guia usado quando a **OCI free não permite criar a instância** (erro de *available domain* / falta de capacidade da VM Ampere A1). Mantém o requisito do desafio de **pelo menos 1 serviço OCI** usando o **OCI Object Storage** (sempre gratuito, regional e **sem problema de AD**).
 
 ---

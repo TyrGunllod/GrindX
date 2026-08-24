@@ -52,6 +52,7 @@ GrindX/
 │   ├── DEPLOYMENT.md           ✅ Deploy com containers
 │   ├── DEPLOYMENT-OCI.md       ✅ Deploy do Agente de IA na OCI
 │   ├── DEPLOYMENT-ALT.md       ✅ Deploy alternativo (Render + Neon + OCI Object Storage)
+│   ├── DEPLOYMENT-RENDER.md    ✅ Passo a passo do deploy no Render
 │   ├── DEPLOYMENT-SUPABASE.md  ✅ Configuração do Supabase (Postgres + pgvector)
 │   ├── SECURITY.md             ✅ JWT e RBAC
 │   ├── SETUP.md                ✅ Guia de instalação
