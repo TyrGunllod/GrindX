@@ -14,9 +14,13 @@ router = APIRouter(prefix="/v1/agente", tags=["Agente"])
 
 @router.post("/manuais", response_model=IngestResponse)
 def ingest_manual(request: IngestRequest) -> IngestResponse:
-    chunks = ingestion.chunk_markdown(request.content)
+    chunks = (
+        ingestion.chunk_csv(request.content)
+        if request.filename.lower().endswith(".csv")
+        else ingestion.chunk_markdown(request.content)
+    )
     if not chunks:
-        raise HTTPException(status_code=400, detail="Nenhum conteúdo no manual")
+        raise HTTPException(status_code=400, detail="Nenhum conteúdo no documento")
 
     try:
         vectors = embeddings.embed([chunk.content for chunk in chunks])

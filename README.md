@@ -94,6 +94,20 @@ Acesse frontend em `https://localhost:8443` e API em `https://localhost:8002/v1/
 
 ---
 
+## Agente de IA (assistente de manuais)
+
+O **Agente de IA** (`apps/agente-ia`) é um assistente RAG que responde dúvidas sobre **como usar os módulos**, com base nos manuais/documentos (Markdown ou CSV) indexados. Acessível pelo **mascote flutuante** no dashboard ou pela API (`http://localhost:8003/v1`). A ingestão é feita pelo módulo **Gestão → Configurar Agente**.
+
+**Exemplo de pergunta:** *O que faz o botão Salvar no cadastro de usuário?*
+**Resposta:** "O botão Salvar grava o novo usuário, fecha a janela e atualiza a tabela. Se algum campo obrigatório estiver errado, aparece um aviso explicando o que corrigir e a janela não fecha."
+
+**Exemplo de pergunta:** *Como desativo um usuário?*
+**Resposta:** "Na coluna Status, clique no selo **Ativo**. A mensagem 'Usuário desativado com sucesso' aparece e o selo muda para **Inativo** — a pessoa deixa de acessar o sistema."
+
+Mais exemplos de perguntas e respostas, arquitetura e instruções em [`apps/agente-ia/README.md`](apps/agente-ia/README.md).
+
+---
+
 ## Testes
 
 Suite com 264 testes cobrindo unitários, integração e validação do monorepo.

@@ -1,4 +1,4 @@
-from app.rag.ingestion import chunk_markdown
+from app.rag.ingestion import chunk_csv, chunk_markdown
 
 
 def test_chunk_markdown_splits_by_headings():
@@ -40,3 +40,19 @@ def test_chunk_markdown_keeps_subheadings_in_parent():
     assert chunks[0].title == "Cadastro de Usuário"
     assert "Dados Pessoais" in chunks[0].content
     assert "Endereço" in chunks[0].content
+
+
+def test_chunk_csv_converts_rows():
+    text = "nome,email,perfil\nMaria,maria@x.com,operador\nJoao,joao@x.com,leitura\n"
+    chunks = chunk_csv(text)
+    assert len(chunks) == 2
+    assert chunks[0].title == "Linha 2"
+    assert "nome: Maria" in chunks[0].content
+    assert "email: maria@x.com" in chunks[0].content
+    assert "perfil: operador" in chunks[0].content
+
+
+def test_chunk_csv_skips_empty_rows():
+    text = "a,b\n1,2\n\n3,4\n"
+    chunks = chunk_csv(text)
+    assert len(chunks) == 2
