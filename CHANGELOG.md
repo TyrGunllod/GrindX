@@ -2,6 +2,31 @@
 
 <!-- version list -->
 
+## v1.75.0 (2026-08-24)
+
+### Documentation
+
+- Add deploy evidence section to README
+  ([`25c1cae`](https://github.com/TyrGunllod/GrindX/commit/25c1cae904e0bc95f5ec42566ab1b06feb862524))
+
+- **agente**: Add sample CSV manual
+  ([`27ab2c0`](https://github.com/TyrGunllod/GrindX/commit/27ab2c0af78ff8eb87a9d5b4acd17a4354c3a3df))
+
+- **agente**: Per-button manual sections and update embedding model references
+  ([`fef835a`](https://github.com/TyrGunllod/GrindX/commit/fef835ab197cf85808324624b496553ca3484159))
+
+- **deploy**: Add Supabase database setup guide
+  ([`4bc90d0`](https://github.com/TyrGunllod/GrindX/commit/4bc90d019a2417a32d5d726c0ac6c1d7b539b79a))
+
+### Features
+
+- **agente**: Add CSV ingestion and full agent README with examples
+  ([`b483f92`](https://github.com/TyrGunllod/GrindX/commit/b483f927cc7f6a3b84e81d57c569bd1caf362762))
+
+- **agente**: Switch to multilingual-e5 embeddings and per-heading chunks
+  ([`19d8b6b`](https://github.com/TyrGunllod/GrindX/commit/19d8b6b8bf11c4c5f8e15194de6be7a7bbde5137))
+
+
 ## v1.74.0 (2026-08-24)
 
 ### Chores
