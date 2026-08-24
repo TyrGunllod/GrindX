@@ -20,6 +20,7 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 
 - **`api-postgres` (porta 8002):** API principal em FastAPI. Gerencia autenticação JWT, RBAC, usuários, temas/skins, estrutura do portal e importação de módulos.
 - **`api-sqlserver` (porta 8001):** API somente leitura para integração com bases SQL Server legadas (Protheus). Endpoints: `/health`, `/v1/produtos/por-codigo`, `/v1/produtos/por-descricao`. Endpoints públicos (sem validação JWT).
+- **`agente-ia` (porta 8003):** Agente de IA (RAG) — assistente de manuais. Responde dúvidas dos colaboradores sobre como usar os módulos (DeepSeek + sentence-transformers + pgvector). Endpoints: `/health`, `/v1/agente/chat`, `/v1/agente/manuais`, `/v1/agente/modulos`.
 - **`shared`:** Pacote Python compartilhado entre as APIs — segurança, schemas e exceções.
 
 ### Frontend
@@ -196,10 +197,15 @@ GrindX/
 │   │   │   └── services/
 │   │   ├── tests/
 │   │   └── ...
+│   ├── agente-ia/             # Agente de IA (RAG) — assistente de manuais
+│   │   ├── app/               # FastAPI: rag (ingestion, embeddings, vectorstore, retrieval, generation), routers
+│   │   ├── manuals/           # Manuais Markdown dos módulos
+│   │   └── tests/
 │   └── frontend-webapp/       # Portal Frontend
 │       ├── index.html         # Login
 │       ├── dashboard.html     # Shell principal
-│       ├── modules/           # admin-skins, admins, auditoria, home, importer, profile, structure, users
+│       ├── widget/            # Mascote do agente (chat nativo)
+│       ├── modules/           # admin-skins, admins, auditoria, configurar-agente, home, importer, profile, structure, users
 │       └── shared/            # Design System + Core Framework
 ├── packages/
 │   └── shared/                # Pacote Python compartilhado

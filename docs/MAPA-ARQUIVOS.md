@@ -1,4 +1,4 @@
-<!-- title: Mapa de Arquivos GrindX | updated: 2026-08-14 -->
+<!-- title: Mapa de Arquivos GrindX | updated: 2026-08-23 -->
 
 # GrindX — Mapa de Arquivos
 
@@ -31,6 +31,8 @@ GrindX/
 │       └── create-standalone-module/
 │           ├── SKILL.md             ✅ Criar módulos standalone
 │           └── templates/           ✅ Templates por tech stack
+│       └── extrair-manual-modulo/
+│           └── SKILL.md             ✅ Gera manuais de uso p/ o Agente de IA
 │
 ├── .planning/
 │   ├── PROJECT.md                   ✅
@@ -48,6 +50,7 @@ GrindX/
 │   ├── API.md                  ✅ Referência de endpoints
 │   ├── DATABASE.md             ✅ Schema e migrações
 │   ├── DEPLOYMENT.md           ✅ Deploy com containers
+│   ├── DEPLOYMENT-OCI.md       ✅ Deploy do Agente de IA na OCI
 │   ├── SECURITY.md             ✅ JWT e RBAC
 │   ├── SETUP.md                ✅ Guia de instalação
 │   ├── SKILLS.md               ✅ Skills do assistente
@@ -63,6 +66,12 @@ GrindX/
 │
 ├── apps/
 │   │
+│   ├── agente-ia/                    ✅ Agente de IA (RAG) — assistente de manuais
+│   │   ├── app/                      ✅ FastAPI + pipeline RAG (ingestion, embeddings, vectorstore, retrieval, generation)
+│   │   ├── manuals/                  ✅ Manuais Markdown dos módulos
+│   │   ├── tests/                    ✅ 10 testes
+│   │   ├── Dockerfile                ✅ (pré-baixa modelo de embeddings)
+│   │   └── requirements.txt          ✅
 │   ├── api-postgres/
 │   │   ├── app/
 │   │   │   ├── auth/
@@ -300,6 +309,12 @@ GrindX/
 │       ├── dashboard.css               ✅
 │       ├── dashboard.html              ✅
 │       ├── dashboard.js                ✅
+│       ├── widget/                     ✅ Mascote do Agente de IA (chat nativo)
+│       │   ├── widget.js               ✅
+│       │   ├── widget.css              ✅
+│       │   └── grindx_chibi.png        ✅ Mascote
+│       ├── modules/
+│       │   └── configurar-agente/      ✅ Gestão → Configurar Agente
 │       ├── Dockerfile                  ✅
 │       ├── index.html                  ✅ forgot-password modal
 │       ├── nginx.conf                  ✅ Reverse proxy / CSP
@@ -352,6 +367,9 @@ GrindX/
 ├── README.md                           ✅
 ├── TASK.md                             ✅
 ├── compose.yaml                        ✅ Orquestração Podman
+├── compose.postgres.yaml               ✅ PostgreSQL + pgvector
+├── compose.oci.yaml                    ✅ Deploy OCI (agente + postgres)
+├── .env.oci.example                    ✅ Variáveis de produção (OCI)
 ├── import/
 │   └── modulo-custo.zip                ✅ Pacote de importação
 ├── infra/

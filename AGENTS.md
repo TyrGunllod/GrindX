@@ -25,10 +25,12 @@ Estas regras causam falha de CI, bug sutil ou retrabalho quando ignoradas. Revis
 
 - `apps/api-postgres/` — FastAPI principal (porta 8002), JWT + RBAC, PostgreSQL via Alembic
 - `apps/api-sqlserver/` — FastAPI somente leitura (porta 8001), endpoints públicos sem JWT
+- `apps/agente-ia/` — Agente de IA (RAG, porta 8003): DeepSeek + sentence-transformers + pgvector; assistente de manuais
 - `apps/frontend-webapp/` — Portal vanilla JS (porta 8101), módulos via iframe, zero frameworks
 - `packages/shared/` — Pacote Python compartilhado (security, schemas, exceptions, error codes)
 - `tests/` — Testes de integração do monorepo (raiz)
 - `.opencode/skills/create-standalone-module/` — Skill para criar novos módulos
+- `.opencode/skills/extrair-manual-modulo/` — Skill para gerar manuais de uso dos módulos
 
 ## Developer Commands
 

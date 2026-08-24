@@ -1,4 +1,4 @@
-<!-- title: Documentação GrindX | updated: 2026-08-17 -->
+<!-- title: Documentação GrindX | updated: 2026-08-23 -->
 
 # GrindX — Documentação
 
@@ -20,6 +20,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 |-----------|-----------|
 | [SETUP.md](SETUP.md) | Guia detalhado de instalação e configuração |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy com containers, CI/CD e reverse proxy |
+| [DEPLOYMENT-OCI.md](DEPLOYMENT-OCI.md) | Deploy do Agente de IA na Oracle Cloud (OCI) |
 
 ### Referência Técnica
 
@@ -44,6 +45,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 |-----------|-----------|
 | [api-postgres/README.md](../apps/api-postgres/README.md) | API principal (FastAPI + PostgreSQL) |
 | [api-sqlserver/README.md](../apps/api-sqlserver/README.md) | API leitura (FastAPI + SQL Server) |
+| [agente-ia/README.md](../apps/agente-ia/README.md) | Agente de IA (RAG) — assistente de manuais |
 
 ---
 
@@ -55,7 +57,9 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 | Frontend (HTTPS) | `https://localhost` | 443 |
 | API Postgres | `http://localhost:8002` | 8002 |
 | API SQL Server | `http://localhost:8001` | 8001 |
+| Agente de IA | `http://localhost:8003` | 8003 |
 | Swagger UI | `http://localhost:8002/v1/docs` | 8002 |
+| Swagger Agente | `http://localhost:8003/v1/docs` | 8003 |
 
 ### Credenciais de Teste
 

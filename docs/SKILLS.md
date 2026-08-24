@@ -13,6 +13,7 @@ Referência de skills úteis para desenvolvimento no projeto GrindX.
 | Skill | Local | Uso |
 |-------|-------|-----|
 | `create-standalone-module` | `.opencode/skills/create-standalone-module/` | **Módulo completo** (backend FastAPI + frontend vanilla JS + testes + migration Alembic) desenvolvido fora do monorepo e exportado via `export.py` |
+| `extrair-manual-modulo` | `.opencode/skills/extrair-manual-modulo/` | Gera manuais de uso (perspectiva do usuário final) dos módulos para o Agente de IA, com questionamentos e ciclo de revisão |
 | `frontend-design` | `.agents/skills/` | Criar interfaces e componentes com alto padrão de design |
 
 ### Qualidade Web
@@ -29,7 +30,7 @@ Referência de skills úteis para desenvolvimento no projeto GrindX.
 | `python-executor` | `.agents/skills/` | Executar Python em ambiente sandbox (dados, scraping, automação) |
 | `python-testing-patterns` | `.agents/skills/` | Estratégias de teste com pytest, fixtures e mocks |
 
-> Skills registradas em `skills-lock.json` (fonte canônica): `accessibility`, `frontend-design`, `python-executor`, `python-testing-patterns`, `seo` (em `.agents/skills/`), além de `create-standalone-module` (em `.opencode/skills/`).
+> Skills registradas em `skills-lock.json` (fonte canônica): `accessibility`, `frontend-design`, `python-executor`, `python-testing-patterns`, `seo` (em `.agents/skills/`), além de `create-standalone-module` e `extrair-manual-modulo` (em `.opencode/skills/`).
 
 ---
 
