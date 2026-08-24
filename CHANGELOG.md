@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.79.2 (2026-08-24)
+
+### Bug Fixes
+
+- **frontend**: Remove duplicate text/html from gzip_types
+  ([`ff43738`](https://github.com/TyrGunllod/GrindX/commit/ff4373892ca25381cb80fd1d0dea36d947d8a414))
+
+
 ## v1.79.1 (2026-08-24)
 
 ### Bug Fixes
