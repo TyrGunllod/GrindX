@@ -2,6 +2,27 @@
 
 <!-- version list -->
 
+## v1.76.0 (2026-08-24)
+
+### Chores
+
+- **deploy**: Render blueprint for agente-ia and api-postgres with Supabase
+  ([`dcb9052`](https://github.com/TyrGunllod/GrindX/commit/dcb90529136107f1259fbb807d8bb0edd13d48f2))
+
+### Documentation
+
+- **deploy**: Add manual Render setup section for older accounts
+  ([`fbf97c8`](https://github.com/TyrGunllod/GrindX/commit/fbf97c8d1c6d46adae062f7ffcaad671ea4d4fef))
+
+- **deploy**: Add step-by-step Render deployment guide
+  ([`181cf6a`](https://github.com/TyrGunllod/GrindX/commit/181cf6a1842eda85ea77d7b97c0d7564a67b477b))
+
+### Features
+
+- **agente**: Use fastembed ONNX embeddings and hybrid keyword search
+  ([`45a5f55`](https://github.com/TyrGunllod/GrindX/commit/45a5f5537341b5a45fae89127597ffe0313d4b8e))
+
+
 ## v1.75.0 (2026-08-24)
 
 ### Documentation
