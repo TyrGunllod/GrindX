@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.79.3 (2026-08-24)
+
+### Bug Fixes
+
+- **frontend**: Enable SNI on nginx upstream proxy
+  ([`c0a3768`](https://github.com/TyrGunllod/GrindX/commit/c0a3768fa3edb152b1ef8b31b0eb314f035093fd))
+
+
 ## v1.79.2 (2026-08-24)
 
 ### Bug Fixes
