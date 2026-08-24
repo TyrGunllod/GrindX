@@ -25,12 +25,12 @@ class Settings(BaseSettings):
     LLM_TIMEOUT_SECONDS: int = 60
 
     # --- Embeddings (modelo local) ---
-    EMBEDDING_MODEL: str = "intfloat/multilingual-e5-small"
+    EMBEDDING_MODEL: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     EMBEDDING_DIM: int = 384
 
     # --- Recuperação (RAG) ---
     SIMILARITY_THRESHOLD: float = 0.35
-    TOP_K: int = 3
+    TOP_K: int = 5
 
     # --- CORS ---
     CORS_ORIGINS: str = ""

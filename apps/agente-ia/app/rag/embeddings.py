@@ -1,28 +1,30 @@
-"""Geração de embeddings com sentence-transformers (modelo local)."""
+"""Geração de embeddings com fastembed (ONNX Runtime — leve, sem torch).
+
+Usa ONNX, reduzindo drasticamente o uso de memória (ideal para o plano
+free do Render com 512MB).
+"""
 
 from functools import lru_cache
 
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 
 from app.core.config import settings
 
 
 @lru_cache
-def _get_model() -> SentenceTransformer:
-    return SentenceTransformer(settings.EMBEDDING_MODEL)
+def _get_model() -> TextEmbedding:
+    return TextEmbedding(model_name=settings.EMBEDDING_MODEL)
 
 
 def _encode(texts: list[str]) -> list[list[float]]:
-    model = _get_model()
-    vectors = model.encode(texts, normalize_embeddings=True)
-    return [vector.tolist() for vector in vectors]
+    return [vector.tolist() for vector in _get_model().embed(texts)]
 
 
 def embed(texts: list[str]) -> list[list[float]]:
-    """Gera embeddings de documentos/passagens (prefixo 'passage:')."""
-    return _encode([f"passage: {text}" for text in texts])
+    """Gera embeddings de documentos/passagens."""
+    return _encode(texts)
 
 
 def embed_query(texts: list[str]) -> list[list[float]]:
-    """Gera embeddings de consultas (prefixo 'query:')."""
-    return _encode([f"query: {text}" for text in texts])
+    """Gera embeddings de consultas (mesmo modelo; MiniLM não usa prefixo)."""
+    return _encode(texts)

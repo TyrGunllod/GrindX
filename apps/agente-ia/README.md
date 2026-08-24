@@ -40,7 +40,7 @@ Agente de IA (apps/agente-ia — FastAPI, porta 8003)
 | Camada | Tecnologia |
 |---|---|
 | API | Python 3.12 + FastAPI + Uvicorn |
-| Embeddings | sentence-transformers (`intfloat/multilingual-e5-small`) |
+| Embeddings | sentence-transformers (`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`) |
 | Banco vetorial | PostgreSQL + pgvector (coluna `vector(384)`, índice por cosseno) |
 | Geração | DeepSeek (`deepseek-chat`) |
 | ORM | SQLAlchemy 2 + psycopg3 |
@@ -143,4 +143,5 @@ python -m pytest tests/ -v
 ```
 
 Cobrem: chunking de Markdown, conversão de CSV, recuperação restrita ao módulo, geração com retry (429) e normalização da URL do banco.
+
 

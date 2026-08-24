@@ -32,7 +32,7 @@ def retrieve(
 
     embedding = embed_fn([question])[0]
 
-    results = search_fn(embedding, module=module, k=top_k)
+    results = search_fn(embedding, module=module, k=top_k, query=question)
     if results and results[0].similarity >= threshold:
         return RetrievalResult(chunks=results, used_fallback=False)
 

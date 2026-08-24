@@ -52,9 +52,9 @@ OCI Object Storage (bucket)        ── manuais/backup  ← requisito OCI
    LLM_API_KEY=<chave-deepseek>
    LLM_BASE_URL=https://api.deepseek.com
    LLM_MODEL=deepseek-chat
-   EMBEDDING_MODEL=intfloat/multilingual-e5-small
+   EMBEDDING_MODEL=sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
    SIMILARITY_THRESHOLD=0.35
-   TOP_K=3
+   TOP_K=5
    CORS_ORIGINS=<domínio-do-frontend>
    ```
 
@@ -94,4 +94,6 @@ E garanta que o `CORS_ORIGINS` do agente inclui o domínio do frontend.
 - [ ] Bucket criado no OCI Object Storage + manuais enviados (requisito OCI)
 - [ ] `window.__GRINDX_AGENT_URL` apontando para o agente na nuvem
 - [ ] Testar: `POST /v1/agente/chat` respondendo
+
+
 

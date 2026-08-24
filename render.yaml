@@ -23,11 +23,11 @@ services:
       - key: LLM_MODEL
         value: deepseek-chat
       - key: EMBEDDING_MODEL
-        value: intfloat/multilingual-e5-small
+        value: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
       - key: SIMILARITY_THRESHOLD
         value: "0.35"
       - key: TOP_K
-        value: "3"
+        value: "5"
       - key: CORS_ORIGINS
         sync: false          # domínio do frontend GrindX
 
@@ -64,3 +64,5 @@ services:
         value: "100"
       - key: RATE_LIMIT_WINDOW_SECONDS
         value: "60"
+
+
