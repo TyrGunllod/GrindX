@@ -59,6 +59,8 @@ OCI Object Storage (bucket)        ── manuais/backup  ← requisito OCI
    CORS_ORIGINS=<domínio-do-frontend>
    ```
 
+> **Usando Supabase?** Veja o passo a passo completo em [DEPLOYMENT-SUPABASE.md](DEPLOYMENT-SUPABASE.md) (connection string, `sslmode=require`, pooler e criação automática do schema).
+
 > No `render.yaml`, se usar Neon/Supabase, troque o `DATABASE_URL` de `fromDatabase` para `sync: false` (preencher manualmente) e remova o bloco `databases:`.
 
 ---

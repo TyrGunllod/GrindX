@@ -22,6 +22,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy com containers, CI/CD e reverse proxy |
 | [DEPLOYMENT-OCI.md](DEPLOYMENT-OCI.md) | Deploy do Agente de IA na Oracle Cloud (OCI) |
 | [DEPLOYMENT-ALT.md](DEPLOYMENT-ALT.md) | Deploy alternativo (Render + Neon/Supabase + OCI Object Storage) |
+| [DEPLOYMENT-SUPABASE.md](DEPLOYMENT-SUPABASE.md) | Configuração do Supabase (Postgres + pgvector) como banco do agente |
 
 ### Referência Técnica
 
