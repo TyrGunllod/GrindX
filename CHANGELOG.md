@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v1.74.0 (2026-08-24)
+
+### Chores
+
+- **deploy**: Add OCI deployment config and guide
+  ([`a27548d`](https://github.com/TyrGunllod/GrindX/commit/a27548d1317f9e3f5ca1d2daead2c2b632eeb864))
+
+### Documentation
+
+- Sync documentation with AI agent feature
+  ([`5c46d89`](https://github.com/TyrGunllod/GrindX/commit/5c46d897de15275916dcc51e87c025cf01abdbe0))
+
+### Features
+
+- **deploy**: Add Render/Neon alternative and psycopg URL normalization
+  ([`e8c00ec`](https://github.com/TyrGunllod/GrindX/commit/e8c00ecdf93976af53669a3b7558a103052b7b1b))
+
+
 ## v1.73.0 (2026-08-23)
 
 ### Code Style
