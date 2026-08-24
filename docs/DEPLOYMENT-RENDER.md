@@ -47,6 +47,38 @@ git push origin main
 
 ---
 
+## Passo 3.5 — Sem Blueprint? (criação manual)
+
+Se a sua conta Render não tem a opção **Blueprint** (versão antiga), crie os dois Web Services manualmente.
+
+### Web Service `agente-ia`
+
+1. **New → Web Service** → conecte o repositório `GrindX`.
+2. Nome: `agente-ia`.
+3. **Environment:** `Docker`.
+4. **Root Directory:** `apps/agente-ia`
+5. **Dockerfile Path:** `Dockerfile`
+6. **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port 8003`
+7. **Health Check Path:** `/health`
+8. Env vars: ver tabela do Passo 4 (agente-ia).
+9. **Create Web Service.**
+
+### Web Service `api-postgres`
+
+1. **New → Web Service** → repositório `GrindX`.
+2. Nome: `api-postgres`.
+3. **Environment:** `Docker`.
+4. **Root Directory:** *(deixe em branco — usa a raiz, pois o Dockerfile copia `packages/`)*
+5. **Dockerfile Path:** `apps/api-postgres/Dockerfile`
+6. **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port 8002`
+7. **Health Check Path:** `/health`
+8. Env vars: ver tabela do Passo 4 (api-postgres).
+9. **Create Web Service.**
+
+> O Start Command pode ficar vazio (o Dockerfile já tem o `CMD`), mas preencher explicitamente não faz mal.
+
+---
+
 ## Passo 4 — Preencher as variáveis de ambiente
 
 No dashboard de **cada** serviço (abas *Environment*), preencha as variáveis marcadas como `sync: false` no blueprint:
