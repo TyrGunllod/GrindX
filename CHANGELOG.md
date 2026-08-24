@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.77.0 (2026-08-24)
+
+### Features
+
+- **agente**: Support keyword-only retrieval for low-memory deploys
+  ([`4f6ce6b`](https://github.com/TyrGunllod/GrindX/commit/4f6ce6bbb5ecf8b299701bb319e08c1070b129fd))
+
+
 ## v1.76.1 (2026-08-24)
 
 ### Bug Fixes
