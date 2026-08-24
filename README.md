@@ -108,6 +108,22 @@ Mais exemplos de perguntas e respostas, arquitetura e instruções em [`apps/age
 
 ---
 
+## Deploy na nuvem — Evidência
+
+O agente está implantado na nuvem e pode ser acessado publicamente. *(Preencher os campos abaixo após concluir o deploy.)*
+
+- **URL pública do agente:** `https://<agente>.onrender.com` _(substituir pela URL real)_
+- **Swagger em nuvem:** `https://<agente>.onrender.com/v1/docs`
+- **Banco:** Supabase (PostgreSQL + pgvector)
+
+**Imagem/vídeo do agente em execução na nuvem:**
+
+![Agente de IA em execução na nuvem](URL_DA_IMAGEM_OU_VIDEO)
+
+> Requisito do desafio: "Inserir no README uma imagem ou vídeo do agente executando em nuvem (OCI ou outro serviço online)".
+
+---
+
 ## Testes
 
 Suite com 264 testes cobrindo unitários, integração e validação do monorepo.
