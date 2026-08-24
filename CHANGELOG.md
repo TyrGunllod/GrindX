@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.79.1 (2026-08-24)
+
+### Bug Fixes
+
+- **frontend**: Point to recreated Render services
+  ([`d800524`](https://github.com/TyrGunllod/GrindX/commit/d8005242dad32853d1fa3ccbb51a8c16925f7b86))
+
+
 ## v1.79.0 (2026-08-24)
 
 ### Documentation
