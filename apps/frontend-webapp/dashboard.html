@@ -17,7 +17,7 @@
     <script>
         // Deploy: em produção (Render), aponta para as APIs públicas
         if (location.hostname.indexOf('onrender.com') !== -1) {
-            window.__GRINDX_API_URL = 'https://api-postgres-l3dy.onrender.com/v1';
+            window.__GRINDX_API_URL = '/v1'; // same-origin via nginx proxy
             window.__GRINDX_AGENT_URL = 'https://agente-ia-b4g2.onrender.com';
         }
     </script>
