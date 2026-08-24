@@ -14,6 +14,17 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from app.core.config import settings
 
 
+def _normalize_db_url(url: str) -> str:
+    """Garante o dialeto psycopg3 (postgresql+psycopg://).
+
+    URLs como `postgresql://` (Neon/Supabase/Render) usam psycopg2 por padrão;
+    o agente usa psycopg3, então converte para `postgresql+psycopg://`.
+    """
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return url
+
+
 @lru_cache
 def _get_engine_kwargs() -> dict:
     """Retorna kwargs do engine, calculados uma vez."""
@@ -36,7 +47,9 @@ def _get_engine_kwargs() -> dict:
 @lru_cache
 def get_engine():
     """Cria o engine sob demanda (lazy)."""
-    return create_engine(settings.DATABASE_URL, **_get_engine_kwargs())
+    return create_engine(
+        _normalize_db_url(settings.DATABASE_URL), **_get_engine_kwargs()
+    )
 
 
 class Base(DeclarativeBase):

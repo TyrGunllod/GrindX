@@ -51,6 +51,7 @@ GrindX/
 │   ├── DATABASE.md             ✅ Schema e migrações
 │   ├── DEPLOYMENT.md           ✅ Deploy com containers
 │   ├── DEPLOYMENT-OCI.md       ✅ Deploy do Agente de IA na OCI
+│   ├── DEPLOYMENT-ALT.md       ✅ Deploy alternativo (Render + Neon + OCI Object Storage)
 │   ├── SECURITY.md             ✅ JWT e RBAC
 │   ├── SETUP.md                ✅ Guia de instalação
 │   ├── SKILLS.md               ✅ Skills do assistente
@@ -370,6 +371,7 @@ GrindX/
 ├── compose.postgres.yaml               ✅ PostgreSQL + pgvector
 ├── compose.oci.yaml                    ✅ Deploy OCI (agente + postgres)
 ├── .env.oci.example                    ✅ Variáveis de produção (OCI)
+├── render.yaml                         ✅ Blueprint Render (deploy alternativo)
 ├── import/
 │   └── modulo-custo.zip                ✅ Pacote de importação
 ├── infra/

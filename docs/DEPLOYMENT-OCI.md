@@ -4,6 +4,8 @@
 
 Guia para publicar o **Agente de IA** (RAG) na Oracle Cloud Infrastructure (Always Free), junto com o **PostgreSQL + pgvector**.
 
+> **Sem capacidade na OCI (erro de available domain)?** Use o [DEPLOYMENT-ALT.md](DEPLOYMENT-ALT.md) — alternativa com Render + Neon/Supabase + OCI Object Storage (cumpre o requisito OCI sem depender da Compute free).
+
 ---
 
 ## Arquitetura

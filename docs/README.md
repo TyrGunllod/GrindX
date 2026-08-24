@@ -21,6 +21,7 @@ Sistema de Gestão Integrado (ERP modular) em monorepo Python + Vanilla JS.
 | [SETUP.md](SETUP.md) | Guia detalhado de instalação e configuração |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy com containers, CI/CD e reverse proxy |
 | [DEPLOYMENT-OCI.md](DEPLOYMENT-OCI.md) | Deploy do Agente de IA na Oracle Cloud (OCI) |
+| [DEPLOYMENT-ALT.md](DEPLOYMENT-ALT.md) | Deploy alternativo (Render + Neon/Supabase + OCI Object Storage) |
 
 ### Referência Técnica
 

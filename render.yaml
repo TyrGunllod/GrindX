@@ -1,0 +1,44 @@
+# Render Blueprint — Agente de IA GrindX
+#
+# Usar quando a OCI free (Compute/Ampere A1) não tiver capacidade (erro de
+# available domain). O requisito OCI do desafio é coberto pelo OCI Object
+# Storage (sempre gratuito e regional, sem problema de AD).
+#
+# Deploy:
+#   1. Suba este arquivo na raiz do repo (ou crie via Render Dashboard → Blueprint).
+#   2. Render cria o Web Service + o banco Postgres (free).
+#   3. Preencha os env vars marcados com `sync: false` (LLM_API_KEY, CORS_ORIGINS).
+#   4. Habilite a extensão pgvector no banco.
+databases:
+  - name: grindx-agente-db
+    plan: free
+    databaseName: grindx
+    user: grindx
+
+services:
+  - type: web
+    name: agente-ia
+    runtime: docker
+    dockerfilePath: apps/agente-ia/Dockerfile
+    dockerContext: apps/agente-ia
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: grindx-agente-db
+          property: connectionString
+      - key: LLM_API_KEY
+        sync: false          # preencher no dashboard (chave DeepSeek)
+      - key: LLM_BASE_URL
+        value: https://api.deepseek.com
+      - key: LLM_MODEL
+        value: deepseek-chat
+      - key: EMBEDDING_MODEL
+        value: paraphrase-multilingual-MiniLM-L12-v2
+      - key: SIMILARITY_THRESHOLD
+        value: "0.35"
+      - key: TOP_K
+        value: "3"
+      - key: CORS_ORIGINS
+        sync: false          # preencher com o domínio do frontend GrindX

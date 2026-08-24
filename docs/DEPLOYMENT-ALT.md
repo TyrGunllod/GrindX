@@ -1,0 +1,95 @@
+<!-- title: Deploy Alternativo — Agente de IA GrindX | updated: 2026-08-23 -->
+
+# Deploy Alternativo — Agente de IA GrindX
+
+Guia usado quando a **OCI free não permite criar a instância** (erro de *available domain* / falta de capacidade da VM Ampere A1). Mantém o requisito do desafio de **pelo menos 1 serviço OCI** usando o **OCI Object Storage** (sempre gratuito, regional e **sem problema de AD**).
+
+---
+
+## Arquitetura
+
+```
+Render (Web Service free)          ── Agente FastAPI (porta 8003)
+Neon / Supabase / Render DB        ── PostgreSQL + pgvector
+OCI Object Storage (bucket)        ── manuais/backup  ← requisito OCI
+```
+
+| O que | Onde | Custo |
+|---|---|---|
+| Agente FastAPI | Render (Web Service) | free |
+| PostgreSQL + pgvector | Neon ou Supabase (free) — ou Render DB | free |
+| Manuais/backup | OCI Object Storage | free (10GB) |
+
+> O agente aceita `DATABASE_URL` no formato `postgresql://...` (Neon/Supabase/Render) — ele converte automaticamente para `postgresql+psycopg://`.
+
+---
+
+## Opção A — Render com Postgres gerenciado (Blueprint)
+
+1. Suba o `render.yaml` (raiz do repo) no Render (Dashboard → **New → Blueprint**), ou use o CLI do Render.
+2. O Render cria o **Web Service** `agente-ia` e o banco **`grindx-agente-db`** (free).
+3. No dashboard do serviço, preencha os env vars `sync: false`:
+   - `LLM_API_KEY` — chave do DeepSeek.
+   - `CORS_ORIGINS` — domínio do frontend GrindX.
+4. No banco, habilite o pgvector:
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS vector;
+   ```
+5. Deploy automático. O agente cria o schema/tabelas na subida (`init_db`).
+
+> ⚠️ O Postgres free do Render expira após ~30 dias. Para uso contínuo, use a **Opção B** (Neon/Supabase).
+
+---
+
+## Opção B — Neon ou Supabase (Postgres gratuito permanente)
+
+1. Crie um projeto no **Neon** (ou **Supabase**).
+2. Copie a `DATABASE_URL` (formato `postgresql://...`).
+3. Habilite o pgvector (Neon/Supabase já o suportam; no Supabase rode `CREATE EXTENSION IF NOT EXISTS vector;` no SQL editor).
+4. No Render, crie um Web Service a partir do `Dockerfile` do agente (`apps/agente-ia/Dockerfile`) e defina:
+
+   ```
+   DATABASE_URL=<url-do-neon/supabase>
+   LLM_API_KEY=<chave-deepseek>
+   LLM_BASE_URL=https://api.deepseek.com
+   LLM_MODEL=deepseek-chat
+   EMBEDDING_MODEL=paraphrase-multilingual-MiniLM-L12-v2
+   SIMILARITY_THRESHOLD=0.35
+   TOP_K=3
+   CORS_ORIGINS=<domínio-do-frontend>
+   ```
+
+> No `render.yaml`, se usar Neon/Supabase, troque o `DATABASE_URL` de `fromDatabase` para `sync: false` (preencher manualmente) e remova o bloco `databases:`.
+
+---
+
+## Passo OCI (obrigatório do desafio)
+
+1. OCI Console → **Storage → Object Storage → Buckets → Create Bucket**.
+   - Object Storage é **regional** e **sempre gratuito** — não passa pelo problema de AD da Compute.
+2. Crie um bucket (ex.: `grindx-agente`).
+3. Faça upload dos manuais (`apps/agente-ia/manuals/*.md`) como backup.
+4. Isso cumpre o requisito **"ao menos 1 serviço OCI"** do desafio.
+
+---
+
+## Ajuste no frontend GrindX
+
+Aponte o widget para a URL do Render:
+
+```js
+window.__GRINDX_AGENT_URL = 'https://agente-ia.onrender.com';
+```
+
+E garanta que o `CORS_ORIGINS` do agente inclui o domínio do frontend.
+
+---
+
+## Checklist
+
+- [ ] Web Service do agente no Render (healthy `/health`)
+- [ ] Postgres + pgvector criado e acessível
+- [ ] `DATABASE_URL`, `LLM_API_KEY`, `CORS_ORIGINS` configurados
+- [ ] Bucket criado no OCI Object Storage + manuais enviados (requisito OCI)
+- [ ] `window.__GRINDX_AGENT_URL` apontando para o agente na nuvem
+- [ ] Testar: `POST /v1/agente/chat` respondendo
