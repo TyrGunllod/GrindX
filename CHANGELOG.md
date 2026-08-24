@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.76.1 (2026-08-24)
+
+### Bug Fixes
+
+- **deploy**: Force embedding model load at build time
+  ([`7871aca`](https://github.com/TyrGunllod/GrindX/commit/7871aca3536d12c14f69058f137ceaccec45ee0c))
+
+
 ## v1.76.0 (2026-08-24)
 
 ### Chores
