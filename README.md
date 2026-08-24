@@ -115,6 +115,7 @@ O agente está implantado na nuvem e acessível publicamente.
 - **Agente de IA:** https://agente-ia-b4g2.onrender.com
 - **Swagger do agente:** https://agente-ia-b4g2.onrender.com/v1/docs
 - **API Postgres (ERP):** https://api-postgres-l3dy.onrender.com
+- **Frontend (GrindX):** https://grindx-frontend.onrender.com
 - **Banco:** Supabase (PostgreSQL + pgvector)
 - **Serviço OCI:** OCI Object Storage (bucket com os manuais de origem)
 
