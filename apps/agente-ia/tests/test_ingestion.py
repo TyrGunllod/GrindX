@@ -26,20 +26,22 @@ def test_chunk_markdown_skips_empty_sections():
     assert [c.title for c in chunks] == ["Com conteúdo"]
 
 
-def test_chunk_markdown_keeps_subheadings_in_parent():
+def test_chunk_markdown_splits_on_subheadings():
     text = (
         "## Cadastro de Usuário\n"
         "Clique em Novo Usuário.\n"
-        "### Dados Pessoais\n"
-        "Preencha nome e e-mail.\n"
+        "### Botões da janela\n"
+        "Salvar — grava o cadastro.\n"
         "### Endereço\n"
         "Preencha rua e cidade.\n"
     )
     chunks = chunk_markdown(text)
-    assert len(chunks) == 1
-    assert chunks[0].title == "Cadastro de Usuário"
-    assert "Dados Pessoais" in chunks[0].content
-    assert "Endereço" in chunks[0].content
+    assert [c.title for c in chunks] == [
+        "Cadastro de Usuário",
+        "Botões da janela",
+        "Endereço",
+    ]
+    assert "Salvar" in chunks[1].content
 
 
 def test_chunk_csv_converts_rows():

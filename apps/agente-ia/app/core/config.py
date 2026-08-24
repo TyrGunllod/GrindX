@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     LLM_TIMEOUT_SECONDS: int = 60
 
     # --- Embeddings (modelo local) ---
-    EMBEDDING_MODEL: str = "paraphrase-multilingual-MiniLM-L12-v2"
+    EMBEDDING_MODEL: str = "intfloat/multilingual-e5-small"
     EMBEDDING_DIM: int = 384
 
     # --- Recuperação (RAG) ---

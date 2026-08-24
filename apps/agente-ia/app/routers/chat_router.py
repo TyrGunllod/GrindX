@@ -19,7 +19,7 @@ def chat(request: ChatRequest) -> ChatResponse:
         result = retrieval.retrieve(
             question=request.question,
             module=request.module,
-            embed_fn=embeddings.embed,
+            embed_fn=embeddings.embed_query,
             search_fn=vectorstore.search,
         )
         answer = generation.generate(request.question, result.chunks)

@@ -23,7 +23,9 @@ def ingest_manual(request: IngestRequest) -> IngestResponse:
         raise HTTPException(status_code=400, detail="Nenhum conteúdo no documento")
 
     try:
-        vectors = embeddings.embed([chunk.content for chunk in chunks])
+        vectors = embeddings.embed(
+            [f"{chunk.title}\n{chunk.content}" for chunk in chunks]
+        )
     except AgenteError as exc:
         logger.error("Falha ao gerar embeddings", error=str(exc))
         raise HTTPException(
