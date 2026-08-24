@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.79.0 (2026-08-24)
+
+### Documentation
+
+- Add frontend URL to deploy evidence
+  ([`2457a0a`](https://github.com/TyrGunllod/GrindX/commit/2457a0a8214311e6eb0584ded2daa12356537702))
+
+### Features
+
+- **frontend**: Docker/nginx deployment with API proxy
+  ([`25d341a`](https://github.com/TyrGunllod/GrindX/commit/25d341a5366758f5e60817160ac89d8f0727c0dd))
+
+
 ## v1.78.0 (2026-08-24)
 
 ### Documentation
