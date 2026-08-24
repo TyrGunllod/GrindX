@@ -70,7 +70,7 @@ GrindX/
 │   │
 │   ├── agente-ia/                    ✅ Agente de IA (RAG) — assistente de manuais
 │   │   ├── app/                      ✅ FastAPI + pipeline RAG (ingestion, embeddings, vectorstore, retrieval, generation)
-│   │   ├── manuals/                  ✅ Manuais Markdown dos módulos
+│   │   ├── manuals/                  ✅ Manuais Markdown/CSV dos módulos
 │   │   ├── tests/                    ✅ 10 testes
 │   │   ├── Dockerfile                ✅ (pré-baixa modelo de embeddings)
 │   │   └── requirements.txt          ✅

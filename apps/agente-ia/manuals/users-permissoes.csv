@@ -1,0 +1,4 @@
+perfil,permissoes
+Leitura,pode visualizar as telas liberadas
+Operador,pode visualizar e fazer alteracoes nas telas liberadas
+Administrador,acesso total ao sistema
