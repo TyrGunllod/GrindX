@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     # --- Embeddings (modelo local) ---
     EMBEDDING_MODEL: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     EMBEDDING_DIM: int = 384
+    # Em planos sem memória suficiente (ex.: Render free 512MB), desative os
+    # embeddings e use a busca por palavras-chave (sem carregar modelo).
+    EMBEDDINGS_ENABLED: bool = True
 
     # --- Recuperação (RAG) ---
     SIMILARITY_THRESHOLD: float = 0.35

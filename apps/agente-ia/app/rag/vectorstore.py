@@ -190,6 +190,40 @@ def search(
     return results[:k]
 
 
+def search_keyword(query: str, module: str | None, k: int) -> list[ChunkResult]:
+    """Busca lexical por termos no título/conteúdo, sem carregar embeddings.
+
+    Usado quando `EMBEDDINGS_ENABLED=false` (planos com pouca memória,
+    ex.: Render free 512MB).
+    """
+    stmt = select(Chunk)
+    if module:
+        stmt = stmt.where(Chunk.module == module)
+    with Session(get_engine()) as session:
+        rows = session.scalars(stmt).all()
+
+    terms = _query_terms(query)
+    if not terms:
+        return []
+
+    scored = []
+    for chunk in rows:
+        score = _keyword_score(terms, chunk.title, chunk.content)
+        if score > 0:
+            scored.append(
+                ChunkResult(
+                    id=chunk.id,
+                    module=chunk.module,
+                    title=chunk.title,
+                    content=chunk.content,
+                    filename=chunk.filename,
+                    similarity=score,
+                )
+            )
+    scored.sort(key=lambda r: r.similarity, reverse=True)
+    return scored[:k]
+
+
 def list_modules() -> list[str]:
     """Lista os módulos que possuem manuais indexados."""
     stmt = select(Chunk.module).distinct().order_by(Chunk.module)

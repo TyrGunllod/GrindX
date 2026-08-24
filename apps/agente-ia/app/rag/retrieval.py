@@ -37,3 +37,24 @@ def retrieve(
         return RetrievalResult(chunks=results, used_fallback=False)
 
     return RetrievalResult(chunks=[], used_fallback=False)
+
+
+def retrieve_keyword(
+    question: str,
+    module: str,
+    search_fn,
+    threshold: float | None = None,
+    top_k: int | None = None,
+) -> RetrievalResult:
+    """Recupera por palavras-chave (sem embeddings), restrito ao módulo.
+
+    Usado quando `EMBEDDINGS_ENABLED=false`.
+    """
+    threshold = threshold if threshold is not None else settings.SIMILARITY_THRESHOLD
+    top_k = top_k if top_k is not None else settings.TOP_K
+
+    results = search_fn(question, module=module, k=top_k)
+    if results and results[0].similarity >= threshold:
+        return RetrievalResult(chunks=results, used_fallback=False)
+
+    return RetrievalResult(chunks=[], used_fallback=False)

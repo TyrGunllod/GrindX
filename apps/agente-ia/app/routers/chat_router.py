@@ -3,6 +3,7 @@
 import structlog
 from fastapi import APIRouter, HTTPException
 
+from app.core.config import settings
 from app.core.exceptions import AgenteError, GenerationError
 from app.core.logging import log_interaction
 from app.rag import embeddings, generation, retrieval, vectorstore
@@ -16,12 +17,19 @@ router = APIRouter(prefix="/v1/agente", tags=["Agente"])
 @router.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest) -> ChatResponse:
     try:
-        result = retrieval.retrieve(
-            question=request.question,
-            module=request.module,
-            embed_fn=embeddings.embed_query,
-            search_fn=vectorstore.search,
-        )
+        if settings.EMBEDDINGS_ENABLED:
+            result = retrieval.retrieve(
+                question=request.question,
+                module=request.module,
+                embed_fn=embeddings.embed_query,
+                search_fn=vectorstore.search,
+            )
+        else:
+            result = retrieval.retrieve_keyword(
+                question=request.question,
+                module=request.module,
+                search_fn=vectorstore.search_keyword,
+            )
         answer = generation.generate(request.question, result.chunks)
     except GenerationError as exc:
         logger.error("Falha na geração da resposta", error=str(exc))
