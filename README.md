@@ -110,11 +110,13 @@ Mais exemplos de perguntas e respostas, arquitetura e instruções em [`apps/age
 
 ## Deploy na nuvem — Evidência
 
-O agente está implantado na nuvem e pode ser acessado publicamente. *(Preencher os campos abaixo após concluir o deploy.)*
+O agente está implantado na nuvem e acessível publicamente.
 
-- **URL pública do agente:** `https://<agente>.onrender.com` _(substituir pela URL real)_
-- **Swagger em nuvem:** `https://<agente>.onrender.com/v1/docs`
+- **Agente de IA:** https://agente-ia-b4g2.onrender.com
+- **Swagger do agente:** https://agente-ia-b4g2.onrender.com/v1/docs
+- **API Postgres (ERP):** https://api-postgres-l3dy.onrender.com
 - **Banco:** Supabase (PostgreSQL + pgvector)
+- **Serviço OCI:** OCI Object Storage (bucket com os manuais de origem)
 
 **Imagem/vídeo do agente em execução na nuvem:**
 
