@@ -1,156 +1,222 @@
 # Manual do Módulo Administradores
 
-Este manual explica, do ponto de vista de quem usa (você), tudo o que é possível ver e fazer no módulo **Administradores** do ERP GrindX. Aqui você pode **cadastrar**, **consultar**, **editar**, **ativar** e **desativar** os administradores do sistema — ou seja, as pessoas com o perfil mais alto de acesso.
+Bem-vindo ao manual do módulo **Administradores** do ERP GrindX! Aqui você aprende, passo a passo, tudo o que dá para fazer nessa tela: cadastrar novos administradores, editar os dados de quem já existe e ativar/desativar o acesso de cada um.
 
-> **Quem pode usar:** apenas usuários com perfil de **Administrador** acessam este módulo. Você precisa estar logado no sistema; se sua sessão estiver expirada, a tela não carrega os dados e mostra a mensagem "Sessão expirada. Faça login novamente.".
+## Tela: Lista de Administradores
 
----
+Esta é a primeira tela do módulo. Ela mostra todos os administradores cadastrados no sistema em uma lista (tabela), com o nome, o e-mail e o status de cada um.
 
-## Tela Principal (Lista de Administradores)
+- No topo você vê o título **Administradores** e, logo abaixo, a lista completa.
+- Cada linha da lista representa um administrador.
+- Ao lado de cada nome aparece um retrato com as iniciais (gerado automaticamente).
+- Do lado direito do cabeçalho fica o botão **Novo Administrador**.
 
-Quando você abre o módulo, vê:
+### Coluna Administrador
 
-- O título **Administradores** no topo.
-- Ao lado do título, um selo com a **versão do sistema**.
-- Logo abaixo, a descrição "Gerenciamento de administradores do sistema".
-- No canto direito, o botão **Novo Administrador**.
-- Mais abaixo, a **tabela** com todos os administradores cadastrados.
+Mostra o nome completo do administrador com um retrato de iniciais ao lado. É só para identificar a pessoa.
 
-Enquanto os dados são buscados, você vê um indicador de carregamento com a mensagem "Carregando administradores...". Se não houver nenhum administrador cadastrado, a tabela mostra "Nenhum administrador encontrado." no centro.
+### Coluna E-mail
 
-### Botão do topo
+Mostra o e-mail de acesso do administrador. É com esse e-mail que ele entra no sistema.
 
-- **Novo Administrador** (botão azul com o ícone de **+**) — abre a janela de cadastro em branco, para criar um novo administrador. Em telas pequenas (celular), o texto some e fica apenas o ícone **+**.
+### Coluna Status
 
-### Tabela de Administradores
+Mostra se o administrador está **Ativo** ou **Inativo**:
 
-A tabela tem estas colunas:
+- **Ativo** (verde): a pessoa consegue acessar o sistema normalmente.
+- **Inativo** (cinza): a pessoa está bloqueada e não consegue mais entrar.
 
-- **Administrador** — mostra a foto (avatar) e o **nome completo** da pessoa. O avatar é uma imagem gerada automaticamente a partir do nome, com fundo vermelho e as iniciais em branco.
-- **E-mail** — mostra o e-mail do administrador. **Esta coluna fica oculta em telas pequenas** (celular).
-- **Status** — mostra um selo indicando se o administrador está **Ativo** (verde) ou **Inativo** (cinza).
-- **Ações** — mostra os botões de ação disponíveis para cada linha.
+O status também funciona como um botão: clicar nele liga ou desliga o acesso da pessoa. Para detalhes, veja **Botão Status (Ativar/Desativar)**.
 
-Em telas pequenas, a tabela vira uma lista de cartões, um para cada administrador, facilitando a visualização no celular.
+### Botão Novo Administrador
 
-### Selo de Status (Ativo/Inativo)
+- **O que faz:** abre a janela (modal) para cadastrar um novo administrador.
+- **Como usar:** clique no botão **+ Novo Administrador**, no topo da tela. A janela "Cadastrar Administrador" vai abrir. Preencha os campos seguindo o passo a passo da seção **Tela: Modal de Cadastro / Edição de Administrador** e clique em **Salvar**.
+- **Quando usar:** sempre que precisar dar acesso a uma nova pessoa no sistema.
 
-O selo de status é **clicável**. Ao clicar, você alterna o estado do administrador:
+### Botão Status (Ativar/Desativar)
 
-- Se está **Ativo**, clicar **desativa** o administrador (ele vira **Inativo**).
-- Se está **Inativo**, clicar **ativa** o administrador (ele vira **Ativo**).
+- **O que faz:** ativa ou desativa o acesso do administrador, sem precisar apagar nada.
+- **Como usar:** na lista, clique sobre o texto de status da pessoa (o "Ativo" verde ou o "Inativo" cinza).
+- **Dica:** se está **Ativo**, um clique desativa. Se está **Inativo**, um clique ativa.
+- **Quando usar:** para bloquear o acesso de quem saiu da empresa ou liberar quem voltou. Nenhum dado é apagado ao desativar.
 
-A ação acontece na hora e uma mensagem confirma o resultado, como "Administrador desativado com sucesso." ou "Administrador ativado com sucesso.". Ao passar o mouse sobre o selo, aparece uma dica: "Clique para desativar" ou "Clique para ativar". Não há janela de confirmação — o clique já efetiva a mudança.
+### Botão Editar (lápis)
 
-### Botão da coluna Ações
+- **O que faz:** abre a janela (modal) para editar os dados de um administrador já cadastrado.
+- **Como usar:** na linha do administrador, clique no ícone de lápis ✏️ (fica na coluna Ações, do lado direito). A janela "Editar Administrador" vai abrir com todos os dados já preenchidos.
+- **Dica:** aqui você pode corrigir informações e também trocar a senha (deixe o campo Senha vazio se não quiser mudar).
+- **Quando usar:** sempre que precisar atualizar os dados de um administrador.
 
-- **Editar** (ícone de lápis) — abre a janela de edição já preenchida com os dados atuais do administrador, para você alterar o que precisar.
+## Tela: Modal de Cadastro / Edição de Administrador
 
----
+Esta é a janela que aparece para cadastrar um administrador novo ou editar um existente.
 
-## Janela "Cadastrar Administrador"
+**Como abrir:**
 
-**Como abrir:** clique no botão **Novo Administrador** no topo da tela.
+- Para cadastrar: clique em **Novo Administrador** na lista.
+- Para editar: clique no ícone de lápis ✏️ na linha do administrador.
 
-A janela abre com o título **Cadastrar Administrador**, todos os campos em branco, e o cursor já posicionado no campo **Nome Completo**. Ela é dividida em cinco blocos: **Dados do Administrador**, **Dados Profissionais**, **Documentos**, **Endereço** e **Contato**. Se a janela for maior que a tela, dá para rolar o conteúdo para ver todos os campos.
+O título da janela muda conforme a situação: **"Cadastrar Administrador"** ou **"Editar Administrador"**.
 
-### Dados do Administrador
+A janela tem vários campos. Os com um asterisco são obrigatórios. Preencha com calma, seção por seção, e ao final clique em **Salvar**. Se mudar de ideia, clique em **Cancelar**.
 
-- **Nome de Usuário** — nome de login do administrador. É **obrigatório** e deve ter no mínimo 3 caracteres (máximo de 50). Enquanto você digita o **Nome Completo**, este campo é preenchido **automaticamente** com uma sugestão: o primeiro nome + as iniciais dos demais nomes, ignorando conectivos como "de", "da", "do", "dos", "das" e "e". Por exemplo, "João da Silva Santos" vira "joãos". Se quiser usar outro nome, clique no campo e digite — a partir do momento em que você clica nele, a sugestão automática é desativada (se você limpar o campo, a geração automática volta a funcionar).
-- **Perfil** — mostra o perfil de acesso. Aqui ele vem **fixado como "Administrador"** e não pode ser alterado (o campo fica desabilitado).
-- **Nome Completo** — nome completo da pessoa. **Obrigatório**, com no mínimo 2 caracteres (máximo de 100). É o primeiro campo que recebe o foco quando a janela abre.
-- **E-mail** — e-mail do administrador. **Obrigatório** e precisa conter o símbolo `@`.
-- **Senha** — senha de acesso. No cadastro é **obrigatória** e deve ter no mínimo 6 caracteres. Abaixo do campo aparece a dica "Preencha apenas se deseja alterar a senha."
+### Campo Nome de Usuário
 
-### Dados Profissionais
+- **O que é:** o apelido (login) que o administrador usa para entrar no sistema.
+- **Como preencher:** ele é preenchido sozinho conforme você digita o **Nome Completo** (ex.: "Maria da Silva" vira "marias"). Mas você pode trocar: clique no campo e digite o login que quiser.
+- **Obrigatório?** Sim. Precisa ter pelo menos 3 caracteres.
+- **Dica:** se você limpar o campo e sair dele, ele volta a preencher sozinho na próxima vez.
 
-- **Código** — campo livre, normalmente usado para um código interno ou matrícula da pessoa. Opcional.
-- **C.B.O** — código da Classificação Brasileira de Ocupações. Ao lado, há um botão de busca (ícone de lupa). Veja como usar na seção **Botões de busca** abaixo.
-- **Salário Base** — valor do salário. Aceita casas decimais e é formatado automaticamente no padrão brasileiro (ex.: 1.500,00). Ao clicar no campo, a formatação é removida para facilitar a digitação, e ao sair do campo ela é aplicada de novo.
-- **Departamento** — departamento ao qual o administrador pertence. Opcional.
-- **Cargo** — descrição do cargo. Campo **somente leitura**: ele é preenchido automaticamente quando você consulta o **C.B.O**.
-- **Classificação** — lista suspensa com o nível profissional. Opções: **Junior**, **Pleno**, **Senior**, **I**, **II**, **III**, **IV** e **V**. (A opção "Selecione..." é apenas o valor vazio inicial.)
+### Campo Perfil
 
-### Documentos
+- **O que é:** o tipo de acesso da pessoa.
+- **Como preencher:** não precisa fazer nada. Ele já vem travado em **Administrador**, pois você está nesse módulo.
 
-- **CPF** — número do CPF. Aceita só números e, ao sair do campo, é formatado automaticamente no padrão `000.000.000-00`.
-- **RG** — número do RG. Ao sair do campo, é formatado automaticamente no padrão `00.000.000-0`.
+### Campo Nome Completo
 
-### Endereço
+- **O que é:** o nome completo e real da pessoa, que aparece na lista.
+- **Como preencher:** digite o nome inteiro, sem abreviações.
+- **Obrigatório?** Sim. Precisa ter pelo menos 2 caracteres.
 
-- **Endereço** — nome da rua/logradouro. Campo **somente leitura**: é preenchido automaticamente pela busca do CEP.
-- **Nº** — número do endereço (máximo de 6 caracteres). Opcional.
-- **CEP** — código postal. Aceita só números e, ao sair do campo, é formatado automaticamente no padrão `00000-000`. Ao lado, há um botão de busca (ícone de lupa).
-- **Bairro** — bairro. Campo **somente leitura** (preenchido pela busca do CEP).
-- **Cidade** — cidade. Campo **somente leitura** (preenchido pela busca do CEP).
-- **UF** — sigla do estado. Campo **somente leitura** (preenchido pela busca do CEP).
+### Campo E-mail
 
-### Contato
+- **O que é:** o e-mail da pessoa, usado para acessar o sistema.
+- **Como preencher:** digite um e-mail válido (tem que ter o "@").
+- **Obrigatório?** Sim.
 
-- **Telefone** — telefone fixo. Ao sair do campo, é formatado automaticamente no padrão `(00) 0000-0000`.
-- **Celular** — celular. Ao sair do campo, é formatado automaticamente no padrão `(00) 00000-0000`.
+### Campo Senha
 
-### Botões de busca (dentro da janela)
+- **O que é:** a senha de acesso ao sistema.
+- **Como preencher:** 
+  - **Ao cadastrar:** é obrigatória e precisa ter no mínimo 6 caracteres.
+  - **Ao editar:** deixe **vazio** para manter a senha atual. Digite uma nova senha (mínimo 6 caracteres) somente se quiser trocar.
+- **Obrigatório?** Sim para cadastro novo, opcional na edição.
+- **Dica:** abaixo do campo aparece a dica "Preencha apenas se deseja alterar a senha" para lembrar disso na edição.
 
-- **Buscar CBO** (ícone de lupa ao lado do campo **C.B.O**) — consulta o código CBO digitado. Para funcionar, o código precisa ter pelo menos 4 números. Você pode acionar a busca clicando na lupa, pressionando **Enter** dentro do campo, ou simplesmente saindo do campo. Se o código existir, o campo **Cargo** é preenchido automaticamente com a descrição da ocupação. Se não existir, aparece a mensagem "CBO não encontrado.". Se houver um problema na consulta, aparece "Erro ao consultar CBO.".
-- **Buscar CEP** (ícone de lupa ao lado do campo **CEP**) — consulta o CEP digitado. Para funcionar, o CEP precisa ter os **8 números**. Você aciona a busca clicando na lupa, pressionando **Enter** no campo, ou saindo do campo. Se o CEP existir, os campos **Endereço**, **Bairro**, **Cidade** e **UF** são preenchidos automaticamente. Se não existir, aparece "CEP não encontrado.". Se houver um problema na consulta, aparece "Erro ao consultar CEP.".
+### Bloco Dados Profissionais
 
-### Botões do rodapé da janela
+Aqui você informa os dados de trabalho do administrador: código, CBO, salário, departamento, cargo e classificação. Preencha os que fizerem sentido.
 
-- **Cancelar** — fecha a janela **sem salvar** nada. Todos os campos preenchidos são descartados e limpos.
-- **Salvar** — confere os campos e grava o novo administrador. Em caso de sucesso, a janela fecha e o novo administrador aparece na tabela (com a mensagem "Administrador salvo com sucesso."). Se houver problema, uma mensagem de erro aparece sem fechar a janela.
+#### Campo Código
 
-### Validações que aparecem ao Salvar
+- **O que é:** um código interno para identificar o administrador na empresa.
+- **Como preencher:** digite o código (número ou texto) que a empresa utiliza.
 
-Antes de gravar, o sistema confere o formulário. Se algo estiver errado, você vê uma destas mensagens (como aviso no canto da tela):
+#### Campo C.B.O
 
-- "Nome de usuário deve ter no mínimo 3 caracteres."
-- "Nome completo é obrigatório."
-- "E-mail inválido."
-- "Senha deve ter no mínimo 6 caracteres."
+- **O que é:** a Classificação Brasileira de Ocupações, ou seja, o código da profissão.
+- **Como preencher:** digite o código numérico do CBO e saia do campo (ou use o botão de busca ao lado). O sistema consulta e preenche o **Cargo** automaticamente.
+- **Dica:** se o cargo não for preenchido, confira se o código foi digitado certo.
 
-Essas mensagens somem sozinhas depois de alguns segundos.
+### Botão Buscar CBO (lupa)
 
----
+- **O que faz:** consulta o código CBO digitado e preenche o campo **Cargo** automaticamente.
+- **Como usar:** digite o código do CBO no campo **C.B.O** e clique no botão de lupa 🔍 ao lado dele.
+- **Dica:** se o CBO não for encontrado, aparece um aviso na tela.
 
-## Janela "Editar Administrador"
+#### Campo Salário Base
 
-**Como abrir:** clique no ícone de **Editar** (lápis) na linha do administrador desejado na tabela.
+- **O que é:** o salário de referência do administrador.
+- **Como preencher:** digite o valor. Ao sair do campo, ele é formatado sozinho no padrão brasileiro (ex.: 1.500,00).
+- **Dica:** você pode digitar com ou sem pontos/vírgula; o sistema ajusta a formatação.
 
-A janela abre com o título **Editar Administrador** e **todos os campos já preenchidos** com os dados atuais da pessoa. Os campos e blocos são os mesmos do cadastro (veja a seção anterior). As diferenças são:
+#### Campo Departamento
 
-- **Senha** — **não é obrigatória**. Deixe em branco para manter a senha atual; preencha somente se quiser trocá-la (mínimo de 6 caracteres). A dica "Preencha apenas se deseja alterar a senha." fica visível para orientar.
-- **Nome de Usuário** — já vem preenchido e pode ser editado manualmente (a geração automática fica desativada).
+- **O que é:** o setor onde o administrador trabalha.
+- **Como preencher:** digite o nome do departamento (ex.: "TI", "Financeiro").
 
-Você pode refazer as buscas de **CBO** e **CEP** normalmente durante a edição para atualizar os campos **Cargo** e de endereço.
+#### Campo Cargo
 
-### Botões do rodapé da janela
+- **O que é:** o cargo/função do administrador.
+- **Como preencher:** normalmente ele é preenchido sozinho ao consultar o **CBO**. Não é possível digitar direto.
+- **Dica:** se não preencher, use o botão de busca do campo **C.B.O**.
 
-- **Cancelar** — fecha a janela **sem salvar**. Os dados originais são mantidos (as alterações feitas são descartadas).
-- **Salvar** — grava as alterações do administrador. Em caso de sucesso, a janela fecha e a tabela é atualizada (mensagem "Administrador salvo com sucesso."). Em caso de erro, uma mensagem é exibida e a janela permanece aberta.
+#### Campo Classificação
 
----
+- **O que é:** o nível da pessoa na carreira.
+- **Como preencher:** clique no campo e escolha uma opção da lista: Junior, Pleno, Senior, I, II, III, IV ou V.
 
-## Como o sistema se comporta (dicas de uso)
+### Bloco Documentos
 
-- **Foco inicial:** ao abrir a janela de cadastro, o cursor já vai para o campo **Nome Completo**.
-- **Fechar a janela:** além do botão **Cancelar**, você pode fechar a janela pressionando a tecla **Esc**.
-- **Navegação por teclado:** pressionar **Enter** em um campo pula para o próximo campo da janela (exceto nos campos C.B.O e CEP, onde o Enter aciona a busca). A tecla **Tab** também percorre os campos e, ao chegar no último, volta para o primeiro.
-- **Máscaras automáticas:** os campos de CPF, RG, CEP, Telefone, Celular e Salário se formatam sozinhos quando você sai deles, e liberam a formatação quando você clica neles para editar. Não se preocupe em digitar traços ou pontos — digite só os números.
-- **Mensagens (toasts):** confirmações e avisos aparecem como pequenas notificações no canto da tela e desaparecem sozinhas depois de alguns segundos. Elas podem ser de sucesso (verde), aviso (amarelo) ou erro (vermelho).
+Aqui você informa os documentos do administrador.
 
----
+#### Campo CPF
 
-## Resumo de Botões e Ícones do Módulo
+- **O que é:** o CPF da pessoa.
+- **Como preencher:** digite os números. Ao sair do campo, o sistema formata sozinho (ex.: 123.456.789-00).
 
-| Botão / Ícone | Onde fica | O que faz |
-|---|---|---|
-| **+** (ícone de adição) | Botão "Novo Administrador" no topo | Abre a janela de cadastro de um novo administrador |
-| **Selo de Status** (Ativo/Inativo) | Coluna "Status" da tabela | Alterna o administrador entre ativo e inativo ao clicar |
-| **Lápis** | Coluna "Ações" da tabela | Abre a janela de edição com os dados do administrador |
-| **Lupa** (ao lado de C.B.O) | Dentro da janela de cadastro/edição | Consulta o CBO e preenche o campo Cargo |
-| **Lupa** (ao lado de CEP) | Dentro da janela de cadastro/edição | Consulta o CEP e preenche os campos de endereço |
-| **Cancelar** | Rodapé da janela | Fecha a janela sem salvar |
-| **Salvar** | Rodapé da janela | Valida e grava o cadastro ou a edição |
+#### Campo RG
 
-> **Lembre-se:** não existe botão para **excluir** um administrador neste módulo. Para tirar um administrador de uso, basta **desativá-lo** clicando no selo de status.
+- **O que é:** o RG da pessoa.
+- **Como preencher:** digite os números. Ao sair do campo, o sistema formata sozinho.
+
+### Bloco Endereço
+
+Aqui você informa o endereço do administrador.
+
+#### Campo CEP
+
+- **O que é:** o CEP da pessoa.
+- **Como preencher:** digite o CEP (só números). Ao sair do campo, o sistema formata sozinho (ex.: 01001-000) e preenche automaticamente o **Endereço**, **Bairro**, **Cidade** e **UF**.
+- **Dica:** dá para usar o botão de busca ao lado do campo para consultar o CEP.
+
+### Botão Buscar CEP (lupa)
+
+- **O que faz:** consulta o CEP digitado e preenche sozinho os campos de endereço (Endereço, Bairro, Cidade e UF).
+- **Como usar:** digite o CEP no campo **CEP** e clique no botão de lupa 🔍 ao lado.
+- **Dica:** se o CEP não for encontrado, aparece um aviso na tela.
+
+#### Campo Endereço
+
+- **O que é:** a rua/avenida do administrador.
+- **Como preencher:** é preenchido sozinho ao consultar o **CEP**. Para corrigir, você pode digitar por cima.
+
+#### Campo Nº
+
+- **O que é:** o número do imóvel no endereço.
+- **Como preencher:** digite o número (até 6 caracteres).
+
+#### Campo Bairro
+
+- **O que é:** o bairro do endereço.
+- **Como preencher:** é preenchido sozinho ao consultar o **CEP**. Para corrigir, você pode digitar por cima.
+
+#### Campo Cidade
+
+- **O que é:** a cidade do endereço.
+- **Como preencher:** é preenchido sozinho ao consultar o **CEP**. Para corrigir, você pode digitar por cima.
+
+#### Campo UF
+
+- **O que é:** a sigla do estado (ex.: SP, RJ, MG).
+- **Como preencher:** é preenchido sozinho ao consultar o **CEP** e não pode ser digitado.
+
+### Bloco Contato
+
+Aqui você informa os telefones do administrador.
+
+#### Campo Telefone
+
+- **O que é:** o telefone fixo da pessoa.
+- **Como preencher:** digite os números. Ao sair do campo, o sistema formata sozinho (ex.: (11) 1234-5678).
+
+#### Campo Celular
+
+- **O que é:** o celular da pessoa.
+- **Como preencher:** digite os números. Ao sair do campo, o sistema formata sozinho (ex.: (11) 91234-5678).
+
+### Botão Cancelar
+
+- **O que faz:** fecha a janela sem salvar nada.
+- **Como usar:** clique em **Cancelar**, no canto inferior direito da janela.
+- **Quando usar:** quando desistir do cadastro ou da edição. Nada do que você digitou será salvo.
+
+### Botão Salvar
+
+- **O que faz:** grava as informações do administrador.
+- **Como usar:** depois de preencher todos os campos obrigatórios, clique em **Salvar**, no canto inferior direito da janela.
+- **O que acontece:** 
+  - Se for um cadastro novo, o administrador é criado como **Ativo** e aparece na lista.
+  - Se for uma edição, os dados são atualizados.
+- **Dica:** se algum campo obrigatório estiver errado ou faltando, o sistema avisa o que precisa ser corrigido e nada é salvo.

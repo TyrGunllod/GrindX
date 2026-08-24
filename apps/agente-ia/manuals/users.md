@@ -1,202 +1,249 @@
 # Manual do Módulo Usuários
 
-Bem-vindo ao manual do módulo **Usuários** do GrindX! Este módulo é onde você gerencia quem pode acessar o sistema. Aqui você cadastra novos colaboradores, edita os dados deles, controla se a pessoa pode entrar (ativo ou inativo), define quem é aprovador e escolhe quais telas (módulos) cada usuário pode ver.
+Neste módulo você gerencia as pessoas que usam o sistema (chamadas de **usuários**): cria novos usuários, edita os dados, controla se a pessoa está ativa ou inativa, define quem é aprovador e libera o acesso aos módulos do sistema.
 
-Neste manual, tudo é explicado **passo a passo**, como se fosse a primeira vez que você abre a tela. Vamos lá!
+O módulo é dividido em três áreas:
 
----
-
-## Tela Principal — Lista de Usuários
-
-Essa é a primeira coisa que você vê ao abrir o módulo. No topo aparece o título **"Gerenciamento de Usuários"** com a frase *"Controle de acesso e permissões modulares"* logo abaixo. No cantinho, você também vê a **versão do sistema** — isso ajuda a saber se você está na tela mais recente.
-
-O restante da tela é uma **tabela** com a lista de todos os usuários cadastrados (exceto administradores — eles não aparecem aqui). Cada linha da tabela é um usuário.
-
-### Como chegar nessa tela
-1. Entre no GrindX com seu login e senha.
-2. No menu lateral, clique em **Usuários** (ou no caminho que leva ao módulo de usuários).
-3. Pronto — a lista carrega sozinha. Enquanto isso, aparece uma mensagem *"Carregando usuários..."*.
-
-> Se a sua sessão expirou, você verá a mensagem *"Sessão expirada. Faça login novamente."* — é só entrar de novo que a tela volta ao normal.
-
-### Colunas da tabela
-
-| Coluna | O que mostra |
-|---|---|
-| **Usuário** | A **foto/avatar** (gerada a partir do nome) e o **nome completo** da pessoa, lado a lado. |
-| **E-mail** | O e-mail de acesso do usuário. Em telas menores (celular), essa coluna fica escondida para caber melhor. |
-| **Perfil** | O tipo de acesso, em um selo colorido: **LEITURA** ou **OPERADOR**. |
-| **Status** | Um selo que mostra se a pessoa está **Ativo** (verde) ou **Inativo** (cinza). Esse selo é clicável (veja abaixo). |
-| **Aprovador** | Um selo que mostra **Sim** ou **Não** — indica se a pessoa pode ser aprovadora. Também é clicável. |
-| **Ações** | Botões de ação de cada linha: editar e permissões (veja abaixo). |
-
-> **Observação:** na versão de celular, a tabela vira cartões. Cada cartão mostra o nome do campo (ex.: "E-mail") seguido do valor, um embaixo do outro, com as ações separadas na parte de baixo. Nada muda no funcionamento — só muda o visual.
-
-### Botões e ícones da tela principal
-
-- **+ Novo Usuário** (botão no canto superior esquerdo) — abre a janela de **cadastro** de um novo usuário. Em telas pequenas, o texto some e fica só o ícone de "+".
-- **Selo de Status (Ativo / Inativo)** — clique nele para **ativar ou desativar** a pessoa. Ao passar o mouse, aparece a dica *"Clique para desativar"* (se estiver ativo) ou *"Clique para ativar"* (se estiver inativo). Veja o passo a passo na seção de status.
-- **Selo de Aprovador (Sim / Não)** — clique nele para **dar ou tirar** o papel de aprovador da pessoa. Ao passar o mouse, aparece a dica *"Clique para tornar aprovador"* ou *"Clique para remover aprovador"*. Veja mais na seção própria.
-- **Ícone de lápis (✏️)** — na coluna Ações. **Edita o usuário**: abre a mesma janela do cadastro, já preenchida com os dados atuais, para você alterar. A dica ao passar o mouse é *"Editar Usuário"*.
-- **Ícone de escudo (🛡️)** — na coluna Ações. **Abre a janela de Permissões** desse usuário, onde você escolhe quais módulos ele pode acessar. A dica ao passar o mouse é *"Permissões"*.
-
-> **E se não houver nenhum usuário?** A tela mostra a mensagem *"Nenhum usuário encontrado."* — é só cadastrar um novo pelo botão **Novo Usuário**.
+- **Tela principal**: a lista de usuários com o botão "Novo Usuário".
+- **Janela de Cadastro/Edição**: onde você preenche os dados da pessoa.
+- **Janela de Permissões**: onde você marca quais módulos a pessoa pode usar.
 
 ---
 
-## Cadastrar Usuário
+## Tela Principal — Gerenciamento de Usuários
 
-Aqui você cria o acesso de uma pessoa nova no sistema. Tudo é feito dentro de uma janela (modal) que divide os dados em **5 blocos** bem organizados, com um risco separando cada um.
+Ao abrir o módulo **Usuários** no menu lateral, você vê a tela principal com:
 
-### Como abrir
-1. Clique no botão **+ Novo Usuário**, no canto superior direito da tela.
-2. A janela **"Cadastrar Usuário"** abre, já posicionando o cursor no campo *Nome Completo* para você digitar direto.
+- O título **"Gerenciamento de Usuários"**.
+- A **versão do sistema** ao lado do título.
+- O botão **"Novo Usuário"** no canto superior direito.
+- A tabela com a lista de usuários cadastrados.
 
-### Como preencher — campo por campo
+Quando a tela abre, ela carrega automaticamente os usuários. Enquanto isso, aparece o aviso **"Carregando usuários..."**. Se não houver nenhum usuário cadastrado, aparece a mensagem **"Nenhum usuário encontrado."**.
 
-#### Bloco 1: Dados do Usuário
-- **Nome de Usuário** — o nome que a pessoa vai usar para entrar no sistema. **Dica esperta:** ele é **gerado automaticamente** conforme você digita o *Nome Completo* (primeiro nome + iniciais dos sobrenomes, ignorando palavras como "de", "da", "do", "e"). Ex.: "Maria Silva Souza" vira `marias`. Se quiser um nome diferente, é só **clicar nesse campo e digitar por cima** — a partir daí o preenchimento automático para. Deve ter **no mínimo 3 caracteres**.
-- **Perfil** — a lista para escolher o nível de acesso. As opções são:
-  - **Leitura** — a pessoa só pode **ver** as telas (opção que já vem marcada por padrão).
-  - **Operador** — além de ver, pode **fazer alterações** nas telas liberadas.
-  - (O perfil *Administrador* não aparece aqui, pois ele é gerenciado à parte.)
+Cada linha da tabela representa um usuário e mostra as colunas a seguir.
 
-#### Bloco 2: Dados Profissionais
-- **Código** — um código interno do colaborador, se a sua empresa usar (opcional).
-- **C.B.O** — a classificação da profissão (Código Brasileiro de Ocupação). Tem um botãozinho de **🔍 lupa** ao lado (explicado abaixo) que busca o cargo automaticamente.
-- **Salário Base** — o salário da pessoa. É só digitar e, ao sair do campo, ele **se formata sozinho** no padrão brasileiro (ex.: `2.500,00`). Opcional.
-- **Departamento** — em qual departamento a pessoa trabalha (opcional).
-- **Cargo** — o cargo do colaborador. **Atenção:** esse campo você não digita — ele é **preenchido automaticamente** quando você busca o C.B.O. Por isso ele aparece "travado".
-- **Classificação** — um nível de senioridade. Escolha na lista: `Junior`, `Pleno`, `Senior` ou os níveis `I`, `II`, `III`, `IV`, `V`. Obrigatório escolher uma (ou deixar em "Selecione..." se não souber).
+### Campo Usuário
 
-#### Bloco 3: Documentos
-- **CPF** — o CPF da pessoa. Ao sair do campo, ele se formata sozinho (ex.: `123.456.789-00`). Obrigatório.
-- **RG** — o registro geral. Também se formata sozinho (ex.: `12.345.678-9`). Obrigatório.
+- Mostra a **foto (avatar)** e o **nome completo** da pessoa.
+- O avatar é gerado automaticamente com as iniciais do nome; não é preciso cadastrar foto.
 
-#### Bloco 4: Endereço
-- **Endereço** — a rua/avenida. **É preenchido automaticamente** pela busca de CEP, então fica "travado". Se precisar, é melhor usar a busca (veja abaixo).
-- **Nº** — o número do imóvel.
-- **CEP** — o código postal. Ao sair do campo, formata sozinho (ex.: `01310-100`).
-- **Bairro**, **Cidade** e **UF** — também **preenchidos automaticamente** pela busca de CEP, ficam "travados". A UF aceita só 2 letras.
+### Campo E-mail
 
-#### Bloco 5: Contato
-- **Telefone** — telefone fixo, formata sozinho (ex.: `(11) 3456-7890`).
-- **Celular** — celular, formata sozinho (ex.: `(11) 98765-4321`).
+- Mostra o e-mail de login da pessoa.
+- Em telas pequenas (celular), essa coluna fica oculta para facilitar a leitura.
 
-### Botões com ação dentro do formulário
+### Campo Perfil
 
-- **🔍 (lupa, ao lado de C.B.O)** — busca o cargo a partir do CBO. **Como usar:** digite pelo menos 4 números do CBO no campo e clique na lupa (ou pressione **Enter** com o cursor no campo). Se encontrar, o campo **Cargo** é preenchido automaticamente. Se não achar, aparece um aviso de erro na tela.
-- **🔍 (lupa, ao lado de CEP)** — busca o endereço a partir do CEP. **Como usar:** digite o CEP com 8 números e clique na lupa (ou pressione **Enter** no campo). Ele preenche **Endereço, Bairro, Cidade e UF** sozinho. Se não achar, aparece um aviso.
+- Mostra o perfil de acesso da pessoa em um selo colorido, por exemplo **"LEITURA"**.
+- O selo apenas informa; a alteração do perfil é feita na janela de edição (campo **Perfil**).
 
-> **Atalho rápido:** dentro do formulário, apertar **Enter** pula para o próximo campo (e dispara as buscas de CBO e CEP quando você está neles).
+### Campo Status (selo clicável)
 
-### Rodapé da janela (botões finais)
+- Mostra se o usuário está **"Ativo"** (selo verde) ou **"Inativo"** (selo cinza).
+- **O selo é clicável**: clique em "Ativo" para desativar a pessoa, ou em "Inativo" para reativar.
+- Ao clicar, o sistema salva a mudança, atualiza a tabela na hora e mostra um aviso confirmando ("Usuário desativado/ativado com sucesso").
+- Uma pessoa inativa continua cadastrada, mas não poderá mais acessar o sistema.
 
-- **Cancelar** — fecha a janela **sem salvar** nada. Tudo que você digitou é descartado e o formulário é limpo.
-- **Salvar** — confere as informações, grava o usuário e fecha a janela. Se algum campo obrigatório estiver errado (usuário com menos de 3 letras, nome vazio, e-mail sem "@", ou senha com menos de 6 caracteres), aparece um aviso explicando o que corrigir e a janela **não** fecha. Quando salvar com sucesso, aparece a mensagem *"Usuário salvo com sucesso."* e o novo usuário entra na lista.
+### Campo Aprovador (selo clicável)
 
-> **Sobre a senha:** no cadastro, o campo **Senha** é obrigatório (mínimo 6 caracteres) e a dica *"Preencha apenas se deseja alterar a senha"* fica visível já no cadastro.
+- Mostra se a pessoa é **aprovador** ("Sim") ou não ("Não").
+- **O selo é clicável**: clique em "Sim" para remover a função de aprovador, ou em "Não" para tornar a pessoa aprovador.
+- Ao clicar, a mudança é salva na hora e a tabela é atualizada.
 
----
+### Botão Novo Usuário
 
-## Editar Usuário
+- **Novo Usuário** — abre a janela **"Cadastrar Usuário"** para você preencher os dados de uma pessoa nova.
+- Também existe a versão com apenas o ícone de **+** (em telas pequenas).
 
-Quando você precisa corrigir ou atualizar os dados de alguém (mudou de cargo, telefone, departamento, etc.).
+### Ícone de lápis (Editar)
 
-### Como fazer
-1. Na lista, localize o usuário que quer editar.
-2. Clique no **ícone de lápis (✏️)** na coluna **Ações** da linha dele.
-3. A janela abre com o título **"Editar Usuário"** e **todos os campos já preenchidos** com os dados atuais.
-4. Faça as alterações que quiser (mesmos campos do cadastro).
-5. No rodapé:
-   - **Salvar** — grava as mudanças e fecha a janela.
-   - **Cancelar** — fecha sem alterar nada.
+- **Lápis** — abre a janela **"Editar Usuário"** com os dados daquela pessoa já preenchidos.
+- Você pode alterar qualquer informação e clicar em **Salvar** para gravar.
 
-### Diferenças em relação ao cadastro
-- O campo **Senha** agora é **opcional** e já vem vazio. Deixe em branco se a senha **não** vai mudar; preencha apenas se quiser trocá-la (aparece a dica *"Preencha apenas se deseja alterar a senha."*). É por isso que na edição não é obrigatório.
-- O **Nome de Usuário** vem preenchido e **não** é gerado automaticamente (o preenchimento automático fica desligado para não sobrescrever o que já existe).
+### Ícone de escudo (Permissões)
+
+- **Escudo** — abre a janela **"Gerenciar Permissões"** daquele usuário.
+- É onde você marca quais módulos do sistema a pessoa pode usar.
 
 ---
 
-## Ativar e Desativar Usuário (Status)
+## Janela de Cadastro e Edição de Usuário
 
-O **Status** controla se a pessoa pode entrar no sistema. Quem está **Inativo** não consegue mais acessar — útil quando o colaborador sai da empresa, está de afastamento, etc. Ninguém é apagado do sistema; a pessoa só é desligada do acesso.
+Essa janela é usada para **criar** um usuário novo e para **editar** um usuário existente.
 
-### Como desativar
-1. Na coluna **Status**, localize o selo **Ativo** (verde) do usuário.
-2. Clique nele. A mensagem *"Usuário desativado com sucesso."* aparece e o selo muda para **Inativo** (cinza).
+- **Como abrir para criar**: clique no botão **"Novo Usuário"** na tela principal. O título da janela será **"Cadastrar Usuário"**.
+- **Como abrir para editar**: clique no **ícone de lápis** na linha da pessoa. O título da janela será **"Editar Usuário"** e todos os campos virão preenchidos com os dados atuais.
 
-### Como ativar
-1. Localize o selo **Inativo** (cinza) do usuário.
-2. Clique nele. Aparece *"Usuário ativado com sucesso."* e o selo volta para **Ativo** (verde), liberando o acesso.
+A janela é dividida em blocos com títulos: **Dados do Usuário**, **Dados Profissionais**, **Documentos**, **Endereço** e **Contato**. Os campos obrigatórios estão descritos abaixo.
 
-> **Dica:** ao passar o mouse no selo, o sistema mostra uma dica confirmando o que o clique vai fazer. Sem risco de clicar sem querer.
+> Dica: enquanto você preenche o formulário, a tecla **Enter** pula para o próximo campo. Nos campos de CBO e CEP, o Enter busca o dado na hora.
+
+### Campo Nome de Usuário
+
+- É o nome de acesso/login da pessoa (como `maria.silva`).
+- Precisa ter **no mínimo 3 caracteres** (máximo 50).
+- **Sugestão automática**: quando você digita o **Nome Completo**, o sistema preenche esse campo sozinho, usando o primeiro nome seguido das iniciais dos outros nomes (ignorando palavras como "de", "da", "do", "das", "dos" e "e").
+- Se você tocar nesse campo para alterar o nome de usuário, o sistema para de preencher sozinho. Se você apagar o campo, o preenchimento automático volta a funcionar.
+
+### Campo Perfil
+
+- Define o **nível de acesso** da pessoa no sistema (por exemplo, leitura).
+- O perfil "admin" não aparece nesta lista.
+- Para um usuário novo, o padrão já vem como **"leitura"**.
+
+### Campo Nome Completo
+
+- É o nome real da pessoa (como aparece na lista).
+- Precisa ter **no mínimo 2 caracteres** (máximo 100).
+- É obrigatório.
+
+### Campo E-mail
+
+- E-mail de login/contato da pessoa.
+- Precisa ser um e-mail válido (conter "@").
+- É obrigatório.
+
+### Campo Senha
+
+- **Criando um usuário novo**: a senha é obrigatória e precisa ter **no mínimo 6 caracteres**.
+- **Editando um usuário**: deixe em branco para manter a senha atual. Só preencha se quiser **alterar a senha** — por isso aparece o aviso *"Preencha apenas se deseja alterar a senha"*.
+
+### Campo Código
+
+- Código interno/funcional da pessoa (opcional).
+- Use apenas números ou o código que a empresa utiliza.
+
+### Campo C.B.O
+
+- C.B.O. (Classificação Brasileira de Ocupações) — o código da ocupação/função da pessoa (opcional).
+- Você pode digitar o código e aguardar que a busca aconteça ao sair do campo, **ou** usar o botão de lupa para buscar.
+- A busca precisa de pelo menos 4 dígitos. Quando encontra, o sistema preenche automaticamente o campo **Cargo**. Se não encontrar, aparece o aviso "CBO não encontrado."
+
+### Botão Buscar CBO (lupa)
+
+- **Lupa (ao lado do campo C.B.O)** — consulta a ocupação a partir do código digitado.
+- Ao encontrar, preenche o campo **Cargo** automaticamente com a descrição da ocupação.
+
+### Campo Salário Base
+
+- Salário base da pessoa (opcional).
+- Digite o valor e, ao sair do campo, ele é formatado automaticamente no formato brasileiro (ex.: `1.234,56`).
+- Ao tocar no campo para editar, a formatação é retirada temporariamente para facilitar a digitação.
+
+### Campo Departamento
+
+- Setor em que a pessoa trabalha, por exemplo "Financeiro", "TI" (opcional).
+
+### Campo Cargo
+
+- Cargo/função da pessoa.
+- Esse campo é **preenchido automaticamente** pela busca de C.B.O e não pode ser digitado manualmente.
+
+### Campo Classificação
+
+- Nível da pessoa na carreira (opcional).
+- As opções são: **Junior**, **Pleno**, **Senior**, **I**, **II**, **III**, **IV** e **V**.
+
+### Campo CPF
+
+- CPF da pessoa (opcional).
+- Ao sair do campo, o número é formatado automaticamente (ex.: `123.456.789-00`).
+
+### Campo RG
+
+- RG da pessoa (opcional).
+- Ao sair do campo, é formatado automaticamente (ex.: `12.345.678-9`).
+
+### Campo Endereço
+
+- Nome da rua/avenida.
+- Esse campo é **preenchido automaticamente** pela busca de CEP e não pode ser digitado manualmente.
+
+### Campo Nº
+
+- Número do imóvel/endereço (opcional).
+- Pode ser digitado normalmente (máximo 6 caracteres).
+
+### Campo CEP
+
+- CEP do endereço (opcional).
+- Ao sair do campo, o número é formatado automaticamente (ex.: `12345-678`).
+- Assim que você informa um CEP com 8 dígitos, o sistema busca e preenche **Endereço**, **Bairro**, **Cidade** e **UF** automaticamente. Se não encontrar, aparece o aviso "CEP não encontrado."
+
+### Botão Buscar CEP (lupa)
+
+- **Lupa (ao lado do campo CEP)** — consulta o endereço a partir do CEP digitado.
+- Ao encontrar, preenche automaticamente os campos **Endereço**, **Bairro**, **Cidade** e **UF**.
+
+### Campo Bairro
+
+- Bairro do endereço.
+- É **preenchido automaticamente** pela busca de CEP e não pode ser digitado manualmente.
+
+### Campo Cidade
+
+- Cidade do endereço.
+- É **preenchida automaticamente** pela busca de CEP e não pode ser digitada manualmente.
+
+### Campo UF
+
+- Sigla do estado (ex.: "SP", "RJ").
+- É **preenchida automaticamente** pela busca de CEP e não pode ser digitada manualmente.
+
+### Campo Telefone
+
+- Telefone fixo (opcional).
+- Ao sair do campo, é formatado automaticamente (ex.: `(11) 2345-6789`).
+
+### Campo Celular
+
+- Celular (opcional).
+- Ao sair do campo, é formatado automaticamente (ex.: `(11) 91234-5678`).
+
+### Botão Salvar
+
+- **Salvar** — grava o usuário novo ou as alterações, fecha a janela e atualiza a tabela.
+- Antes de salvar, o sistema valida os campos obrigatórios:
+  - **Nome de usuário** com menos de 3 caracteres → aviso "Nome de usuário deve ter no mínimo 3 caracteres."
+  - **Nome completo** vazio ou muito curto → aviso "Nome completo é obrigatório."
+  - **E-mail** inválido → aviso "E-mail inválido."
+  - **Senha** ausente ou com menos de 6 caracteres (apenas na criação) → aviso "Senha deve ter no mínimo 6 caracteres."
+- Se algo estiver errado, aparece um aviso e a janela **não fecha**. Corrija e tente de novo.
+- Se tudo estiver certo, aparece "Usuário salvo com sucesso."
+
+### Botão Cancelar
+
+- **Cancelar** — fecha a janela **sem salvar** nada.
+- Qualquer dado digitado é descartado.
 
 ---
 
-## Definir e Remover Aprovador
+## Janela de Gerenciamento de Permissões
 
-O campo **Aprovador** marca as pessoas que exercem o papel de **aprovador** no sistema (quem aprova algo nos outros módulos). É um "sim ou não" por usuário.
+Essa janela controla **quais módulos do sistema cada usuário pode acessar**.
 
-### Como tornar alguém aprovador
-1. Na coluna **Aprovador**, localize o selo **Não** do usuário.
-2. Clique nele. Aparece *"Aprovador ativado com sucesso."* e o selo muda para **Sim** (verde).
+- **Como abrir**: clique no **ícone de escudo** na linha do usuário na tela principal.
+- Ao abrir, a janela mostra **"Carregando permissões..."** e em seguida lista os módulos do sistema.
 
-### Como remover o papel de aprovador
-1. Localize o selo **Sim** (verde) do usuário.
-2. Clique nele. Aparece *"Aprovador desativado com sucesso."* e o selo volta para **Não**.
+Os módulos aparecem organizados em **abas/grupos** (ex.: um grupo para cada área do sistema), cada um com seu próprio título. Dentro de cada grupo, os módulos aparecem com um ícone e uma caixinha de seleção (checkbox). Os módulos que a pessoa já pode acessar aparecem **marcados**.
 
-> **Dica:** a dica ao passar o mouse diz exatamente o que o clique fará ("Clique para tornar aprovador" / "Clique para remover aprovador").
+### Campo Selecionar todos / Limpar
 
----
+- No topo de cada grupo de módulos há a opção **"Selecionar todos"**.
+- Clique nela para marcar **todas** as caixinhas daquele grupo de uma vez. O texto muda para **"Limpar"**.
+- Clique em **"Limpar"** para desmarcar todas as caixinhas daquele grupo.
 
-## Gerenciar Permissões
+### Campo Marcação de Admin
 
-Essa é a janela onde você escolhe **quais telas (módulos) cada usuário pode ver e usar**. Pense nela como uma lista de "checkboxes" de acesso: o que estiver marcado, a pessoa vê; o que não estiver, ela não vê.
+- Módulos exclusivos para administradores aparecem com o selo **"Admin"** ao lado do nome.
+- Marque com cuidado: dar acesso a módulos de admin a um usuário comum pode liberar funções sensíveis.
 
-### Como abrir
-1. Na lista de usuários, localize a pessoa.
-2. Clique no **ícone de escudo (🛡️)** na coluna **Ações**.
-3. A janela **"Gerenciar Permissões"** abre mostrando *"Carregando permissões..."* por um instante e, em seguida, a lista completa de módulos.
+### Botão Salvar Permissões
 
-### Como entender a tela
-A janela traz os módulos do sistema **agrupados por abas** (as seções do menu do GrindX). Cada grupo aparece dentro de um cartão com o nome da aba e um ícone. Exemplo de como seria a organização:
+- **Salvar Permissões** — grava as permissões marcadas, fecha a janela e mostra o aviso "Permissões atualizadas com sucesso."
+- Depois de salvar, o usuário já pode usar (ou deixar de usar) os módulos marcados.
 
-- **Aba do sistema** (ex.: *Início*, *Financeiro*, *Estoque*...) — cada aba é um cartão.
-  - Dentro de cada cartão, ficam os **módulos** daquela aba, cada um com uma **checkbox** (caixinha de marcar), um ícone e o nome do módulo.
-  - Alguns módulos têm **subgrupos** — aparece um nome de seção menor com os módulos filhos recuados à direita, com uma barrinha na lateral para você entender a hierarquia.
-  - Alguns módulos têm um selo vermelho **"ADMIN"** ao lado do nome. Isso significa que é um módulo **exclusivo de administradores** — mesmo que você marque, apenas perfis de admin realmente o usam.
+### Botão Cancelar
 
-### Controles da janela (campo a campo)
-
-- **Checkbox de cada módulo** — marque para **liberar** o módulo para o usuário; desmarque para **bloquear**. Você pode marcar e desmarcar à vontade antes de salvar.
-- **"Selecionar todos" / "Limpar"** — no canto direito do cabeçalho de cada aba (grupo). Uma caixinha de seleção em massa:
-  - Se **nenhum** (ou só alguns) módulos da aba estiver marcado, aparece o texto **"Selecionar todos"**. Marque essa caixinha para **liberar todos os módulos** daquela aba de uma vez — o texto muda para "Limpar".
-  - Se **todos** os módulos da aba já estiverem marcados, aparece **"Limpar"**. Clique para **remover o acesso a todos** os módulos daquela aba de uma vez — o texto volta para "Selecionar todos".
-
-> **Dica:** se a lista for longa, a janela rola sozinha por dentro. Os botões de salvar/cancelar ficam sempre visíveis no rodapé.
-
-### Rodapé da janela (botões finais)
-
-- **Cancelar** — fecha a janela **sem aplicar** nenhuma mudança.
-- **Salvar Permissões** — grava as permissões marcadas e fecha a janela. Ao concluir, aparece a mensagem *"Permissões atualizadas com sucesso."*.
-
-> **E se der erro ao carregar?** A janela mostra a mensagem *"Erro ao carregar permissões."* — nesse caso, feche e tente abrir de novo. Se persistir, avise o suporte.
-
----
-
-## Resumo rápido (colinha)
-
-| Quero fazer... | Onde clico |
-|---|---|
-| Cadastrar usuário | Botão **+ Novo Usuário** |
-| Editar dados de alguém | **✏️ lápis** na linha da pessoa |
-| Abrir/fechar acesso de alguém | **Selo Status** (Ativo/Inativo) |
-| Dar/tirar papel de aprovador | **Selo Aprovador** (Sim/Não) |
-| Liberar/bloquear telas | **🛡️ escudo** na linha da pessoa |
-| Buscar cargo pelo CBO | **🔍 lupa** ao lado do campo C.B.O |
-| Buscar endereço pelo CEP | **🔍 lupa** ao lado do campo CEP |
-| Trocar senha de alguém | **✏️ lápis** → preencher o campo **Senha** |
-| Cancelar sem salvar | **Cancelar** (no rodapé de qualquer janela) |
-
-Se ainda tiver dúvidas sobre algum campo ou botão, é só perguntar — o manual está aqui para isso!
+- **Cancelar** — fecha a janela **sem salvar** as mudanças feitas nas permissões.

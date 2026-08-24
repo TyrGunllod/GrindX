@@ -1,228 +1,165 @@
 # Manual do Módulo Meu Perfil
 
-O módulo **Meu Perfil** é onde você visualiza e gerencia seus dados pessoais dentro do GrindX. Por aqui você pode atualizar suas informações (contato, endereço, dados profissionais), alterar sua senha de acesso e personalizar a aparência do sistema (tema e layout).
+O **Meu Perfil** é o lugar onde você cuida dos seus dados pessoais e das suas preferências no ERP GrindX. Aqui você pode atualizar suas informações de contato, dados profissionais, alterar sua senha e escolher o visual do sistema.
 
-Tudo o que você salva aqui fica associado ao seu usuário logado — ou seja, somente você vê e altera essas informações.
-
----
-
-## Meu Perfil (tela principal)
-
-Ao abrir o módulo, você vê o título **"Meu Perfil"**, a descrição *"Gerencie seus dados pessoais e preferências."* e, ao lado do título, um selo com a **versão do sistema** (por exemplo: "v1.0.0"). Esse selo é apenas informativo.
-
-A tela é dividida em **dois cartões** (blocos):
-
-1. **Meus Dados** — com todos os seus dados pessoais e profissionais.
-2. **Configurações** — com botões para alterar senha e preferências.
-
-### Como a tela carrega
-Assim que você abre o módulo, o sistema carrega automaticamente as suas informações (nome, e-mail, CPF, endereço etc.) e preenche os campos para você. Você não precisa buscar nada manualmente — apenas confira e edite o que for necessário.
+Este manual mostra, passo a passo, o que cada campo e cada botão faz.
 
 ---
 
-## Meus Dados
+## Tela: Meus Dados
 
-Cartão com o ícone de **usuário** (🪪) e o título **"Meus Dados"**. Ele contém todos os seus dados em um formulário.
+Ao abrir o **Meu Perfil**, você vê o bloco **Meus Dados**, com um formulário dividido em várias seções. Os campos em cinza (que não podem ser digitados) são apenas de consulta — eles são preenchidos automaticamente pelo sistema.
 
-> 💡 **Dica geral:** campos acinzentados (com aparência desabilitada) **não podem ser editados** — eles são informações controladas pelo sistema. Campos brancos normais podem ser preenchidos e alterados por você.
+### Campo Nome de Usuário
+Mostra o seu login de acesso. **Não pode ser editado** — é criado quando sua conta é cadastrada.
 
-### Campos de identificação (somente leitura)
+### Campo Perfil
+Mostra qual é o seu tipo de acesso no sistema (ex.: Administrador, Operador ou Leitura). **Não pode ser editado** — é definido pelo responsável pela sua conta.
 
-Esses três primeiros campos são informativos e **não podem ser editados**:
+### Campo Nome Completo
+Mostra seu nome por extenso. **Não pode ser editado** aqui — para corrigir, fale com o administrador do sistema.
 
-| Campo | O que é | Editável? |
-|-------|---------|-----------|
-| **Nome de Usuário** | Seu login de acesso ao sistema (sempre em minúsculas). | ❌ Não |
-| **Perfil** | Seu nível de acesso dentro do sistema: **Administrador**, **Operador** ou **Leitura**. | ❌ Não |
-| **Nome Completo** | Seu nome cadastrado no sistema. | ❌ Não |
+### Campo Código
+Identificador interno do seu cadastro de funcionário. Digite o código caso o campo esteja em branco.
 
-> **Sobre o Perfil (permissões):** o valor mostrado aqui indica o seu nível de acesso. **Administrador** tem acesso total, **Operador** executa as operações do dia a dia e **Leitura** apenas visualiza as informações. Se você acha que seu perfil está errado, procure o administrador do sistema — não é possível alterá-lo por aqui.
+### Campo C.B.O
+Aqui você informa o código da sua ocupação (Classificação Brasileira de Ocupações), que é usado para preencher o seu cargo automaticamente.
 
-Logo abaixo, uma linha divisória separa os dados de identificação dos dados editáveis.
+**Como preencher:**
+1. Digite o código do CBO (pelo menos 4 números).
+2. Clique no botão de lupa (buscar) ao lado do campo, ou pressione **Enter**.
+3. O sistema consulta a ocupação e preenche sozinho o campo **Cargo**.
 
-### Campos de dados profissionais
+### Botão Buscar CBO
+Botão em formato de lupa (ícone 🔍) que fica ao lado do campo C.B.O. Ao clicar, o sistema procura a ocupação correspondente ao código digitado e preenche o campo **Cargo** automaticamente. Se o código não for encontrado, aparece uma mensagem "CBO não encontrado".
 
-| Campo | O que é | Como preencher |
-|-------|---------|----------------|
-| **Código** | Um código de identificação do funcionário (pode ser seu código/matrícula). | Digite o texto/código desejado. Opcional. |
-| **C.B.O** | A **Classificação Brasileira de Ocupações** — o número oficial da sua profissão (ex.: 2525-05 para Analista de Sistemas). | Digite o número do CBO. **Mínimo de 4 dígitos.** Ao sair do campo, o sistema consulta automaticamente. |
-| **Salário Base** | O valor do seu salário base. | Digite o valor. **Sem símbolo de R$** — apenas números. Ao sair do campo, o sistema formata sozinho (ex.: `1500,00` vira `1.500,00`). |
-| **Departamento** | O setor em que você trabalha (ex.: TI, Financeiro, RH). | Digite o nome do departamento. |
-| **Cargo** | Seu cargo no sistema (ex.: Analista de Sistemas). | ⚠️ **Somente leitura** — é preenchido automaticamente pelo sistema quando você informa o **C.B.O**. |
-| **Classificação** | O nível/senioridade do seu cargo. | Selecione na lista suspensa: **Junior**, **Pleno**, **Senior**, **I**, **II**, **III**, **IV** ou **V**. |
+### Campo Salário Base
+Digite o valor do seu salário base, usando vírgula para os centavos (ex.: `3.500,00`). O sistema formata o valor sozinho ao sair do campo.
 
-### Campos de documentos
+### Campo Departamento
+Digite o nome do seu departamento ou setor (ex.: Financeiro, TI, Vendas).
 
-| Campo | O que é | Como preencher |
-|-------|---------|----------------|
-| **CPF** | Seu Cadastro de Pessoa Física. | Digite apenas números. Ao sair do campo, o sistema formata sozinho (ex.: `12345678901` vira `123.456.789-01`). |
-| **RG** | Seu Registro Geral (documento de identidade). | Digite apenas números. Ao sair do campo, o sistema formata sozinho (ex.: `123456789` vira `12.345.678-9`). |
+### Campo Cargo
+Mostra o seu cargo. **Não pode ser digitado** — ele é preenchido automaticamente pelo sistema quando você informa o C.B.O.
 
-> 💡 **Comportamento das máscaras:** quando você clica em um campo de CPF, RG, telefone, CEP ou salário para editar, o sistema **remove a formatação** automaticamente para facilitar a digitação. Ao sair do campo, a máscara é aplicada de novo. Digite apenas os números.
+### Campo Classificação
+Selecione o nível da sua função na lista suspensa. As opções são: **Junior**, **Pleno**, **Senior**, **I**, **II**, **III**, **IV** ou **V**.
 
-### Campos de endereço
+### Campo CPF
+Digite seu CPF. O sistema formata os pontos e o traço automaticamente. Ao clicar no campo, a máscara some para você digitar só os números.
 
-| Campo | O que é | Editável? |
-|-------|---------|-----------|
-| **Endereço** | Nome da sua rua/avenida. | ⚠️ **Somente leitura** — preenchido automaticamente pela busca de CEP. |
-| **Nº** | Número do seu endereço. | ✅ Sim — digite o número (até 6 dígitos). |
-| **CEP** | Seu Código de Endereçamento Postal. | ✅ Sim — digite os 8 números; o sistema formata sozinho (ex.: `01310100` vira `01310-100`). Ao sair do campo, busca os dados automaticamente. |
-| **Bairro** | Seu bairro. | ⚠️ **Somente leitura** — preenchido pela busca de CEP. |
-| **Cidade** | Sua cidade. | ⚠️ **Somente leitura** — preenchido pela busca de CEP. |
-| **UF** | Sua unidade federativa (estado). | ⚠️ **Somente leitura** — preenchido pela busca de CEP. |
+### Campo RG
+Digite seu RG. O sistema formata os pontos e o traço automaticamente. Ao clicar no campo, a máscara some para você digitar só os números.
 
-> 💡 **Como funciona a busca por CEP:** basta digitar o CEP completo (8 números). Ao sair do campo, o sistema consulta o endereço e **preenche automaticamente** Endereço, Bairro, Cidade e UF. Você só precisa digitar o **Nº** da sua casa. Se o CEP não for encontrado, aparece uma mensagem de aviso.
+### Campo Endereço
+Mostra o nome da sua rua. **Não pode ser digitado** — é preenchido automaticamente quando você informa o CEP.
 
-### Campos de contato
+### Campo Nº
+Digite o número do seu endereço (máximo de 6 caracteres).
 
-| Campo | O que é | Como preencher |
-|-------|---------|----------------|
-| **Telefone** | Seu telefone fixo. | Digite apenas números (DDD + número, ex.: `1133334444`). O sistema formata sozinho (ex.: `(11) 3333-4444`). |
-| **Celular** | Seu celular. | Digite apenas números (DDD + número, ex.: `11988887777`). O sistema formata sozinho (ex.: `(11) 98888-7777`). |
-| **E-mail** | Seu e-mail para contato. | Digite um e-mail válido (ex.: `voce@empresa.com.br`). **Campo obrigatório** — o botão Salvar só funciona com um e-mail válido. |
+### Campo CEP
+Digite seu CEP. O sistema formata com o hífen automaticamente.
 
-> ⚠️ **E-mail:** se o e-mail digitado for inválido ou já estiver em uso por outro usuário, o sistema mostra uma mensagem de erro **em vermelho logo abaixo do campo**. Corrija e tente salvar novamente.
+**Como preencher:**
+1. Digite os 8 números do CEP.
+2. Clique no botão de lupa (buscar) ao lado do campo, ou pressione **Enter**.
+3. O sistema consulta o CEP e preenche sozinho os campos **Endereço**, **Bairro**, **Cidade** e **UF**.
+
+### Botão Buscar CEP
+Botão em formato de lupa (ícone 🔍) ao lado do campo CEP. Ao clicar, o sistema consulta o CEP digitado e preenche automaticamente os campos de endereço, bairro, cidade e UF. Se o CEP não existir, aparece a mensagem "CEP não encontrado".
+
+### Campo Bairro
+Mostra o seu bairro. **Não pode ser digitado** — é preenchido automaticamente quando você informa o CEP.
+
+### Campo Cidade
+Mostra a sua cidade. **Não pode ser digitado** — é preenchida automaticamente quando você informa o CEP.
+
+### Campo UF
+Mostra a sigla do seu estado (ex.: SP, RJ, MG). **Não pode ser digitado** — é preenchida automaticamente quando você informa o CEP.
+
+### Campo Telefone
+Digite seu telefone fixo com DDD. O sistema formata no padrão `(11) 1234-5678` ao sair do campo. Ao clicar, a máscara some para você digitar só os números.
+
+### Campo Celular
+Digite seu celular com DDD. O sistema formata no padrão `(11) 91234-5678` ao sair do campo. Ao clicar, a máscara some para você digitar só os números.
+
+### Campo E-mail
+Digite seu e-mail de contato. Este campo é obrigatório — se você deixá-lo em branco ou digitar um endereço inválido, o sistema mostra um aviso de erro abaixo do campo.
 
 ### Botão Salvar
+Botão azul com ícone de disquete (💾) que fica no final do bloco **Meus Dados**. Ele salva todas as alterações que você fez nos campos. Enquanto salva, o botão mostra "Salvando..." e fica desabilitado. Ao terminar, aparece a mensagem "Dados salvos com sucesso!".
 
-- **Ícone:** disco de salvar (💾) + texto **"Salvar"**.
-- **O que faz:** salva todas as alterações que você fez no cartão Meus Dados.
-- **Enquanto salva:** o botão muda para *"Salvando..."* com um ícone de carregamento girando, e fica desabilitado até terminar.
-- **Quando funciona:** ao concluir, aparece a confirmação **"Dados salvos com sucesso!"** no canto da tela (notificação que desaparece sozinha).
-- **O que ele NÃO faz:** não limpa os campos nem fecha a tela. Se algo der errado, você verá uma mensagem de erro na notificação (ou abaixo do e-mail, se o problema for o e-mail).
-
-> 💡 **Dica:** use o botão **Salvar** ao final, depois de preencher tudo. Você pode preencher todos os campos e salvar de uma vez. Campos que você não preencheu ficam vazios — sem problema.
-
-### Atalhos de teclado no formulário
-
-- Pressione **Enter** em qualquer campo do formulário para **pular para o próximo campo**.
-- No campo **C.B.O**, pressionar **Enter** faz a consulta da ocupação (mesma coisa que sair do campo).
-- No campo **CEP**, pressionar **Enter** faz a consulta do endereço.
+**Dica:** se o sistema acusar erro no e-mail, a mensagem aparece em vermelho logo abaixo do campo E-mail.
 
 ---
 
-## Configurações
+## Tela: Configurações
 
-Cartão com o ícone de **engrenagem** (⚙️) e o título **"Configurações"**. Ele tem dois botões grandes:
+Logo abaixo do bloco **Meus Dados** há o bloco **Configurações**, com dois botões de atalho para ajustes gerais da sua conta.
 
-| Botão | Ícone | O que faz |
-|-------|-------|-----------|
-| **Alterar Senha** | Chave (🔑) | Abre a janela (modal) para trocar sua senha de acesso. |
-| **Preferências** | Paleta de cores (🎨) | Abre a janela (modal) para personalizar tema e layout do sistema. |
+### Botão Alterar Senha
+Botão com ícone de chave (🔑). Ao clicar, abre a janela (modal) para você trocar a sua senha de acesso. Veja a seção [Modal Alterar Senha](#modal-alterar-senha).
 
----
-
-### Alterar Senha (janela/modal)
-
-**Como abrir:** clique no botão **"Alterar Senha"** no cartão Configurações.
-
-Uma janela (modal) aparece sobre a tela, com o título **"Alterar Senha"** e o ícone de chave. Nela há 3 campos de senha e 2 botões.
-
-#### Campos do modal
-
-| Campo | O que é | Regras |
-|-------|---------|--------|
-| **Senha Atual** | A senha que você usa hoje para entrar. | Obrigatório. |
-| **Nova Senha** | A nova senha que você quer usar. | Obrigatório. **Mínimo de 6 caracteres.** |
-| **Confirmar Nova Senha** | A nova senha digitada de novo, para confirmar. | Obrigatório. Deve ser **exatamente igual** à "Nova Senha". |
-
-Os pontos ficam ocultos (••••) enquanto você digita — isso é normal.
-
-#### Botões do modal
-
-| Botão | Ícone | O que faz |
-|-------|-------|-----------|
-| **Salvar** | Disco de salvar (💾) | Valida e salva a nova senha. Se algum campo estiver vazio, se a nova senha tiver menos de 6 caracteres ou se a confirmação não bater com a nova senha, o sistema mostra o erro **em vermelho** dentro da janela e não salva. Se tudo der certo, a janela fecha, o sistema **atualiza a página automaticamente** e você passa a usar a nova senha no próximo login. |
-| **Cancelar** | — (texto) | Fecha a janela **sem salvar** nada. |
-
-**Como fechar sem salvar:** além do botão Cancelar, você pode clicar **fora da janela** (na área escurecida ao redor) para fechá-la.
-
-> 💡 **Importante:** depois de alterar a senha, o sistema recarrega a página sozinho. Isso é normal — é para aplicar a mudança. Você continuará logado.
+### Botão Preferências
+Botão com ícone de paleta de cores (🎨). Ao clicar, abre a janela (modal) para você personalizar o tema e o layout do sistema. Veja a seção [Modal Preferências](#modal-preferências).
 
 ---
 
-### Preferências (janela/modal)
+## Modal Alterar Senha
 
-**Como abrir:** clique no botão **"Preferências"** no cartão Configurações.
+Esta janela abre quando você clica no botão **Alterar Senha** na tela de Configurações. Ela serve para trocar a sua senha de acesso ao sistema.
 
-Uma janela (modal) aparece com o título **"Preferências"** e o ícone de paleta. Nela você personaliza a aparência do GrindX.
+### Como abrir
+1. Na tela **Meu Perfil**, role até o bloco **Configurações**.
+2. Clique no botão **Alterar Senha**.
 
-#### Campos do modal
+### Campo Senha Atual
+Digite a sua senha atual (a que você usa hoje para entrar no sistema). Os caracteres ficam ocultos como bolinhas.
 
-**1. Tema**
-Escolha o visual geral do sistema com os botões de alternância (o selecionado fica com a borda colorida):
+### Campo Nova Senha
+Digite a nova senha que você quer usar. Ela deve ter **no mínimo 6 caracteres**.
 
-| Opção | Ícone | Efeito |
-|-------|-------|--------|
-| **Claro** | Sol (☀️) | Fundo branco/claro no sistema. |
-| **Escuro** | Lua (🌙) | Fundo escuro no sistema. |
+### Campo Confirmar Nova Senha
+Digite novamente a nova senha, exatamente igual ao campo anterior, para confirmar.
 
-**2. Layout Desktop**
-Define como o menu/navegação aparece no **computador**:
+### Botão Salvar (modal Alterar Senha)
+Botão azul com ícone de disquete (💾) no rodapé da janela. Salva a nova senha e fecha a janela. **Importante:** depois de salvar, o sistema recarrega a página — você deverá entrar novamente com a nova senha.
 
-| Opção | Ícone | Efeito |
-|-------|-------|--------|
-| **Topbar** | Janela maximizada (🖥️) | Menu na **barra superior** da tela. |
-| **Sidebar** | Menu hambúrguer (☰) | Menu em uma **barra lateral** (coluna à esquerda). |
+**Avisos que podem aparecer:**
+- Se algum campo ficar em branco: "Preencha todos os campos de senha."
+- Se a nova senha e a confirmação não forem iguais: "Nova senha e confirmação não conferem."
+- Se a nova senha for muito curta: "Nova senha deve ter no mínimo 6 caracteres."
 
-**3. Layout Celular / Tablet**
-Define a navegação em **telas pequenas** (celular e tablet):
+Esses avisos aparecem em vermelho no rodapé da janela.
 
-| Opção | Ícone | Efeito |
-|-------|-------|--------|
-| **Topbar** | Janela maximizada (🖥️) | Menu na barra superior. |
-| **Sidebar** | Menu hambúrguer (☰) | Menu em barra lateral. |
-
-Abaixo dessa opção aparece a dica: *"Aplicado automaticamente em telas menores que 768px."* — ou seja, em celulares/tablets essa escolha vale automaticamente; em computadores vale a escolha de "Layout Desktop".
-
-> 💡 **Qual já está selecionado?** O sistema mostra com a borda destacada a opção que está ativa no momento. Clique na que você quiser para trocar — só uma fica selecionada por vez.
-
-#### Botões do modal
-
-| Botão | Ícone | O que faz |
-|-------|-------|-----------|
-| **Salvar** | Disco de salvar (💾) | Aplica as preferências escolhidas, fecha a janela e **atualiza a página automaticamente**. Você já verá o novo visual (tema/layout) em ação. |
-| **Cancelar** | — (texto) | Fecha a janela **sem aplicar** nenhuma mudança. |
-
-**Como fechar sem salvar:** clique no botão **Cancelar** ou **fora da janela** (na área escurecida) para fechar sem aplicar as mudanças.
-
-> 💡 **Dica:** quando você troca de tema, a mudança vale para todo o sistema, não só para a tela do Meu Perfil. E as preferências ficam salvas para as próximas vezes que você entrar.
+### Botão Cancelar (modal Alterar Senha)
+Botão com contorno, no rodapé da janela. Fecha a janela sem salvar nada. Você também pode fechar clicando fora da janela, na área escura ao redor.
 
 ---
 
-## Resumo: todos os botões e ícones do módulo
+## Modal Preferências
 
-| Onde | Botão / Ícone | Ação |
-|------|---------------|------|
-| Meus Dados | **Salvar** (💾) | Salva os dados pessoais editados. |
-| Meus Dados — C.B.O | **Lupa (🔍)** ao lado do campo C.B.O | Consulta a ocupação do CBO digitado e preenche o campo Cargo. |
-| Meus Dados — CEP | **Lupa (🔍)** ao lado do campo CEP | Consulta o CEP digitado e preenche Endereço, Bairro, Cidade e UF. |
-| Configurações | **Alterar Senha** (🔑) | Abre o modal para trocar a senha. |
-| Configurações | **Preferências** (🎨) | Abre o modal de tema e layout. |
-| Modal Alterar Senha | **Salvar** (💾) | Valida e grava a nova senha. |
-| Modal Alterar Senha | **Cancelar** | Fecha o modal sem salvar. |
-| Modal Preferências | **Salvar** (💾) | Aplica tema/layout e recarrega a página. |
-| Modal Preferências | **Cancelar** | Fecha o modal sem aplicar. |
-| Qualquer modal | Clique fora da janela | Fecha o modal sem salvar. |
+Esta janela abre quando você clica no botão **Preferências** na tela de Configurações. Ela serve para personalizar a aparência do sistema: o tema (claro ou escuro) e o layout (posição da barra de menu).
 
----
+### Como abrir
+1. Na tela **Meu Perfil**, role até o bloco **Configurações**.
+2. Clique no botão **Preferências**.
 
-## Perguntas rápidas (FAQ)
+### Opção Tema — Claro / Escuro
+Escolha o visual do sistema. Toque em **Claro** (ícone ☀️) para usar o tema claro, ou **Escuro** (ícone 🌙) para usar o tema escuro. A opção escolhida fica destacada.
 
-**Por que alguns campos estão apagados/cinza e não consigo digitar?**
-Porque são informações controladas pelo sistema: Nome de Usuário, Perfil, Nome Completo, Cargo, Endereço, Bairro, Cidade e UF. O Cargo vem do CBO, e o endereço vem da busca do CEP — o sistema preenche sozinho.
+### Opção Layout Desktop — Topbar / Sidebar
+Escolha onde fica o menu quando você usa o sistema no computador:
+- **Topbar** (ícone de janela): menu na parte de cima da tela.
+- **Sidebar** (ícone de três linhas): menu em uma barra lateral.
 
-**Preciso preencher tudo para salvar?**
-Não. Só o **E-mail** é obrigatório. Os demais podem ficar vazios, mas quanto mais completos, melhor para o sistema.
+### Opção Layout Celular / Tablet — Topbar / Sidebar
+Escolha o layout usado em telas menores, como celulares e tablets (telas abaixo de 768px). A escolha é aplicada automaticamente nesses aparelhos.
+- **Topbar**: menu na parte de cima.
+- **Sidebar**: menu em uma barra lateral.
 
-**O Cargo não preencheu sozinho. O que fazer?**
-Confira se o **C.B.O** tem pelo menos 4 números e aguarde a consulta ao sair do campo (ou clique na lupa 🔍). Se a ocupação não for encontrada, o sistema avisa.
+### Botão Salvar (modal Preferências)
+Botão azul com ícone de disquete (💾) no rodapé da janela. Salva as preferências, aplica o novo visual na hora e fecha a janela. O sistema recarrega a página para aplicar as mudanças por completo.
 
-**Tirei o campo CEP e o endereço não preencheu.**
-Confira se digitou os **8 números** do CEP e saia do campo (ou clique na lupa 🔍). Se o CEP não existir, o sistema avisa com uma mensagem.
-
-**Troquei o tema e nada mudou?**
-Clique em **Salvar** no modal Preferências — é só depois de salvar que o visual é aplicado e a página é recarregada.
-
-**Esqueci minha senha nova que acabei de criar?**
-O sistema não mostra a senha em lugar nenhum por segurança. Se você esquecer, procure o administrador do sistema para redefinir o acesso.
+### Botão Cancelar (modal Preferências)
+Botão com contorno, no rodapé da janela. Fecha a janela sem salvar nada. Você também pode fechar clicando fora da janela, na área escura ao redor.

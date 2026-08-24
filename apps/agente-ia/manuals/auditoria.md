@@ -1,144 +1,110 @@
 # Manual do Módulo Auditoria
 
-## Sobre o Módulo
+O módulo **Auditoria** é uma área só de leitura: você não cadastra nem edita nada aqui. Ele serve para consultar dois tipos de informação:
 
-O módulo **Auditoria** do GrindX é uma tela de **consulta** (somente leitura). Aqui você acompanha dois tipos de informação sobre o que acontece no sistema:
+1. **Registro de Alterações** — tudo que foi criado, alterado ou excluído no sistema.
+2. **Tempo de Uso** — os horários em que cada usuário entrou e saiu do sistema.
 
-1. **Registro de Alterações** — um histórico de tudo que foi criado, alterado ou excluído no banco de dados, incluindo quem fez, o que mudou e de onde.
-2. **Tempo de Uso** — o registro de quando cada usuário entrou (login) e saiu (logout) do sistema, por quanto tempo ficou e o motivo do término da sessão.
-
-Você não consegue editar, excluir ou cadastrar nada nesta tela. Ela serve apenas para **consultar e fiscalizar**.
-
-### Como acessar
-
-1. Faça login no GrindX.
-2. No menu lateral (ou menu principal), clique em **Auditoria**.
-3. A tela abre já carregando as duas tabelas automaticamente. Não precisa clicar em nada para carregar.
-
-> **Permissão:** para ver esta tela você só precisa estar logado no sistema. Se você ainda não fez login, o sistema te redireciona para a tela de login.
-
-### O que você vê no topo da tela
-
-- **Título "Auditoria"** — o nome do módulo.
-- **Versão do sistema** — um selo pequeno ao lado do título que mostra a versão atual do GrindX. Serve para você saber qual versão do sistema você está usando.
-- **Subtítulo** — "Registro de alterações no banco e tempo de uso dos usuários." Explica resumidamente o que o módulo faz.
+É o lugar certo para descobrir "quem fez o quê" e "quem estava conectado quando".
 
 ---
 
-## Registro de Alterações
+## Tela Principal: Auditoria
 
-Esta é a primeira tabela da tela. Ela mostra o **histórico de mudanças feitas nos dados** do sistema: quem criou, alterou ou excluiu um registro, quando e quais campos foram mexidos.
+Quando você abre o módulo, a tela já carrega sozinha os dois painéis com os dados. Não precisa clicar em nada para começar. No topo aparece o nome do módulo e a versão do sistema.
 
-No topo do cartão você vê o ícone de **prancheta com lista** (📋) e o texto **"Registro de Alterações"**, além de um selo cinza que mostra o **total de registros encontrados**, por exemplo `1.250 registro(s)`. Esse número se refere ao total geral (e não só aos registros da página atual).
+A tela mostra dois blocos lado a lado:
 
-### Colunas da tabela
+- **Registro de Alterações** (ícone de prancheta) — histórico de mudanças no sistema.
+- **Tempo de Uso** (ícone de relógio) — histórico de entradas e saídas dos usuários.
 
-Cada linha representa **uma ação feita por um usuário** em um registro. As colunas são:
+Cada bloco tem um total no cabeçalho (ex.: "12 registro(s)" ou "5 sessão(ões)") informando quantos itens existem no total, e mostra **20 itens por página**.
 
-| Coluna | O que mostra |
-|--------|--------------|
-| **Data** | A data e a hora em que a ação aconteceu, no formato brasileiro (ex.: `23/08/2026 14:32`). |
-| **Usuário** | Quem fez a ação. Mostra o nome de login (username) do usuário. Se o nome não estiver disponível, aparece o número identificador do usuário (ex.: `#42`). Se não houver informação, aparece `—`. *(Coluna oculta em telas pequenas, como celular.)* |
-| **Entidade** | Qual tipo de registro foi mexido (ex.: Produto, Cliente, Pedido). Se for possível identificar o registro específico, aparece o nome da entidade seguido do seu número, ex.: `Produto #7`. |
-| **Ação** | O tipo de ação feita, mostrada como um **selo colorido**: |
-| | - **Inserção** (selo **verde**) — um novo registro foi criado. |
-| | - **Alteração** (selo **amarelo**) — um registro existente foi editado. |
-| | - **Exclusão** (selo **vermelho**) — um registro foi apagado. |
-| | - **Outros** (selo **cinza**) — ações de outros tipos, mostradas com o nome original. |
-| **Campos Alterados** | Lista de **quais campos** (colunas do registro) foram modificados naquela ação, cada um dentro de um selinho pequeno. Ex.: `nome`, `preço`. Se não houver campos listados, aparece `—`. |
-| **IP** | O endereço de IP (computador/rede) de onde o usuário fez a ação. Se não houver, aparece `—`. *(Coluna oculta em telas pequenas.)* |
-
-> **Dica:** nas telas pequenas (celular), as colunas **Usuário** e **IP** ficam ocultas para caber melhor. As demais continuam visíveis.
-
-### Paginação (navegar entre páginas)
-
-Cada página mostra **até 20 registros**. No rodapé da tabela você encontra:
-
-- **Botão "Anterior"** (com a setinha para a esquerda `‹`) — leva você para a **página anterior** de logs. Ele fica **desativado** (acinzentado) quando você já está na primeira página.
-- **Texto "Página X de Y"** — mostra em qual página você está e quantas páginas existem no total (ex.: `Página 1 de 12`).
-- **Botão "Próxima"** (com a setinha para a direita `›`) — leva você para a **próxima página** de logs. Ele fica **desativado** quando você já está na última página.
-
-Não existe campo para escolher o número da página digitando; você navega clicando nos botões **Anterior** e **Próxima**.
-
-### Mensagens possíveis na tabela
-
-- **"Nenhum log registrado."** — não existe nenhuma alteração registrada no sistema até o momento.
-- **"Erro ao carregar logs de auditoria."** — aconteceu um problema ao buscar os dados (por exemplo, sem conexão com a internet). Nesse caso, verifique sua conexão e tente acessar a tela novamente.
+> **Dica:** se não houver nada registrado, aparece a mensagem "Nenhum log registrado." ou "Nenhuma sessão registrada."
 
 ---
 
-## Tempo de Uso
+## Bloco Registro de Alterações
 
-Esta é a segunda tabela da tela. Ela mostra o **histórico de sessões dos usuários**: quando cada um entrou, quando saiu, quanto tempo ficou logado e o motivo pelo qual a sessão terminou.
+Mostra um histórico das mudanças feitas no sistema, com as colunas abaixo.
 
-No topo do cartão você vê o ícone de **relógio** (🕐) e o texto **"Tempo de Uso"**, além do selo com o **total de sessões encontradas**, por exemplo `480 sessão(ões)`.
+### Coluna Data
+Quando a alteração aconteceu, com dia, hora e minuto (formato brasileiro). Se não houver data, aparece um travessão (—).
 
-### Colunas da tabela
+### Coluna Usuário
+Nome de quem fez a alteração. Se o nome não estiver disponível, aparece o número de identificação do usuário. Se não houver usuário, aparece um travessão (—). Esta coluna fica oculta em telas menores (celular).
 
-Cada linha representa **uma sessão de login** de um usuário. As colunas são:
+### Coluna Entidade
+O que foi mexido (tipo de registro, como "produto", "cliente" etc.), acompanhado do número de identificação do registro quando existir (ex.: "produto #42").
 
-| Coluna | O que mostra |
-|--------|--------------|
-| **Login** | A data e a hora em que o usuário **entrou** no sistema (ex.: `23/08/2026 08:05`). |
-| **Logout** | A data e a hora em que o usuário **saiu** do sistema. Se a sessão **ainda está aberta** (o usuário está logado agora), aparece o selo verde **"Em uso"** em vez de uma data. |
-| **Duração** | Por quanto tempo a sessão durou. O formato se adapta: |
-| | - Sessões longas: ex. `2h 15min`. |
-| | - Sessões médias: ex. `45min 30s`. |
-| | - Sessões curtas: ex. `30s`. |
-| | - Se não houver informação, aparece `—`. |
-| **Usuário** | Quem estava logado. Mostra o nome de login; se não estiver disponível, aparece o número identificador (ex.: `#42`). *(Coluna oculta em telas pequenas.)* |
-| **IP** | O endereço de IP de onde a pessoa entrou no sistema. Se não houver, aparece `—`. *(Coluna oculta em telas pequenas.)* |
-| **Motivo** | O motivo pelo qual a sessão terminou: |
-| | - **Logout** — o usuário saiu clicando no botão de sair do sistema. |
-| | - **Inatividade** — o usuário ficou um tempo sem mexer no sistema e foi desconectado automaticamente. |
-| | - **Sessão expirada** — o tempo máximo de sessão acabou e o sistema encerrou. |
-| | - Se não houver informação, aparece `—`. |
+### Coluna Ação
+O tipo de mudança feita, mostrado como um selo colorido:
 
-> **Dica:** use a coluna **Logout** para descobrir quem está **conectado agora** no sistema — as linhas com o selo verde "Em uso" indicam sessões abertas.
+- **Inserção** (selo verde) — algo foi criado.
+- **Alteração** (selo amarelo) — algo foi editado.
+- **Exclusão** (selo vermelho) — algo foi apagado.
 
-### Paginação (navegar entre páginas)
+### Coluna Campos Alterados
+Quais campos do registro foram modificados, mostrados como pequenos rótulos. Se não houver informação, aparece um travessão (—).
 
-Igual à tabela anterior: cada página mostra **até 20 sessões**.
+### Coluna IP
+O endereço de internet (IP) de onde veio a alteração. Se não estiver disponível, aparece um travessão (—). Esta coluna fica oculta em telas menores (celular).
 
-- **Botão "Anterior"** (setinha para a esquerda `‹`) — volta para a **página anterior**. Fica desativado na primeira página.
-- **Texto "Página X de Y"** — sua posição atual na listagem.
-- **Botão "Próxima"** (setinha para a direita `›`) — avança para a **próxima página**. Fica desativado na última página.
+### Botão Anterior
+Volta para a página anterior de registros. Ele fica desabilitado (acinzentado) quando você já está na primeira página. Use a seta para a esquerda (‹).
 
-### Mensagens possíveis na tabela
+### Botão Próxima
+Avança para a próxima página de registros. Ele fica desabilitado (acinzentado) quando você já está na última página. Use a seta para a direita (›).
 
-- **"Nenhuma sessão registrada."** — não existe nenhuma sessão de uso registrada até o momento.
-- **"Erro ao carregar sessões de uso."** — aconteceu um problema ao buscar os dados. Verifique sua conexão e tente novamente.
+> **Para navegar:** no rodapé do bloco aparece "Página X de Y". Clique em **Anterior** e **Próxima** para percorrer as páginas.
 
 ---
 
-## Resumo rápido (até aqui, tudo que você clica)
+## Bloco Tempo de Uso
 
-| Elemento | O que faz |
-|----------|-----------|
-| Menu **Auditoria** | Abre este módulo. |
-| **Anterior** (em "Registro de Alterações") | Volta uma página nos logs de alterações. |
-| **Próxima** (em "Registro de Alterações") | Avança uma página nos logs de alterações. |
-| **Anterior** (em "Tempo de Uso") | Volta uma página no histórico de sessões. |
-| **Próxima** (em "Tempo de Uso") | Avança uma página no histórico de sessões. |
+Mostra o histórico de conexões dos usuários, com as colunas abaixo.
 
-Não existem modais, formulários ou janelas de preenchimento neste módulo: ele é inteiramente de consulta. A navegação se resume a trocar de página nas duas tabelas.
+### Coluna Login
+Quando o usuário entrou no sistema, com dia, hora e minuto (formato brasileiro). Se não houver data, aparece um travessão (—).
+
+### Coluna Logout
+Quando o usuário saiu do sistema. Se o usuário ainda está conectado, aparece o selo verde **"Em uso"** no lugar da data.
+
+### Coluna Duração
+Quanto tempo o usuário ficou conectado, no formato "2h 5min", "3min 10s" ou "15s". Se não houver informação, aparece um travessão (—).
+
+### Coluna Usuário
+Nome de quem esteve conectado. Se o nome não estiver disponível, aparece o número de identificação do usuário. Esta coluna fica oculta em telas menores (celular).
+
+### Coluna IP
+O endereço de internet (IP) de onde o usuário se conectou. Se não estiver disponível, aparece um travessão (—). Esta coluna fica oculta em telas menores (celular).
+
+### Coluna Motivo
+Por que a sessão terminou:
+
+- **Logout** — o usuário saiu clicando em "Sair".
+- **Inatividade** — o usuário ficou parado por muito tempo.
+- **Sessão expirada** — o tempo máximo de conexão chegou ao fim.
+
+Se o usuário ainda está conectado, aparece um travessão (—).
+
+### Botão Anterior
+Volta para a página anterior de sessões. Ele fica desabilitado (acinzentado) quando você já está na primeira página. Use a seta para a esquerda (‹).
+
+### Botão Próxima
+Avança para a próxima página de sessões. Ele fica desabilitado (acinzentado) quando você já está na última página. Use a seta para a direita (›).
+
+> **Para navegar:** no rodapé do bloco aparece "Página X de Y". Clique em **Anterior** e **Próxima** para percorrer as páginas.
 
 ---
 
 ## Perguntas frequentes
 
-**1. Por que a coluna "Usuário" some quando acesso pelo celular?**
-Porque o sistema esconde algumas colunas em telas pequenas para a tabela ficar legível. A mesma informação continua disponível ao acessar por um computador ou tablet.
+### Posso editar ou apagar um registro de auditoria?
+Não. O módulo Auditoria é apenas de consulta. Os registros são gravados automaticamente pelo sistema e não podem ser alterados por ninguém.
 
-**2. Um registro aparece na tabela mas não sei qual era o dado antigo.**
-A tabela mostra **quais campos** foram alterados (na coluna "Campos Alterados"), mas não mostra o valor antigo. Para isso, é preciso verificar o cadastro atual do registro no módulo correspondente.
+### Por que algumas colunas não aparecem?
+Em telas menores (como celulares), as colunas **Usuário** e **IP** são ocultadas para facilitar a leitura. Se você vir a tabela sem essas colunas, é por causa do tamanho da tela.
 
-**3. Vejo "Em uso" na coluna Logout. O que significa?**
-Significa que a sessão do usuário **está aberta agora** — ou seja, essa pessoa está logada no sistema neste momento.
-
-**4. O que são "Inatividade" e "Sessão expirada" no motivo do logout?**
-- **Inatividade:** o usuário ficou muito tempo sem mexer no sistema e foi desconectado automaticamente.
-- **Sessão expirada:** o tempo máximo permitido para uma sessão foi atingido, então o sistema encerrou a sessão por segurança.
-
-**5. Posso apagar algum registro desta tela?**
-Não. O módulo Auditoria é de consulta. Apenas os registros do sistema geram automaticamente os logs; você não pode criar, editar ou excluir nada aqui.
+### Preciso preencher algum campo ou abrir algum formulário?
+Não. Este módulo não tem formulários nem janelas de cadastro. Os dados aparecem automaticamente assim que a página abre.

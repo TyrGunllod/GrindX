@@ -1,188 +1,155 @@
 # Manual do Módulo Importar Módulos
 
-## O que é este módulo
-
-A tela **Importar Módulos** serve para você **instalar e atualizar módulos** do GrindX usando arquivos `.zip`. Se você recebeu um pacote de um novo módulo (ou uma atualização), é aqui que você o coloca para funcionar no sistema — sem precisar mexer em nada técnico.
-
-A tela faz basicamente duas coisas:
-- Mostra os módulos **que estão disponíveis para instalar** (os arquivos `.zip` que o sistema encontrou na pasta de importação do servidor).
-- Mostra os módulos que **já estão instalados** no sistema.
-
-Você também consegue **remover** módulos instalados por aqui. Para usar a tela, você precisa estar **logado no sistema** — sem login, você é redirecionado para a tela de entrada.
-
-No topo da página, ao lado do título "Importar Módulos", aparece um selo com a **versão do sistema** em uso.
+> Para quem pergunta: *"o que faz o botão X?"* — este manual explica, em linguagem simples, cada tela, campo e botão do módulo **Importar Módulos** do ERP GrindX.
 
 ---
 
-## Acessando a tela
+## Tela Principal — "Importar Módulos"
 
-1. Faça login no GrindX.
-2. Abra o módulo **Importar Módulos** pelo menu do sistema.
-3. A página abre com duas tabelas vazias e um aviso: *"Clique em 'Atualizar' para escanear a pasta de importação."* — é isso que você vai fazer primeiro.
+Ao abrir o módulo, você vê o título **"Importar Módulos"**, a versão do sistema, e a descrição: *"Instale e atualize módulos via arquivos .zip."* Logo abaixo ficam duas listas (tabelas).
 
-> Dica para iniciantes: a primeira coisa a fazer ao abrir a tela é clicar no botão **Atualizar**. Sem isso, a lista de módulos disponíveis não é carregada.
+Quando a página carrega, o sistema já procura os módulos disponíveis. Se nada for encontrado, aparece a mensagem: **"Clique em 'Atualizar' para escanear a pasta de importação."**
 
----
+### Bloco "Disponíveis para Importar"
 
-## Botão Atualizar
+Esta é a lista de módulos que estão na pasta de importação do servidor e **ainda não foram instalados** (ou que podem ser atualizados).
 
-Fica no canto superior direito da tela.
+Cada linha da lista mostra estas informações:
 
-| Item | O que faz |
-|------|-----------|
-| Ícone de setas circulares (sincronizar) | Indica que é um botão de recarregar/refrescar. |
-| Texto **Atualizar** | Aparece em telas maiores (desktop). Em telas pequenas (celular), o texto fica oculto e só o ícone aparece. |
+- **Módulo** — o nome do pacote (.zip) que será instalado.
+- **Versão** — a versão do arquivo.
+- **Schema** — o banco de dados associado ao módulo (para saber em qual base ele será instalado).
+- **Status** — o estado do módulo:
+  - **Novo** (etiqueta azul) — ainda não foi instalado.
+  - **Importado** (etiqueta verde) — já está instalado no sistema.
+- **Ações** — o botão disponível para aquele módulo (Importar ou Remover, conforme o status).
 
-**O que ele faz:** ele *escaneia* a pasta de importação do servidor à procura de arquivos `.zip` de módulos e atualiza as duas listas da tela:
-- A tabela **Disponíveis para Importar** passa a mostrar os novos módulos encontrados.
-- A tabela **Módulos Instalados** passa a mostrar o que está instalado naquele momento.
+### Botão Atualizar
 
-Use o **Atualizar** sempre que quiser conferir se há novidades, ou depois de colocar um novo `.zip` na pasta de importação. Enquanto a varredura acontece, aparece um **carregando (spinner)** no lugar da lista.
+- **O que faz:** escaneia de novo a pasta de importação do servidor e atualiza a lista de módulos disponíveis.
+- **Quando usar:** depois que você colocar um novo arquivo .zip na pasta de importação, clique em **Atualizar** para o sistema enxergar o módulo. Use também se a lista parecer desatualizada.
+- **Como usar:** basta clicar no botão (ícone de setas circulando). Enquanto escaneia, aparece um indicador de carregamento.
 
----
+### Botão Importar (na lista de disponíveis)
 
-## Tabela: Disponíveis para Importar
+- **O que faz:** abre a janela (modal) de confirmação para instalar o módulo no sistema.
+- **Onde aparece:** na coluna **Ações**, para módulos com status **Novo** (botão azul com ícone de download).
+- **Como usar:**
+  1. Clique no botão **Importar** do módulo desejado.
+  2. Uma janela de confirmação abre mostrando o nome do módulo.
+  3. Clique em **Importar** para confirmar (detalhes no modal **Importar Módulo**).
 
-É a primeira tabela da tela. Mostra os módulos encontrados na pasta de importação do servidor, prontos para serem instalados.
+### Botão Remover (na lista de disponíveis)
 
-**Colunas:**
+- **O que faz:** abre a janela de confirmação para **desinstalar** um módulo que já está instalado.
+- **Onde aparece:** na coluna **Ações**, para módulos com status **Importado** (botão vermelho com ícone de lixeira).
+- **Como usar:**
+  1. Clique no botão **Remover** do módulo.
+  2. Uma janela de confirmação abre avisando que os arquivos do módulo serão apagados.
+  3. Clique em **Remover** para confirmar (detalhes no modal **Remover Módulo**).
 
-- **Módulo** — o nome do módulo.
-- **Versão** — a versão do pacote que está disponível.
-- **Schema** — o nome do esquema de banco de dados que o módulo usa. Você não precisa fazer nada com isso; é só informação.
-- **Status** — mostra um selo (badge) colorido:
-  - **Novo** (selo cinza) — o módulo ainda não foi instalado no sistema.
-  - **Importado** (selo verde) — o módulo já está instalado. Nesse caso, o que está disponível na pasta é na prática uma **atualização** dele.
-- **Ações** — o botão disponível para aquele módulo (veja abaixo).
+### Bloco "Módulos Instalados"
 
-**Botões da coluna Ações:**
+Esta é a lista dos módulos que **já estão funcionando** no sistema.
 
-| Botão/Ícone | Quando aparece | O que faz |
-|-------------|----------------|-----------|
-| **Importar** (ícone de seta para baixo/baixar) | Quando o status é **Novo** | Abre a janela **Importar Módulo** para instalar o módulo. Em celular, o texto some e fica só o ícone. |
-| **Remover** (ícone de lata de lixo) | Quando o status é **Importado** | Abre a janela **Remover Módulo**. Aqui ele é útil se você instalou uma atualização e quer desinstalar. |
-
-**Situações que você pode ver aqui:**
-
-- *"Nenhum módulo disponível. Coloque um .zip na pasta import/ do servidor."* — não há nenhum pacote na pasta de importação. Você precisa que alguém com acesso ao servidor coloque o arquivo `.zip` do módulo lá.
-- A tabela vazia com a mensagem *"Clique em 'Atualizar'..."* — você ainda não clicou em **Atualizar** nesta sessão.
-
-> Observação de permissão: só aparece nesta lista o que realmente está na pasta de importação. Se o `.zip` estiver com nome errado ou corrompido, ele pode não aparecer — nesse caso, peça ajuda de quem administra o servidor.
-
----
-
-## Tabela: Módulos Instalados
-
-É a segunda tabela da tela. Mostra os módulos que **já estão rodando** no sistema.
-
-**Colunas:**
+Cada linha mostra:
 
 - **Módulo** — o nome do módulo instalado.
 - **Versão** — a versão instalada.
-- **API** — o banco de dados onde o módulo funciona. Pode aparecer como **SQL Server** ou **PostgreSQL**. É só informação.
-- **Ações** — o que você pode fazer com o módulo:
+- **API** — o banco de dados usado pelo módulo (**SQL Server** ou **PostgreSQL**).
+- **Ações** — botão disponível:
+  - **Remover** — para módulos que podem ser desinstalados.
+  - **Padrão** (etiqueta azul) — módulos do próprio sistema que **não podem** ser removidos.
 
-| Item | Quando aparece | O que faz |
-|------|----------------|-----------|
-| **Remover** (ícone de lata de lixo) | Quando o módulo pode ser desinstalado | Abre a janela **Remover Módulo** para desinstalá-lo. |
-| **Padrão** (selo cinza) | Quando o módulo é essencial para o sistema | Esse módulo **não pode ser removido** por você. O selo indica que ele é um módulo padrão do GrindX. |
+Se não houver nenhum módulo instalado, a mensagem **"Nenhum módulo instalado."** aparece.
 
-**Situações que você pode ver aqui:**
+### Botão Remover (na lista de instalados)
 
-- *"Carregando módulos instalados..."* — a lista ainda está sendo carregada; aguarde um instante.
-- *"Nenhum módulo instalado."* — não há nenhum módulo instalado no momento.
-
-> Observação de permissão: o botão **Remover** só aparece para módulos que o sistema permite desinstalar. Módulos **Padrão** não têm esse botão justamente porque são protegidos.
-
----
-
-## Janela (Modal): Importar Módulo
-
-Essa janela aparece quando você clica em **Importar** em um módulo disponível.
-
-### Como abrir
-1. Clique em **Atualizar** para carregar a lista de disponíveis.
-2. Na linha do módulo desejado, clique no botão **Importar** (ícone de seta para baixo).
-
-### O que você vê
-- **Título:** "Importar Módulo".
-- **Módulo:** o nome do módulo que você escolheu (apenas para conferir).
-- Uma mensagem: *"Confirme para importar este módulo."*
-
-### Como preencher/agir — campo a campo
-Não há campos para digitar. A janela só pede uma confirmação:
-
-| Elemento | O que faz |
-|----------|-----------|
-| **X** (canto superior direito) | Fecha a janela sem importar nada. |
-| **Cancelar** | Fecha a janela sem importar nada. Mesmo efeito do **X**. |
-| **Importar** (botão azul) | Confirma e inicia a instalação do módulo. |
-
-### O que acontece depois que você confirma
-1. O botão muda para **"Importando..."** e fica desativado (você não pode clicar de novo).
-2. Dentro da janela aparece uma área de **log** (o passo a passo da instalação), com uma animação de carregamento.
-3. Cada passo concluído aparece com uma marca de visto **✓** em verde.
-4. Ao terminar, aparece a mensagem **"Módulo importado com sucesso!"** e a janela fecha sozinha depois de alguns segundos. A lista é atualizada automaticamente.
-
-### Se o sistema precisar reiniciar
-Alguns módulos exigem que o servidor seja reiniciado para terminar a instalação. Nesse caso, você verá:
-- A mensagem **"Aguardando servidor reiniciar..."** e um contador de tentativas (ex.: `1/30`).
-- O sistema fica aguardando o servidor voltar e conferindo sozinho se o módulo foi importado. Isso pode levar até 1 minuto.
-- Quando o servidor volta e o módulo é confirmado, aparece **"✓ Módulo importado com sucesso!"** e a janela fecha.
-- Se o servidor não responder, aparece a mensagem de erro *"Timeout: servidor não respondeu. Recarregue a página."* Nesse caso, recarregue a página e clique em **Atualizar** para ver se o módulo foi instalado.
+- **O que faz:** abre a janela de confirmação para desinstalar o módulo.
+- **Onde aparece:** na coluna **Ações** da lista de instalados, como botão vermelho com ícone de lixeira.
+- **Como usar:**
+  1. Clique no botão **Remover** do módulo.
+  2. Confirme na janela que abre (detalhes no modal **Remover Módulo**).
+- **Atenção:** módulos com a etiqueta **Padrão** não têm esse botão — eles fazem parte do sistema e não podem ser removidos.
 
 ---
 
-## Janela (Modal): Remover Módulo
+## Modal "Importar Módulo"
 
-Essa janela aparece quando você clica em **Remover** em um módulo (disponível ou instalado, desde que ele possa ser removido).
+Janela de confirmação que aparece ao clicar em **Importar** em um módulo disponível.
 
-### Como abrir
-- Na tabela **Disponíveis para Importar**: no módulo com status **Importado**, clique no botão **Remover** (lata de lixo).
-- Na tabela **Módulos Instalados**: no módulo que não tem o selo **Padrão**, clique no botão **Remover** (lata de lixo).
+### Campo "Módulo"
 
-### O que você vê
-- **Título:** "Remover Módulo".
-- **Módulo:** o nome do módulo que você escolheu.
-- Uma mensagem de aviso: *"Tem certeza que deseja remover este módulo? Os arquivos backend e frontend serão deletados."*
+- **O que é:** mostra o nome (identificador) do módulo que será instalado. Serve só para você confirmar que escolheu o pacote certo.
+- **Como preencher:** não precisa digitar nada — o campo já vem preenchido com o nome do módulo que você clicou.
 
-### Como agir — campo a campo
-Também não há campos para digitar, só confirmação:
+### Texto de confirmação
 
-| Elemento | O que faz |
-|----------|-----------|
-| **X** (canto superior direito) | Fecha a janela sem remover nada. |
-| **Cancelar** | Fecha a janela sem remover nada. Mesmo efeito do **X**. |
-| **Remover** (botão azul) | Confirma e remove o módulo do sistema. |
+- Mostra a frase: *"Confirme para importar este módulo."*
+- É só um aviso pedindo confirmação antes de instalar.
 
-> ⚠️ **Atenção:** a remoção é definitiva. Os arquivos do módulo são apagados. Só confirme se tiver certeza.
+### Botão Importar
 
-### O que acontece depois que você confirma
-1. O botão muda para **"Removendo..."** e fica desativado.
-2. Aparece o **log** com cada passo da remoção marcado com **✓** em verde.
-3. Ao terminar, aparece **"Módulo removido com sucesso!"** e a janela fecha sozinha. A lista é atualizada automaticamente.
-4. Se algo der errado, aparece uma mensagem em vermelho tipo **"Falha: ..."** com o motivo. O botão volta ao normal para você tentar novamente.
+- **O que faz:** começa a instalação do módulo.
+- **O que acontece ao clicar:**
+  1. O botão muda para **"Importando..."** e fica desativado (para não clicar duas vezes).
+  2. Dentro da janela aparece uma barra de carregamento e depois a lista de passos concluídos, marcados com ✓.
+  3. Ao final aparece a mensagem **"Módulo importado com sucesso!"** e a janela fecha sozinha, atualizando as listas.
+- **Dica:** se o servidor precisar reiniciar para concluir, o sistema mostra a mensagem **"Aguardando servidor reiniciar..."** e continua tentando sozinho. Isso pode levar até 1 minuto. Se der timeout, aparece o aviso para **recarregar a página**.
 
----
+### Botão Cancelar
 
-## Resumo rápido dos botões e ícones
+- **O que faz:** fecha a janela **sem** instalar nada.
+- **Como usar:** clique em **Cancelar** se mudar de ideia. Nada é alterado no sistema.
 
-| Ícone | Nome | Onde fica | O que faz |
-|-------|------|-----------|-----------|
-| 🔄 setas circulares | **Atualizar** | Topo da tela | Escaneia a pasta de importação e recarrega as duas listas. |
-| ⬇️ seta para baixo | **Importar** | Linha de um módulo **Novo** | Abre a janela para instalar o módulo. |
-| 🗑️ lata de lixo | **Remover** | Linha de um módulo **Importado** ou instalado | Abre a janela para desinstalar o módulo. |
-| ✖️ X | **Fechar** | Canto do modal | Fecha a janela sem fazer nada. |
-| — | **Cancelar** | Rodapé do modal | Fecha a janela sem fazer nada. |
-| — | **Importar** (no modal) | Rodapé do modal | Confirma a instalação. |
-| — | **Remover** (no modal) | Rodapé do modal | Confirma a remoção. |
-| 🏷️ selo cinza **Padrão** | — | Linha de um módulo instalado | Indica módulo essencial que não pode ser removido. |
+### Botão X (fechar)
+
+- **O que faz:** fecha a janela sem instalar o módulo — mesmo efeito do **Cancelar**.
+- **Onde fica:** no canto superior direito da janela (o "×").
 
 ---
 
-## Dicas finais
+## Modal "Remover Módulo"
 
-- **Sempre clique em Atualizar** depois de colocar um novo `.zip` na pasta de importação do servidor — senão o módulo não aparece na lista.
-- Depois de importar ou remover um módulo, a tela se atualiza sozinha; não precisa recarregar a página manualmente.
-- Em celular, as tabelas viram cartões e os rótulos das colunas aparecem acima de cada valor, para ficar mais fácil de ler.
-- Se um módulo aparecer com status **Importado** na tabela de disponíveis, é porque já existe uma versão instalada — nesse caso você pode importar para atualizar ou remover.
+Janela de confirmação que aparece ao clicar em **Remover** em um módulo importado (na lista de disponíveis ou na de instalados).
+
+### Campo "Módulo"
+
+- **O que é:** mostra o nome (identificador) do módulo que será removido.
+- **Como preencher:** não precisa digitar nada — o campo já vem preenchido automaticamente.
+
+### Aviso de exclusão
+
+- Mostra o aviso: *"Tem certeza que deseja remover este módulo? Os arquivos backend e frontend serão deletados."*
+- **Leia com atenção:** ao remover, os arquivos do módulo são apagados do sistema. Não é possível recuperá-los pela tela.
+
+### Botão Remover
+
+- **O que faz:** apaga o módulo do sistema.
+- **O que acontece ao clicar:**
+  1. O botão muda para **"Removendo..."** e fica desativado.
+  2. Aparece uma barra de carregamento.
+  3. Ao terminar, mostra **"Módulo removido com sucesso!"** e a janela fecha sozinha, atualizando as listas.
+- **Se der erro:** aparece a mensagem **"Falha: ..."** com o motivo. O botão volta ao normal para você tentar de novo.
+
+### Botão Cancelar
+
+- **O que faz:** fecha a janela **sem** remover nada.
+- **Como usar:** clique em **Cancelar** se quiser manter o módulo instalado.
+
+### Botão X (fechar)
+
+- **O que faz:** fecha a janela sem remover o módulo — mesmo efeito do **Cancelar**.
+- **Onde fica:** no canto superior direito da janela (o "×").
+
+---
+
+## Resumo rápido
+
+| Situação | O que fazer |
+| --- | --- |
+| Coloquei um .zip na pasta de importação | Clique em **Atualizar** |
+| Instalar um módulo novo | Botão **Importar** → confirme em **Importar** |
+| Desinstalar um módulo | Botão **Remover** → confirme em **Remover** |
+| Módulo marcado como **Padrão** | Não tem como remover — faz parte do sistema |
+| Mudar de ideia no meio | Clique em **Cancelar** ou no **X** |

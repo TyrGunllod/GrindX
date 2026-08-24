@@ -88,7 +88,12 @@ Use as respostas para orientar a leitura do código e a escrita do manual.
 - Em standalone, cada aba do `frontend/` vira uma seção `##` (ou subseções, se a aba tiver várias funcionalidades).
 - Descreva ações em ordem: "Acesse o menu X", "Preencha o campo Y", "Clique em Salvar".
 - Use subseções `###` para agrupar os campos de um formulário/modal (ex.: `### Dados Pessoais`).
-- **Liste os botões** de cada tela/modal com o que cada um faz, em uma lista curta (ex.: `- **Salvar** — grava e fecha.`). Isso é essencial para o agente responder "o que faz o botão X?".
+- **Cada botão vira uma sub-seção `### Botão <Nome>`** com uma descrição focada e objetiva do que ele faz. Ex.:
+  ```markdown
+  ### Botão Salvar
+  - **Salvar** — grava o novo usuário, fecha a janela e atualiza a tabela. Se um campo obrigatório estiver errado, exibe aviso e não fecha.
+  ```
+  Isso é essencial para o agente responder "o que faz o botão X?" — o título descritivo (`### Botão Salvar`) melhora a recuperação.
 - **Explique o preenchimento** de cada modal: como abrir, e cada campo com o que deve ser informado.
 - Mencione permissões visíveis ("disponível somente para administradores") quando relevante ao uso.
 - Linguagem simples, direta e em português. Sem jargão técnico.

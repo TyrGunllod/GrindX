@@ -74,7 +74,7 @@ DATABASE_URL=postgresql://postgres.<REF>:<SENHA>@aws-0-<REGIAO>.pooler.supabase.
 LLM_API_KEY=<chave-deepseek>
 LLM_BASE_URL=https://api.deepseek.com
 LLM_MODEL=deepseek-chat
-EMBEDDING_MODEL=paraphrase-multilingual-MiniLM-L12-v2
+EMBEDDING_MODEL=intfloat/multilingual-e5-small
 SIMILARITY_THRESHOLD=0.35
 TOP_K=3
 CORS_ORIGINS=<domínio-do-frontend>
@@ -141,3 +141,4 @@ Invoke-RestMethod -Uri "http://localhost:8003/v1/agente/chat" -Method Post -Cont
 - [ ] `DATABASE_URL` configurada no agente
 - [ ] `init_db` criou `agente.chunks` (verificado no SQL Editor)
 - [ ] `/health` responde `{"database":{"postgres":"connected"}}`
+

@@ -342,7 +342,7 @@ Armazena os trechos (chunks) dos manuais com seus embeddings.
 | `content` | text | Conteúdo do trecho |
 | `filename` | text | Nome do arquivo do manual |
 | `updated_at` | timestamptz | Última atualização |
-| `embedding` | vector(384) | Vetor do modelo `paraphrase-multilingual-MiniLM-L12-v2` |
+| `embedding` | vector(384) | Vetor do modelo `intfloat/multilingual-e5-small` |
 
 ---
 
@@ -357,3 +357,4 @@ psql -U postgres grindx < grindx_backup.sql
 ```
 
 Em produção, agendar backup diário via cron ou ferramenta do provedor de banco.
+
