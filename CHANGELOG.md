@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.78.0 (2026-08-24)
+
+### Documentation
+
+- Fill deploy evidence with public URLs
+  ([`ad31ec1`](https://github.com/TyrGunllod/GrindX/commit/ad31ec1f2c02ceadcbd52854d51e65bf7415dc95))
+
+### Features
+
+- **frontend**: Point to public API URLs when deployed on Render
+  ([`d750091`](https://github.com/TyrGunllod/GrindX/commit/d750091f5dceb900b5291113dd10b14d383e5972))
+
+
 ## v1.77.0 (2026-08-24)
 
 ### Features
