@@ -19,6 +19,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY apps/api-postgres/app/ app/
 COPY packages/ packages/
 
+ENV PYTHONPATH=/app:/app/packages
+
 RUN chown -R appuser:appgroup /app
 
 USER appuser

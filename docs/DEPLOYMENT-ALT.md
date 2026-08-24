@@ -27,17 +27,14 @@ OCI Object Storage (bucket)        ── manuais/backup  ← requisito OCI
 ## Opção A — Render com Postgres gerenciado (Blueprint)
 
 1. Suba o `render.yaml` (raiz do repo) no Render (Dashboard → **New → Blueprint**), ou use o CLI do Render.
-2. O Render cria o **Web Service** `agente-ia` e o banco **`grindx-agente-db`** (free).
-3. No dashboard do serviço, preencha os env vars `sync: false`:
-   - `LLM_API_KEY` — chave do DeepSeek.
-   - `CORS_ORIGINS` — domínio do frontend GrindX.
-4. No banco, habilite o pgvector:
-   ```sql
-   CREATE EXTENSION IF NOT EXISTS vector;
-   ```
-5. Deploy automático. O agente cria o schema/tabelas na subida (`init_db`).
+2. O Render cria os **Web Services** `agente-ia` (porta 8003) e `api-postgres` (porta 8002). O banco é o **Supabase** (não há Postgres gerenciado no blueprint).
+3. No dashboard de cada serviço, preencha os env vars `sync: false`:
+   - `agente-ia`: `DATABASE_URL` (Supabase), `LLM_API_KEY` (DeepSeek), `CORS_ORIGINS`.
+   - `api-postgres`: `DATABASE_URL` (Supabase, com `+psycopg`), `SECRET_KEY`, `CORS_ORIGINS`.
+4. **Migrações/seed do ERP** já foram aplicados no Supabase (`make migrate` + `make seed`) — o `api-postgres` só conecta.
+5. Deploy automático. O agente cria o schema `agente`/tabela na subida (`init_db`).
 
-> ⚠️ O Postgres free do Render expira após ~30 dias. Para uso contínuo, use a **Opção B** (Neon/Supabase).
+> Se preferir o Postgres gerenciado do Render, adicione o bloco `databases:` ao blueprint — mas o free expira após ~30 dias; **Supabase é a opção permanente** (ver [DEPLOYMENT-SUPABASE.md](DEPLOYMENT-SUPABASE.md)).
 
 ---
 

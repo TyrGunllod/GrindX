@@ -1,21 +1,11 @@
-# Render Blueprint — Agente de IA GrindX
+# Render Blueprint — GrindX (Agente de IA + API Postgres)
 #
-# Usar quando a OCI free (Compute/Ampere A1) não tiver capacidade (erro de
-# available domain). O requisito OCI do desafio é coberto pelo OCI Object
-# Storage (sempre gratuito e regional, sem problema de AD).
+# Banco usado: Supabase (PostgreSQL + pgvector) — as DATABASE_URL são
+# preenchidas manualmente (sync: false) com a URL do Supabase.
 #
-# Deploy:
-#   1. Suba este arquivo na raiz do repo (ou crie via Render Dashboard → Blueprint).
-#   2. Render cria o Web Service + o banco Postgres (free).
-#   3. Preencha os env vars marcados com `sync: false` (LLM_API_KEY, CORS_ORIGINS).
-#   4. Habilite a extensão pgvector no banco.
-databases:
-  - name: grindx-agente-db
-    plan: free
-    databaseName: grindx
-    user: grindx
-
+# Uso: Render Dashboard → New → Blueprint → apontar para este repositório.
 services:
+  # ── Agente de IA (porta 8003) ──
   - type: web
     name: agente-ia
     runtime: docker
@@ -25,20 +15,52 @@ services:
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: grindx-agente-db
-          property: connectionString
+        sync: false          # URL do Supabase (postgresql://...?sslmode=require)
       - key: LLM_API_KEY
-        sync: false          # preencher no dashboard (chave DeepSeek)
+        sync: false          # chave DeepSeek
       - key: LLM_BASE_URL
         value: https://api.deepseek.com
       - key: LLM_MODEL
         value: deepseek-chat
       - key: EMBEDDING_MODEL
-        value: paraphrase-multilingual-MiniLM-L12-v2
+        value: intfloat/multilingual-e5-small
       - key: SIMILARITY_THRESHOLD
         value: "0.35"
       - key: TOP_K
         value: "3"
       - key: CORS_ORIGINS
-        sync: false          # preencher com o domínio do frontend GrindX
+        sync: false          # domínio do frontend GrindX
+
+  # ── API Postgres (ERP, porta 8002) ──
+  - type: web
+    name: api-postgres
+    runtime: docker
+    dockerfilePath: apps/api-postgres/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # URL do Supabase (postgresql+psycopg://...?sslmode=require)
+      - key: SECRET_KEY
+        sync: false          # chave forte (32+ chars, entropia alta)
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+      - key: APP_NAME
+        value: ERP API Postgres
+      - key: APP_VERSION
+        value: "0.1.0"
+      - key: DEBUG
+        value: "false"
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: CORS_ORIGINS
+        sync: false          # domínio do frontend GrindX
+      - key: RATE_LIMIT_REQUESTS
+        value: "100"
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: "60"
