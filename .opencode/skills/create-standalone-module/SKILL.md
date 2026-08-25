@@ -299,6 +299,7 @@ Use template: `templates/shared/frontend/style.css`
 - Usar exclusivamente `var(--...)` para cores, fontes, espaçamentos — nunca cores fixas
 - CSS base = mobile; `@media (min-width: 768px)` para desktop
 - Tabelas viram cards no mobile: use `data-label` nos `<td>` para `::before`
+- `.page-header` é `position:sticky; top:0` via `core.css` (fica fixo ao rolar) — não duplicar no `style.css` do módulo
 - Modal usa `modal-overlay` + `modal-card` (NÃO `<dialog>` nativo); elemento central com `class="modal-content"` (header/footer fixos, scroll só no meio — layout vem do `core.css`)
 - Testar visualmente com pelo menos 2 skins antes de exportar
 
@@ -328,6 +329,7 @@ Use templates:
 - A descrição (`{menu_description}`) fica abaixo do container, dentro do mesmo `<div>`
 - A área de botões usa `class="actions-group"` com `style="margin-top: var(--space-4);"` — nunca `header-actions` (não existe no monorepo)
 - `.page-header-container` é definido no `core.css` e usa `justify-content: space-between` (h1 à esquerda, badge à direita), `width: 100%` e `gap: var(--space-3, 0.75rem)` — responsivo, sem `gap` fixo; não duplicar no style.css do módulo
+- `.page-header` é `position:sticky; top:0; z-index:5` com `background:var(--bg-main)` e borda inferior via `core.css` — permanece fixo ao rolar o conteúdo; não redefinir no `style.css` do módulo
 - `.viz-version` também é definido no `core.css` com `white-space: nowrap` — o número da versão nunca quebra internamente e o badge permanece visível quando a página é reduzida
 - Como `.page-header` usa `flex-direction: column; align-items: flex-start`, o primeiro `<div>` filho precisa de `width: 100%` (regra `.page-header > div { width: 100%; }` no `style.css`) para o `.page-header-container` ocupar a largura total e o badge ir ao **extremo direito**
 
