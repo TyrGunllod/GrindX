@@ -64,7 +64,7 @@
         const userName = getUserName();
         const helpText = 'Eu sou o GrindX, e estou aqui para te ajudar, qualquer dúvida me pergunte!';
         bubble.textContent = userName
-            ? getGreeting() + ', ' + userName + '!\n\n' + helpText
+            ? getGreeting() + ', ' + userName + '!\n' + helpText
             : getGreeting() + '!\n\n' + helpText;
         document.body.appendChild(bubble);
 
