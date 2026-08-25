@@ -1,7 +1,6 @@
 @import url('../../shared/core.css');
 
 .page-container { padding: var(--space-6); }
-.page-header { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: var(--space-6); }
 
 /* Responsive Table */
 .table-responsive {

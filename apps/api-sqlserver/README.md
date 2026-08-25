@@ -59,7 +59,33 @@ pip install -r requirements.txt
 
 ### 2. Drivers
 
-Certifique-se de ter o `Microsoft ODBC Driver 17 for SQL Server` instalado no sistema.
+**Container:** já vem com `unixodbc` + `msodbcsql18` no `Containerfile`.
+
+**Host Linux (sem container) — escolha UMA opção:**
+
+**A) pyodbc + ODBC Driver (requer lib de sistema):**
+```bash
+# Se apt update falha com `microsoft-prod.gpg: No such file`, remova primeiro:
+sudo rm -f /etc/apt/sources.list.d/mssql-release.list /usr/share/keyrings/microsoft-prod.gpg && sudo apt update
+
+sudo apt install -y curl gnupg2 ca-certificates
+curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+sudo chmod 644 /usr/share/keyrings/microsoft-prod.gpg
+echo "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" | sudo tee /etc/apt/sources.list.d/mssql-release.list
+sudo apt update
+sudo ACCEPT_EULA=Y apt install -y unixodbc unixodbc-dev msodbcsql17  # ou msodbcsql18 se usar Driver 18
+
+odbcinst -q -d -v  # deve listar o driver instalado
+```
+`.env` deve alinhar com o pacote: `DB_DRIVER=ODBC Driver 17 for SQL Server` (para `msodbcsql17`) ou `ODBC Driver 18 for SQL Server` (para `msodbcsql18`). Erro `Can't open lib 'ODBC Driver 17'` = mismatch.
+
+Remover: `sudo apt remove -y msodbcsql18 && sudo apt autoremove -y`.
+
+**B) pymssql (sem ODBC, sem repo Microsoft):**
+```env
+DB_DRIVER=pymssql
+```
+`app/core/config.py:125` usa `mssql+pymssql://` quando `DB_DRIVER` não contém `ODBC` — não precisa de `unixODBC`.
 
 ### 3. Variáveis de Ambiente
 

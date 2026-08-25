@@ -107,6 +107,86 @@ DB_DRIVER=ODBC Driver 17 for SQL Server
 SECRET_KEY=chave-secreta-forte-com-pelo-menos-32-caracteres
 ```
 
+### 3.1 Instalação nativa no Linux sem container (Debian 12 / Ubuntu 22.04+)
+
+> No container (`Containerfile`) os drivers já vêm instalados (`unixodbc` + `msodbcsql18`). Esta seção é só para rodar `uvicorn` direto no host Linux.
+
+`pyodbc` (`requirements.txt`) depende de lib de sistema (`libodbc.so.2`). Sem ela o erro é `ImportError: libodbc.so.2: cannot open shared object file` em `app/database.py:42`.
+
+Há duas opções — escolha **uma**:
+
+#### Opção A — pyodbc + Microsoft ODBC Driver (recomendado se usa `DB_DRIVER=ODBC ...`)
+
+```bash
+# 0. Se um `apt update` já falha com `... microsoft-prod.gpg: No such file`,
+#    remova o repo quebrado antes de qualquer coisa:
+sudo rm -f /etc/apt/sources.list.d/mssql-release.list
+sudo rm -f /usr/share/keyrings/microsoft-prod.gpg
+sudo apt update
+
+# 1. deps do keyring
+sudo apt install -y curl gnupg2 ca-certificates
+
+# 2. keyring Microsoft — ATENÇÃO ao `sudo` antes do `gpg`
+curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+sudo chmod 644 /usr/share/keyrings/microsoft-prod.gpg
+ls -l /usr/share/keyrings/microsoft-prod.gpg  # tem que existir
+
+# 3. repo Microsoft (Debian 12 bookworm — troque para ubuntu/22.04 se for Ubuntu)
+echo "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" | sudo tee /etc/apt/sources.list.d/mssql-release.list
+
+sudo apt update
+
+# 4. driver ODBC + unixODBC
+#    Para DB_DRIVER="ODBC Driver 17 for SQL Server":
+sudo ACCEPT_EULA=Y apt install -y unixodbc unixodbc-dev msodbcsql17
+#    Para DB_DRIVER="ODBC Driver 18 for SQL Server" (usado no Containerfile):
+#    sudo ACCEPT_EULA=Y apt install -y unixodbc unixodbc-dev msodbcsql18
+
+# 5. confirmar
+odbcinst -q -d -v
+cat /etc/odbcinst.ini
+ls -l /opt/microsoft/msodbcsql*/lib64/
+```
+
+`.env` deve apontar para o driver instalado:
+
+```env
+# se instalou msodbcsql17
+DB_DRIVER=ODBC Driver 17 for SQL Server
+# se instalou msodbcsql18
+DB_DRIVER=ODBC Driver 18 for SQL Server
+```
+
+> Erro `Can't open lib 'ODBC Driver 17 for SQL Server' : file not found (0)` significa que o `.env` pede `Driver 17` mas só o `18` está instalado (ou vice-versa). Alinhe `DB_DRIVER` com `odbcinst -q -d` ou instale o outro pacote.
+
+Remover um driver:
+
+```bash
+dpkg -l | grep msodbcsql
+sudo apt remove -y msodbcsql18   # ou msodbcsql17
+sudo apt autoremove -y
+```
+
+#### Opção B — pymssql (sem driver ODBC / sem repo Microsoft)
+
+`pymssql` já está em `requirements.txt` e não precisa de `unixODBC`/`msodbcsql`:
+
+```env
+DB_DRIVER=pymssql
+```
+
+`app/core/config.py:125` — se `DB_DRIVER` não contém `ODBC`, a `DATABASE_URL` usa `mssql+pymssql://` e `pyodbc` nem é carregado. Útil para dev/teste sem instalar nada no SO.
+
+Verificação final (ambas as opções):
+
+```bash
+python -c "import pyodbc; print(pyodbc.version)"  # só Opção A precisa passar
+curl -s http://localhost:8001/health | jq
+# esperado: {"status":"healthy","database":{"sqlserver":"connected"}}
+# se retornar "degraded" com details.error, veja `odbcinst -q -d` e `DB_DRIVER`
+```
+
 ---
 
 ## 4. Rodar o Projeto
