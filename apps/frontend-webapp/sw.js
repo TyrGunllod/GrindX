@@ -1,4 +1,4 @@
-const CACHE = 'grindx-v2';
+const CACHE = 'grindx-v3';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
