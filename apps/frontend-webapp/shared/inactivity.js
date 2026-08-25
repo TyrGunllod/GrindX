@@ -2,7 +2,7 @@
  * Shared Inactivity Tracker — GrindX
  *
  * Detecta inatividade do usuário, transmite atividade de iframes para o
- * dashboard pai e força logout automático após 5min com aviso nos 60s finais.
+ * dashboard pai e força logout automático após 30min com modal de confirmação.
  *
  * Contextos:
  *  - Janela principal (dashboard): gerencia o timer único e executa logout.
@@ -34,9 +34,11 @@
             this.timeoutId = null;
             this.warningTimeoutId = null;
             this.WARNING_TIME = options.warningTime || 60000;
-            this.LOGOUT_TIME = options.logoutTime || 300000;
+            this.LOGOUT_TIME = options.logoutTime || 1800000;
             this.isWarningShown = false;
             this.isIframe = !!(win && win.self !== win.top);
+            this.modalElement = null;
+            this.countdownInterval = null;
 
             if (options.autoInit !== false && this.document) {
                 this.init();
@@ -55,6 +57,7 @@
             clearTimeout(this.warningTimeoutId);
             this.timeoutId = null;
             this.warningTimeoutId = null;
+            this.closeModal();
         }
 
         bindEvents() {
@@ -94,29 +97,97 @@
         resetTimer() {
             this.lastActivity = Date.now();
             this.isWarningShown = false;
+            this.closeModal();
             this.startTimer();
         }
 
         showWarning() {
             this.isWarningShown = true;
-            const msg = (this.i18n && this.i18n.t) ? this.i18n.t('inactivity_warning')
-                : 'Sua sessão será encerrada em 60 segundos';
+            this.showConfirmationModal();
+        }
+
+        showConfirmationModal() {
+            if (!this.document || !this.window) return;
+
+            const msg = (this.i18n && this.i18n.t) ? this.i18n.t('inactivity_confirm')
+                : 'Você ainda está aí? Sua sessão será encerrada em 60 segundos.';
+            const btnText = (this.i18n && this.i18n.t) ? this.i18n.t('inactivity_confirm_button')
+                : 'Sim, estou aqui!';
+            const secondsText = (this.i18n && this.i18n.t) ? this.i18n.t('inactivity_seconds_remaining')
+                : 'segundos restantes';
+
+            const overlay = this.document.createElement('div');
+            overlay.className = 'grindx-inactivity-overlay';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+            overlay.setAttribute('aria-label', 'Confirmação de presença');
+
+            overlay.innerHTML = `
+                <div class="grindx-inactivity-modal">
+                    <div class="grindx-inactivity-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <p class="grindx-inactivity-message">${msg}</p>
+                    <p class="grindx-inactivity-countdown"><span id="grindx-inactivity-seconds">${this.WARNING_TIME / 1000}</span> ${secondsText}</p>
+                    <button class="btn btn-primary grindx-inactivity-confirm-btn" id="grindx-inactivity-confirm">${btnText}</button>
+                </div>
+            `;
+
+            this.document.body.appendChild(overlay);
+            this.modalElement = overlay;
+
+            const confirmBtn = this.document.getElementById('grindx-inactivity-confirm');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', () => this.confirmPresence());
+            }
 
             if (this.onWarning) {
                 this.onWarning(msg);
-                return;
             }
-            if (this.components && this.components.LoadingSpinner) {
-                this.components.LoadingSpinner.toast(msg, 'warning');
+
+            this.startCountdown();
+        }
+
+        startCountdown() {
+            let remaining = this.WARNING_TIME / 1000;
+            const countdownEl = this.modalElement ? this.modalElement.querySelector('#grindx-inactivity-seconds') : null;
+
+            this.countdownInterval = setInterval(() => {
+                remaining--;
+                if (countdownEl) {
+                    countdownEl.textContent = remaining;
+                }
+                if (remaining <= 0) {
+                    clearInterval(this.countdownInterval);
+                    this.countdownInterval = null;
+                }
+            }, 1000);
+        }
+
+        confirmPresence() {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+            this.resetTimer();
+        }
+
+        closeModal() {
+            if (this.countdownInterval) {
+                clearInterval(this.countdownInterval);
+                this.countdownInterval = null;
             }
-            if (this.document && this.document.dispatchEvent) {
-                this.document.dispatchEvent(new this.window.CustomEvent('grindx:inactivity-warning', { detail: { message: msg } }));
+            if (this.modalElement && this.modalElement.parentNode) {
+                this.modalElement.parentNode.removeChild(this.modalElement);
+                this.modalElement = null;
             }
         }
 
         handleLogout() {
             clearTimeout(this.timeoutId);
             clearTimeout(this.warningTimeoutId);
+            this.closeModal();
 
             if (this.onLogout) {
                 this.onLogout();

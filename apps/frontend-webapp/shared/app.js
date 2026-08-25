@@ -115,7 +115,10 @@ const TRANSLATIONS = {
         save: 'Salvar',
         cancel: 'Cancelar',
         inactivity_warning: 'Sua sessão será encerrada em 60 segundos',
-        inactivity_logout: 'Sua sessão foi encerrada. Volte para o login.'
+        inactivity_logout: 'Sua sessão foi encerrada. Volte para o login.',
+        inactivity_confirm: 'Você ainda está aí? Sua sessão será encerrada em 60 segundos.',
+        inactivity_confirm_button: 'Sim, estou aqui!',
+        inactivity_seconds_remaining: 'segundos restantes'
     },
     'en-US': {
         login: 'Login',

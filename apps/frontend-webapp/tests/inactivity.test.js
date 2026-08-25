@@ -28,18 +28,33 @@ function fakeWindow() {
 }
 
 function fakeDoc() {
+    const elements = {};
     return {
         readyState: 'complete',
         addEventListener: () => {},
         removeEventListener: () => {},
-        dispatchEvent: () => true
+        dispatchEvent: () => true,
+        createElement: (tag) => ({
+            tagName: tag,
+            className: '',
+            innerHTML: '',
+            style: {},
+            setAttribute: () => {},
+            addEventListener: () => {},
+            querySelector: () => null,
+            parentNode: { removeChild: () => {} }
+        }),
+        getElementById: (id) => elements[id] || null,
+        body: {
+            appendChild: (el) => { elements[el.id] = el; return el; }
+        }
     };
 }
 
-test('armazena tempos de warning e logout configurados', () => {
+test('armazena tempos de warning e logout configurados (30min)', () => {
     const tracker = new InactivityTracker({ autoInit: false });
     assert.equal(tracker.WARNING_TIME, 60000);
-    assert.equal(tracker.LOGOUT_TIME, 300000);
+    assert.equal(tracker.LOGOUT_TIME, 1800000);
 });
 
 test('detecta contexto de janela principal (self === top)', () => {
@@ -145,23 +160,52 @@ test('evento message de origem diferente é ignorado', () => {
     assert.equal(tracker.lastActivity, 0, 'origem diferente não deve resetar');
 });
 
-test('showWarning usa onClick/i18n e marca isWarningShown', () => {
+test('showConfirmationModal cria modal de confirmação', () => {
     const win = fakeWindow();
     win.self = {};
     win.top = {};
-    let warned = null;
 
     const tracker = new InactivityTracker({
         window: win,
         document: fakeDoc(),
         autoInit: false,
-        i18n: { t: (k) => (k === 'inactivity_warning' ? 'Aviso traduzido' : k) },
-        onWarning: (msg) => { warned = msg; }
+        i18n: { t: (k) => {
+            const translations = {
+                'inactivity_confirm': 'Você ainda está aí?',
+                'inactivity_confirm_button': 'Sim, estou aqui!',
+                'inactivity_seconds_remaining': 'segundos restantes'
+            };
+            return translations[k] || k;
+        }}
     });
 
     tracker.showWarning();
     assert.equal(tracker.isWarningShown, true);
-    assert.equal(warned, 'Aviso traduzido');
+    assert.ok(tracker.modalElement, 'deve criar o elemento modal');
+    tracker.destroy();
+});
+
+test('confirmPresence reinicia o timer e fecha o modal', () => {
+    const win = fakeWindow();
+    win.self = {};
+    win.top = {};
+
+    const tracker = new InactivityTracker({
+        window: win,
+        document: fakeDoc(),
+        autoInit: false
+    });
+
+    tracker.lastActivity = 0;
+    tracker.modalElement = { parentNode: { removeChild: () => {} } };
+    tracker.countdownInterval = setInterval(() => {}, 1000);
+
+    tracker.confirmPresence();
+
+    assert.ok(tracker.lastActivity > 0, 'deve atualizar lastActivity');
+    assert.equal(tracker.modalElement, null, 'deve fechar o modal');
+    assert.equal(tracker.countdownInterval, null, 'deve limpar o intervalo');
+    tracker.destroy();
 });
 
 test('handleLogout chama onLogout quando fornecido', () => {
@@ -223,4 +267,68 @@ test('sem onLogout, com serverLogout disponível, notifica o servidor', () => {
     tracker.handleLogout();
     assert.equal(notified, true, 'deve notificar o servidor no logout por inatividade');
     delete globalThis.grindx;
+});
+
+test('closeModal limpa modalElement e countdownInterval', () => {
+    const win = fakeWindow();
+    win.self = {};
+    win.top = {};
+
+    const tracker = new InactivityTracker({
+        window: win,
+        document: fakeDoc(),
+        autoInit: false
+    });
+
+    tracker.modalElement = { parentNode: { removeChild: () => {} } };
+    tracker.countdownInterval = setInterval(() => {}, 1000);
+
+    tracker.closeModal();
+
+    assert.equal(tracker.modalElement, null, 'deve limpar modalElement');
+    assert.equal(tracker.countdownInterval, null, 'deve limpar countdownInterval');
+    tracker.destroy();
+});
+
+test('destroy limpa timers e fecha modal', () => {
+    const win = fakeWindow();
+    win.self = {};
+    win.top = {};
+
+    const tracker = new InactivityTracker({
+        window: win,
+        document: fakeDoc(),
+        autoInit: true
+    });
+
+    tracker.modalElement = { parentNode: { removeChild: () => {} } };
+    tracker.countdownInterval = setInterval(() => {}, 1000);
+
+    tracker.destroy();
+
+    assert.equal(tracker.timeoutId, null);
+    assert.equal(tracker.warningTimeoutId, null);
+    assert.equal(tracker.modalElement, null);
+    assert.equal(tracker.countdownInterval, null);
+});
+
+test('resetTimer fecha modal existente', () => {
+    const win = fakeWindow();
+    win.self = {};
+    win.top = {};
+
+    const tracker = new InactivityTracker({
+        window: win,
+        document: fakeDoc(),
+        autoInit: false
+    });
+
+    tracker.modalElement = { parentNode: { removeChild: () => {} } };
+    tracker.countdownInterval = setInterval(() => {}, 1000);
+
+    tracker.resetTimer();
+
+    assert.equal(tracker.modalElement, null);
+    assert.equal(tracker.countdownInterval, null);
+    tracker.destroy();
 });
