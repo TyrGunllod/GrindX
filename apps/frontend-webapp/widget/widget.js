@@ -8,7 +8,8 @@
 (function () {
     'use strict';
 
-    const AGENT_URL = window.__GRINDX_AGENT_URL || 'http://localhost:8003';
+    const AGENT_URL = window.__GRINDX_AGENT_URL
+        || (location.hostname.indexOf('onrender.com') !== -1 ? 'https://agente-ia-gexd.onrender.com' : 'http://localhost:8003');
     const CHAT_ENDPOINT = AGENT_URL.replace(/\/+$/, '') + '/v1/agente/chat';
 
     function getActiveModule() {
