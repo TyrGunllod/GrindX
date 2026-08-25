@@ -56,6 +56,10 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    if (request.method !== 'GET') {
+        return; // não cacheia POST (login, chamadas de API etc.)
+    }
+
     event.respondWith(
         fetch(request)
             .then((response) => {
