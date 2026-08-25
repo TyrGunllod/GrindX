@@ -678,3 +678,88 @@ Remove um módulo importado (backend, frontend e vínculo com aba).
 ```
 
 **404:** Módulo não encontrado para remoção.
+
+---
+
+## Agente de IA (`apps/agente-ia`)
+
+Serviço separado (porta **8003**) que responde dúvidas sobre os manuais dos módulos (RAG). Base URL: `http://localhost:8003/v1` · Swagger: `http://localhost:8003/v1/docs`.
+
+> O serviço **não exige autenticação JWT**. O chat é chamado pelo mascote do frontend (widget) e a ingestão/remoção pelo módulo **Gestão → Configurar Agente**.
+
+### `GET /health`
+
+Health check do agente (inclui conectividade com o Postgres/pgvector).
+
+**Response 200:**
+```json
+{
+  "status": "healthy",
+  "service": "GrindX Agente IA",
+  "version": "0.1.0",
+  "database": { "postgres": "connected" },
+  "timestamp": "2026-08-23T00:00:00Z"
+}
+```
+
+### `POST /v1/agente/chat`
+
+Gera uma resposta com base nos manuais do módulo informado.
+
+**Body:**
+```json
+{ "question": "o que faz o botão Salvar?", "module": "users" }
+```
+
+**Response 200:**
+```json
+{
+  "answer": "O botão Salvar grava o cadastro e fecha a janela.",
+  "sources": [ { "filename": "users.md", "title": "Cadastrar Usuário", "module": "users" } ],
+  "used_fallback": false,
+  "found": true
+}
+```
+
+**502:** limitação de requisições (429) do provedor de LLM.
+
+### `POST /v1/agente/manuais`
+
+Ingere um manual Markdown para um módulo.
+
+**Body:**
+```json
+{ "module": "users", "filename": "users.md", "content": "# Manual do Módulo Usuários\n..." }
+```
+
+**Response 200:**
+```json
+{ "chunks": 6 }
+```
+
+### `GET /v1/agente/manuais`
+
+Lista os manuais indexados, agrupados por módulo/arquivo.
+
+**Response 200:**
+```json
+{ "manuais": [ { "module": "users", "filename": "users.md", "chunks": 6 } ] }
+```
+
+### `DELETE /v1/agente/manuais?module=<m>&filename=<f>`
+
+Remove um manual indexado (todos os chunks do módulo + arquivo).
+
+**Response 200:**
+```json
+{ "removed": 6 }
+```
+
+### `GET /v1/agente/modulos`
+
+Lista os slugs dos módulos que possuem manuais indexados.
+
+**Response 200:**
+```json
+{ "modules": ["users", "structure"] }
+```

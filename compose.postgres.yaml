@@ -1,0 +1,20 @@
+services:
+  postgres18:
+    image: pgvector/pgvector:pg18
+    container_name: postgres18
+    restart: always
+    env_file:
+      - ./.env.postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql:Z
+    networks:
+      - nest
+
+volumes:
+  pgdata:
+
+networks:
+  nest:
+    external: true

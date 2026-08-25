@@ -1,0 +1,28 @@
+# Deploy OCI — Agente de IA + PostgreSQL/pgvector
+#
+# Uso (na VM OCI, em /opt/grindx/):
+#   cp .env.oci.example .env   # preencher os valores
+#   docker compose -f compose.oci.yaml up -d
+services:
+  agent:
+    image: iad.ocir.io/<tenancy>/grindx/agente-ia:latest
+    container_name: agente-ia
+    ports:
+      - "8003:8003"
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg18
+    container_name: postgres18
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql:z
+    restart: unless-stopped
+
+volumes:
+  pgdata:

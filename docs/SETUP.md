@@ -122,9 +122,15 @@ make dev-sqlserver
 
 # Terminal 3 — frontend (porta 8101)
 make dev-frontend
+
+# Terminal 4 — agente de IA (porta 8003, opcional)
+make venv-agente      # primeira vez — cria .venv do agente e instala deps
+make dev-agente
 ```
 
 Acessar: `http://localhost:8101`
+
+> **Agente de IA:** para o assistente de manuais funcionar, configure `apps/agente-ia/.env` (copie de `.env.example`) com `DATABASE_URL` e `LLM_API_KEY` (DeepSeek). O Postgres precisa ter a extensão `pgvector` (o agente cria o schema/tabela sozinho na subida). Os manuais são importados pelo módulo **Gestão → Configurar Agente**.
 
 ---
 

@@ -2,6 +2,207 @@
 
 <!-- version list -->
 
+## v1.79.6 (2026-08-25)
+
+### Bug Fixes
+
+- **frontend**: Detect production API/agent URL in modules and widget
+  ([`213d2ff`](https://github.com/TyrGunllod/GrindX/commit/213d2ff696e35fc0efc0b27ea0bbdae3f65f48f7))
+
+
+## v1.79.5 (2026-08-25)
+
+### Bug Fixes
+
+- **frontend**: Soften asset cache and bump service worker version
+  ([`b34587e`](https://github.com/TyrGunllod/GrindX/commit/b34587e3a4087ffdd276988233a7d77c791047d7))
+
+
+## v1.79.4 (2026-08-25)
+
+### Bug Fixes
+
+- **frontend**: Direct API calls, skip POST caching in SW, remove proxy loop
+  ([`98aecf0`](https://github.com/TyrGunllod/GrindX/commit/98aecf0d95e437c3ae557742d068a3b94d1b02ec))
+
+
+## v1.79.3 (2026-08-24)
+
+### Bug Fixes
+
+- **frontend**: Enable SNI on nginx upstream proxy
+  ([`c0a3768`](https://github.com/TyrGunllod/GrindX/commit/c0a3768fa3edb152b1ef8b31b0eb314f035093fd))
+
+
+## v1.79.2 (2026-08-24)
+
+### Bug Fixes
+
+- **frontend**: Remove duplicate text/html from gzip_types
+  ([`ff43738`](https://github.com/TyrGunllod/GrindX/commit/ff4373892ca25381cb80fd1d0dea36d947d8a414))
+
+
+## v1.79.1 (2026-08-24)
+
+### Bug Fixes
+
+- **frontend**: Point to recreated Render services
+  ([`d800524`](https://github.com/TyrGunllod/GrindX/commit/d8005242dad32853d1fa3ccbb51a8c16925f7b86))
+
+
+## v1.79.0 (2026-08-24)
+
+### Documentation
+
+- Add frontend URL to deploy evidence
+  ([`2457a0a`](https://github.com/TyrGunllod/GrindX/commit/2457a0a8214311e6eb0584ded2daa12356537702))
+
+### Features
+
+- **frontend**: Docker/nginx deployment with API proxy
+  ([`25d341a`](https://github.com/TyrGunllod/GrindX/commit/25d341a5366758f5e60817160ac89d8f0727c0dd))
+
+
+## v1.78.0 (2026-08-24)
+
+### Documentation
+
+- Fill deploy evidence with public URLs
+  ([`ad31ec1`](https://github.com/TyrGunllod/GrindX/commit/ad31ec1f2c02ceadcbd52854d51e65bf7415dc95))
+
+### Features
+
+- **frontend**: Point to public API URLs when deployed on Render
+  ([`d750091`](https://github.com/TyrGunllod/GrindX/commit/d750091f5dceb900b5291113dd10b14d383e5972))
+
+
+## v1.77.0 (2026-08-24)
+
+### Features
+
+- **agente**: Support keyword-only retrieval for low-memory deploys
+  ([`4f6ce6b`](https://github.com/TyrGunllod/GrindX/commit/4f6ce6bbb5ecf8b299701bb319e08c1070b129fd))
+
+
+## v1.76.1 (2026-08-24)
+
+### Bug Fixes
+
+- **deploy**: Force embedding model load at build time
+  ([`7871aca`](https://github.com/TyrGunllod/GrindX/commit/7871aca3536d12c14f69058f137ceaccec45ee0c))
+
+
+## v1.76.0 (2026-08-24)
+
+### Chores
+
+- **deploy**: Render blueprint for agente-ia and api-postgres with Supabase
+  ([`dcb9052`](https://github.com/TyrGunllod/GrindX/commit/dcb90529136107f1259fbb807d8bb0edd13d48f2))
+
+### Documentation
+
+- **deploy**: Add manual Render setup section for older accounts
+  ([`fbf97c8`](https://github.com/TyrGunllod/GrindX/commit/fbf97c8d1c6d46adae062f7ffcaad671ea4d4fef))
+
+- **deploy**: Add step-by-step Render deployment guide
+  ([`181cf6a`](https://github.com/TyrGunllod/GrindX/commit/181cf6a1842eda85ea77d7b97c0d7564a67b477b))
+
+### Features
+
+- **agente**: Use fastembed ONNX embeddings and hybrid keyword search
+  ([`45a5f55`](https://github.com/TyrGunllod/GrindX/commit/45a5f5537341b5a45fae89127597ffe0313d4b8e))
+
+
+## v1.75.0 (2026-08-24)
+
+### Documentation
+
+- Add deploy evidence section to README
+  ([`25c1cae`](https://github.com/TyrGunllod/GrindX/commit/25c1cae904e0bc95f5ec42566ab1b06feb862524))
+
+- **agente**: Add sample CSV manual
+  ([`27ab2c0`](https://github.com/TyrGunllod/GrindX/commit/27ab2c0af78ff8eb87a9d5b4acd17a4354c3a3df))
+
+- **agente**: Per-button manual sections and update embedding model references
+  ([`fef835a`](https://github.com/TyrGunllod/GrindX/commit/fef835ab197cf85808324624b496553ca3484159))
+
+- **deploy**: Add Supabase database setup guide
+  ([`4bc90d0`](https://github.com/TyrGunllod/GrindX/commit/4bc90d019a2417a32d5d726c0ac6c1d7b539b79a))
+
+### Features
+
+- **agente**: Add CSV ingestion and full agent README with examples
+  ([`b483f92`](https://github.com/TyrGunllod/GrindX/commit/b483f927cc7f6a3b84e81d57c569bd1caf362762))
+
+- **agente**: Switch to multilingual-e5 embeddings and per-heading chunks
+  ([`19d8b6b`](https://github.com/TyrGunllod/GrindX/commit/19d8b6b8bf11c4c5f8e15194de6be7a7bbde5137))
+
+
+## v1.74.0 (2026-08-24)
+
+### Chores
+
+- **deploy**: Add OCI deployment config and guide
+  ([`a27548d`](https://github.com/TyrGunllod/GrindX/commit/a27548d1317f9e3f5ca1d2daead2c2b632eeb864))
+
+### Documentation
+
+- Sync documentation with AI agent feature
+  ([`5c46d89`](https://github.com/TyrGunllod/GrindX/commit/5c46d897de15275916dcc51e87c025cf01abdbe0))
+
+### Features
+
+- **deploy**: Add Render/Neon alternative and psycopg URL normalization
+  ([`e8c00ec`](https://github.com/TyrGunllod/GrindX/commit/e8c00ecdf93976af53669a3b7558a103052b7b1b))
+
+
+## v1.73.0 (2026-08-23)
+
+### Code Style
+
+- **frontend**: Reduce mascot size by 20%
+  ([`d4b5270`](https://github.com/TyrGunllod/GrindX/commit/d4b5270d1aa7852beb4491c855c6bb42f0a332dc))
+
+- **frontend**: Reduce mascot size by another 20%
+  ([`1dea5fe`](https://github.com/TyrGunllod/GrindX/commit/1dea5fed3ee0fa9d8655831174f16d42c502459d))
+
+### Features
+
+- **frontend**: Add intro message to mascot greeting
+  ([`12ad155`](https://github.com/TyrGunllod/GrindX/commit/12ad1558ebc3652e0fed6d9594180c553730d044))
+
+- **frontend**: Greeting bubble on mascot with user name
+  ([`e38830d`](https://github.com/TyrGunllod/GrindX/commit/e38830d4307cf76a04a01faf823878980fa7f005))
+
+- **frontend**: Use chibi image in chat panel header
+  ([`96f8457`](https://github.com/TyrGunllod/GrindX/commit/96f8457f1664a2f14f91a81b14f0bad3c3d8bba0))
+
+
+## v1.72.0 (2026-08-19)
+
+### Bug Fixes
+
+- Mover scripts do head para o fim do body no template do frontend (evita render blocking e quebra
+  do frontend)
+  ([`fce3add`](https://github.com/TyrGunllod/GrindX/commit/fce3addb63adeb857720f54411d86d17cacbd72e))
+
+### Documentation
+
+- Add spec and plan for fixed modal header/footer scroll pattern
+  ([`d35312b`](https://github.com/TyrGunllod/GrindX/commit/d35312b9702f3ed816018754c9e9ca558dc1ee25))
+
+- **skill**: Align module header/badge templates with monorepo CSS
+  ([`3c8de1c`](https://github.com/TyrGunllod/GrindX/commit/3c8de1cbdaaab73c6a8c207900ce7e83d5bbd015))
+
+- **skill**: Sync create-standalone-module with latest conventions
+  ([`7baf353`](https://github.com/TyrGunllod/GrindX/commit/7baf35328769ea37e0f6f3194e448ab05c72e1b5))
+
+### Features
+
+- Documentar e implementar a nomenclatura do zip com versao no template create-standalone-module
+  ([`8399398`](https://github.com/TyrGunllod/GrindX/commit/8399398d35e19611a53da7d878694d1b23940e11))
+
+
 ## v1.71.0 (2026-08-14)
 
 ### Documentation

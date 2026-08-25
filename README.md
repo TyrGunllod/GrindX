@@ -20,6 +20,7 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 
 - **`api-postgres` (porta 8002):** API principal em FastAPI. Gerencia autenticação JWT, RBAC, usuários, temas/skins, estrutura do portal e importação de módulos.
 - **`api-sqlserver` (porta 8001):** API somente leitura para integração com bases SQL Server legadas (Protheus). Endpoints: `/health`, `/v1/produtos/por-codigo`, `/v1/produtos/por-descricao`. Endpoints públicos (sem validação JWT).
+- **`agente-ia` (porta 8003):** Agente de IA (RAG) — assistente de manuais. Responde dúvidas dos colaboradores sobre como usar os módulos (DeepSeek + sentence-transformers + pgvector). Endpoints: `/health`, `/v1/agente/chat`, `/v1/agente/manuais`, `/v1/agente/modulos`.
 - **`shared`:** Pacote Python compartilhado entre as APIs — segurança, schemas e exceções.
 
 ### Frontend
@@ -90,6 +91,39 @@ Acesse frontend em `https://localhost:8443` e API em `https://localhost:8002/v1/
 | Usuário | Senha | Perfil |
 |---------|-------|--------|
 | `admin` | `admin123` | Administrador |
+
+---
+
+## Agente de IA (assistente de manuais)
+
+O **Agente de IA** (`apps/agente-ia`) é um assistente RAG que responde dúvidas sobre **como usar os módulos**, com base nos manuais/documentos (Markdown ou CSV) indexados. Acessível pelo **mascote flutuante** no dashboard ou pela API (`http://localhost:8003/v1`). A ingestão é feita pelo módulo **Gestão → Configurar Agente**.
+
+**Exemplo de pergunta:** *O que faz o botão Salvar no cadastro de usuário?*
+**Resposta:** "O botão Salvar grava o novo usuário, fecha a janela e atualiza a tabela. Se algum campo obrigatório estiver errado, aparece um aviso explicando o que corrigir e a janela não fecha."
+
+**Exemplo de pergunta:** *Como desativo um usuário?*
+**Resposta:** "Na coluna Status, clique no selo **Ativo**. A mensagem 'Usuário desativado com sucesso' aparece e o selo muda para **Inativo** — a pessoa deixa de acessar o sistema."
+
+Mais exemplos de perguntas e respostas, arquitetura e instruções em [`apps/agente-ia/README.md`](apps/agente-ia/README.md).
+
+---
+
+## Deploy na nuvem — Evidência
+
+O agente está implantado na nuvem e acessível publicamente.
+
+- **Agente de IA:** https://agente-ia-gexd.onrender.com
+- **Swagger do agente:** https://agente-ia-gexd.onrender.com/v1/docs
+- **API Postgres (ERP):** https://api-postgres-jc35.onrender.com
+- **Frontend (GrindX):** https://grindx-frontend.onrender.com
+- **Banco:** Supabase (PostgreSQL + pgvector)
+- **Serviço OCI:** OCI Object Storage (bucket com os manuais de origem)
+
+**Imagem/vídeo do agente em execução na nuvem:**
+
+![Agente de IA em execução na nuvem](deploy.png)
+
+> Requisito do desafio: "Inserir no README uma imagem ou vídeo do agente executando em nuvem (OCI ou outro serviço online)".
 
 ---
 
@@ -196,10 +230,15 @@ GrindX/
 │   │   │   └── services/
 │   │   ├── tests/
 │   │   └── ...
+│   ├── agente-ia/             # Agente de IA (RAG) — assistente de manuais
+│   │   ├── app/               # FastAPI: rag (ingestion, embeddings, vectorstore, retrieval, generation), routers
+│   │   ├── manuals/           # Manuais Markdown dos módulos
+│   │   └── tests/
 │   └── frontend-webapp/       # Portal Frontend
 │       ├── index.html         # Login
 │       ├── dashboard.html     # Shell principal
-│       ├── modules/           # admin-skins, admins, auditoria, home, importer, profile, structure, users
+│       ├── widget/            # Mascote do agente (chat nativo)
+│       ├── modules/           # admin-skins, admins, auditoria, configurar-agente, home, importer, profile, structure, users
 │       └── shared/            # Design System + Core Framework
 ├── packages/
 │   └── shared/                # Pacote Python compartilhado

@@ -320,7 +320,29 @@ Cria (idempotente):
 - Usuário `admin` / `admin123` (e-mail `admin@erp.com.br`) com role `admin` — vinculado à GrindX
 - Skin "Padrão GrindX" com `layout_mode` `topbar`
 - Abas: `Principal` (ordem 0), `R. HUMANOS` (ordem 50) e `Gestão` (ordem 100)
-- Módulos: `Dashboard` (home), `Usuários` (users), `Administradores` (admins, role admin), `Módulos & Abas` (structure), `Skins` (admin-skins), `Importar Módulos` (importer), `Auditoria` (auditoria, role admin)
+- Módulos: `Dashboard` (home), `Usuários` (users), `Administradores` (admins, role admin), `Módulos & Abas` (structure), `Skins` (admin-skins), `Importar Módulos` (importer), `Auditoria` (auditoria, role admin), `Configurar Agente` (configurar-agente, role admin)
+
+---
+
+## Schema `agente` (Agente de IA)
+
+O Agente de IA (`apps/agente-ia`) usa um schema próprio `agente`, criado automaticamente na subida do serviço (`init_db`) — **não** faz parte das migrações Alembic do `api-postgres`.
+
+Requer a extensão **pgvector** (`CREATE EXTENSION IF NOT EXISTS vector`) no PostgreSQL.
+
+### Tabela `agente.chunks`
+
+Armazena os trechos (chunks) dos manuais com seus embeddings.
+
+| Coluna | Tipo | Descrição |
+|--------|------|-----------|
+| `id` | serial PK | Identificador |
+| `module` | varchar(120) | Slug do módulo (ex.: `users`) |
+| `title` | text | Título da seção |
+| `content` | text | Conteúdo do trecho |
+| `filename` | text | Nome do arquivo do manual |
+| `updated_at` | timestamptz | Última atualização |
+| `embedding` | vector(384) | Vetor do modelo `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` |
 
 ---
 
@@ -335,3 +357,5 @@ psql -U postgres grindx < grindx_backup.sql
 ```
 
 Em produção, agendar backup diário via cron ou ferramenta do provedor de banco.
+
+

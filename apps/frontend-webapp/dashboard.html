@@ -14,6 +14,13 @@
     <meta name="theme-color" content="#00c2e0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <script>
+        // Deploy: em produção (Render), aponta para as APIs públicas
+        if (location.hostname.indexOf('onrender.com') !== -1) {
+            window.__GRINDX_API_URL = 'https://api-postgres-jc35.onrender.com/v1';
+            window.__GRINDX_AGENT_URL = 'https://agente-ia-gexd.onrender.com';
+        }
+    </script>
     
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
@@ -26,6 +33,7 @@
     <!-- Shared Architecture -->
     <link rel="stylesheet" href="shared/core.css">
     <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="widget/widget.css">
 </head>
 <body class="dashboard-layout layout-topbar">
 
@@ -166,6 +174,9 @@
     <script src="shared/components/LoadingSpinner.js"></script>
     <script src="shared/skinLoader.js"></script>
     <script src="dashboard.js"></script>
+    <script src="widget/widget.js"></script>
 
 
 </body></html>
+
+

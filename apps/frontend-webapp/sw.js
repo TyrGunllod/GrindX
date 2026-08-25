@@ -1,4 +1,4 @@
-const CACHE = 'grindx-v2';
+const CACHE = 'grindx-v3';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -54,6 +54,10 @@ self.addEventListener('fetch', (event) => {
             caches.match(request).then((cached) => cached || fetch(request))
         );
         return;
+    }
+
+    if (request.method !== 'GET') {
+        return; // não cacheia POST (login, chamadas de API etc.)
     }
 
     event.respondWith(

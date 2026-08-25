@@ -1,0 +1,225 @@
+/* ==========================================
+   AGENTE IA — WIDGET FLUTUANTE (Mascote)
+   Design System: Glassmorphism + tokens var(--...)
+   ========================================== */
+
+.grindx-ai-fab {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    width: 50px;
+    height: 94px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.grindx-ai-fab img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.28));
+}
+
+.grindx-ai-fab:hover {
+    transform: translateY(-2px) scale(1.04);
+}
+
+.grindx-ai-bubble {
+    position: fixed;
+    bottom: 55px;
+    right: 72px;
+    max-width: 280px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+    z-index: 8999;
+}
+
+.grindx-ai-bubble.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.grindx-ai-bubble::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -8px;
+    margin-top: -8px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent transparent transparent var(--bg-card);
+}
+
+.grindx-ai-panel {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    height: 560px;
+    max-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+    z-index: 9000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(16px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.grindx-ai-panel.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.grindx-ai-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.grindx-ai-panel-header span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.grindx-ai-header-img {
+    width: 22px;
+    height: 22px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.grindx-ai-panel-header i {
+    color: var(--primary);
+}
+
+.grindx-ai-close {
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.grindx-ai-close:hover {
+    color: var(--text-main);
+}
+
+.grindx-ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    background: var(--bg-main);
+}
+
+.grindx-ai-msg {
+    max-width: 85%;
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.75rem;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.grindx-ai-msg-user {
+    align-self: flex-end;
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.grindx-ai-msg-assistant {
+    align-self: flex-start;
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+.grindx-ai-sources {
+    align-self: flex-start;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    padding: 0 0.25rem;
+}
+
+.grindx-ai-input {
+    display: flex;
+    gap: var(--space-2);
+    padding: 0.6rem;
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.grindx-ai-field {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    background: var(--bg-main);
+    color: var(--text-main);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.grindx-ai-send {
+    border: none;
+    background: var(--primary);
+    color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 0 0.9rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+    .grindx-ai-fab {
+        width: 37px;
+        height: 70px;
+        bottom: 12px;
+        right: 12px;
+    }
+    .grindx-ai-panel {
+        bottom: 130px;
+        right: 16px;
+        left: 16px;
+        width: auto;
+        height: calc(100vh - 160px);
+    }
+}

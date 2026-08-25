@@ -299,6 +299,14 @@ def seed_database():
                 "icone": "fas fa-history",
                 "role_minima": "admin",
             },
+            {
+                "aba": "Gestão",
+                "nome": "Configurar Agente",
+                "slug": "configurar-agente",
+                "url": "modules/configurar-agente/index.html",
+                "icone": "fas fa-robot",
+                "role_minima": "admin",
+            },
         ]
 
         modulos_criados = 0

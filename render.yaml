@@ -1,0 +1,70 @@
+# Render Blueprint — GrindX (Agente de IA + API Postgres)
+#
+# Banco usado: Supabase (PostgreSQL + pgvector) — as DATABASE_URL são
+# preenchidas manualmente (sync: false) com a URL do Supabase.
+#
+# Uso: Render Dashboard → New → Blueprint → apontar para este repositório.
+services:
+  # ── Agente de IA (porta 8003) ──
+  - type: web
+    name: agente-ia
+    runtime: docker
+    dockerfilePath: apps/agente-ia/Dockerfile
+    dockerContext: apps/agente-ia
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # URL do Supabase (postgresql://...?sslmode=require)
+      - key: LLM_API_KEY
+        sync: false          # chave DeepSeek
+      - key: LLM_BASE_URL
+        value: https://api.deepseek.com
+      - key: LLM_MODEL
+        value: deepseek-chat
+      - key: EMBEDDING_MODEL
+        value: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+      - key: EMBEDDINGS_ENABLED
+        value: "false"
+      - key: SIMILARITY_THRESHOLD
+        value: "0.35"
+      - key: TOP_K
+        value: "5"
+      - key: CORS_ORIGINS
+        sync: false          # domínio do frontend GrindX
+
+  # ── API Postgres (ERP, porta 8002) ──
+  - type: web
+    name: api-postgres
+    runtime: docker
+    dockerfilePath: apps/api-postgres/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # URL do Supabase (postgresql+psycopg://...?sslmode=require)
+      - key: SECRET_KEY
+        sync: false          # chave forte (32+ chars, entropia alta)
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+      - key: APP_NAME
+        value: ERP API Postgres
+      - key: APP_VERSION
+        value: "0.1.0"
+      - key: DEBUG
+        value: "false"
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: CORS_ORIGINS
+        sync: false          # domínio do frontend GrindX
+      - key: RATE_LIMIT_REQUESTS
+        value: "100"
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: "60"
+
+

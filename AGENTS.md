@@ -25,23 +25,28 @@ Estas regras causam falha de CI, bug sutil ou retrabalho quando ignoradas. Revis
 
 - `apps/api-postgres/` — FastAPI principal (porta 8002), JWT + RBAC, PostgreSQL via Alembic
 - `apps/api-sqlserver/` — FastAPI somente leitura (porta 8001), endpoints públicos sem JWT
+- `apps/agente-ia/` — Agente de IA (RAG, porta 8003): DeepSeek + sentence-transformers + pgvector; assistente de manuais
 - `apps/frontend-webapp/` — Portal vanilla JS (porta 8101), módulos via iframe, zero frameworks
 - `packages/shared/` — Pacote Python compartilhado (security, schemas, exceptions, error codes)
 - `tests/` — Testes de integração do monorepo (raiz)
 - `.opencode/skills/create-standalone-module/` — Skill para criar novos módulos
+- `.opencode/skills/extrair-manual-modulo/` — Skill para gerar manuais de uso dos módulos
 
 ## Developer Commands
 
 ```powershell
 make venv              # cria .venv e instala requirements das duas APIs
+make venv-agente       # cria .venv do agente-ia e instala deps (torch incluso)
 make dev-postgres      # uvicorn porta 8002 (Win: scripts/dev-postgres.ps1)
 make dev-sqlserver     # uvicorn porta 8001 (Win: scripts/dev-sqlserver.ps1)
 make dev-frontend      # http.server porta 8101 (Win: scripts/dev-frontend.ps1)
+make dev-agente        # uvicorn porta 8003 (agente de IA / RAG)
 make dev-all           # todos (terminais separados via pwsh no Windows)
 make dev-kill-port     # Win: remove portproxy rules nas portas dev (req admin)
 make migrate           # alembic upgrade head
 make seed              # popula dados iniciais
 make test-all          # pytest de todas as APIs + shared + raiz
+make test-agente       # pytest do agente-ia
 make lint              # ruff check --fix . && ruff check .
 make format            # ruff format packages/ apps/
 make build             # podman-compose build
