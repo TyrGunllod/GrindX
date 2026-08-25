@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.79.5 (2026-08-25)
+
+### Bug Fixes
+
+- **frontend**: Soften asset cache and bump service worker version
+  ([`b34587e`](https://github.com/TyrGunllod/GrindX/commit/b34587e3a4087ffdd276988233a7d77c791047d7))
+
+
 ## v1.79.4 (2026-08-25)
 
 ### Bug Fixes
