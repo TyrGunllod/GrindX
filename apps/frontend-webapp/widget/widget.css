@@ -43,6 +43,7 @@
     font-size: 0.85rem;
     color: var(--text-main);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    white-space: pre-wrap;
     opacity: 0;
     visibility: hidden;
     transform: translateY(8px);
@@ -116,10 +117,10 @@
 }
 
 .grindx-ai-header-img {
-    width: 22px;
-    height: 22px;
-    object-fit: cover;
-    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    border-radius: 10%;
 }
 
 .grindx-ai-panel-header i {
