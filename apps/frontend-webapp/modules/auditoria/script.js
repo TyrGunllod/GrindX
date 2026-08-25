@@ -11,7 +11,7 @@ class AuditoriaController extends window.grindx.controllers.BaseController {
 
         this.logsTable = new window.grindx.components.DataTable('logsBody', [
             { dataLabel: 'Data', render: (l) => this.formatDate(l.criado_em) },
-            { className: 'hide-mobile', dataLabel: 'Usuário', render: (l) => (l.user_id ? (l.usuario_username || `#${l.user_id}`) : '—') },
+            { className: 'hide-mobile', dataLabel: 'Usuário', render: (l) => (l.user_id ? (l.usuario_nome_completo || l.usuario_username || `#${l.user_id}`) : '—') },
             { dataLabel: 'Entidade', render: (l) => this.formatEntidade(l) },
             {
                 dataLabel: 'Ação',
@@ -30,7 +30,7 @@ class AuditoriaController extends window.grindx.controllers.BaseController {
                     : '<span class="badge badge-success">Em uso</span>'),
             },
             { dataLabel: 'Duração', render: (s) => this.formatDuracao(s.duracao_segundos) },
-            { className: 'hide-mobile', dataLabel: 'Usuário', render: (s) => (s.usuario_username || `#${s.user_id}`) },
+            { className: 'hide-mobile', dataLabel: 'Usuário', render: (s) => (s.usuario_nome_completo || s.usuario_username || `#${s.user_id}`) },
             { className: 'hide-mobile', dataLabel: 'IP', render: (s) => s.ip || '—' },
             { dataLabel: 'Motivo', render: (s) => (s.logout_motivo ? this.motivoLabel(s.logout_motivo) : '—') },
         ]);

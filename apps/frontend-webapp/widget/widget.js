@@ -20,7 +20,7 @@
         const profile = (window.grindx && window.grindx.session && window.grindx.session.getUserProfile)
             ? window.grindx.session.getUserProfile()
             : {};
-        const full = profile.nome_completo || profile.name || profile.username || profile.email || '';
+        const full = profile.nome_completo || profile.name || profile.email || '';
         if (!full) return '';
         const parts = String(full).trim().split(/\s+/).filter(Boolean);
         if (parts.length <= 2) return full.trim();

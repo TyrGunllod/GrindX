@@ -30,11 +30,11 @@
             profile = getUserData();
         }
 
-        if (!profile || !profile.username) {
+        if (!profile || (!profile.username && !profile.nome_completo && !profile.id)) {
             profile = getUserData();
         }
 
-        if (!profile || !profile.username) {
+        if (!profile || (!profile.username && !profile.nome_completo && !profile.id)) {
             showToast('Erro ao carregar perfil.', 'error');
             return;
         }

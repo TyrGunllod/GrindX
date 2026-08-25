@@ -12,6 +12,7 @@ class AuditLogResponse(BaseModel):
     id: int
     user_id: Optional[int] = None
     usuario_username: Optional[str] = None
+    usuario_nome_completo: Optional[str] = None
     entidade: str
     entidade_id: Optional[int] = None
     acao: str
@@ -29,6 +30,7 @@ class SessaoResponse(BaseModel):
     id: int
     user_id: int
     usuario_username: Optional[str] = None
+    usuario_nome_completo: Optional[str] = None
     login_at: datetime | None = None
     logout_at: Optional[datetime] = None
     duracao_segundos: Optional[int] = None

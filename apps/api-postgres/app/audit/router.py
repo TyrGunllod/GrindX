@@ -31,7 +31,7 @@ def listar_logs(
     """Lista os logs de auditoria (mais recentes primeiro)."""
     total = db.query(AuditLog).count()
     rows = (
-        db.query(AuditLog, Usuario.username)
+        db.query(AuditLog, Usuario.username, Usuario.nome_completo)
         .outerjoin(Usuario, Usuario.id == AuditLog.user_id)
         .order_by(AuditLog.criado_em.desc(), AuditLog.id.desc())
         .offset((page - 1) * page_size)
@@ -39,9 +39,10 @@ def listar_logs(
         .all()
     )
     items = []
-    for log, username in rows:
+    for log, username, nome_completo in rows:
         item = AuditLogResponse.model_validate(log)
         item.usuario_username = username
+        item.usuario_nome_completo = nome_completo
         items.append(item)
     return PaginatedResponse(
         items=items,
@@ -67,7 +68,7 @@ def listar_sessoes(
     """Lista as sessões de uso (mais recentes primeiro)."""
     total = db.query(Sessao).count()
     rows = (
-        db.query(Sessao, Usuario.username)
+        db.query(Sessao, Usuario.username, Usuario.nome_completo)
         .outerjoin(Usuario, Usuario.id == Sessao.user_id)
         .order_by(Sessao.login_at.desc(), Sessao.id.desc())
         .offset((page - 1) * page_size)
@@ -75,9 +76,10 @@ def listar_sessoes(
         .all()
     )
     items = []
-    for sessao, username in rows:
+    for sessao, username, nome_completo in rows:
         item = SessaoResponse.model_validate(sessao)
         item.usuario_username = username
+        item.usuario_nome_completo = nome_completo
         items.append(item)
     return PaginatedResponse(
         items=items,

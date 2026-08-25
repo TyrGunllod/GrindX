@@ -618,7 +618,6 @@ class DashboardController extends window.grindx.controllers.BaseController {
     getUserDisplayName(user) {
         const full = user?.nome_completo
             || user.name
-            || user.username
             || user.email
             || (user.sub === '1' ? 'Administrador' : 'Usuário');
         const parts = String(full).trim().split(/\s+/).filter(Boolean);
