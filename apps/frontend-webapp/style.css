@@ -79,29 +79,12 @@ input:focus {
     }
 }
 
-/* Modal Styles */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: var(--space-4);
-}
-
-.modal-overlay.hidden {
-    display: none;
-}
-
+/* Modal — base .modal (overlay, header, close e bottom-sheet vêm do core.css) */
 .modal {
     background: var(--bg-card);
-    border-radius: 1.5rem;
     border: 1px solid var(--border-color);
     padding: var(--space-4);
     width: 100%;
-    max-width: 400px;
     box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
 }
 
@@ -109,7 +92,6 @@ input:focus {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--space-4);
 }
 
 .modal-header h2 {
@@ -129,6 +111,14 @@ input:focus {
 
 .modal-close:hover {
     color: var(--text-main);
+}
+
+/* Desktop: visual próprio do .modal (mobile é bottom-sheet full-width via core.css) */
+@media (min-width: 768px) {
+    .modal {
+        max-width: 400px;
+        border-radius: 1.5rem;
+    }
 }
 
 /* Animation */

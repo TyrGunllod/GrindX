@@ -111,12 +111,6 @@
     padding: var(--space-4);
 }
 
-.structure-modal {
-    max-height: 90vh;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
-}
-
 .url-input-row {
     display: flex;
     gap: 0.5rem;
@@ -152,10 +146,15 @@
     pointer-events: none;
 }
 
-.picker-modal {
-    max-height: 80vh;
+.structure-modal {
     display: flex;
     flex-direction: column;
+    max-height: 90vh;
+}
+
+.structure-modal .modal-header,
+.structure-modal .modal-footer {
+    flex-shrink: 0;
 }
 
 .picker-modal .modal-header {
@@ -166,13 +165,10 @@
 }
 
 .picker-list {
-    flex: 1;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 0.375rem;
     padding: 0.5rem 0;
-    max-height: 50vh;
 }
 
 .picker-item {

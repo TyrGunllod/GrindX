@@ -20,7 +20,11 @@
         const profile = (window.grindx && window.grindx.session && window.grindx.session.getUserProfile)
             ? window.grindx.session.getUserProfile()
             : {};
-        return profile.nome_completo || profile.name || profile.username || profile.email || '';
+        const full = profile.nome_completo || profile.name || profile.username || profile.email || '';
+        if (!full) return '';
+        const parts = String(full).trim().split(/\s+/).filter(Boolean);
+        if (parts.length <= 2) return full.trim();
+        return parts[0] + ' ' + parts[parts.length - 1];
     }
 
     function getGreeting() {
@@ -42,7 +46,7 @@
         panel.setAttribute('aria-hidden', 'true');
         panel.innerHTML =
             '<div class="grindx-ai-panel-header">' +
-                '<span><img src="widget/grindx_chibi.png" class="grindx-ai-header-img" alt="" /> Assistente GrindX</span>' +
+                '<span><img src="widget/grindx_chibi_head.png" class="grindx-ai-header-img" alt="" /> Assistente GrindX</span>' +
                 '<button type="button" class="grindx-ai-close" aria-label="Fechar">&times;</button>' +
             '</div>' +
             '<div class="grindx-ai-messages"></div>' +
@@ -58,10 +62,10 @@
         bubble.className = 'grindx-ai-bubble';
         bubble.setAttribute('aria-hidden', 'true');
         const userName = getUserName();
-        const helpText = ' Eu sou o GrindX, e estou aqui para te ajudar, qualquer dúvida me pergunte!';
+        const helpText = 'Eu sou o GrindX, e estou aqui para te ajudar, qualquer dúvida me pergunte!';
         bubble.textContent = userName
-            ? getGreeting() + ', ' + userName + '!' + helpText
-            : getGreeting() + '!' + helpText;
+            ? getGreeting() + ', ' + userName + '!\n' + helpText
+            : getGreeting() + '!\n\n' + helpText;
         document.body.appendChild(bubble);
 
         let bubbleTimer = null;

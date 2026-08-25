@@ -30,8 +30,8 @@ dev-backend:
 	@echo "API rodando em http://localhost:7000"
 
 dev-frontend:
-	@echo "Iniciando servidor frontend estatico..."
-	@cd frontend/{frontend_prefix}_* && python -m http.server 7080
+	@echo "Iniciando servidor frontend estatico (raiz do modulo)..."
+	@python -m http.server 7080
 	@echo "Frontend em http://localhost:7080"
 
 # ==========================================

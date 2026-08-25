@@ -72,11 +72,10 @@
 }
 
 /* Modal */
-.skin-modal {
-    max-width: min(490px, calc(100vw - var(--space-4)));
-    max-height: 90vh;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
+@media (min-width: 768px) {
+    .skin-modal {
+        max-width: min(490px, calc(100vw - var(--space-4)));
+    }
 }
 
 .modal-header {
@@ -393,8 +392,10 @@
 }
 
 /* Template Modal */
-.template-modal {
-    max-width: 600px;
+@media (min-width: 768px) {
+    .template-modal {
+        max-width: 600px;
+    }
 }
 
 .template-grid {

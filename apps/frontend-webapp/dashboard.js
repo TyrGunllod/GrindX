@@ -616,11 +616,14 @@ class DashboardController extends window.grindx.controllers.BaseController {
      }
 
     getUserDisplayName(user) {
-        return user?.nome_completo
+        const full = user?.nome_completo
             || user.name
             || user.username
             || user.email
             || (user.sub === '1' ? 'Administrador' : 'Usuário');
+        const parts = String(full).trim().split(/\s+/).filter(Boolean);
+        if (parts.length <= 2) return full;
+        return `${parts[0]} ${parts[parts.length - 1]}`;
     }
 
     getInitials(name) {

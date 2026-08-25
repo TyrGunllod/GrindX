@@ -198,7 +198,10 @@ def copy_frontend(import_dir: Path, module_name: str, force: bool) -> None:
 
     for item in src.iterdir():
         if item.name == "shared":
-            logger.info("Ignorando diretório shared/ — já existe no monorepo")
+            # Módulos antigos ainda podem trazer frontend/shared/ (fallback).
+            # Módulos novos movem o fallback para shared/ na raiz (excluído no zip
+            # pelo export.py), então este caso só ocorre por compatibilidade.
+            logger.info("Ignorando frontend/shared/ (compatibilidade) — já existe no monorepo")
             continue
         if item.is_dir():
             dest = dest_base / item.name

@@ -177,7 +177,7 @@ modulo-{nome}.zip
 **Diferenças importantes:**
 - **Sem `models/` e `base.py`** — consultas SQL raw via `text()` nas repositories
 - **Sem `migration/`** — sem schema para gerenciar (aponta para tabelas do Protheus)
-- **`frontend/shared/` é ignorado** pelo importador (já existe no monorepo)
+- **O fallback `shared/` (frontend + Python) vive na raiz do módulo standalone** e é ignorado pelo importador (o monorepo tem os `shared` padrão)
 - **Apenas GET** — os módulos sqlserver são read-only por definição
 
 **Importante:** `module.json` deve estar na raiz do zip, não dentro de um subdiretório.
