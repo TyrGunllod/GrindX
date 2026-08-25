@@ -8,7 +8,7 @@ version_variables = [
 branch = "main"
 changelog_file = "CHANGELOG.md"
 upload_to_vcs_release = true
-commit_parser = "angular"
+commit_parser = "conventional"
 major_on_zero = true
 
 [tool.semantic_release.commit_parser_options]
