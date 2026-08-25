@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.79.4 (2026-08-25)
+
+### Bug Fixes
+
+- **frontend**: Direct API calls, skip POST caching in SW, remove proxy loop
+  ([`98aecf0`](https://github.com/TyrGunllod/GrindX/commit/98aecf0d95e437c3ae557742d068a3b94d1b02ec))
+
+
 ## v1.79.3 (2026-08-24)
 
 ### Bug Fixes
