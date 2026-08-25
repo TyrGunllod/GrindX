@@ -121,7 +121,7 @@ O agente está implantado na nuvem e acessível publicamente.
 
 **Imagem/vídeo do agente em execução na nuvem:**
 
-![Agente de IA em execução na nuvem](docs/evidencia-agente.png)
+![Agente de IA em execução na nuvem](deploy.png)
 
 > Requisito do desafio: "Inserir no README uma imagem ou vídeo do agente executando em nuvem (OCI ou outro serviço online)".
 
