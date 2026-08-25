@@ -2,6 +2,28 @@
 
 <!-- version list -->
 
+## v1.79.7 (2026-08-25)
+
+### Bug Fixes
+
+- Modais com header/footer fixos, headers sticky e mascote (#5)
+  ([#5](https://github.com/TyrGunllod/GrindX/pull/5),
+  [`e089504`](https://github.com/TyrGunllod/GrindX/commit/e08950430954e3f7e4e0a8e6b4e64b775279ab6d))
+
+### Code Style
+
+- Format import_module.py
+  ([`7bdafe5`](https://github.com/TyrGunllod/GrindX/commit/7bdafe56c20424e06ea2f2ac55d239479a5db7de))
+
+### Documentation
+
+- Add deploy evidence screenshot
+  ([`ebc5abc`](https://github.com/TyrGunllod/GrindX/commit/ebc5abcf11560cfe7fb4bfb49de60282bcd7ab68))
+
+- Update deploy evidence with final URLs and image placeholder
+  ([`9783aab`](https://github.com/TyrGunllod/GrindX/commit/9783aabbbac0b330e71dde0e1b97485b39bc4032))
+
+
 ## v1.79.6 (2026-08-25)
 
 ### Bug Fixes
