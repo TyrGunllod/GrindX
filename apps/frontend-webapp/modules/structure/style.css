@@ -146,6 +146,17 @@
     pointer-events: none;
 }
 
+.structure-modal {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.structure-modal .modal-header,
+.structure-modal .modal-footer {
+    flex-shrink: 0;
+}
+
 .picker-modal .modal-header {
     display: flex;
     align-items: center;
