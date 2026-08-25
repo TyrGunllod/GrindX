@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.79.6 (2026-08-25)
+
+### Bug Fixes
+
+- **frontend**: Detect production API/agent URL in modules and widget
+  ([`213d2ff`](https://github.com/TyrGunllod/GrindX/commit/213d2ff696e35fc0efc0b27ea0bbdae3f65f48f7))
+
+
 ## v1.79.5 (2026-08-25)
 
 ### Bug Fixes
