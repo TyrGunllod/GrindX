@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v1.80.0 (2026-08-25)
+
+### Bug Fixes
+
+- **ci**: Pin GitPython for semantic-release compatibility
+  ([`96b53e7`](https://github.com/TyrGunllod/GrindX/commit/96b53e7edf8d25dc63ac16ecc8c4d2dbbe064212))
+
+### Documentation
+
+- Add Linux native install guide for api-sqlserver
+  ([`5485cc6`](https://github.com/TyrGunllod/GrindX/commit/5485cc658ed3a03bf66e7d9e6441b3ab61ddc323))
+
+### Features
+
+- **frontend**: Add presence confirmation modal for inactivity timeout
+  ([`6b2b411`](https://github.com/TyrGunllod/GrindX/commit/6b2b4115030e74e71bf1252ab692842a939634d4))
+
+
 ## v1.79.7 (2026-08-25)
 
 ### Bug Fixes
