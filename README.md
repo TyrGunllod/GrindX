@@ -112,16 +112,16 @@ Mais exemplos de perguntas e respostas, arquitetura e instruções em [`apps/age
 
 O agente está implantado na nuvem e acessível publicamente.
 
-- **Agente de IA:** https://agente-ia-b4g2.onrender.com
-- **Swagger do agente:** https://agente-ia-b4g2.onrender.com/v1/docs
-- **API Postgres (ERP):** https://api-postgres-l3dy.onrender.com
+- **Agente de IA:** https://agente-ia-gexd.onrender.com
+- **Swagger do agente:** https://agente-ia-gexd.onrender.com/v1/docs
+- **API Postgres (ERP):** https://api-postgres-jc35.onrender.com
 - **Frontend (GrindX):** https://grindx-frontend.onrender.com
 - **Banco:** Supabase (PostgreSQL + pgvector)
 - **Serviço OCI:** OCI Object Storage (bucket com os manuais de origem)
 
 **Imagem/vídeo do agente em execução na nuvem:**
 
-![Agente de IA em execução na nuvem](URL_DA_IMAGEM_OU_VIDEO)
+![Agente de IA em execução na nuvem](docs/evidencia-agente.png)
 
 > Requisito do desafio: "Inserir no README uma imagem ou vídeo do agente executando em nuvem (OCI ou outro serviço online)".
 
