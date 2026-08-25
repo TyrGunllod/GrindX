@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.81.0 (2026-08-25)
+
+### Features
+
+- Display user full name instead of username
+  ([`58e322a`](https://github.com/TyrGunllod/GrindX/commit/58e322ac7ce048c2b16929fa05d6f777e22e7403))
+
+
 ## v1.80.0 (2026-08-25)
 
 ### Bug Fixes
