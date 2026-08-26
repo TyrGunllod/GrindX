@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrindX — Mensagens</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../shared/core.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="module-page">
+    <div class="container animate-in">
+        <header class="page-header mb-8">
+            <div>
+                <div class="page-header-container">
+                    <h1>Mensagens</h1>
+                    <span class="viz-version" id="viz-version" aria-label="Versão do sistema"></span>
+                </div>
+                <p class="text-muted">Recados internos, avisos e notificações do sistema.</p>
+            </div>
+        </header>
+
+        <section class="msg-toolbar" aria-label="Filtros e ações">
+            <div class="msg-toolbar-filters">
+                <label class="msg-select-label">
+                    <span>Status</span>
+                    <select id="statusFilter" class="form-control">
+                        <option value="todas">Todas</option>
+                        <option value="nao_lidas">Não lidas</option>
+                        <option value="lidas">Lidas</option>
+                        <option value="arquivadas">Arquivadas</option>
+                    </select>
+                </label>
+                <label class="msg-select-label">
+                    <span>Ordenar por data</span>
+                    <select id="ordemFilter" class="form-control">
+                        <option value="decrescente">Mais recentes primeiro</option>
+                        <option value="crescente">Mais antigas primeiro</option>
+                    </select>
+                </label>
+            </div>
+            <button class="btn btn-primary" id="novaMensagemBtn" type="button">
+                <i class="fas fa-paper-plane"></i> Nova Mensagem
+            </button>
+        </section>
+
+        <section id="listaView" aria-label="Lista de mensagens">
+            <div id="listaMensagens" class="msg-list"></div>
+            <footer class="msg-pagination">
+                <button class="btn btn-outline" id="listaPrev" aria-label="Página anterior">
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span class="msg-page-info" id="listaPageInfo"></span>
+                <button class="btn btn-outline" id="listaNext" aria-label="Próxima página">
+                    Próxima <i class="fas fa-chevron-right"></i>
+                </button>
+            </footer>
+        </section>
+
+        <section id="threadView" class="msg-thread" style="display: none;" aria-label="Conversa">
+            <div class="msg-thread-header">
+                <button class="btn btn-outline" id="voltarBtn" type="button">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+                <h2 id="threadTitulo"></h2>
+            </div>
+            <div id="threadMensagens" class="msg-thread-mensagens"></div>
+            <div class="msg-thread-reply">
+                <textarea id="respostaTexto" class="form-control" rows="3"
+                          placeholder="Escreva sua resposta..." aria-label="Resposta"></textarea>
+                <div class="msg-thread-reply-actions">
+                    <label class="btn btn-outline msg-file-btn">
+                        <i class="fas fa-paperclip"></i> Anexar
+                        <input type="file" id="respostaAnexos" multiple style="display:none;">
+                    </label>
+                    <button class="btn btn-primary" id="enviarRespostaBtn" type="button">
+                        <i class="fas fa-paper-plane"></i> Responder
+                    </button>
+                </div>
+                <div id="respostaArquivos" class="msg-anexos-pendentes"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal Nova Mensagem -->
+    <div class="msg-modal-overlay" id="composeModal" style="display:none;" role="dialog" aria-modal="true" aria-label="Nova mensagem">
+        <div class="msg-modal">
+            <header class="msg-modal-header">
+                <h3>Nova Mensagem</h3>
+                <button class="btn-icon" id="fecharModalBtn" aria-label="Fechar">&times;</button>
+            </header>
+            <form id="composeForm" class="msg-modal-body">
+                <div class="form-group">
+                    <label for="destinatarioSelect">Destinatário</label>
+                    <select id="destinatarioSelect" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="categoriaSelect">Categoria</label>
+                    <select id="categoriaSelect" class="form-control">
+                        <option value="DIRETA">Direta</option>
+                        <option value="AVISO">Aviso</option>
+                        <option value="SISTEMA">Sistema</option>
+                    </select>
+                    <p class="text-muted msg-hint" id="categoriaHint">Apenas administradores podem enviar Avisos ou mensagens do Sistema.</p>
+                </div>
+                <div class="form-group">
+                    <label for="tituloInput">Título</label>
+                    <input type="text" id="tituloInput" class="form-control" maxlength="150" required>
+                </div>
+                <div class="form-group">
+                    <label for="textoInput">Texto</label>
+                    <textarea id="textoInput" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="urlAcaoInput">URL de ação (opcional)</label>
+                    <input type="text" id="urlAcaoInput" class="form-control" maxlength="255"
+                           placeholder="modules/estoque/index.html">
+                    <p class="text-muted msg-hint">Caminho interno aberto ao clicar na mensagem.</p>
+                </div>
+                <div class="form-group">
+                    <label>Anexos (opcional)</label>
+                    <label class="btn btn-outline msg-file-btn">
+                        <i class="fas fa-paperclip"></i> Escolher arquivos
+                        <input type="file" id="composeAnexos" multiple style="display:none;">
+                    </label>
+                    <div id="composeArquivos" class="msg-anexos-pendentes"></div>
+                </div>
+            </form>
+            <footer class="msg-modal-footer">
+                <button class="btn btn-secondary" id="cancelarModalBtn" type="button">Cancelar</button>
+                <button class="btn btn-primary" id="enviarMensagemBtn" type="button">
+                    <i class="fas fa-paper-plane"></i> Enviar
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../../shared/config.js"></script>
+    <script src="../../shared/app.js"></script>
+    <script src="../../shared/apiService.js"></script>
+    <script src="../../shared/baseController.js"></script>
+    <script src="../../shared/notificationBridge.js"></script>
+    <script src="../../shared/components/LoadingSpinner.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
