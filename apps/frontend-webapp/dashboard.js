@@ -49,6 +49,9 @@ class DashboardController extends window.grindx.controllers.BaseController {
         this.setupEvents();
         await this.loadCurrentUserProfile();
         await this.loadDynamicMenu();
+        if (window.grindx.mensagens && typeof window.grindx.mensagens.refresh === 'function') {
+            window.grindx.mensagens.refresh();
+        }
         this.loadInitialView();
         this.loadCompanySkin();
     }
@@ -122,6 +125,16 @@ class DashboardController extends window.grindx.controllers.BaseController {
                 if (e.data === 'profile-saved') this.loadCurrentUserProfile();
                 if (e.data === 'layout-changed') this._applyLayoutForDevice();
                 if (e.data === 'layout-mobile-changed') this._applyLayoutForDevice();
+                if (e.data && e.data.type === 'grindx:mensagens-atualizar') {
+                    if (window.grindx.mensagens && typeof window.grindx.mensagens.refresh === 'function') {
+                        window.grindx.mensagens.refresh();
+                    }
+                }
+                if (e.data && e.data.type === 'grindx:navegar' && typeof e.data.url === 'string') {
+                    if (this.isInternalPath(e.data.url)) {
+                        this.navigateToModule(e.data.url);
+                    }
+                }
             });
 
             // Logo click handlers using event delegation
@@ -148,6 +161,16 @@ class DashboardController extends window.grindx.controllers.BaseController {
                     e.stopPropagation();
                     this.loadProfileModule();
                     document.querySelectorAll('.logo-clickable.open').forEach(el => {
+                        el.classList.remove('open');
+                    });
+                });
+            });
+
+            document.querySelectorAll('[data-mensagens="true"]').forEach((btn) => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.navigateToModule('modules/mensagens/index.html');
+                    document.querySelectorAll('.logo-clickable.open').forEach((el) => {
                         el.classList.remove('open');
                     });
                 });
@@ -433,57 +456,66 @@ class DashboardController extends window.grindx.controllers.BaseController {
         if (window.innerWidth < 1024) this.toggleSidebar(false);
     }
 
-     navigateToModule(url) {
-         if (!url) return;
-         this.showLoader(true);
-         this.zoomLevel = 1;
+    isInternalPath(url) {
+        return !!url
+            && url.indexOf('://') === -1
+            && url.indexOf('javascript:') === -1
+            && url.indexOf('data:') === -1
+            && url.indexOf('vbscript:') === -1
+            && url.startsWith('modules/');
+    }
 
-         const wrapper = document.createElement('div');
-         wrapper.className = 'iframe-zoom-wrapper';
+    navigateToModule(url) {
+        if (!url) return;
+        this.showLoader(true);
+        this.zoomLevel = 1;
 
-         const iframe = document.createElement('iframe');
-         iframe.className = 'module-iframe';
-         iframe.src = url;
-         iframe.onload = () => {
-             this.showLoader(false);
-             this.applySkinToIframe(iframe);
-             this.applyZoom();
-         };
+        const wrapper = document.createElement('div');
+        wrapper.className = 'iframe-zoom-wrapper';
 
-         wrapper.appendChild(iframe);
-         this.viewport.innerHTML = '';
-         this.viewport.appendChild(wrapper);
-     }
+        const iframe = document.createElement('iframe');
+        iframe.className = 'module-iframe';
+        iframe.src = url;
+        iframe.onload = () => {
+            this.showLoader(false);
+            this.applySkinToIframe(iframe);
+            this.applyZoom();
+        };
 
-     zoomIn() {
-         this.zoomLevel = Math.min(2, +(this.zoomLevel + 0.1).toFixed(1));
-         this.applyZoom();
-     }
+        wrapper.appendChild(iframe);
+        this.viewport.innerHTML = '';
+        this.viewport.appendChild(wrapper);
+    }
 
-     zoomOut() {
-         this.zoomLevel = Math.max(0.3, +(this.zoomLevel - 0.1).toFixed(1));
-         this.applyZoom();
-     }
+    zoomIn() {
+        this.zoomLevel = Math.min(2, +(this.zoomLevel + 0.1).toFixed(1));
+        this.applyZoom();
+    }
 
-     zoomReset() {
-         this.zoomLevel = 1;
-         this.applyZoom();
-     }
+    zoomOut() {
+        this.zoomLevel = Math.max(0.3, +(this.zoomLevel - 0.1).toFixed(1));
+        this.applyZoom();
+    }
 
-     applyZoom() {
-         const wrapper = this.viewport.querySelector('.iframe-zoom-wrapper');
-         if (!wrapper) return;
-         const iframe = wrapper.querySelector('iframe');
-         if (!iframe) return;
-         const w = 100 / this.zoomLevel;
-         const h = 100 / this.zoomLevel;
-         wrapper.style.width = w + '%';
-         wrapper.style.height = h + '%';
-         iframe.style.transform = 'scale(' + this.zoomLevel + ')';
-         iframe.style.width = (100 / this.zoomLevel) + '%';
-         iframe.style.height = (100 / this.zoomLevel) + '%';
-         iframe.style.transformOrigin = '0 0';
-     }
+    zoomReset() {
+        this.zoomLevel = 1;
+        this.applyZoom();
+    }
+
+    applyZoom() {
+        const wrapper = this.viewport.querySelector('.iframe-zoom-wrapper');
+        if (!wrapper) return;
+        const iframe = wrapper.querySelector('iframe');
+        if (!iframe) return;
+        const w = 100 / this.zoomLevel;
+        const h = 100 / this.zoomLevel;
+        wrapper.style.width = w + '%';
+        wrapper.style.height = h + '%';
+        iframe.style.transform = 'scale(' + this.zoomLevel + ')';
+        iframe.style.width = (100 / this.zoomLevel) + '%';
+        iframe.style.height = (100 / this.zoomLevel) + '%';
+        iframe.style.transformOrigin = '0 0';
+    }
 
     applySkinToIframe(iframe) {
         if (!iframe) return;
