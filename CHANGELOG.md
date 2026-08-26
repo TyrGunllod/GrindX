@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.81.2 (2026-08-26)
+
+### Bug Fixes
+
+- **widget**: Adjust AI panel position to avoid overlap
+  ([`0acc647`](https://github.com/TyrGunllod/GrindX/commit/0acc647beb879e3c5b4a5456bb09aa4d77f880e9))
+
+
 ## v1.81.1 (2026-08-26)
 
 ### Bug Fixes
