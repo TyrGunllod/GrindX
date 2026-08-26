@@ -70,7 +70,7 @@
 
 .grindx-ai-panel {
     position: fixed;
-    bottom: 96px;
+    bottom: 130px;
     right: 24px;
     width: 380px;
     max-width: calc(100vw - 32px);
