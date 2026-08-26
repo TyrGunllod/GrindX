@@ -539,6 +539,24 @@ Lista os logins/logouts dos usuários (tempo de uso), mais recentes primeiro. Re
 
 ---
 
+## Mensagens Internas (`/v1/mensagens`)
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/v1/mensagens` | Lista mensagens raiz do destinatário (`status`, `ordem`, paginação) |
+| GET | `/v1/mensagens/nao-lidas/count` | Contador de não lidas do usuário |
+| POST | `/v1/mensagens` | Cria mensagem raiz (`SISTEMA`/`AVISO` exigem admin) |
+| GET | `/v1/mensagens/{id}/thread` | Raiz + respostas da thread |
+| POST | `/v1/mensagens/{id}/respostas` | Responde à thread (participantes) |
+| PATCH | `/v1/mensagens/{id}/lida` | Marca mensagem como lida (destinatário) |
+| PATCH | `/v1/mensagens/{id}/thread/lida` | Marca thread como lida (participantes) |
+| PATCH | `/v1/mensagens/{id}/arquivar` | Arquiva/restaura thread (destinatário da raiz) |
+| POST | `/v1/mensagens/{id}/anexos` | Anexa arquivo (remetente; max 10MB; allowlist) |
+| GET | `/v1/mensagens/{id}/anexos` | Lista anexos (participantes) |
+| GET | `/v1/mensagens/{id}/anexos/{anexo_id}/download` | Baixa anexo autenticado (participantes) |
+
+---
+
 ## Produtos Protheus (api-sqlserver)
 
 Endpoints read-only da `api-sqlserver` para consulta de produtos na tabela `SB1010` do Protheus. **Não validam token JWT** — a `api-sqlserver` não implementa autenticação, portanto são públicos.

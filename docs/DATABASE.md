@@ -230,6 +230,40 @@ Rastreamento de tempo de uso (login/logout por usuário). Uma linha é criada a 
 
 Índices: `ix_sessoes_user_id`, `ix_sessoes_login_at`.
 
+### Schema `org` — Mensagens (`org.mensagens`)
+
+Mensagens internas com threads, anexos e badge de não lidas. Criada pela migration `023_add_mensagens`.
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | BigInteger PK | Identificador |
+| `resposta_a_id` | BigInteger FK → `org.mensagens.id` (ondelete CASCADE, nullable) | Mensagem raiz da thread (NULL para raízes) |
+| `remetente_id` | BigInteger FK → `iam.usuarios.id` (ondelete SET NULL, nullable) | Remetente (NULL = sistema) |
+| `destinatario_id` | BigInteger FK → `iam.usuarios.id` (ondelete CASCADE) | Destinatário |
+| `titulo` | String(150) | Título |
+| `texto` | Text | Corpo |
+| `categoria` | String(20) CHECK | `SISTEMA`, `DIRETA` ou `AVISO` (default `DIRETA`) |
+| `url_acao` | String(255) (nullable) | Caminho interno para ação |
+| `lida_em` | DateTime(tz) (nullable) | Leitura |
+| `arquivada_em` | DateTime(tz) (nullable) | Arquivamento |
+| `criado_em` | DateTime(tz) | Criação |
+
+Índices: `ix_mensagens_destinatario_id (destinatario_id, criado_em)`; parcial `ix_mensagens_nao_lidas WHERE lida_em IS NULL` (só na migration, não no model para compatibilidade com SQLite nos testes); `ix_mensagens_resposta_a (resposta_a_id)`.
+
+### Schema `org` — Anexos de Mensagem (`org.anexos_mensagem`)
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | BigInteger PK | Identificador |
+| `mensagem_id` | BigInteger FK → `org.mensagens.id` (ondelete CASCADE) | Mensagem dona |
+| `nome_arquivo_original` | String(255) | Nome original |
+| `caminho` | String(255) | Relativo a `uploads/` (ex.: `mensagens/<uuid>.pdf`) |
+| `content_type` | String(100) | MIME type |
+| `tamanho_bytes` | Integer | Tamanho em bytes |
+| `criado_em` | DateTime(tz) | Criação |
+
+Índice: `ix_anexos_mensagem_mensagem_id (mensagem_id)`.
+
 ### Schema `org` — Projeto, Recurso, Tarefa, RegistroTarefa
 
 Tabelas criadas pela migration `007_add_org_schema_tables` para gestão de projetos. **Não possuem model class** — existem apenas no banco via SQL puro na migração.
@@ -304,6 +338,7 @@ As migrações ficam em `apps/api-postgres/alembic/versions/`.
 | `020_encrypt_sensitive_user_fields` | Criptografa `cpf`, `rg`, `salario`, `endereco`, `telefone`, `celular` e altera para `String(255)` |
 | `021_add_aprovador_to_usuarios` | Adiciona `aprovador` em `usuarios` |
 | `022_add_audit_tables` | Cria `org.audit_logs` e `org.sessoes` para auditoria de alterações e tempo de uso |
+| `023_add_mensagens` | Cria `org.mensagens` e `org.anexos_mensagem` (threads, categorias, anexos) + índices `ix_mensagens_*` e `ix_anexos_mensagem_mensagem_id` |
 
 ---
 
@@ -320,7 +355,7 @@ Cria (idempotente):
 - Usuário `admin` / `admin123` (e-mail `admin@erp.com.br`) com role `admin` — vinculado à GrindX
 - Skin "Padrão GrindX" com `layout_mode` `topbar`
 - Abas: `Principal` (ordem 0), `R. HUMANOS` (ordem 50) e `Gestão` (ordem 100)
-- Módulos: `Dashboard` (home), `Usuários` (users), `Administradores` (admins, role admin), `Módulos & Abas` (structure), `Skins` (admin-skins), `Importar Módulos` (importer), `Auditoria` (auditoria, role admin), `Configurar Agente` (configurar-agente, role admin)
+- Módulos: `Dashboard` (home), `Mensagens` (mensagens), `Usuários` (users), `Administradores` (admins, role admin), `Módulos & Abas` (structure), `Skins` (admin-skins), `Importar Módulos` (importer), `Auditoria` (auditoria, role admin), `Configurar Agente` (configurar-agente, role admin)
 
 ---
 
