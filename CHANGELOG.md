@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.82.1 (2026-08-26)
+
+### Bug Fixes
+
+- **widget**: Restore mascot greeting with full name
+  ([`9491946`](https://github.com/TyrGunllod/GrindX/commit/949194672b453d31cc6582c71516ceec9834f774))
+
+
 ## v1.82.0 (2026-08-26)
 
 ### Features
