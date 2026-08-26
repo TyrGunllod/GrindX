@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.82.0 (2026-08-26)
+
+### Features
+
+- **importer**: Move available modules table into header below update button
+  ([`1a71028`](https://github.com/TyrGunllod/GrindX/commit/1a71028acce2ad41ef71e1e238856667c7c23c29))
+
+
 ## v1.81.2 (2026-08-26)
 
 ### Bug Fixes
