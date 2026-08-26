@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.81.1 (2026-08-26)
+
+### Bug Fixes
+
+- **db**: Sanitize pop_docs tipos before CHECK constraint
+  ([`bd31159`](https://github.com/TyrGunllod/GrindX/commit/bd31159f50b7c76eee6ed19088e8601db117af9e))
+
+
 ## v1.81.0 (2026-08-25)
 
 ### Features
