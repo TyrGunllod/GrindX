@@ -224,3 +224,53 @@
         height: calc(100vh - 160px);
     }
 }
+
+/* ---- Contador de não lidas no mascote (Mensageiro) ---- */
+.grindx-ai-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 10px;
+    background: var(--skin-danger, #dc2626);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+    display: none;
+}
+.grindx-ai-badge.visible {
+    display: inline-block;
+}
+
+.grindx-ai-msg-bubble {
+    position: fixed;
+    right: 84px;
+    bottom: 24px;
+    max-width: 300px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--skin-surface, #ffffff);
+    color: var(--skin-text, #1f2937);
+    border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.18));
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    display: none;
+    cursor: pointer;
+    align-items: center;
+    gap: 10px;
+    z-index: 10000;
+}
+.grindx-ai-msg-bubble.visible {
+    display: flex;
+}
+.grindx-ai-msg-bubble-icon {
+    color: var(--skin-primary, #00c2e0);
+    font-size: 1.1rem;
+}
+.grindx-ai-msg-bubble-text {
+    font-size: 0.85rem;
+    line-height: 1.35;
+}

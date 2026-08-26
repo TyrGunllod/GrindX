@@ -34,6 +34,15 @@
         return 'Boa noite';
     }
 
+    function renderMensagensCount(count) {
+        const strong = document.querySelector('.grindx-ai-msg-bubble-text strong');
+        if (strong) strong.textContent = count;
+        document.querySelectorAll('[data-mensagens-badge]').forEach((el) => {
+            el.textContent = count > 0 ? String(count) : '';
+            el.classList.toggle('visible', count > 0);
+        });
+    }
+
     function createWidget() {
         const fab = document.createElement('button');
         fab.className = 'grindx-ai-fab';
@@ -67,6 +76,48 @@
             ? getGreeting() + ', ' + userName + '!\n' + helpText
             : getGreeting() + '!\n\n' + helpText;
         document.body.appendChild(bubble);
+
+        // ---- Contador de mensagens não lidas (Mensageiro) ----
+        const unreadBadge = document.createElement('span');
+        unreadBadge.className = 'grindx-ai-badge';
+        unreadBadge.setAttribute('aria-hidden', 'true');
+        fab.appendChild(unreadBadge);
+
+        const msgBubble = document.createElement('div');
+        msgBubble.className = 'grindx-ai-msg-bubble';
+        msgBubble.setAttribute('role', 'button');
+        msgBubble.setAttribute('tabindex', '0');
+        msgBubble.setAttribute('aria-hidden', 'true');
+        msgBubble.setAttribute('aria-label', 'Abrir recados');
+        msgBubble.innerHTML =
+            '<span class="grindx-ai-msg-bubble-icon"><i class="fas fa-envelope" aria-hidden="true"></i></span>' +
+            '<span class="grindx-ai-msg-bubble-text">Você tem <strong>0</strong> novos recados!</span>';
+        document.body.appendChild(msgBubble);
+
+        const mensagens = window.grindx.MensagensWidget
+            ? new window.grindx.MensagensWidget({
+                badge: unreadBadge,
+                balloon: msgBubble,
+                api: window.grindx.api,
+                onCountChange: renderMensagensCount,
+                onOpenRecados: () => {
+                    if (window.dashboard && typeof window.dashboard.navigateToModule === 'function') {
+                        window.dashboard.navigateToModule('modules/mensagens/index.html');
+                    }
+                }
+            })
+            : null;
+        window.grindx.mensagens = mensagens;
+
+        msgBubble.addEventListener('click', () => {
+            if (mensagens) mensagens.openRecados();
+        });
+        msgBubble.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (mensagens) mensagens.openRecados();
+            }
+        });
 
         let bubbleTimer = null;
 
