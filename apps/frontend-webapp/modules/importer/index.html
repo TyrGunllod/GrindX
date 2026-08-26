@@ -24,30 +24,31 @@
                     <i class="fas fa-sync"></i> <span class="hide-mobile">Atualizar</span>
                 </button>
             </div>
-				
-        </header>
 
-        <div class="table-responsive" style="margin-top: 1.5rem;">
-            <h2 style="margin-bottom:var(--space-3);padding: 5pt 0pt 0pt 10pt;">Disponíveis para Importar</h2>
-            <table class="w-full">
-                <thead>
-                    <tr>
-                        <th scope="col">Módulo</th>
-                        <th scope="col">Versão</th>
-                        <th scope="col">Schema</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="dataTableContainer">
-                    <tr>
-                        <td colspan="5" class="text-center text-muted" style="padding: 2rem;">
-                            Clique em "Atualizar" para escanear a pasta de importação.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <div class="importer-header-disponiveis">
+                <h2 class="importer-header-title">Disponíveis para Importar</h2>
+                <div class="table-responsive table-responsive--header">
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th scope="col">Módulo</th>
+                                <th scope="col">Versão</th>
+                                <th scope="col">Schema</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableContainer">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted" style="padding: 2rem;">
+                                    Clique em "Atualizar" para escanear a pasta de importação.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </header>
 
         <div class="table-responsive" style="margin-top: 2rem;">
             <h2 style="margin-bottom:var(--space-3); padding: 5pt 0pt 0pt 10pt;">Módulos Instalados</h2>
