@@ -252,6 +252,13 @@ def seed_database():
                 "icone": "fas fa-home",
             },
             {
+                "aba": "Principal",
+                "nome": "Mensagens",
+                "slug": "mensagens",
+                "url": "modules/mensagens/index.html",
+                "icone": "fas fa-envelope",
+            },
+            {
                 "aba": "R. HUMANOS",
                 "nome": "Usuários",
                 "slug": "users",
