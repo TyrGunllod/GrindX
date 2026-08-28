@@ -21,18 +21,14 @@ test-integration:
 	@python -m pytest app/modules/$(MODULE)/tests/ -v --tb=short -k "integration"
 
 # ==========================================
-# Desenvolvimento
+# Desenvolvimento — padrão pop-docs
 # ==========================================
 
 dev-backend:
-	@echo "Iniciando API FastAPI (uvicorn)..."
-	@cd app/modules/$(MODULE) && cmd /c "set PYTHONPATH=../../..&& uvicorn app.main:app --reload --port 7000"
-	@echo "API rodando em http://localhost:7000"
+	uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload
 
 dev-frontend:
-	@echo "Iniciando servidor frontend estatico (raiz do modulo)..."
-	@python -m http.server 7080
-	@echo "Frontend em http://localhost:7080"
+	cd frontend/{frontend_prefix}_{tab} && python -m http.server 7080
 
 # ==========================================
 # Empacotamento & Exportação

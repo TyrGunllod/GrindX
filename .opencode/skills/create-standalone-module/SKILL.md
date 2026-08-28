@@ -401,6 +401,10 @@ Use templates em `templates/shared/support/`:
 - **`pytest.ini`** → `templates/shared/support/pytest.ini` — config testpaths
 - **`Makefile`** → `templates/shared/support/Makefile` — targets: test, test-unit, test-integration, dev-backend, dev-frontend, package, export, dry-run, import, clean, version, version-dry-run, help
 
+> **Regras dev — padrão pop-docs (obrigatórias):**
+> - `dev-backend` deve ser exatamente `uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload` (sem `python -m`, sem `cd app/...`, com `--host 0.0.0.0`)
+> - `dev-frontend` deve ser `cd frontend/{frontend_prefix}_{primeira_aba} && python -m http.server 7080` (ex: `cd frontend/custo_produtos && python -m http.server 7080`) — abre `http://localhost:7080/` direto no `index.html` sem listar pastas; exige `shared/` fallback dentro de cada `frontend/*/` (ex: `frontend/custo_produtos/shared/core.css` como em `pop-docs` `frontend/pop-docs/shared/`). Não usar `python -m http.server 7080` na raiz.
+
 ## 5.5 Versionamento (obrigatório)
 
 > Gerado por `templates/shared/scripts/version.py` — mesmo padrão do `pop_viz`.
@@ -474,9 +478,9 @@ $env:GRINDX_PACKAGES = "D:\\_Projetos\\GrindX\\packages"
 python -m pytest app/modules/{module_name}/tests/ -v
 # Esperado: 10+ testes PASS
 
-# 3. Rodar standalone (sem GrindX)
-make dev-backend      # FastAPI em http://localhost:7000
-make dev-frontend     # Frontend estatico em http://localhost:7080
+# 3. Rodar standalone (sem GrindX) — padrão pop-docs
+make dev-backend      # FastAPI: uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload → http://localhost:7000
+make dev-frontend     # Frontend: cd frontend/{prefix}_{tab} && python -m http.server 7080 → http://localhost:7080/ (index.html direto, não lista pastas)
 
 # 4. Gerar pacote .zip
 make package
@@ -513,7 +517,7 @@ pytest tests/ -k {module_name} -v
 - [ ] **PDF opcional**: se módulo gera PDF, instalar `xhtml2pdf` no venv do GrindX
 - [ ] Tests: conftest.py, unit tests (mocked repo), integration tests (SQLite)
 - [ ] Migration: Alembic migration file (PostgreSQL)
-- [ ] Support: requirements.txt (com python-dotenv), pytest.ini, run_tests.ps1, Makefile (com dev-backend/dev-frontend)
+- [ ] Support: requirements.txt (com python-dotenv), pytest.ini, run_tests.ps1, Makefile (com dev-backend `uvicorn --host 0.0.0.0 --port 7000 --reload` / dev-frontend `cd frontend/{tab} && http.server 7080` direto no index)
 - [ ] Versionamento: `scripts/version.py` + targets `version`/`version-dry-run` no Makefile
 - [ ] Badge de versão: `version.js` na raiz de cada aba frontend, `<span id="viz-version">` no header, `setBadgeVersao()` em `script.js` (`.viz-version` e `.page-header-container` vêm do `core.css` — não duplicar no `style.css`)
 - [ ] `AGENTS.md` criado na raiz do modulo com regras para agentes de IA

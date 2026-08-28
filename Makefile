@@ -41,7 +41,7 @@ ifeq ($(OS),Windows_NT)
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev-postgres.ps1
 else
 	@echo "Iniciando API Postgres na porta 8002..."
-	cd apps/api-postgres && $(PP_APP) $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002
+	@nohup bash -c "cd apps/api-postgres && $(PP_APP) $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002" > api-postgres.log 2>&1 < /dev/null &
 endif
 
 dev-sqlserver:
@@ -50,7 +50,7 @@ ifeq ($(OS),Windows_NT)
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev-sqlserver.ps1
 else
 	@echo "Iniciando API SQL Server na porta 8001..."
-	cd apps/api-sqlserver && $(PP_APP) $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
+	@nohup bash -c "cd apps/api-sqlserver && $(PP_APP) $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001" > api-sqlserver.log 2>&1 < /dev/null &
 endif
 
 dev-frontend:
@@ -59,12 +59,17 @@ ifeq ($(OS),Windows_NT)
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev-frontend.ps1
 else
 	@echo "Iniciando Frontend na porta 8101..."
-	$(PY) -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0
+	@nohup $(PY) -m http.server 8101 --directory apps/frontend-webapp --bind 0.0.0.0 > frontend.log 2>&1 < /dev/null &
 endif
 
 dev-agente:
+ifeq ($(OS),Windows_NT)
 	@echo "Iniciando Agente IA na porta 8003..."
 	cd apps/agente-ia && $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8003
+else
+	@echo "Iniciando Agente IA na porta 8003..."
+	@nohup bash -c "cd apps/agente-ia && $(VENV_PY) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8003" > agente-ia.log 2>&1 < /dev/null &
+endif
 
 dev-https:
 ifeq ($(OS),Windows_NT)
@@ -84,21 +89,27 @@ ifeq ($(OS),Windows_NT)
 	pwsh -Command "Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'cd apps/agente-ia; .\\.venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8003'"
 	@echo "Acesse: http://localhost:8101"
 else
-	@echo "Subindo todos os servicos GrindX..."
-	@echo "Abra terminais separados para cada servico:"
-	@echo "  make dev-postgres"
-	@echo "  make dev-sqlserver"
-	@echo "  make dev-frontend"
-	@echo "  make dev-agente"
-	@echo "Acesse: http://localhost:8101"
+	@echo "Subindo todos os servicos GrindX em background..."
+	@make dev-postgres
+	@make dev-sqlserver
+	@make dev-frontend
+	@make dev-agente
+	@echo "----------------------------------------------------"
+	@echo "Todos os servicos foram iniciados em background!"
+	@echo "Frontend: http://localhost:8101"
+	@echo "Logs gerados em: api-postgres.log, api-sqlserver.log, frontend.log, agente-ia.log"
+	@echo "Para encerrar tudo use: make dev-kill-port"
+	@echo "----------------------------------------------------"
 endif
 
 dev-kill-port:
 ifeq ($(OS),Windows_NT)
-	@echo "Liberando portas de desenvolvimento (8001, 8002, 8101)..."
+	@echo "Liberando portas de desenvolvimento (8001, 8002, 8003, 8101)..."
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/kill-port.ps1
 else
-	@echo "Linux: use fuser -k 8002/tcp ou lsof -ti:8002 | xargs kill"
+	@echo "Encerrando servicos nas portas 8001, 8002, 8003 e 8101..."
+	@fuser -k 8001/tcp 8002/tcp 8003/tcp 8101/tcp 2>/dev/null || true
+	@echo "Portas liberadas com sucesso."
 endif
 
 dev-external:
