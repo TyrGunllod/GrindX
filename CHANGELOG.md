@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.82.3 (2026-08-28)
+
+### Bug Fixes
+
+- **api-sqlserver**: Add xhtml2pdf dependency for custo PDF
+  ([`f17bdde`](https://github.com/TyrGunllod/GrindX/commit/f17bddee2575ae48a1b942f7aaa76f667b0280a9))
+
+
 ## v1.82.2 (2026-08-28)
 
 ### Bug Fixes
