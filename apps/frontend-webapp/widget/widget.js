@@ -145,6 +145,10 @@
             })
             : null;
         window.grindx.mensagens = mensagens;
+        // Avisa o dashboard que o widget está pronto para receber refresh pós-login
+        try { window.dispatchEvent(new CustomEvent('grindx:mensagens-ready')); } catch (_) {}
+        // Garante verificação imediata também quando a aba volta a ficar visível após login
+        try { if (mensagens) mensagens.refresh(); } catch (_) {}
 
         msgBubble.addEventListener('click', () => {
             if (mensagens) mensagens.openRecados();

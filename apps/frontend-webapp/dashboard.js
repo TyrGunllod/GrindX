@@ -49,11 +49,28 @@ class DashboardController extends window.grindx.controllers.BaseController {
         this.setupEvents();
         await this.loadCurrentUserProfile();
         await this.loadDynamicMenu();
-        if (window.grindx.mensagens && typeof window.grindx.mensagens.refresh === 'function') {
-            window.grindx.mensagens.refresh();
-        }
+        this._refreshMensagensAposLogin();
         this.loadInitialView();
         this.loadCompanySkin();
+    }
+
+    _refreshMensagensAposLogin() {
+        const tryRefresh = () => {
+            if (window.grindx.mensagens && typeof window.grindx.mensagens.refresh === 'function') {
+                window.grindx.mensagens.refresh();
+                return true;
+            }
+            return false;
+        };
+        if (tryRefresh()) return;
+        // Widget ainda não inicializou (race no DOMContentLoaded) — tenta até ficar pronto
+        let tries = 0;
+        const timer = setInterval(() => {
+            tries++;
+            if (tryRefresh() || tries > 20) clearInterval(timer);
+        }, 300);
+        // Também escuta evento disparado pelo widget quando fica pronto
+        window.addEventListener('grindx:mensagens-ready', () => tryRefresh(), { once: true });
     }
 
     checkAuth() {
