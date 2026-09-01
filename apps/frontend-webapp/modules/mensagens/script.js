@@ -170,12 +170,15 @@ class MensagensController extends window.grindx.controllers.BaseController {
         this.threadId = mensagemId;
         try {
             const itens = await window.grindx.api.get(`/mensagens/${mensagemId}/thread`);
-            this.renderThread(itens);
+            // Marca como lida antes de renderizar para que a exclamação já suma
             await window.grindx.api.patch(`/mensagens/${mensagemId}/thread/lida`);
             if (window.grindx.notifyMensagens) window.grindx.notifyMensagens();
-            const raiz = itens.find((m) => m.id === Number(mensagemId))
-                || itens.find((m) => !m.resposta_a_id)
-                || itens[0];
+            // Re-busca para refletir lida_em atualizado (exclamação danger some)
+            const itensAtualizados = await window.grindx.api.get(`/mensagens/${mensagemId}/thread`);
+            this.renderThread(itensAtualizados);
+            const raiz = itensAtualizados.find((m) => m.id === Number(mensagemId))
+                || itensAtualizados.find((m) => !m.resposta_a_id)
+                || itensAtualizados[0];
             this.mostrarBotaoAcao(raiz);
         } catch (err) {
             console.error('Erro ao abrir thread:', err);
