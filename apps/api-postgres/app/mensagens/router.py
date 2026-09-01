@@ -18,6 +18,7 @@ from app.mensagens.schemas import (
     AnexoResponse,
     ArquivarRequest,
     CountResponse,
+    DestinatarioResponse,
     MensagemCreate,
     MensagemResponse,
     OrdemMensagem,
@@ -91,6 +92,34 @@ def contar_nao_lidas(
     """Total de mensagens não lidas (raiz e respostas, excluindo arquivadas)."""
     service = MensagensService(db)
     return CountResponse(count=service.contar_nao_lidas(int(current_user.sub)))
+
+
+@router.get(
+    "/destinatarios", response_model=PaginatedResponse[DestinatarioResponse]
+)
+def listar_destinatarios(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(100, ge=1, le=100),
+    role: str | None = Query(None),
+    db: Session = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+):
+    """Lista usuários ativos disponíveis como destinatários (inclui administradores).
+
+    Qualquer usuário autenticado pode listar; exclui o próprio solicitante.
+    Filtro opcional `?role=admin` para listar apenas administradores.
+    """
+    service = MensagensService(db)
+    rows, total = service.listar_destinatarios(
+        int(current_user.sub), page, page_size, role
+    )
+    return PaginatedResponse(
+        items=[DestinatarioResponse.model_validate(r) for r in rows],
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=(total + page_size - 1) // page_size,
+    )
 
 
 @router.post("", response_model=MensagemResponse)

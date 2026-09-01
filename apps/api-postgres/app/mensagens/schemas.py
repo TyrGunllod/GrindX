@@ -89,3 +89,16 @@ class CountResponse(BaseModel):
     """Resposta do contador de não lidas."""
 
     count: int
+
+
+class DestinatarioResponse(BaseModel):
+    """Usuário disponível como destinatário (inclui administradores)."""
+
+    id: int
+    username: str
+    nome_completo: str
+    role: str
+    email: str
+
+    class Config:
+        from_attributes = True

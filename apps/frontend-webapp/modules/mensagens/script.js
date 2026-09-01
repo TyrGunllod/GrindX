@@ -56,7 +56,7 @@ class MensagensController extends window.grindx.controllers.BaseController {
 
     async carregarDestinatarios() {
         try {
-            const data = await window.grindx.api.get('/usuarios', { page_size: 100 });
+            const data = await window.grindx.api.get('/mensagens/destinatarios', { page_size: 100 });
             const me = window.grindx.session.getUserProfile();
             const items = (data.items || []).filter((u) => String(u.id) !== String(me.id));
             const select = document.getElementById('destinatarioSelect');

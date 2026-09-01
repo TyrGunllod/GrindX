@@ -280,6 +280,29 @@ class MensagensService:
             .count()
         )
 
+    def listar_destinatarios(
+        self,
+        solicitante_id: int,
+        page: int = 1,
+        page_size: int = 100,
+        role: str | None = None,
+    ) -> tuple[list[Usuario], int]:
+        """Lista usuários ativos disponíveis como destinatários (inclui administradores).
+
+        Qualquer usuário autenticado pode listar; exclui o próprio solicitante.
+        Filtro opcional por `role` (ex.: `admin`).
+        """
+        q = self.db.query(Usuario).filter(
+            Usuario.id != solicitante_id,
+            Usuario.ativo.is_(True),
+        )
+        if role:
+            q = q.filter(Usuario.role == role)
+        q = q.order_by(Usuario.nome_completo.asc(), Usuario.id.asc())
+        total = q.count()
+        rows = q.offset((page - 1) * page_size).limit(page_size).all()
+        return rows, total
+
     # ------------------------------------------------------------------
     # Ações
     # ------------------------------------------------------------------
