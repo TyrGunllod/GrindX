@@ -17,32 +17,29 @@
                     <span class="viz-version" id="viz-version" aria-label="Versão do sistema"></span>
                 </div>
                 <p class="text-muted">Recados internos, avisos e notificações do sistema.</p>
+                <div class="msg-header-actions" aria-label="Filtros e ações">
+                    <button class="btn btn-primary" id="novaMensagemBtn" type="button">
+                        <i class="fas fa-paper-plane"></i> Nova Mensagem
+                    </button>
+                    <label class="msg-select-label">
+                        <span>Status</span>
+                        <select id="statusFilter" class="form-control">
+                            <option value="todas">Todas</option>
+                            <option value="nao_lidas">Não lidas</option>
+                            <option value="lidas">Lidas</option>
+                            <option value="arquivadas">Arquivadas</option>
+                        </select>
+                    </label>
+                    <label class="msg-select-label">
+                        <span>Ordenar por data</span>
+                        <select id="ordemFilter" class="form-control">
+                            <option value="decrescente">Mais recentes primeiro</option>
+                            <option value="crescente">Mais antigas primeiro</option>
+                        </select>
+                    </label>
+                </div>
             </div>
         </header>
-
-        <section class="msg-toolbar" aria-label="Filtros e ações">
-            <div class="msg-toolbar-filters">
-                <label class="msg-select-label">
-                    <span>Status</span>
-                    <select id="statusFilter" class="form-control">
-                        <option value="todas">Todas</option>
-                        <option value="nao_lidas">Não lidas</option>
-                        <option value="lidas">Lidas</option>
-                        <option value="arquivadas">Arquivadas</option>
-                    </select>
-                </label>
-                <label class="msg-select-label">
-                    <span>Ordenar por data</span>
-                    <select id="ordemFilter" class="form-control">
-                        <option value="decrescente">Mais recentes primeiro</option>
-                        <option value="crescente">Mais antigas primeiro</option>
-                    </select>
-                </label>
-            </div>
-            <button class="btn btn-primary" id="novaMensagemBtn" type="button">
-                <i class="fas fa-paper-plane"></i> Nova Mensagem
-            </button>
-        </section>
 
         <section id="listaView" aria-label="Lista de mensagens">
             <div id="listaMensagens" class="msg-list"></div>
