@@ -10,7 +10,7 @@
  */
 
 (function initMensagensWidget(globalScope) {
-    const DEFAULT_POLL_INTERVAL = 10 * 60 * 1000; // 10 minutos
+    const DEFAULT_POLL_INTERVAL = 30 * 1000; // 30 segundos (cross-user polling precisa ser responsivo)
 
     class MensagensWidget {
         constructor(options = {}) {
@@ -37,12 +37,28 @@
             return this.api
                 .get('/mensagens/nao-lidas/count')
                 .then((data) => (data && typeof data.count === 'number') ? data.count : 0)
-                .catch(() => 0);
+                .catch((err) => {
+                    // 401 (sessão expirada) é tratado pelo apiService; outros erros logados para debug
+                    if (err && err.message && err.message.indexOf('Sessão expirada') === -1) {
+                        try { console.warn('[Mensagens] falha ao buscar não lidas:', err.message); } catch (_) {}
+                    }
+                    return 0;
+                });
         }
 
         init() {
             this.refresh();
             this.startPolling();
+            // Atualiza imediatamente quando o usuário volta à aba/janela (cobre polling cross-user)
+            try {
+                const win = (typeof window !== 'undefined' ? window : null);
+                if (win) {
+                    win.addEventListener('visibilitychange', () => {
+                        if (win.document.visibilityState === 'visible') this.refresh();
+                    });
+                    win.addEventListener('focus', () => this.refresh());
+                }
+            } catch (_) {}
         }
 
         startPolling() {
