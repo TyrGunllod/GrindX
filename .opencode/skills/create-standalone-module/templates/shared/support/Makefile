@@ -21,18 +21,14 @@ test-integration:
 	@python -m pytest app/modules/$(MODULE)/tests/ -v --tb=short -k "integration"
 
 # ==========================================
-# Desenvolvimento
+# Desenvolvimento — padrão pop-docs
 # ==========================================
 
 dev-backend:
-	@echo "Iniciando API FastAPI (uvicorn)..."
-	@cd app/modules/$(MODULE) && cmd /c "set PYTHONPATH=../../..&& uvicorn app.main:app --reload --port 7000"
-	@echo "API rodando em http://localhost:7000"
+	uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload
 
 dev-frontend:
-	@echo "Iniciando servidor frontend estatico (raiz do modulo)..."
-	@python -m http.server 7080
-	@echo "Frontend em http://localhost:7080"
+	cd frontend/{frontend_prefix}_{tab} && python -m http.server 7080
 
 # ==========================================
 # Empacotamento & Exportação
@@ -43,8 +39,7 @@ package:
 	@echo.
 	@echo Zip gerado: dist/modulo-$(MODULE)-vX.Y.Z.zip (versao do module.json)
 	@echo Estrutura:
-	@for %%f in (dist/modulo-$(MODULE)-*.zip) do @python -c "import zipfile; [print('  ' + f) for f in zipfile.ZipFile('%%f').namelist()[:10]]"
-	@for %%f in (dist/modulo-$(MODULE)-*.zip) do @python -c "import zipfile; n=len(zipfile.ZipFile('%%f').namelist()); print(f'  ... ({n} arquivos total)')"
+	@python -c "import glob,zipfile; z=sorted(glob.glob('dist/modulo-$(MODULE)-*.zip'))[-1]; print('\n'.join(['  '+f for f in zipfile.ZipFile(z).namelist()[:10]])); print(f'  ... ({len(zipfile.ZipFile(z).namelist())} arquivos total)')"
 
 dry-run:
 	@python -m app.modules.$(MODULE).export package --dry-run
@@ -62,7 +57,7 @@ export-dry:
 import: package
 	@echo.
 	@echo Copiando zip para import/ do GrindX...
-	@for %%f in (dist/modulo-$(MODULE)-*.zip) do @python -c "import shutil,os; os.makedirs('../GrindX/import',exist_ok=True); shutil.copy2('%%f','../GrindX/import/'); print('Copiado para ../GrindX/import/' + os.path.basename('%%f'))"
+	@python -c "import glob,shutil,os; z=sorted(glob.glob('dist/modulo-$(MODULE)-*.zip'))[-1]; os.makedirs('../GrindX/import',exist_ok=True); shutil.copy2(z,'../GrindX/import/'); print('Copiado para ../GrindX/import/' + os.path.basename(z))"
 	@echo.
 	@echo Proximo passo: importar via API ou frontend
 	@echo   API:  curl -X POST -H "Authorization: Bearer ^<token^>" "http://localhost:8000/v1/import/$(MODULE)?force=true"

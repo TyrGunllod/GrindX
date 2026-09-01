@@ -17,10 +17,34 @@
     }
 
     function getUserName() {
-        const profile = (window.grindx && window.grindx.session && window.grindx.session.getUserProfile)
-            ? window.grindx.session.getUserProfile()
-            : {};
-        const full = profile.nome_completo || profile.name || profile.email || '';
+        const sources = [];
+        if (window.dashboard && window.dashboard.user) sources.push(window.dashboard.user);
+        if (window.grindx && window.grindx.session && window.grindx.session.getUserProfile) {
+            try { sources.push(window.grindx.session.getUserProfile() || {}); } catch (_) {}
+        }
+        if (window.parent && window.parent.grindx && window.parent.grindx.session && window.parent.grindx.session.getUserProfile) {
+            try { sources.push(window.parent.grindx.session.getUserProfile() || {}); } catch (_) {}
+        }
+        // tenta extrair do JWT se ainda não tem perfil
+        try {
+            const token = window.grindx && window.grindx.session && window.grindx.session.getToken ? window.grindx.session.getToken() : null;
+            if (token) {
+                const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+                const data = JSON.parse(atob(payload));
+                if (data) sources.push(data);
+            }
+        } catch (_) {}
+        let full = '';
+        for (const p of sources) {
+            full = p.nome_completo || p.name || '';
+            if (full) break;
+        }
+        if (!full) {
+            for (const p of sources) {
+                full = p.email || '';
+                if (full) break;
+            }
+        }
         if (!full) return '';
         const parts = String(full).trim().split(/\s+/).filter(Boolean);
         if (parts.length <= 2) return full.trim();
@@ -70,12 +94,25 @@
         const bubble = document.createElement('div');
         bubble.className = 'grindx-ai-bubble';
         bubble.setAttribute('aria-hidden', 'true');
-        const userName = getUserName();
         const helpText = 'Eu sou o GrindX, e estou aqui para te ajudar, qualquer dúvida me pergunte!';
-        bubble.textContent = userName
-            ? getGreeting() + ', ' + userName + '!\n' + helpText
-            : getGreeting() + '!\n\n' + helpText;
+        function refreshBubble() {
+            const userName = getUserName();
+            bubble.textContent = userName
+                ? getGreeting() + ', ' + userName + '!\n' + helpText
+                : getGreeting() + '!\n\n' + helpText;
+            return !!userName;
+        }
+        refreshBubble();
         document.body.appendChild(bubble);
+        // atualiza quando o perfil carregar (dashboard faz fetch async)
+        let bubbleRefreshTries = 0;
+        const bubbleRefreshTimer = setInterval(() => {
+            bubbleRefreshTries++;
+            if (refreshBubble() || bubbleRefreshTries > 10) clearInterval(bubbleRefreshTimer);
+        }, 800);
+        window.addEventListener('message', (e) => {
+            if (e.data === 'profile-saved') refreshBubble();
+        });
 
         // ---- Contador de mensagens não lidas (Mensageiro) ----
         const unreadBadge = document.createElement('span');

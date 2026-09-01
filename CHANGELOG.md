@@ -2,6 +2,59 @@
 
 <!-- version list -->
 
+## v1.82.3 (2026-08-28)
+
+### Bug Fixes
+
+- **api-sqlserver**: Add xhtml2pdf dependency for custo PDF
+  ([`f17bdde`](https://github.com/TyrGunllod/GrindX/commit/f17bddee2575ae48a1b942f7aaa76f667b0280a9))
+
+
+## v1.82.2 (2026-08-28)
+
+### Bug Fixes
+
+- **frontend**: Require button click to dismiss inactivity warning
+  ([`e191ba6`](https://github.com/TyrGunllod/GrindX/commit/e191ba652479b36e8978faf0390dfac32d35f756))
+
+### Documentation
+
+- Align dev workflow with pop-docs pattern
+  ([`92321a4`](https://github.com/TyrGunllod/GrindX/commit/92321a4ee5bb72273bedb417f77a657ca332f0d3))
+
+
+## v1.82.1 (2026-08-26)
+
+### Bug Fixes
+
+- **widget**: Restore mascot greeting with full name
+  ([`9491946`](https://github.com/TyrGunllod/GrindX/commit/949194672b453d31cc6582c71516ceec9834f774))
+
+
+## v1.82.0 (2026-08-26)
+
+### Features
+
+- **importer**: Move available modules table into header below update button
+  ([`1a71028`](https://github.com/TyrGunllod/GrindX/commit/1a71028acce2ad41ef71e1e238856667c7c23c29))
+
+
+## v1.81.2 (2026-08-26)
+
+### Bug Fixes
+
+- **widget**: Adjust AI panel position to avoid overlap
+  ([`0acc647`](https://github.com/TyrGunllod/GrindX/commit/0acc647beb879e3c5b4a5456bb09aa4d77f880e9))
+
+
+## v1.81.1 (2026-08-26)
+
+### Bug Fixes
+
+- **db**: Sanitize pop_docs tipos before CHECK constraint
+  ([`bd31159`](https://github.com/TyrGunllod/GrindX/commit/bd31159f50b7c76eee6ed19088e8601db117af9e))
+
+
 ## v1.81.0 (2026-08-25)
 
 ### Features

@@ -50,6 +50,26 @@ td {
     background: rgba(0, 194, 224, 0.02);
 }
 
+/* Disponíveis dentro do header */
+.importer-header-disponiveis {
+    width: 100%;
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.importer-header-title {
+    margin: 0 0 var(--space-3) 0;
+    padding: 0 0 0 10pt;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.table-responsive--header {
+    border-radius: 0.75rem;
+}
+
 /* Table-to-card on mobile */
 @media (max-width: 767px) {
   .table-responsive table,
