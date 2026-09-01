@@ -135,6 +135,8 @@ class MensagensController extends window.grindx.controllers.BaseController {
     }
 
     temAtividadeNaoLida(m) {
+        // Backend calcula corretamente para remetente e destinatário (inclui respostas)
+        if (typeof m.nao_lida === 'boolean') return m.nao_lida;
         return !m.lida_em;
     }
 

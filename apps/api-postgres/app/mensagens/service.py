@@ -152,6 +152,25 @@ class MensagensService:
             .subquery()
         )
 
+        nao_lidas_subq = (
+            self.db.query(
+                Mensagem.resposta_a_id.label("raiz_id"),
+                func.count(Mensagem.id).label("qtd_nao_lidas"),
+            )
+            .filter(
+                Mensagem.resposta_a_id.isnot(None),
+                Mensagem.destinatario_id == usuario_id,
+                Mensagem.lida_em.is_(None),
+            )
+            .group_by(Mensagem.resposta_a_id)
+            .subquery()
+        )
+
+        participante = or_(
+            Mensagem.destinatario_id == usuario_id,
+            Mensagem.remetente_id == usuario_id,
+        )
+
         q = (
             self.db.query(
                 Mensagem,
@@ -159,26 +178,37 @@ class MensagensService:
                 subq.c.qtd_respostas,
                 subq.c.ultima_resposta,
                 anexos_subq.c.qtd_anexos,
+                nao_lidas_subq.c.qtd_nao_lidas,
             )
             .outerjoin(subq, subq.c.raiz_id == Mensagem.id)
             .outerjoin(Usuario, Usuario.id == Mensagem.remetente_id)
             .outerjoin(anexos_subq, anexos_subq.c.msg_id == Mensagem.id)
+            .outerjoin(nao_lidas_subq, nao_lidas_subq.c.raiz_id == Mensagem.id)
             .filter(Mensagem.resposta_a_id.is_(None))
-            .filter(Mensagem.destinatario_id == usuario_id)
         )
 
-        if status == StatusMensagem.NAO_LIDAS:
-            q = q.filter(Mensagem.arquivada_em.is_(None)).filter(
-                or_(Mensagem.lida_em.is_(None), tem_resposta_nao_lida)
+        raiz_nao_lida = and_(
+            Mensagem.destinatario_id == usuario_id,
+            Mensagem.lida_em.is_(None),
+        )
+
+        if status == StatusMensagem.ARQUIVADAS:
+            # Arquivadas só fazem sentido para o destinatário (único que pode arquivar)
+            q = q.filter(Mensagem.destinatario_id == usuario_id).filter(
+                Mensagem.arquivada_em.isnot(None)
             )
-        elif status == StatusMensagem.LIDAS:
-            q = q.filter(Mensagem.arquivada_em.is_(None)).filter(
-                and_(Mensagem.lida_em.isnot(None), ~tem_resposta_nao_lida)
-            )
-        elif status == StatusMensagem.ARQUIVADAS:
-            q = q.filter(Mensagem.arquivada_em.isnot(None))
-        else:  # TODAS
-            q = q.filter(Mensagem.arquivada_em.is_(None))
+        else:
+            q = q.filter(participante)
+            if status == StatusMensagem.NAO_LIDAS:
+                q = q.filter(Mensagem.arquivada_em.is_(None)).filter(
+                    or_(raiz_nao_lida, tem_resposta_nao_lida)
+                )
+            elif status == StatusMensagem.LIDAS:
+                q = q.filter(Mensagem.arquivada_em.is_(None)).filter(
+                    and_(~raiz_nao_lida, ~tem_resposta_nao_lida)
+                )
+            else:  # TODAS
+                q = q.filter(Mensagem.arquivada_em.is_(None))
 
         atividade = func.coalesce(subq.c.ultima_resposta, Mensagem.criado_em)
         ordem_dir = atividade.desc() if ordem == OrdemMensagem.DECRESCENTE else atividade.asc()
@@ -188,7 +218,10 @@ class MensagensService:
         rows = q.offset((page - 1) * page_size).limit(page_size).all()
 
         itens = []
-        for msg, nome, qtd, ultima, qtd_anexos in rows:
+        for msg, nome, qtd, ultima, qtd_anexos, qtd_nao_lidas in rows:
+            nao_lida = (msg.destinatario_id == usuario_id and msg.lida_em is None) or (
+                qtd_nao_lidas or 0
+            ) > 0
             item = {
                 "id": msg.id,
                 "resposta_a_id": msg.resposta_a_id,
@@ -205,6 +238,7 @@ class MensagensService:
                 "quantidade_respostas": qtd or 0,
                 "ultima_resposta_em": ultima,
                 "anexos_count": qtd_anexos or 0,
+                "nao_lida": nao_lida,
             }
             itens.append(item)
         return itens, total

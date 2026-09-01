@@ -80,6 +80,7 @@ class MensagemResponse(BaseModel):
     ultima_resposta_em: datetime | None = None
     anexos: list[AnexoResponse] = []
     anexos_count: int = 0
+    nao_lida: bool = False
 
     class Config:
         from_attributes = True
