@@ -106,6 +106,17 @@ class MensagensController extends window.grindx.controllers.BaseController {
         if (window.grindx.mensagens) window.grindx.mensagens.refresh();
     }
 
+    getCurrentUserId() {
+        try {
+            const p = window.grindx.session.getUserProfile();
+            return String(p.id || p.sub || '');
+        } catch (_) { return ''; }
+    }
+
+    isMensagemNaoLida(m) {
+        return !m.lida_em && String(m.destinatario_id) === this.getCurrentUserId();
+    }
+
     cardHtml(m) {
         const naoLida = this.temAtividadeNaoLida(m);
         const catClass = (m.categoria || 'DIRETA').toUpperCase();
@@ -113,6 +124,7 @@ class MensagensController extends window.grindx.controllers.BaseController {
             <article class="msg-card ${naoLida ? 'nao-lida' : ''}" data-abrir="${m.id}" tabindex="0" role="button"
                      aria-label="Abrir mensagem ${m.titulo}">
                 <div class="msg-card-head">
+                    ${naoLida ? '<span class="msg-nao-lida" aria-label="Não lida"><i class="fas fa-exclamation-circle" aria-hidden="true"></i></span>' : ''}
                     <span class="msg-categoria ${catClass}">${catClass}</span>
                     <h3 class="msg-card-title">${this.escapeHtml(m.titulo)}</h3>
                 </div>
@@ -161,7 +173,9 @@ class MensagensController extends window.grindx.controllers.BaseController {
             this.renderThread(itens);
             await window.grindx.api.patch(`/mensagens/${mensagemId}/thread/lida`);
             if (window.grindx.notifyMensagens) window.grindx.notifyMensagens();
-            const raiz = itens[0];
+            const raiz = itens.find((m) => m.id === Number(mensagemId))
+                || itens.find((m) => !m.resposta_a_id)
+                || itens[0];
             this.mostrarBotaoAcao(raiz);
         } catch (err) {
             console.error('Erro ao abrir thread:', err);
@@ -171,7 +185,10 @@ class MensagensController extends window.grindx.controllers.BaseController {
     renderThread(itens) {
         document.getElementById('listaView').style.display = 'none';
         document.getElementById('threadView').style.display = 'block';
-        document.getElementById('threadTitulo').textContent = itens[0] ? itens[0].titulo : '';
+        const raizTitulo = (itens.find((m) => m.id === Number(this.threadId))
+            || itens.find((m) => !m.resposta_a_id)
+            || itens[0]);
+        document.getElementById('threadTitulo').textContent = raizTitulo ? raizTitulo.titulo : '';
         const container = document.getElementById('threadMensagens');
         container.innerHTML = itens.map((m) => this.threadItemHtml(m)).join('');
         container.querySelectorAll('[data-download]').forEach((el) => {
@@ -185,6 +202,7 @@ class MensagensController extends window.grindx.controllers.BaseController {
 
     threadItemHtml(m) {
         const catClass = (m.categoria || 'DIRETA').toUpperCase();
+        const naoLida = this.isMensagemNaoLida(m);
         const anexos = (m.anexos || []).map((a) =>
             `<span class="msg-anexo-chip">
                 <i class="fas fa-paperclip"></i> ${this.escapeHtml(a.nome_arquivo_original)}
@@ -195,8 +213,9 @@ class MensagensController extends window.grindx.controllers.BaseController {
              </span>`
         ).join('');
         return `
-            <article class="msg-thread-item">
+            <article class="msg-thread-item ${naoLida ? 'nao-lida' : ''}">
                 <div class="msg-card-head">
+                    ${naoLida ? '<span class="msg-nao-lida" aria-label="Não lida"><i class="fas fa-exclamation-circle" aria-hidden="true"></i></span>' : ''}
                     <span class="msg-categoria ${catClass}">${catClass}</span>
                     <h3 class="msg-card-title">${this.escapeHtml(m.titulo)}</h3>
                 </div>

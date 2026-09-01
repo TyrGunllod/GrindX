@@ -54,7 +54,24 @@
 }
 
 .msg-card.nao-lida {
-    border-left: 3px solid var(--primary);
+    border-left: 3px solid var(--danger);
+}
+
+.msg-nao-lida {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--danger);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.msg-thread-item.nao-lida {
+    border-left: 3px solid var(--danger);
 }
 
 .msg-card-head {

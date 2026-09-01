@@ -253,7 +253,7 @@ class MensagensService:
             .filter(
                 or_(Mensagem.id == raiz.id, Mensagem.resposta_a_id == raiz.id)
             )
-            .order_by(Mensagem.criado_em.asc(), Mensagem.id.asc())
+            .order_by(Mensagem.criado_em.desc(), Mensagem.id.desc())
             .all()
         )
         ids = [m.id for m, _ in rows]
