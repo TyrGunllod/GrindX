@@ -20,7 +20,8 @@
     flex-direction: column;
     gap: 4px;
     font-size: 0.85rem;
-    color: var(--skin-text-muted, #6b7280);
+    color: var(--text-muted);
+    font-family: var(--skin-font-body);
 }
 
 .msg-list {
@@ -30,21 +31,22 @@
 }
 
 .msg-card {
-    border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.12));
-    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--skin-radius-lg);
     padding: 14px 16px;
-    background: var(--skin-surface, rgba(255, 255, 255, 0.06));
+    background: var(--bg-card);
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: var(--skin-shadow-card);
 }
 
 .msg-card:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
 .msg-card.nao-lida {
-    border-left: 3px solid var(--skin-primary, #00c2e0);
+    border-left: 3px solid var(--primary);
 }
 
 .msg-card-head {
@@ -63,9 +65,9 @@
     letter-spacing: 0.04em;
 }
 
-.msg-categoria.SISTEMA { background: rgba(99, 102, 241, 0.18); color: var(--skin-primary, #818cf8); }
-.msg-categoria.DIRETA  { background: rgba(0, 194, 224, 0.16); color: var(--skin-primary, #00c2e0); }
-.msg-categoria.AVISO   { background: rgba(245, 158, 11, 0.18); color: #f59e0b; }
+.msg-categoria.SISTEMA { background: rgba(99, 102, 241, 0.18); color: #818cf8; }
+.msg-categoria.DIRETA  { background: rgba(0, 194, 224, 0.16); color: var(--primary); }
+.msg-categoria.AVISO   { background: rgba(245, 158, 11, 0.18); color: var(--warning); }
 
 .msg-card-title {
     font-weight: 600;
@@ -79,13 +81,13 @@
     flex-wrap: wrap;
     gap: 10px;
     font-size: 0.78rem;
-    color: var(--skin-text-muted, #9ca3af);
+    color: var(--text-muted);
     margin-bottom: 4px;
 }
 
 .msg-card-texto {
     font-size: 0.85rem;
-    color: var(--skin-text, #1f2937);
+    color: var(--text-main);
     margin: 0 0 6px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -101,7 +103,7 @@
 
 .msg-card-replies {
     font-size: 0.75rem;
-    color: var(--skin-text-muted, #9ca3af);
+    color: var(--text-muted);
 }
 
 .msg-pagination {
@@ -113,13 +115,13 @@
 
 .msg-page-info {
     font-size: 0.85rem;
-    color: var(--skin-text-muted, #9ca3af);
+    color: var(--text-muted);
 }
 
 .msg-empty {
     text-align: center;
     padding: 40px 16px;
-    color: var(--skin-text-muted, #9ca3af);
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
 
@@ -131,17 +133,18 @@
 }
 
 .msg-thread-item {
-    border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.12));
-    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--skin-radius-lg);
     padding: 12px 14px;
-    background: var(--skin-surface, rgba(255, 255, 255, 0.06));
+    background: var(--bg-card);
+    box-shadow: var(--skin-shadow-card);
 }
 
 .msg-thread-item .msg-card-title { margin-bottom: 4px; }
 .msg-thread-item .msg-card-texto { -webkit-line-clamp: unset; overflow: visible; }
 
 .msg-thread-reply {
-    border-top: 1px solid var(--skin-border, rgba(255, 255, 255, 0.12));
+    border-top: 1px solid var(--border-color);
     padding-top: 12px;
 }
 
@@ -168,60 +171,77 @@
     font-size: 0.75rem;
     padding: 3px 8px;
     border-radius: 999px;
-    background: var(--skin-surface, rgba(255, 255, 255, 0.08));
-    border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.12));
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
 }
 
 .msg-anexo-chip button {
     background: none;
     border: none;
-    color: var(--skin-danger, #dc2626);
+    color: var(--danger);
     cursor: pointer;
     font-size: 0.85rem;
     line-height: 1;
 }
 
-/* Modal */
+/* Modal — segue padrão Glassmorphism do core.css (.modal-overlay/.modal-card) */
 .msg-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    padding: var(--space-4);
 }
 
 .msg-modal {
     width: min(520px, 92vw);
-    max-height: 88vh;
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
-    border-radius: 16px;
-    background: var(--skin-bg, #0f172a);
-    border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.12));
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    border-radius: var(--skin-radius-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--skin-shadow-modal);
+    overflow: hidden;
 }
 
 .msg-modal-header {
+    flex-shrink: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    border-bottom: 1px solid var(--skin-border, rgba(255, 255, 255, 0.12));
+    border-bottom: 1px solid var(--border-color);
+    font-family: var(--skin-font-heading);
+}
+
+.msg-modal-header h3 {
+    margin: 0;
+    color: var(--text-main);
 }
 
 .msg-modal-body {
+    flex: 1;
+    min-height: 0;
     padding: 16px 20px;
     overflow-y: auto;
+    scrollbar-gutter: stable;
 }
 
 .msg-modal-footer {
+    flex-shrink: 0;
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    gap: var(--space-2);
     padding: 12px 20px;
-    border-top: 1px solid var(--skin-border, rgba(255, 255, 255, 0.12));
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-card);
 }
 
 .msg-hint {
@@ -239,4 +259,19 @@
 .msg-thread-header h2 {
     margin: 0;
     font-size: 1.1rem;
+    font-family: var(--skin-font-heading);
+    color: var(--text-main);
+}
+
+@media (max-width: 767px) {
+    .msg-modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+    .msg-modal {
+        width: 100%;
+        max-width: 100%;
+        max-height: 92vh;
+        border-radius: 1rem 1rem 0 0;
+    }
 }
