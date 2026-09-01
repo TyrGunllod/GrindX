@@ -24,6 +24,14 @@
     font-family: var(--skin-font-body);
 }
 
+.msg-modal .form-control,
+.msg-modal input,
+.msg-modal textarea,
+.msg-modal select,
+.msg-thread-reply textarea {
+    font-family: var(--skin-font-body);
+}
+
 .msg-list {
     display: flex;
     flex-direction: column;
