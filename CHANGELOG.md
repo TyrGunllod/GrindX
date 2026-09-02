@@ -2,6 +2,143 @@
 
 <!-- version list -->
 
+## v1.83.0 (2026-09-02)
+
+### Bug Fixes
+
+- **mensagens**: Abrir tópico e arquivar voltam a funcionar
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Alertas ao logar funcionando ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Alertas aparecem ao receber mensagem
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Exclamação some ao ler ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Respostas chegam ao remetente ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Topico com ultima mensagem primeiro e exclamação danger para não lidas
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Verificar mensagens novas ao logar
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+### Code Style
+
+- Ruff format and clean unused vars in mensagens tests
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- Ruff import order em main.py e test_mensagens_models
+  ([`531bf29`](https://github.com/TyrGunllod/GrindX/commit/531bf29e3790245d22623bc2d0e2475aa9756fec))
+
+- **mensagens**: Align modal and cards to design system
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Ensure modal form controls use skin font
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+### Documentation
+
+- Add mensageiro (mensagens internas) design spec
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- Add mensageiro feature source doc
+  ([`4941125`](https://github.com/TyrGunllod/GrindX/commit/4941125e9b9fdefc933965b4c5bae93f8578fd9c))
+
+- Add mensageiro implementation plan ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- Document mensagens endpoints and tables ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- Expand mensageiro spec with threads and attachments
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- Sync mensageiro docs for merge ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+### Features
+
+- Módulo central de mensagens internas (mensageiro)
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **frontend**: Add Mensagens dropdown item and postMessage listener
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **frontend**: Add mensagens module (list, threads, compose, attachments)
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **frontend**: Add notificationBridge for iframe-to-parent messaging
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **frontend**: Add unread badge and balloon to mascot widget
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Add /v1/mensagens router with threads and attachments
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Add Mensagem and AnexoMensagem models
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Add mensagens and anexos_mensagem migration
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Add MensagensService with threads, archive and unread count
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Add schemas and enums ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Broadcast para SISTEMA/AVISO ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Contagem no balão de greeting do mascote
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Disponibilizar destinatarios incluindo administradores
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Icone de envelope no aviso do balão de greeting
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Mover Nova Mensagem, Status e Ordenação para o header
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Ocultar resposta em mensagens do sistema
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+- **mensagens**: Register mensagens module in seed
+  ([#6](https://github.com/TyrGunllod/GrindX/pull/6),
+  [`9a8547b`](https://github.com/TyrGunllod/GrindX/commit/9a8547bd757781d10dd0269d923db0bb50675bc2))
+
+
 ## v1.82.3 (2026-08-28)
 
 ### Bug Fixes
