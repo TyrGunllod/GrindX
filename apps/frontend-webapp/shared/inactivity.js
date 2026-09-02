@@ -80,6 +80,7 @@
         }
 
         onActivity() {
+            if (this.isWarningShown) return;
             if (this.isIframe && this.window) {
                 this.window.parent.postMessage({ type: ACTIVITY_TYPE, timestamp: Date.now() }, this.window.location.origin);
                 return;

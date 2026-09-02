@@ -901,3 +901,21 @@ iframe {
     flex: 1;
     min-height: 0;
 }
+
+.nav-dropdown-badge {
+    margin-left: auto;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: var(--skin-danger, #dc2626);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    display: none;
+}
+.nav-dropdown-badge.visible {
+    display: inline-block;
+}

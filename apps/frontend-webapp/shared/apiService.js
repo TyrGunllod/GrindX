@@ -109,6 +109,7 @@
         get: (endpoint, params = {}, options = {}) => request(endpoint, { ...options, method: 'GET', params }),
         post: (endpoint, data, options = {}) => request(endpoint, { ...options, method: 'POST', data }),
         put: (endpoint, data, options = {}) => request(endpoint, { ...options, method: 'PUT', data }),
+        patch: (endpoint, data, options = {}) => request(endpoint, { ...options, method: 'PATCH', data }),
         delete: (endpoint, options = {}) => request(endpoint, { ...options, method: 'DELETE' })
     };
 

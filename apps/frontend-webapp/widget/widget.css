@@ -57,6 +57,15 @@
     transform: translateY(0);
 }
 
+.grindx-ai-bubble.has-recados {
+    cursor: pointer;
+}
+
+.grindx-ai-bubble .fa-envelope {
+    color: var(--primary);
+    margin-right: 5px;
+}
+
 .grindx-ai-bubble::after {
     content: '';
     position: absolute;
@@ -70,7 +79,7 @@
 
 .grindx-ai-panel {
     position: fixed;
-    bottom: 96px;
+    bottom: 130px;
     right: 24px;
     width: 380px;
     max-width: calc(100vw - 32px);
@@ -224,3 +233,25 @@
         height: calc(100vh - 160px);
     }
 }
+
+/* ---- Contador de não lidas no mascote (Mensageiro) ---- */
+.grindx-ai-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 10px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+    display: none;
+}
+.grindx-ai-badge.visible {
+    display: inline-block;
+}
+

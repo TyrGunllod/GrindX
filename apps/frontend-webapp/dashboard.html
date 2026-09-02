@@ -51,11 +51,15 @@
                              <span class="dropdown-user-role" id="userRoleSidebar">...</span>
                          </div>
                          <div class="nav-dropdown-divider"></div>
-                         <button class="nav-dropdown-item" role="menuitem" data-profile="true">
-                             <i class="fas fa-user"></i> Meu Perfil
-                         </button>
-                         <div class="nav-dropdown-divider"></div>
-                         <button class="nav-dropdown-item danger" role="menuitem" id="logoutBtnSidebar">
+                          <button class="nav-dropdown-item" role="menuitem" data-profile="true">
+                              <i class="fas fa-user"></i> Meu Perfil
+                          </button>
+                          <button class="nav-dropdown-item" role="menuitem" data-mensagens="true">
+                              <i class="fas fa-envelope"></i> Mensagens
+                              <span class="nav-dropdown-badge" data-mensagens-badge aria-hidden="true"></span>
+                          </button>
+                          <div class="nav-dropdown-divider"></div>
+                          <button class="nav-dropdown-item danger" role="menuitem" id="logoutBtnSidebar">
                              <i class="fas fa-power-off"></i> Sair
                          </button>
                      </div>
@@ -116,11 +120,15 @@
                        <span class="dropdown-user-role" id="userRoleTopbarDropdown">...</span>
                    </div>
                    <div class="nav-dropdown-divider"></div>
-                   <button class="nav-dropdown-item" role="menuitem" data-profile="true">
-                       <i class="fas fa-user"></i> Meu Perfil
-                   </button>
-                   <div class="nav-dropdown-divider"></div>
-                   <button class="nav-dropdown-item danger" role="menuitem" id="logoutBtnTopbar">
+                    <button class="nav-dropdown-item" role="menuitem" data-profile="true">
+                        <i class="fas fa-user"></i> Meu Perfil
+                    </button>
+                    <button class="nav-dropdown-item" role="menuitem" data-mensagens="true">
+                        <i class="fas fa-envelope"></i> Mensagens
+                        <span class="nav-dropdown-badge" data-mensagens-badge aria-hidden="true"></span>
+                    </button>
+                    <div class="nav-dropdown-divider"></div>
+                    <button class="nav-dropdown-item danger" role="menuitem" id="logoutBtnTopbar">
                        <i class="fas fa-power-off"></i> Sair
                    </button>
                </div>
@@ -168,6 +176,8 @@
     <script src="shared/app.js"></script>
     <script src="shared/inactivity.js"></script>
     <script src="shared/apiService.js"></script>
+    <script src="shared/notificationBridge.js"></script>
+    <script src="shared/mensagensWidget.js"></script>
     <script src="shared/serverLogout.js"></script>
     <script src="shared/baseController.js"></script>
     <script src="shared/components/ReusableModal.js"></script>

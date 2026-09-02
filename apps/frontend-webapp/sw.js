@@ -1,4 +1,4 @@
-const CACHE = 'grindx-v3';
+const CACHE = 'grindx-v4';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -12,6 +12,8 @@ const STATIC_ASSETS = [
     '/shared/baseController.js',
     '/shared/validation.js',
     '/shared/skinLoader.js',
+    '/shared/notificationBridge.js',
+    '/shared/mensagensWidget.js',
     '/shared/components/LoadingSpinner.js',
     '/shared/components/ReusableModal.js',
     '/shared/components/FormField.js',
