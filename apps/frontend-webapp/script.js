@@ -42,15 +42,22 @@ class AuthController {
         return window.grindx.api.post('/auth/token', { username, password }, { auth: false });
     }
 
-    handleSuccess(result, credentials) {
+    async handleSuccess(result, credentials) {
         window.grindx.session.setTokens({
             accessToken: result.access_token,
             refreshToken: result.refresh_token
         });
-        const userProfile = {
-            ...(result.user || result.usuario || result.profile || {}),
-            username: credentials.username
-        };
+
+        // Buscar perfil completo do usuário antes de redirecionar
+        let userProfile = { username: credentials.username };
+        try {
+            const profile = await window.grindx.api.get('/auth/me');
+            if (profile) {
+                userProfile = { ...userProfile, ...profile };
+            }
+        } catch (err) {
+            console.warn('Não foi possível carregar o perfil após login:', err);
+        }
         window.grindx.session.setUserProfile(userProfile);
 
         // Salvar company_id para skin do próximo login
