@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.83.1 (2026-09-02)
+
+### Bug Fixes
+
+- Fetch user profile after login to ensure nome_completo is up to date
+  ([`837db52`](https://github.com/TyrGunllod/GrindX/commit/837db52c5aeb19d35136d765b0fe2fa4ebc4417d))
+
+
 ## v1.83.0 (2026-09-02)
 
 ### Bug Fixes
