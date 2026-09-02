@@ -195,10 +195,11 @@ class MensagensController extends window.grindx.controllers.BaseController {
     renderThread(itens) {
         document.getElementById('listaView').style.display = 'none';
         document.getElementById('threadView').style.display = 'block';
-        const raizTitulo = (itens.find((m) => m.id === Number(this.threadId))
+        const raiz = itens.find((m) => m.id === Number(this.threadId))
             || itens.find((m) => !m.resposta_a_id)
-            || itens[0]);
-        document.getElementById('threadTitulo').textContent = raizTitulo ? raizTitulo.titulo : '';
+            || itens[0];
+        document.getElementById('threadTitulo').textContent = raiz ? raiz.titulo : '';
+        this.atualizarCaixaResposta(raiz);
         const container = document.getElementById('threadMensagens');
         container.innerHTML = itens.map((m) => this.threadItemHtml(m)).join('');
         container.querySelectorAll('[data-download]').forEach((el) => {
@@ -238,6 +239,25 @@ class MensagensController extends window.grindx.controllers.BaseController {
                 ${anexos ? `<div class="msg-anexos-pendentes">${anexos}</div>` : ''}
             </article>
         `;
+    }
+
+    atualizarCaixaResposta(raiz) {
+        const reply = document.querySelector('.msg-thread-reply');
+        if (!reply) return;
+        const isSystem = !!raiz && (raiz.categoria === 'SISTEMA' || raiz.categoria === 'AVISO');
+        reply.style.display = isSystem ? 'none' : '';
+        const hint = document.getElementById('semRespostaHint');
+        if (isSystem) {
+            if (!hint) {
+                const el = document.createElement('p');
+                el.id = 'semRespostaHint';
+                el.className = 'msg-sem-resposta';
+                el.textContent = 'Esta é uma mensagem do sistema. Não é possível responder.';
+                reply.parentNode.insertBefore(el, reply);
+            }
+        } else if (hint) {
+            hint.remove();
+        }
     }
 
     mostrarBotaoAcao(raiz) {

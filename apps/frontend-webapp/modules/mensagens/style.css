@@ -181,6 +181,16 @@
     padding-top: 12px;
 }
 
+.msg-sem-resposta {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--skin-radius-lg);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    background: var(--bg-card);
+}
+
 .msg-thread-reply-actions {
     display: flex;
     gap: 8px;
