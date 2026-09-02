@@ -1,7 +1,11 @@
 """Testes de unidade do service de mensagens."""
 
 import pytest
-from shared.exceptions.base import BusinessValidationError, ForbiddenError, NotFoundError
+from shared.exceptions.base import (
+    ForbiddenError,
+    NotFoundError,
+)
+from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
 
 from app.mensagens.models import Mensagem
@@ -13,7 +17,6 @@ from app.mensagens.schemas import (
 )
 from app.mensagens.service import MensagensService
 from app.models.usuario import Usuario
-from shared.security.jwt import gerar_hash_senha
 
 
 def _usuario(db: Session, username: str, role: str = "operador") -> Usuario:
@@ -81,7 +84,7 @@ def test_contar_nao_lidas_ignora_lidas_e_arquivadas(db_session: Session):
     b = _usuario(db_session, "dest3")
     svc = MensagensService(db_session)
 
-    m1 = _criar_raiz(db_session, a, b, titulo="Não lida")
+    _criar_raiz(db_session, a, b, titulo="Não lida")
     m2 = _criar_raiz(db_session, a, b, titulo="Lida")
     m3 = _criar_raiz(db_session, a, b, titulo="Arquivada")
 

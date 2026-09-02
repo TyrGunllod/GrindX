@@ -1,7 +1,5 @@
 """Testes de integração da API de mensagens."""
 
-import os
-import uuid
 
 from fastapi.testclient import TestClient
 from shared.security.jwt import gerar_hash_senha
@@ -33,9 +31,7 @@ def _token(client: TestClient, username: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {resp.json()['access_token']}"}
 
 
-def test_fluxo_completo_mensagem_thread_e_lida(
-    client: TestClient, db_session: Session
-):
+def test_fluxo_completo_mensagem_thread_e_lida(client: TestClient, db_session: Session):
     a = _criar_usuario(db_session, "msg_a")
     b = _criar_usuario(db_session, "msg_b")
     h_a = _token(client, "msg_a")
@@ -93,7 +89,7 @@ def test_fluxo_completo_mensagem_thread_e_lida(
 
 
 def test_sistema_aviso_requer_admin(client: TestClient, db_session: Session):
-    comum = _criar_usuario(db_session, "msg_comum")
+    _criar_usuario(db_session, "msg_comum")
     alvo = _criar_usuario(db_session, "msg_alvo")
     h = _token(client, "msg_comum")
 
@@ -132,11 +128,7 @@ def test_broadcast_sistema_envia_para_todos_ativos(
     assert resp.json()["count"] == 3
 
     for u in (admin, u1, u2):
-        msg = (
-            db_session.query(Mensagem)
-            .filter(Mensagem.destinatario_id == u.id)
-            .one()
-        )
+        msg = db_session.query(Mensagem).filter(Mensagem.destinatario_id == u.id).one()
         assert msg.remetente_id is None
         assert msg.categoria == "SISTEMA"
         assert msg.titulo == "Manutenção"
@@ -145,8 +137,8 @@ def test_broadcast_sistema_envia_para_todos_ativos(
 def test_broadcast_requer_admin_e_categoria_sistema(
     client: TestClient, db_session: Session
 ):
-    comum = _criar_usuario(db_session, "msg_comum_br")
-    admin = _criar_usuario(db_session, "msg_admin_br2", role="admin")
+    _criar_usuario(db_session, "msg_comum_br")
+    _criar_usuario(db_session, "msg_admin_br2", role="admin")
     h_comum = _token(client, "msg_comum_br")
     h_admin = _token(client, "msg_admin_br2")
 
@@ -166,9 +158,9 @@ def test_broadcast_requer_admin_e_categoria_sistema(
 
 
 def test_apenas_destinatario_marca_lida(client: TestClient, db_session: Session):
-    a = _criar_usuario(db_session, "msg_a2")
+    _criar_usuario(db_session, "msg_a2")
     b = _criar_usuario(db_session, "msg_b2")
-    c = _criar_usuario(db_session, "msg_c2")
+    _criar_usuario(db_session, "msg_c2")
     h_a = _token(client, "msg_a2")
     h_c = _token(client, "msg_c2")
 
@@ -184,7 +176,7 @@ def test_apenas_destinatario_marca_lida(client: TestClient, db_session: Session)
 
 
 def test_arquivar_restaura_via_body(client: TestClient, db_session: Session):
-    a = _criar_usuario(db_session, "msg_a4")
+    _criar_usuario(db_session, "msg_a4")
     b = _criar_usuario(db_session, "msg_b4")
     h_a = _token(client, "msg_a4")
     h_b = _token(client, "msg_b4")
@@ -216,7 +208,7 @@ def test_anexo_upload_e_download_autenticado(
 
     monkeypatch.setattr(mensagens_router, "UPLOADS_DIR", str(tmp_path))
 
-    a = _criar_usuario(db_session, "msg_a3")
+    _criar_usuario(db_session, "msg_a3")
     b = _criar_usuario(db_session, "msg_b3")
     h_a = _token(client, "msg_a3")
     h_b = _token(client, "msg_b3")
@@ -239,7 +231,7 @@ def test_anexo_upload_e_download_autenticado(
     assert anexo["tamanho_bytes"] == 16
 
     # terceiro não participa -> 403 no download
-    c = _criar_usuario(db_session, "msg_c3")
+    _criar_usuario(db_session, "msg_c3")
     h_c = _token(client, "msg_c3")
     resp = client.get(
         f"/v1/mensagens/{msg_id}/anexos/{anexo['id']}/download", headers=h_c

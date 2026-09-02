@@ -1,7 +1,11 @@
 """Service do módulo central de mensagens."""
 
 import structlog
-from shared.exceptions.base import BusinessValidationError, ForbiddenError, NotFoundError
+from shared.exceptions.base import (
+    BusinessValidationError,
+    ForbiddenError,
+    NotFoundError,
+)
 from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session, aliased
 
@@ -127,7 +131,11 @@ class MensagensService:
                 message="Não é possível responder a mensagens do sistema."
             )
 
-        outro = raiz.destinatario_id if raiz.remetente_id == usuario_id else raiz.remetente_id
+        outro = (
+            raiz.destinatario_id
+            if raiz.remetente_id == usuario_id
+            else raiz.remetente_id
+        )
         resposta = Mensagem(
             resposta_a_id=raiz.id,
             remetente_id=usuario_id,
@@ -246,7 +254,9 @@ class MensagensService:
                 q = q.filter(Mensagem.arquivada_em.is_(None))
 
         atividade = func.coalesce(subq.c.ultima_resposta, Mensagem.criado_em)
-        ordem_dir = atividade.desc() if ordem == OrdemMensagem.DECRESCENTE else atividade.asc()
+        ordem_dir = (
+            atividade.desc() if ordem == OrdemMensagem.DECRESCENTE else atividade.asc()
+        )
         q = q.order_by(ordem_dir)
 
         total = q.count()
@@ -285,9 +295,7 @@ class MensagensService:
         rows = (
             self.db.query(Mensagem, Usuario.nome_completo)
             .outerjoin(Usuario, Usuario.id == Mensagem.remetente_id)
-            .filter(
-                or_(Mensagem.id == raiz.id, Mensagem.resposta_a_id == raiz.id)
-            )
+            .filter(or_(Mensagem.id == raiz.id, Mensagem.resposta_a_id == raiz.id))
             .order_by(Mensagem.criado_em.desc(), Mensagem.id.desc())
             .all()
         )
@@ -342,9 +350,7 @@ class MensagensService:
             .filter(
                 Mensagem.destinatario_id == usuario_id,
                 Mensagem.lida_em.is_(None),
-                func.coalesce(
-                    Mensagem.arquivada_em, raiz_alias.arquivada_em
-                ).is_(None),
+                func.coalesce(Mensagem.arquivada_em, raiz_alias.arquivada_em).is_(None),
             )
             .count()
         )

@@ -95,9 +95,7 @@ def contar_nao_lidas(
     return CountResponse(count=service.contar_nao_lidas(int(current_user.sub)))
 
 
-@router.get(
-    "/destinatarios", response_model=PaginatedResponse[DestinatarioResponse]
-)
+@router.get("/destinatarios", response_model=PaginatedResponse[DestinatarioResponse])
 def listar_destinatarios(
     page: int = Query(1, ge=1),
     page_size: int = Query(100, ge=1, le=100),
@@ -177,9 +175,7 @@ def criar_resposta(
 ):
     """Responde à thread (apenas participantes; categorias diretas)."""
     service = MensagensService(db)
-    resposta = service.criar_resposta(
-        int(current_user.sub), mensagem_id, dados
-    )
+    resposta = service.criar_resposta(int(current_user.sub), mensagem_id, dados)
     return MensagemResponse.model_validate(resposta)
 
 
@@ -270,7 +266,9 @@ async def anexar_arquivo(
         content_type=file.content_type,
         tamanho_bytes=len(content),
     )
-    logger.info("Anexo salvo", anexo_id=anexo.id, mensagem_id=msg.id, bytes=len(content))
+    logger.info(
+        "Anexo salvo", anexo_id=anexo.id, mensagem_id=msg.id, bytes=len(content)
+    )
     return anexo
 
 
