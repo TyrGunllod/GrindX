@@ -1,6 +1,5 @@
 """Testes de integração da API de mensagens."""
 
-
 from fastapi.testclient import TestClient
 from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
