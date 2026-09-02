@@ -57,6 +57,10 @@
     transform: translateY(0);
 }
 
+.grindx-ai-bubble.has-recados {
+    cursor: pointer;
+}
+
 .grindx-ai-bubble::after {
     content: '';
     position: absolute;
@@ -246,31 +250,3 @@
     display: inline-block;
 }
 
-.grindx-ai-msg-bubble {
-    position: fixed;
-    right: 84px;
-    bottom: 24px;
-    max-width: 300px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    background: var(--bg-card);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-    display: none;
-    cursor: pointer;
-    align-items: center;
-    gap: 10px;
-    z-index: 10000;
-}
-.grindx-ai-msg-bubble.visible {
-    display: flex;
-}
-.grindx-ai-msg-bubble-icon {
-    color: var(--primary);
-    font-size: 1.1rem;
-}
-.grindx-ai-msg-bubble-text {
-    font-size: 0.85rem;
-    line-height: 1.35;
-}

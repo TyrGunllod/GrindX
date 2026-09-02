@@ -58,9 +58,7 @@
         return 'Boa noite';
     }
 
-    function renderMensagensCount(count) {
-        const strong = document.querySelector('.grindx-ai-msg-bubble-text strong');
-        if (strong) strong.textContent = count;
+    function renderDropdownBadges(count) {
         document.querySelectorAll('[data-mensagens-badge]').forEach((el) => {
             el.textContent = count > 0 ? String(count) : '';
             el.classList.toggle('visible', count > 0);
@@ -94,13 +92,29 @@
         const bubble = document.createElement('div');
         bubble.className = 'grindx-ai-bubble';
         bubble.setAttribute('aria-hidden', 'true');
+        bubble.setAttribute('role', 'button');
+        bubble.setAttribute('tabindex', '0');
         const helpText = 'Eu sou o GrindX, e estou aqui para te ajudar, qualquer dúvida me pergunte!';
-        function refreshBubble() {
+        function getBubbleCount() {
+            return (window.grindx.mensagens && typeof window.grindx.mensagens.count === 'number')
+                ? window.grindx.mensagens.count
+                : 0;
+        }
+        function buildBubbleText(count) {
             const userName = getUserName();
-            bubble.textContent = userName
+            let text = userName
                 ? getGreeting() + ', ' + userName + '!\n' + helpText
                 : getGreeting() + '!\n\n' + helpText;
-            return !!userName;
+            if (count > 0) {
+                text += '\n\n' + (count === 1 ? 'Você tem 1 novo recado!' : 'Você tem ' + count + ' novos recados!');
+            }
+            return text;
+        }
+        function refreshBubble(countOverride) {
+            const count = (typeof countOverride === 'number') ? countOverride : getBubbleCount();
+            bubble.textContent = buildBubbleText(count);
+            bubble.classList.toggle('has-recados', count > 0);
+            return !!getUserName();
         }
         refreshBubble();
         document.body.appendChild(bubble);
@@ -120,23 +134,14 @@
         unreadBadge.setAttribute('aria-hidden', 'true');
         fab.appendChild(unreadBadge);
 
-        const msgBubble = document.createElement('div');
-        msgBubble.className = 'grindx-ai-msg-bubble';
-        msgBubble.setAttribute('role', 'button');
-        msgBubble.setAttribute('tabindex', '0');
-        msgBubble.setAttribute('aria-hidden', 'true');
-        msgBubble.setAttribute('aria-label', 'Abrir recados');
-        msgBubble.innerHTML =
-            '<span class="grindx-ai-msg-bubble-icon"><i class="fas fa-envelope" aria-hidden="true"></i></span>' +
-            '<span class="grindx-ai-msg-bubble-text">Você tem <strong>0</strong> novos recados!</span>';
-        document.body.appendChild(msgBubble);
-
         const mensagens = window.grindx.MensagensWidget
             ? new window.grindx.MensagensWidget({
                 badge: unreadBadge,
-                balloon: msgBubble,
                 api: window.grindx.api,
-                onCountChange: renderMensagensCount,
+                onCountChange: (count) => {
+                    refreshBubble(count);
+                    renderDropdownBadges(count);
+                },
                 onOpenRecados: () => {
                     if (window.dashboard && typeof window.dashboard.navigateToModule === 'function') {
                         window.dashboard.navigateToModule('modules/mensagens/index.html');
@@ -150,13 +155,14 @@
         // Garante verificação imediata também quando a aba volta a ficar visível após login
         try { if (mensagens) mensagens.refresh(); } catch (_) {}
 
-        msgBubble.addEventListener('click', () => {
-            if (mensagens) mensagens.openRecados();
+        // Clicar no balão de greeting com recados pendentes abre o módulo de mensagens
+        bubble.addEventListener('click', () => {
+            if (getBubbleCount() > 0 && mensagens) mensagens.openRecados();
         });
-        msgBubble.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+        bubble.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && getBubbleCount() > 0 && mensagens) {
                 e.preventDefault();
-                if (mensagens) mensagens.openRecados();
+                mensagens.openRecados();
             }
         });
 
