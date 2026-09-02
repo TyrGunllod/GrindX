@@ -22,10 +22,10 @@ from fastapi.staticfiles import StaticFiles
 from app.audit.listeners import auditar_flush  # noqa: F401  (registra listeners)
 from app.audit.router import router as audit_router
 from app.auth.router import router as auth_router
-from app.mensagens.router import router as mensagens_router
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import setup_logging
+from app.mensagens.router import router as mensagens_router
 from app.middleware.audit_context import AuditContextMiddleware
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_id import RequestIdMiddleware

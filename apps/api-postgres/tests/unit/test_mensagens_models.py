@@ -2,11 +2,11 @@
 
 from datetime import datetime
 
+from shared.security.jwt import gerar_hash_senha
 from sqlalchemy.orm import Session
 
 from app.mensagens.models import AnexoMensagem, Mensagem
 from app.models.usuario import Usuario
-from shared.security.jwt import gerar_hash_senha
 
 
 def _usuario(db: Session, username: str) -> Usuario:
