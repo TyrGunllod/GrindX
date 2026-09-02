@@ -34,6 +34,15 @@ class MensagemCreate(BaseModel):
     url_acao: str | None = Field(default=None, max_length=255)
 
 
+class BroadcastCreate(BaseModel):
+    """Criação de mensagem broadcast (SISTEMA/AVISO para todos os usuários ativos)."""
+
+    titulo: str = Field(..., min_length=1, max_length=150)
+    texto: str = Field(..., min_length=1)
+    categoria: CategoriaMensagem = CategoriaMensagem.SISTEMA
+    url_acao: str | None = Field(default=None, max_length=255)
+
+
 class RespostaCreate(BaseModel):
     """Criação de resposta em uma thread."""
 

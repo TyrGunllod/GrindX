@@ -42,6 +42,8 @@ class MensagensController extends window.grindx.controllers.BaseController {
         document.getElementById('fecharModalBtn').addEventListener('click', () => this.fecharModal());
         document.getElementById('cancelarModalBtn').addEventListener('click', () => this.fecharModal());
         document.getElementById('enviarMensagemBtn').addEventListener('click', () => this.enviarMensagem());
+        document.getElementById('categoriaSelect').addEventListener('change', () => this.toggleBroadcastGroup());
+        document.getElementById('broadcastCheckbox').addEventListener('change', () => this.atualizarEstadoDestinatario());
         document.getElementById('voltarBtn').addEventListener('click', () => this.voltarLista());
         document.getElementById('enviarRespostaBtn').addEventListener('click', () => this.enviarResposta());
         document.getElementById('composeAnexos').addEventListener('change', (e) => {
@@ -281,7 +283,10 @@ class MensagensController extends window.grindx.controllers.BaseController {
         this.composeFiles = [];
         this.renderArquivosPendentes('composeArquivos', []);
         document.getElementById('composeForm').reset();
+        document.getElementById('broadcastCheckbox').checked = false;
         this.aplicarPermissaoCategoria();
+        this.toggleBroadcastGroup();
+        this.atualizarEstadoDestinatario();
     }
 
     fecharModal() {
@@ -296,18 +301,52 @@ class MensagensController extends window.grindx.controllers.BaseController {
         }
     }
 
+    toggleBroadcastGroup() {
+        const me = window.grindx.session.getUserProfile();
+        const categoria = document.getElementById('categoriaSelect').value;
+        const canBroadcast = me.role === 'admin' && (categoria === 'SISTEMA' || categoria === 'AVISO');
+        document.getElementById('broadcastGroup').style.display = canBroadcast ? 'block' : 'none';
+        if (!canBroadcast) document.getElementById('broadcastCheckbox').checked = false;
+        this.atualizarEstadoDestinatario();
+    }
+
+    atualizarEstadoDestinatario() {
+        const broadcast = document.getElementById('broadcastCheckbox').checked;
+        const dest = document.getElementById('destinatarioSelect');
+        if (dest) dest.disabled = broadcast;
+    }
+
     async enviarMensagem() {
         const destinatario_id = Number(document.getElementById('destinatarioSelect').value);
         const titulo = document.getElementById('tituloInput').value.trim();
         const texto = document.getElementById('textoInput').value.trim();
         const categoria = document.getElementById('categoriaSelect').value;
         const url_acao = document.getElementById('urlAcaoInput').value.trim() || null;
+        const broadcast = document.getElementById('broadcastCheckbox').checked;
 
-        if (!destinatario_id || !titulo || !texto) {
-            this.toastWarning('Preencha destinatário, título e texto.');
+        if (!titulo || !texto) {
+            this.toastWarning('Preencha título e texto.');
             return;
         }
         try {
+            if (broadcast) {
+                const data = await window.grindx.api.post('/mensagens/broadcast', {
+                    titulo, texto, categoria, url_acao
+                });
+                this.fecharModal();
+                this.toastSuccess(`Mensagem enviada para ${data.count} usuário(s)!`);
+                if (window.grindx.notifyMensagens) window.grindx.notifyMensagens();
+                if (this.status !== 'todas') {
+                    this.status = 'todas';
+                    document.getElementById('statusFilter').value = 'todas';
+                }
+                await this.loadLista();
+                return;
+            }
+            if (!destinatario_id) {
+                this.toastWarning('Selecione o destinatário.');
+                return;
+            }
             const msg = await window.grindx.api.post('/mensagens', {
                 destinatario_id, titulo, texto, categoria, url_acao
             });

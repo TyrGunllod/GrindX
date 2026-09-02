@@ -17,6 +17,7 @@ from app.mensagens.models import Mensagem
 from app.mensagens.schemas import (
     AnexoResponse,
     ArquivarRequest,
+    BroadcastCreate,
     CountResponse,
     DestinatarioResponse,
     MensagemCreate,
@@ -120,6 +121,20 @@ def listar_destinatarios(
         page_size=page_size,
         total_pages=(total + page_size - 1) // page_size,
     )
+
+
+@router.post("/broadcast", response_model=CountResponse)
+def criar_broadcast(
+    dados: BroadcastCreate,
+    db: Session = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+):
+    """Envia mensagem SISTEMA/AVISO para todos os usuários ativos (admin)."""
+    service = MensagensService(db)
+    count = service.criar_broadcast(
+        int(current_user.sub), dados, is_admin=_is_admin(current_user)
+    )
+    return CountResponse(count=count)
 
 
 @router.post("", response_model=MensagemResponse)

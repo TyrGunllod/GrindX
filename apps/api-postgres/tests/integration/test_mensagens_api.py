@@ -110,6 +110,61 @@ def test_sistema_aviso_requer_admin(client: TestClient, db_session: Session):
     assert resp.status_code == 403, resp.text
 
 
+def test_broadcast_sistema_envia_para_todos_ativos(
+    client: TestClient, db_session: Session
+):
+    admin = _criar_usuario(db_session, "msg_admin_br", role="admin")
+    u1 = _criar_usuario(db_session, "msg_u1")
+    u2 = _criar_usuario(db_session, "msg_u2")
+    h = _token(client, "msg_admin_br")
+
+    resp = client.post(
+        "/v1/mensagens/broadcast",
+        headers=h,
+        json={
+            "titulo": "Manutenção",
+            "texto": "Sistema em manutenção hoje às 22h.",
+            "categoria": "SISTEMA",
+        },
+    )
+    assert resp.status_code == 200, resp.text
+    # inclui o próprio admin (anúncio vai para todos os ativos)
+    assert resp.json()["count"] == 3
+
+    for u in (admin, u1, u2):
+        msg = (
+            db_session.query(Mensagem)
+            .filter(Mensagem.destinatario_id == u.id)
+            .one()
+        )
+        assert msg.remetente_id is None
+        assert msg.categoria == "SISTEMA"
+        assert msg.titulo == "Manutenção"
+
+
+def test_broadcast_requer_admin_e_categoria_sistema(
+    client: TestClient, db_session: Session
+):
+    comum = _criar_usuario(db_session, "msg_comum_br")
+    admin = _criar_usuario(db_session, "msg_admin_br2", role="admin")
+    h_comum = _token(client, "msg_comum_br")
+    h_admin = _token(client, "msg_admin_br2")
+
+    resp = client.post(
+        "/v1/mensagens/broadcast",
+        headers=h_comum,
+        json={"titulo": "X", "texto": "Y", "categoria": "SISTEMA"},
+    )
+    assert resp.status_code == 403, resp.text
+
+    resp = client.post(
+        "/v1/mensagens/broadcast",
+        headers=h_admin,
+        json={"titulo": "X", "texto": "Y", "categoria": "DIRETA"},
+    )
+    assert resp.status_code == 422, resp.text
+
+
 def test_apenas_destinatario_marca_lida(client: TestClient, db_session: Session):
     a = _criar_usuario(db_session, "msg_a2")
     b = _criar_usuario(db_session, "msg_b2")

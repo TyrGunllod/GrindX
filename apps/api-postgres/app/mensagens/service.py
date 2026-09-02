@@ -1,12 +1,13 @@
 """Service do módulo central de mensagens."""
 
 import structlog
-from shared.exceptions.base import ForbiddenError, NotFoundError
+from shared.exceptions.base import BusinessValidationError, ForbiddenError, NotFoundError
 from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session, aliased
 
 from app.mensagens.models import AnexoMensagem, Mensagem
 from app.mensagens.schemas import (
+    BroadcastCreate,
     MensagemCreate,
     OrdemMensagem,
     RespostaCreate,
@@ -80,6 +81,40 @@ class MensagensService:
         self.db.refresh(msg)
         logger.info("Mensagem criada", id=msg.id, categoria=categoria)
         return msg
+
+    def criar_broadcast(
+        self, usuario_id: int, dados: BroadcastCreate, is_admin: bool
+    ) -> int:
+        """Envia mensagem SISTEMA/AVISO para todos os usuários ativos (admin)."""
+        categoria = dados.categoria.value
+        if categoria not in _CATEGORIAS_SISTEMA:
+            raise BusinessValidationError(
+                message="Broadcast disponível apenas para as categorias SISTEMA ou AVISO."
+            )
+        if not is_admin:
+            raise ForbiddenError(
+                message="Apenas administradores podem enviar mensagens do sistema."
+            )
+
+        usuarios = self.db.query(Usuario).filter(Usuario.ativo.is_(True)).all()
+        for u in usuarios:
+            self.db.add(
+                Mensagem(
+                    remetente_id=None,
+                    destinatario_id=u.id,
+                    titulo=dados.titulo.strip(),
+                    texto=dados.texto,
+                    categoria=categoria,
+                    url_acao=dados.url_acao,
+                )
+            )
+        self.db.commit()
+        logger.info(
+            "Broadcast criado",
+            categoria=categoria,
+            destinatarios=len(usuarios),
+        )
+        return len(usuarios)
 
     def criar_resposta(
         self, usuario_id: int, mensagem_id: int, dados: RespostaCreate

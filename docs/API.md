@@ -547,6 +547,7 @@ Lista os logins/logouts dos usuários (tempo de uso), mais recentes primeiro. Re
 | GET | `/v1/mensagens/nao-lidas/count` | Contador de não lidas do usuário |
 | GET | `/v1/mensagens/destinatarios` | Lista destinatários ativos (inclui administradores; `?role=admin`; qualquer autenticado) |
 | POST | `/v1/mensagens` | Cria mensagem raiz (`SISTEMA`/`AVISO` exigem admin) |
+| POST | `/v1/mensagens/broadcast` | Envia SISTEMA/AVISO para todos os usuários ativos (admin; retorna `count`) |
 | GET | `/v1/mensagens/{id}/thread` | Raiz + respostas da thread |
 | POST | `/v1/mensagens/{id}/respostas` | Responde à thread (participantes) |
 | PATCH | `/v1/mensagens/{id}/lida` | Marca mensagem como lida (destinatário) |
