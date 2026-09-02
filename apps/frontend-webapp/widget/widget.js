@@ -58,6 +58,15 @@
         return 'Boa noite';
     }
 
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     function renderDropdownBadges(count) {
         document.querySelectorAll('[data-mensagens-badge]').forEach((el) => {
             el.textContent = count > 0 ? String(count) : '';
@@ -102,17 +111,19 @@
         }
         function buildBubbleText(count) {
             const userName = getUserName();
-            let text = userName
-                ? getGreeting() + ', ' + userName + '!\n' + helpText
-                : getGreeting() + '!\n\n' + helpText;
+            const safeName = escapeHtml(userName);
+            let text = safeName
+                ? escapeHtml(getGreeting()) + ', ' + safeName + '!\n' + escapeHtml(helpText)
+                : escapeHtml(getGreeting()) + '!\n\n' + escapeHtml(helpText);
             if (count > 0) {
-                text += '\n\n' + (count === 1 ? 'Você tem 1 novo recado!' : 'Você tem ' + count + ' novos recados!');
+                text += '\n\n<i class="fas fa-envelope" aria-hidden="true"></i> ' +
+                    (count === 1 ? 'Você tem 1 novo recado!' : 'Você tem ' + count + ' novos recados!');
             }
             return text;
         }
         function refreshBubble(countOverride) {
             const count = (typeof countOverride === 'number') ? countOverride : getBubbleCount();
-            bubble.textContent = buildBubbleText(count);
+            bubble.innerHTML = buildBubbleText(count);
             bubble.classList.toggle('has-recados', count > 0);
             return !!getUserName();
         }

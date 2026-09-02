@@ -61,6 +61,11 @@
     cursor: pointer;
 }
 
+.grindx-ai-bubble .fa-envelope {
+    color: var(--primary);
+    margin-right: 5px;
+}
+
 .grindx-ai-bubble::after {
     content: '';
     position: absolute;
