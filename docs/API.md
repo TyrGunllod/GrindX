@@ -539,6 +539,32 @@ Lista os logins/logouts dos usuários (tempo de uso), mais recentes primeiro. Re
 
 ---
 
+## Mensagens Internas (`/v1/mensagens`)
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/v1/mensagens` | Lista threads do participante (remetente ou destinatário) com filtros `status`/`ordem` e paginação |
+| GET | `/v1/mensagens/nao-lidas/count` | Contador de não lidas do usuário |
+| GET | `/v1/mensagens/destinatarios` | Lista destinatários ativos (inclui administradores; `?role=admin`; qualquer autenticado) |
+| POST | `/v1/mensagens` | Cria mensagem raiz individual (`SISTEMA`/`AVISO` exigem admin) |
+| POST | `/v1/mensagens/broadcast` | Envia SISTEMA/AVISO para todos os usuários ativos (admin; retorna `count`) |
+| GET | `/v1/mensagens/{id}/thread` | Raiz + respostas da thread (última primeiro) |
+| POST | `/v1/mensagens/{id}/respostas` | Responde à thread (participantes; **não permite responder a mensagens do sistema**) |
+| PATCH | `/v1/mensagens/{id}/lida` | Marca mensagem como lida (destinatário) |
+| PATCH | `/v1/mensagens/{id}/thread/lida` | Marca thread como lida (participantes) |
+| PATCH | `/v1/mensagens/{id}/arquivar` | Arquiva/restaura a thread (apenas o destinatário da raiz; body opcional `{"arquivar": false}`) |
+| POST | `/v1/mensagens/{id}/anexos` | Anexa arquivo (remetente; max 10MB; allowlist) |
+| GET | `/v1/mensagens/{id}/anexos` | Lista anexos (participantes) |
+| GET | `/v1/mensagens/{id}/anexos/{anexo_id}/download` | Baixa anexo autenticado (participantes) |
+
+**Regras:**
+- Categorias: `DIRETA` (qualquer autenticado; remetente = usuário logado), `SISTEMA`/`AVISO` (apenas admin; remetente NULL = "Sistema").
+- Broadcast cria uma mensagem por usuário ativo; não aceita anexos.
+- Mensagens do sistema não podem ser respondidas.
+- A listagem considera o usuário como **participante** (remetente ou destinatário) e retorna `nao_lida: bool` (calculado no servidor, inclui respostas não lidas).
+
+---
+
 ## Produtos Protheus (api-sqlserver)
 
 Endpoints read-only da `api-sqlserver` para consulta de produtos na tabela `SB1010` do Protheus. **Não validam token JWT** — a `api-sqlserver` não implementa autenticação, portanto são públicos.

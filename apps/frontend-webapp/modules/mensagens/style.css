@@ -1,0 +1,333 @@
+/* Módulo Mensagens — GrindX (tokens do design system) */
+
+.msg-toolbar,
+.msg-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.msg-toolbar {
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.msg-header-actions {
+    margin-top: var(--space-4);
+}
+
+.msg-toolbar-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.msg-select-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: var(--skin-font-body);
+}
+
+.msg-modal .form-control,
+.msg-modal input,
+.msg-modal textarea,
+.msg-modal select,
+.msg-thread-reply textarea {
+    font-family: var(--skin-font-body);
+}
+
+.msg-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.msg-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--skin-radius-lg);
+    padding: 14px 16px;
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: var(--skin-shadow-card);
+}
+
+.msg-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.msg-card.nao-lida {
+    border-left: 3px solid var(--danger);
+}
+
+.msg-nao-lida {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--danger);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.msg-thread-item.nao-lida {
+    border-left: 3px solid var(--danger);
+}
+
+.msg-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.msg-categoria {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.msg-categoria.SISTEMA { background: rgba(99, 102, 241, 0.18); color: #818cf8; }
+.msg-categoria.DIRETA  { background: rgba(0, 194, 224, 0.16); color: var(--primary); }
+.msg-categoria.AVISO   { background: rgba(245, 158, 11, 0.18); color: var(--warning); }
+
+.msg-card-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0;
+    flex: 1;
+}
+
+.msg-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.msg-card-texto {
+    font-size: 0.85rem;
+    color: var(--text-main);
+    margin: 0 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.msg-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.msg-card-replies {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.msg-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.msg-page-info {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.msg-empty {
+    text-align: center;
+    padding: 40px 16px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.msg-thread-mensagens {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.msg-thread-item {
+    border: 1px solid var(--border-color);
+    border-radius: var(--skin-radius-lg);
+    padding: 12px 14px;
+    background: var(--bg-card);
+    box-shadow: var(--skin-shadow-card);
+}
+
+.msg-thread-item .msg-card-title { margin-bottom: 4px; }
+.msg-thread-item .msg-card-texto { -webkit-line-clamp: unset; overflow: visible; }
+
+.msg-thread-reply {
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+}
+
+.msg-sem-resposta {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--skin-radius-lg);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    background: var(--bg-card);
+}
+
+.msg-thread-reply-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    align-items: center;
+}
+
+.msg-file-btn { cursor: pointer; }
+
+.msg-anexos-pendentes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.msg-anexo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.msg-anexo-chip button {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+/* Modal — segue padrão Glassmorphism do core.css (.modal-overlay/.modal-card) */
+.msg-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--space-4);
+}
+
+.msg-modal {
+    width: min(520px, 92vw);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--skin-radius-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--skin-shadow-modal);
+    overflow: hidden;
+}
+
+.msg-modal-header {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    font-family: var(--skin-font-heading);
+}
+
+.msg-modal-header h3 {
+    margin: 0;
+    color: var(--text-main);
+}
+
+.msg-modal-body {
+    flex: 1;
+    min-height: 0;
+    padding: 16px 20px;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+.msg-modal-footer {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-card);
+}
+
+.msg-hint {
+    font-size: 0.75rem;
+    margin-top: 4px;
+}
+
+.msg-broadcast-group {
+    margin-top: 8px;
+}
+
+.msg-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-main);
+}
+
+.msg-thread-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.msg-thread-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-family: var(--skin-font-heading);
+    color: var(--text-main);
+}
+
+@media (max-width: 767px) {
+    .msg-modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+    .msg-modal {
+        width: 100%;
+        max-width: 100%;
+        max-height: 92vh;
+        border-radius: 1rem 1rem 0 0;
+    }
+}

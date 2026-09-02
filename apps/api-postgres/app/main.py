@@ -22,6 +22,7 @@ from fastapi.staticfiles import StaticFiles
 from app.audit.listeners import auditar_flush  # noqa: F401  (registra listeners)
 from app.audit.router import router as audit_router
 from app.auth.router import router as auth_router
+from app.mensagens.router import router as mensagens_router
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import setup_logging
@@ -135,6 +136,7 @@ app.include_router(proxies_router)
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(audit_router)
+app.include_router(mensagens_router)
 app.include_router(usuario_router)
 app.include_router(portal_router)
 app.include_router(theme_router)
