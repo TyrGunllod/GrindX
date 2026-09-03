@@ -637,11 +637,10 @@ iframe {
     overflow-x: auto;
     overflow-y: visible;
     scrollbar-width: none;
-    padding-bottom: 160px;
-    margin-bottom: -160px;
     min-width: 0;
 }
 .topbar-nav::-webkit-scrollbar { display: none; }
+.topbar-nav-scroll::-webkit-scrollbar { display: none; }
 
 .nav-group-topbar {
     position: relative;
