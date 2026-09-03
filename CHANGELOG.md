@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.83.2 (2026-09-03)
+
+### Bug Fixes
+
+- Remove invisible topbar overlay blocking module iframe clicks
+  ([`d4a3982`](https://github.com/TyrGunllod/GrindX/commit/d4a3982fc8bf2191c2a3deefb9ab20a40980b194))
+
+
 ## v1.83.1 (2026-09-02)
 
 ### Bug Fixes
