@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.83.4 (2026-09-03)
+
+### Bug Fixes
+
+- Ajustado o deslocamento do user info
+  ([`daa6058`](https://github.com/TyrGunllod/GrindX/commit/daa60588e27172a51a0690fa0699f3f831896296))
+
+
 ## v1.83.3 (2026-09-03)
 
 
