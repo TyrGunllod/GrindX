@@ -63,7 +63,7 @@ Retorna o perfil do usuário autenticado. Qualquer role pode acessar.
 {
   "id": 1,
   "username": "admin",
-  "email": "admin@grindx.com",
+  "email": "admin@erp.com.br",
   "nome_completo": "Administrador",
   "role": "admin",
   "ativo": true,
@@ -139,7 +139,7 @@ Verifica se a API está respondendo e a conectividade com o banco. Não exige au
 {
   "status": "healthy",
   "service": "ERP API Postgres",
-  "version": "1.69.1",
+  "version": "1.83.4",
   "database": { "postgres": "connected" },
   "timestamp": "2026-08-14T12:00:00Z"
 }
@@ -167,7 +167,7 @@ Lista todos os usuários (paginado, filtrável por role). Requer perfil `operado
     {
       "id": 1,
       "username": "admin",
-      "email": "admin@grindx.com",
+      "email": "admin@erp.com.br",
       "nome_completo": "Administrador",
       "role": "admin",
       "ativo": true,

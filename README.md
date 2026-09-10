@@ -8,7 +8,7 @@ O **GrindX** é um ERP modular construído com arquitetura de monorepo, focado e
 
 ## Status do Projeto
 
-Projeto em desenvolvimento ativo. Funcionalidades principais implementadas e funcionais (autenticação JWT + RBAC, CRUD de usuários, portal modular com shell, skin system com dual layout, importação de módulos). CI/CD, testes automatizados (264) e documentação acompanham o desenvolvimento.
+Projeto em desenvolvimento ativo. Funcionalidades principais implementadas e funcionais (autenticação JWT + RBAC, CRUD de usuários, portal modular com shell, skin system com dual layout, importação de módulos). CI/CD, testes automatizados (305) e documentação acompanham o desenvolvimento.
 
 ---
 
@@ -26,7 +26,7 @@ O projeto utiliza micro-serviços no backend e um Portal Orquestrador (Shell) no
 ### Frontend
 
 - **Portal Modular (porta 8101):** Shell que gerencia navegação e carrega módulos via iframe isolado. **PWA-ready** (service worker, manifest com ícones 192x192 e 512x512, `display: standalone`). Preparado para reverse proxy (nginx) com same-origin API, CSP estático e HTTPS.
-- **Módulos:** `admin-skins`, `admins`, `auditoria`, `home`, `importer`, `mensagens`, `profile`, `structure`, `users` — cada um é standalone e testável independentemente.
+- **Módulos:** `admin-skins`, `admins`, `auditoria`, `configurar-agente`, `home`, `importer`, `mensagens`, `profile`, `structure`, `users` — cada um é standalone e testável independentemente.
 - **Mensagens (`modules/mensagens/`)** — mensagens internas com threads, anexos e badge de não lidas no mascote; backend `app/mensagens/` (`/v1/mensagens`).
 - **Inatividade:** `shared/inactivity.js` — sistema de inatividade com logout automático; `shared/serverLogout.js` notifica a API no logout manual e por inatividade (`POST /v1/auth/logout`).
 - **Design System:** Glassmorphism + tokens CSS + `UIFactory` para consistência absoluta.
@@ -130,11 +130,11 @@ O agente está implantado na nuvem e acessível publicamente.
 
 ## Testes
 
-Suite com 264 testes cobrindo unitários, integração e validação do monorepo.
+Suite com 305 testes cobrindo unitários, integração e validação do monorepo.
 
 | Pacote | Testes | Cobertura |
 |--------|--------|-----------|
-| `api-postgres` | 197 | Auth, RBAC, temas, usuários, portal, segurança, cache, importação, PDF |
+| `api-postgres` | 238 | Auth, RBAC, temas, usuários, portal, segurança, cache, importação |
 | `api-sqlserver` | 17 | Health check e consulta de produtos Protheus |
 | `shared` | 26 | Permissões RBAC |
 | `tests/` (raiz) | 24 | Validação de pacotes e JWT cross-API |
@@ -153,7 +153,7 @@ make test-all         # todos os pacotes
 
 Workflow único em `.github/workflows/release.yml`:
 
-- **`test-api-postgres`** — 197 testes com SQLite in-memory, cobertura mínima 70%
+- **`test-api-postgres`** — 238 testes com SQLite in-memory, cobertura mínima 70%
 - **`test-api-sqlserver`** — testes com SQLite via `DB_URL_OVERRIDE`
 - **`test-root`** — testes do monorepo (depende dos dois anteriores)
 - **`lint`** — `ruff check` + `ruff format --check` em `packages/` e `apps/`
@@ -221,7 +221,7 @@ GrindX/
 │   │   ├── mensagens/         # Mensagens internas (models, schemas, service, router)
 │   │   ├── audit/             # Auditoria de alterações e sessões (models, service, listeners, router)
 │   │   ├── alembic/           # 23 migrações do banco
-│   │   ├── tests/             # 216 testes
+│   │   ├── tests/             # 238 testes
 │   │   └── ...
 │   ├── api-sqlserver/         # API somente leitura (SQL Server)
 │   │   ├── app/
