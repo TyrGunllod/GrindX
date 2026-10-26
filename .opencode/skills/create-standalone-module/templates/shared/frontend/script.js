@@ -4,11 +4,10 @@ let modelos=[];let editingId=null;
 const _isGrindx=typeof window!=='undefined'&&window.grindx&&window.grindx.session;
 const _apiBase=(function(){var h=window.location.hostname,p=window.location.port;if(p==='7080')return'http://'+h+':7000/v1/pop-modelos';if(window.GRINDX_CONFIG?.API_BASE_URL)return window.GRINDX_CONFIG.API_BASE_URL+'/pop-modelos';return'/v1/pop-modelos';})();
 const API_BASE=_apiBase;
-const API_KEY=localStorage.getItem('popg_api_key')||'';
 async function apiFetch(url,options){
  options=options||{};const headers={'Content-Type':'application/json',...(options.headers||{})};
  if(_isGrindx){var tk=window.grindx.session.getToken();if(tk)headers['Authorization']='Bearer '+tk;}
- else if(API_KEY)headers['X-API-Key']=API_KEY;
+ /* Standalone: sem credencial — a API do modulo nao autentica fora do GrindX. */
  var r=await fetch(url,{...options,headers});if(!r.ok){var e={detail:'HTTP '+r.status};try{e=await r.json()}catch(ex){}throw new Error(e.detail||'Erro');}
  return r.status!==204?r.json():null;
 }

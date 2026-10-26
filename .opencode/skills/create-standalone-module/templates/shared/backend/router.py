@@ -12,7 +12,7 @@ try:
     _grindx_mode = True
 except ImportError:
     from app.core.database_protheus import get_db_protheus as get_db
-    from app.core.auth import verify_api_key as _auth_dependency
+    from app.core.auth import identidade_standalone as _auth_dependency
     _grindx_mode = False
 
 router = APIRouter(prefix="{route_prefix}", tags=["{route_tag}"])

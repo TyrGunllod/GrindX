@@ -99,6 +99,8 @@ Registro centralizado de códigos de erro. Use constantes em vez de strings lite
 
 ## Segurança
 
+- **Standalone não autentica.** `app/core/auth.py` devolve sempre a identidade de desenvolvimento (`USUARIO_DEV = 1`); `X-Usuario-Id` só serve para simular outro usuário. Autenticação de verdade é exclusivamente o JWT do GrindX — por isso o standalone jamais deve ser publicado em ambiente exposto, e o frontend nunca guarda segredo.
+
 - Validação de secrets (entropia mínima, requisitos)
 - CORS: modo strict em produção (nunca `*`)
 - Rate limiting: estratégia e chaves utilizadas

@@ -182,7 +182,7 @@ Carrega `.env` via `python-dotenv`, expõe `DATABASE_URL`.
 Engine SQLAlchemy + `get_db_protheus()`. Usa `DATABASE_URL` do config.
 
 ### `app/core/auth.py` → `templates/shared/standalone/auth.py`
-`verify_api_key()` stub — aceita qualquer `X-API-Key` header.
+`identidade_standalone()` + `Identidade(sub)` + `USUARIO_DEV = 1`. **O standalone não autentica**: autenticação de verdade só existe no GrindX (JWT). O header opcional `X-Usuario-Id` simula outro usuário; sem ele, todo chamador é o `USUARIO_DEV`. Nunca exigir chave: um 401 no standalone trava o teste local e o frontend nem tem tela para cadastrar credencial.
 
 ### `app/modules/iam/base.py` → `templates/shared/standalone/iam_base.py`
 Stub local: `metadata`, `reg`, `IamBase`. Substitui dependência do GrindX.
@@ -218,7 +218,7 @@ Stub vazio — no GrindX fornece `window.grindx.session`, no standalone é vazio
 
 **Fluxo de import no router (dual-context):**
 - GrindX: `app.database.get_db` + `app.auth.dependencies.get_current_user`
-- Standalone: `app.core.database_protheus.get_db_protheus` + `app.core.auth.verify_api_key`
+- Standalone: `app.core.database_protheus.get_db_protheus` + `app.core.auth.identidade_standalone` (sem credencial)
 - `shared.*` e `app.modules.iam.*` resolvidos localmente no standalone
 
 ## 1. Backend — Criar Todos os Arquivos
@@ -257,7 +257,7 @@ Substitua `{module_name}`, `{entity_name}`, `{route_prefix}`, `{route_tag}`.
 
 **Dual-context authentication:**
 - **GrindX**: usa `app.database.get_db` (SQLAlchemy session) + JWT auth (`get_current_user`)
-- **Standalone**: usa `app.core.database_protheus.get_db_protheus` + API key auth (`verify_api_key`)
+- **Standalone**: usa `app.core.database_protheus.get_db_protheus` + identidade de desenvolvimento (`identidade_standalone`, sem credencial)
 - Ambos injetados via `Depends()` — FastAPI resolve automaticamente via try/except
 
 ### 1.7 `__init__.py` files
@@ -411,14 +411,14 @@ Use templates:
 - NUNCA importar bibliotecas externas (React, Vue, jQuery, Axios)
 - NUNCA usar TypeScript — apenas JS puro
 - `API_BASE`: relativa no GrindX (`/{route_api}`), absoluta no standalone (`http://localhost:7000/{route_api}`)
-- `_fetch()` com detecção de contexto: `window.grindx.session` (JWT) vs `API_KEY`
-- `downloadFromUrl()` para PDF/binários com fallback para `?api_key=` (standalone)
+- `_fetch()` com detecção de contexto: `window.grindx.session` (JWT no GrindX); no standalone vai **sem header**
+- `downloadFromUrl()` para PDF/binários: no GrindX manda o `Authorization`; no standalone não precisa de credencial
 - Eventos via delegated event bubbling no container pai
 - Ciclo de vida: `DOMContentLoaded` → `init()` → carregar dados → renderizar
 
 **Dual-context auth:**
 - **GrindX**: `window.grindx.session.getToken()` → `Authorization: Bearer {token}`
-- **Standalone**: `X-API-Key` header; PDFs usam `?api_key=` query param
+- **Standalone**: **nenhuma credencial** — nem `X-API-Key`, nem `?api_key=`. Identidade fixa de desenvolvimento (`USUARIO_DEV = 1`); `X-Usuario-Id` só em teste
 - **NÃO usar `window.grindx.api`** — aponta para api-postgres (porta 8002), não api-sqlserver
 
 ## 4. Migration
@@ -586,9 +586,10 @@ pytest tests/ -k {module_name} -v
 - [ ] **Frontend tabs definido**: Array de abas com name, url, menu_icone, order
 - [ ] **Standalone prerequisites**: `app/__init__.py`, `app/main.py`, `app/core/` (config, database_protheus, auth), `app/modules/iam/base.py`, `shared/` (exceptions, schemas), `.env.example`, `.gitignore`
 - [ ] **`index.html` na raiz** apontando para a primeira aba (`meta refresh`, sem JS) — a raiz do `http.server` nunca pode listar pastas, e `test_root_index.py` guarda isso
+- [ ] **Standalone sem credencial**: `identidade_standalone` com `USUARIO_DEV = 1` em `app/core/auth.py`; nenhum `X-API-Key`/`?api_key=` no backend nem no `script.js`. Autenticação real só no GrindX (JWT)
 - [ ] **Modais sem botão de fechar**: só `Cancelar` e `Salvar` no rodapé, fechando apenas no cancelar ou no envio bem-sucedido (`test_modal_contrato.py`)
 - [ ] Backend: base, model, schemas, repository, service, router + __init__.py
-- [ ] **Router dual-context**: try/except para `get_db`/`get_current_user` (GrindX) vs `get_db_protheus`/`verify_api_key` (standalone)
+- [ ] **Router dual-context**: try/except para `get_db`/`get_current_user` (GrindX) vs `get_db_protheus`/`identidade_standalone` (standalone, **sem credencial**)
 - [ ] **Frontend dual-context**: `_fetch()` e `downloadFromUrl()` com detecção `window.grindx.session` + `index.html` inclui `app.js`
 - [ ] **PDF opcional**: se módulo gera PDF, instalar `xhtml2pdf` no venv do GrindX
 - [ ] Tests: conftest.py, unit tests (mocked repo), integration tests (SQLite)
