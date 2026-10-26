@@ -5,7 +5,7 @@
 MODULE := {module_name}
 ENTITY := {entity_name}
 
-.PHONY: test test-unit test-integration dev-backend dev-frontend package export dry-run import clean version version-dry-run help
+.PHONY: test test-unit test-integration dev-backend dev-frontend db-init db-init-dry package export dry-run import clean version version-dry-run help
 
 # ==========================================
 # Testes
@@ -27,8 +27,24 @@ test-integration:
 dev-backend:
 	uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload
 
+# Serve a raiz do modulo: o caminho absoluto /shared/... resolve para {module_root}/shared/
+# (uma unica copia do fallback). Abrir a aba em http://localhost:7080/{frontend_prefix}_{tab}/index.html
+# Nao usar 'cd frontend/{frontend_prefix}_{tab}': quebraria o /shared/... e exigiria copia por aba.
 dev-frontend:
-	cd frontend/{frontend_prefix}_{tab} && python -m http.server 7080
+	python -m http.server 7080
+
+# ==========================================
+# Banco de dados (standalone)
+# ==========================================
+
+# O standalone nao tem alembic.ini: database.sql e o caminho padrao para criar o
+# schema e as tabelas. Idempotente - pode rodar de novo sem perder dado.
+# Dentro do GrindX use a migration, nunca este arquivo.
+db-init:
+	@python scripts/db_init.py
+
+db-init-dry:
+	@python scripts/db_init.py --dry-run
 
 # ==========================================
 # Empacotamento & Exportação
@@ -93,6 +109,7 @@ help:
 	@echo   make test-integration Roda apenas testes de integracao
 	@echo   make dev-backend      Inicia API FastAPI (porta 7000)
 	@echo   make dev-frontend     Inicia frontend estatico (porta 7080)
+	@echo   make db-init          Cria schema e tabelas via database.sql (standalone)
 	@echo   make package          Gera o zip para importacao
 	@echo   make dry-run          Simula a geracao do zip
 	@echo   make export           Exporta direto para o GrindX (CLI)

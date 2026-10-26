@@ -121,7 +121,8 @@ Project_Management/modulo-{module_name}/
 │           │   ├── __init__.py
 │           │   ├── conftest.py                 # Templates/shared/tests/conftest.py
 │           │   ├── test_{module_name}_unit.py  # Templates/shared/tests/test_unit.py
-│           │   └── test_{module_name}_integration.py  # Templates/shared/tests/test_integration.py
+│           │   ├── test_{module_name}_integration.py  # Templates/shared/tests/test_integration.py
+│           │   └── test_database_sql.py        # Templates/shared/tests/test_database_sql.py
 │           ├── export.py                       # Templates/shared/export.py
 │           └── README.md
 ├── shared/
@@ -140,8 +141,10 @@ Project_Management/modulo-{module_name}/
 │   │   └── (style.css importa /shared/core.css — shared na raiz do módulo)
 │   └── ...
 ├── scripts/
-│   └── version.py                               # Templates/shared/scripts/version.py
+│   ├── version.py                               # Templates/shared/scripts/version.py
+│   └── db_init.py                               # Templates/shared/scripts/db_init.py (aplica o database.sql)
 ├── CHANGELOG.md                                 # Gerado por scripts/version.py
+├── database.sql                                 # Templates/shared/database.sql — schema + tabelas no standalone
 ├── migration/
 │   └── {revision}_{table_name}.py              # Templates/postgres/migration.py
 ├── AGENTS.md                                   # Templates/shared/AGENTS.md
@@ -154,6 +157,7 @@ Project_Management/modulo-{module_name}/
 
 - ❌ **Sem** `base.py`, `models/`, `migration/` (sem ORM, sem schema para gerenciar)
 - ❌ **Sem** `conftest.py`, `test_integration.py` (mock do Protheus em vez de SQLite)
+- ❌ **Sem** `database.sql` e `scripts/db_init.py` (não há schema para preparar)
 - ✏️ `module.json` — adiciona `target_api: "sqlserver"` → `templates/sqlserver/module.json`
 - ✏️ `export.py` — aponta para `api-sqlserver`, pula migration/dependency/alembic
 - ✏️ `routers/{module_name}_router.py` — factory inline (padrão atual)
@@ -284,6 +288,16 @@ Substitua `{module_name}`, `{entity_name}`.
 - Testes com SQLite real via fixtures do conftest
 - Cobre: repository CRUD, service buscar/listar
 
+### 2.4 `tests/test_database_sql.py`
+> **Se `target_api == "sqlserver"`: PULE** (não há `database.sql`).
+
+Use template: `templates/shared/tests/test_database_sql.py`
+Substitua `{module_name}`.
+- Lê o `module.json` (schema + `tables[]`) e o `database.sql` da raiz
+- Cobre: schema criado, todas as tabelas do manifesto presentes, idempotência
+  (`IF NOT EXISTS`, sem `DROP`/`TRUNCATE`) e **colunas do SQL == colunas do metadata**
+- `scripts/db_init.py` recusa `DATABASE_URL` sqlite com exit 2
+
 ## 3. Frontend
 
 > **Mobile-first:** CSS base para telas pequenas, `@media (min-width: 768px)` para desktop. Elementos interativos: mínimo 44px de altura.
@@ -393,17 +407,46 @@ Substitua `{table_name}`, `{schema_name}`.
 - Gere revision ID único (ex: via `alembic revision --autogenerate` ou timestamp manual)
 - Ajuste `down_revision` conforme o histórico do Alembic
 
+## 4.5 Banco do standalone — `database.sql` (obrigatório)
+
+> **Se `target_api == "sqlserver"`: PULE esta seção** (não há ORM nem tabelas gerenciadas).
+
+O repositório standalone **não tem `alembic.ini`** e o `app/main.py` não chama
+`create_all`, então sem este arquivo não existe caminho para criar as tabelas fora do
+GrindX — e o módulo sobe com o banco vazio. Gere:
+
+- **`database.sql`** → `templates/shared/database.sql` — substitua `{module_name}`,
+  `{schema_name}`. Crie o schema com `CREATE SCHEMA IF NOT EXISTS` e **um bloco por
+tabela** de `tables[]` no `module.json`, na ordem em que as FKs exigem. Regras:
+  - `CREATE TABLE IF NOT EXISTS` e `CREATE INDEX IF NOT EXISTS` em tudo (idempotente);
+  - **nunca** `DROP`/`DELETE`/`TRUNCATE`: o script roda em banco com dados;
+  - unidades inteiras em `BIGINT` (nunca `FLOAT`), dinheiro/cotação em `NUMERIC(20, 2)`;
+  - timestamps em `TIMESTAMPTZ NOT NULL DEFAULT now()`;
+  - `CHECK` para invariantes (ex: `CHECK (sats > 0)`), `UNIQUE` nomeada e FK explícita.
+- **`scripts/db_init.py`** → `templates/shared/scripts/db_init.py` — aplica o SQL pelo
+  driver Python (sem exigir `psql`), lê `schema_name`/`tables[]` do `module.json` e confere
+  no fim se todas as tabelas existem. Recusa SQLite com mensagem explicando que os testes
+  usam `create_all`.
+- **`Makefile`** — `make db-init` e `make db-init-dry` (já no template de suporte).
+
+> **Teste de contrato obrigatório:** compare as colunas do `database.sql` com o metadata do
+> SQLAlchemy (`PortalBase.metadata.tables`), tabela por tabela. É o que impede o SQL de
+> apodrecer quando o modelo muda — e o inverso também. Sem ele, o módulo "passa nos testes"
+> e quebra no `make db-init` do usuário.
+>
+> **Dentro do GrindX o `database.sql` não é usado**: lá a migration é a fonte da verdade.
+
 ## 5. Support Files
 
 Use templates em `templates/shared/support/`:
 - **`run_tests.ps1`** → `templates/shared/support/run_tests.ps1` — script para rodar testes com `GRINDX_PACKAGES`
 - **`requirements.txt`** → `templates/shared/support/requirements.txt` — pytest, sqlalchemy, pydantic, structlog, fastapi, uvicorn, alembic, python-dotenv
 - **`pytest.ini`** → `templates/shared/support/pytest.ini` — config testpaths
-- **`Makefile`** → `templates/shared/support/Makefile` — targets: test, test-unit, test-integration, dev-backend, dev-frontend, package, export, dry-run, import, clean, version, version-dry-run, help
+- **`Makefile`** → `templates/shared/support/Makefile` — targets: test, test-unit, test-integration, dev-backend, dev-frontend, **db-init, db-init-dry**, package, export, dry-run, import, clean, version, version-dry-run, help
 
 > **Regras dev — padrão pop-docs (obrigatórias):**
 > - `dev-backend` deve ser exatamente `uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload` (sem `python -m`, sem `cd app/...`, com `--host 0.0.0.0`)
-> - `dev-frontend` deve ser `cd frontend/{frontend_prefix}_{primeira_aba} && python -m http.server 7080` (ex: `cd frontend/custo_produtos && python -m http.server 7080`) — abre `http://localhost:7080/` direto no `index.html` sem listar pastas; exige `shared/` fallback dentro de cada `frontend/*/` (ex: `frontend/custo_produtos/shared/core.css` como em `pop-docs` `frontend/pop-docs/shared/`). Não usar `python -m http.server 7080` na raiz.
+> - `dev-frontend` deve ser `python -m http.server 7080` **na raiz do módulo** — é o que faz o caminho absoluto `/shared/...` resolver para `{module_root}/shared/`, onde vive o fallback standalone, com **uma única** cópia do `shared/`. Abrir a aba em `http://localhost:7080/{frontend_prefix}_{aba}/index.html` (a raiz não tem `index.html` próprio, então lista as pastas; use a URL da aba). Não usar `cd frontend/{frontend_prefix}_{primeira_aba}`: isso quebra o `/shared/...` e exigiria uma cópia do `shared/` em cada `frontend/*/`.
 
 ## 5.5 Versionamento (obrigatório)
 
@@ -422,6 +465,8 @@ Use templates em `templates/shared/support/`:
 ⚠️ O padrão `make version` cria a tag no commit atual, ANTES do commit dos artefatos — `git checkout vX.Y.Z` não conteria o changelog.
 
 Arquivos standalone (ver seção 1.0):
+- **`database.sql`** → `templates/shared/database.sql` — preparo do banco no standalone (seção 4.5)
+- **`scripts/db_init.py`** → `templates/shared/scripts/db_init.py` — aplica o `database.sql`
 - **`.env.example`** → `templates/shared/standalone/env_example` — template DATABASE_URL
 - **`.gitignore`** → `templates/shared/standalone/gitignore` — exclui __pycache__, .env, .pytest_cache, dist
 
@@ -451,6 +496,8 @@ Use template: `templates/sqlserver/module.json` (inclui `target_api: "sqlserver"
 Use template: `templates/shared/export.py`
 Substitua `{module_name}`, `{entity_name}`.
 
+> O `package()` inclui o **`database.sql`** da raiz no zip (além de `module.json`, backend, frontend e migration): é o script que cria as tabelas quando o módulo roda standalone. Se ele não existir, nada é incluído.
+
 **Nomenclatura do zip** — o `package()` nomeia o zip com a versão lida do `module.json`: `dist/modulo-{pasta_do_modulo}-v{version}.zip` (ex: `modulo-pop_docs-v1.0.0.zip`); sem versão no manifest → `modulo-{pasta_do_modulo}.zip`. Mesmo padrão do `pop_docs` (`_zip_filename`). A importação no GrindX usa o `module_name` do manifest (o fallback fuzzy `*{module_name}*.zip` aceita o nome com versão).
 
 ### Adaptação para `target_api`
@@ -479,8 +526,9 @@ python -m pytest app/modules/{module_name}/tests/ -v
 # Esperado: 10+ testes PASS
 
 # 3. Rodar standalone (sem GrindX) — padrão pop-docs
+make db-init          # cria schema + tabelas via database.sql (sem isso o banco fica vazio)
 make dev-backend      # FastAPI: uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload → http://localhost:7000
-make dev-frontend     # Frontend: cd frontend/{prefix}_{tab} && python -m http.server 7080 → http://localhost:7080/ (index.html direto, não lista pastas)
+make dev-frontend     # Frontend: python -m http.server 7080 na raiz do modulo → http://localhost:7080/{prefix}_{tab}/index.html
 
 # 4. Gerar pacote .zip
 make package
@@ -517,7 +565,9 @@ pytest tests/ -k {module_name} -v
 - [ ] **PDF opcional**: se módulo gera PDF, instalar `xhtml2pdf` no venv do GrindX
 - [ ] Tests: conftest.py, unit tests (mocked repo), integration tests (SQLite)
 - [ ] Migration: Alembic migration file (PostgreSQL)
-- [ ] Support: requirements.txt (com python-dotenv), pytest.ini, run_tests.ps1, Makefile (com dev-backend `uvicorn --host 0.0.0.0 --port 7000 --reload` / dev-frontend `cd frontend/{tab} && http.server 7080` direto no index)
+- [ ] **Banco do standalone**: `database.sql` na raiz (schema + tabelas, idempotente, sem `DROP`) + `scripts/db_init.py` + targets `db-init`/`db-init-dry`, e `database.sql` incluído no `package()` do `export.py`
+- [ ] **Contrato do SQL**: `test_database_sql.py` comparando as colunas do `database.sql` com o metadata dos modelos
+- [ ] Support: requirements.txt (com python-dotenv), pytest.ini, run_tests.ps1, Makefile (com dev-backend `uvicorn --host 0.0.0.0 --port 7000 --reload` / dev-frontend `python -m http.server 7080` **na raiz do módulo**, abrindo `http://localhost:7080/{frontend_prefix}_{aba}/index.html`)
 - [ ] Versionamento: `scripts/version.py` + targets `version`/`version-dry-run` no Makefile
 - [ ] Badge de versão: `version.js` na raiz de cada aba frontend, `<span id="viz-version">` no header, `setBadgeVersao()` em `script.js` (`.viz-version` e `.page-header-container` vêm do `core.css` — não duplicar no `style.css`)
 - [ ] `AGENTS.md` criado na raiz do modulo com regras para agentes de IA
@@ -531,7 +581,7 @@ pytest tests/ -k {module_name} -v
 
 ### SQL Server (opção A2) — Diferenças
 
-- [ ] **Sem** `base.py`, `models/`, `migration/`
+- [ ] **Sem** `base.py`, `models/`, `migration/`, `database.sql`, `scripts/db_init.py`
 - [ ] **Adicionar** `exceptions.py` com exceções específicas do domínio
 - [ ] **`module.json`**: incluir `"target_api": "sqlserver"` e `"role_minima": "leitura"`
 - [ ] **`export.py`**: `GRINDX_API` aponta para `apps/api-sqlserver`; pula migration/dependency/alembic

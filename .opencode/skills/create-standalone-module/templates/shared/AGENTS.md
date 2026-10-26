@@ -6,6 +6,7 @@ Estas regras causam falha de CI, bug sutil ou retrabalho quando ignoradas. Revis
 
 **Sempre:**
 - [ ] Antes de `git push`: executar testes → formatar código → lint, nesta ordem (ver Pre-push)
+- [ ] Manter `database.sql`, os modelos e a migration em sincronia (o teste de contrato compara as colunas)
 - [ ] Usar tokens/constantes do design system — nunca valores fixos (cores, fontes, espaçamentos)
 - [ ] Usar constantes/enums de erro — nunca strings literais de erro
 - [ ] Atualizar documentação (README, docs/) ao alterar código relevante
@@ -65,6 +66,15 @@ Documente os comandos principais: inicialização, execução de serviços, test
   1. `python scripts/version.py --no-tag` — atualiza `module.json` + `frontend/*/version.js` + `CHANGELOG.md`
   2. Commitar esses artefatos e então criar a tag `git tag vX.Y.Z`
   - ⚠️ O padrão `make version` cria a tag no commit atual, ANTES do commit dos artefatos — `git checkout vX.Y.Z` não conteria o changelog
+
+---
+
+## Banco de dados — Standalone vs GrindX
+
+- **Standalone**: o repositório não tem `alembic.ini`, então a migration não roda aqui. O preparo do banco é o `database.sql` da raiz — idempotente (`CREATE SCHEMA/TABLE/INDEX IF NOT EXISTS`), sem `DROP`, aplicado por `make db-init` (`scripts/db_init.py`, que usa o driver Python e dispensa o `psql`).
+- **GrindX**: a fonte da verdade é a migration (`migration/{revision}_{table}_...py`), aplicada pelo `make export`. **Nunca** rode o `database.sql` lá.
+- `database.sql` é PostgreSQL (`SERIAL`, `TIMESTAMPTZ`, `NUMERIC`); os testes de integração usam SQLite in-memory com `create_all`.
+- O `package()` do `export.py` inclui `database.sql` no zip.
 
 ---
 

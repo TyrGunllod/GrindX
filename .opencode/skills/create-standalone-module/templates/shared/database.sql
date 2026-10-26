@@ -1,0 +1,42 @@
+-- database.sql — prepara o banco do modulo {module_name} no contexto standalone.
+--
+-- Este e o caminho padrao de criacao das tabelas fora do GrindX: o repositorio
+-- standalone nao tem alembic.ini, entao a migration so roda dentro do monorepo.
+-- Dentro do GrindX nao use este arquivo: la a migration e a fonte da verdade.
+--
+-- Idempotente: pode rodar quantas vezes quiser, nunca derruba dados.
+--
+--   psql "$DATABASE_URL" -f database.sql
+--   python scripts/db_init.py        (mesma coisa, sem precisar do psql)
+--
+-- Gere um bloco como o exemplo abaixo para CADA tabela de `tables[]` no
+-- module.json, na ordem em que as FKs exigem (pai antes do filho). Troque colunas
+-- e constraints pelas do modelo de verdade.
+--
+-- Regras:
+--   * CREATE TABLE IF NOT EXISTS / CREATE INDEX IF NOT EXISTS em tudo;
+--   * nunca DROP/DELETE/TRUNCATE — o script roda em banco com dados;
+--   * unidades inteiras (sats, quantidades) em BIGINT, nunca FLOAT;
+--   * dinheiro/cotacao em NUMERIC(20, 2);
+--   * timestamps em TIMESTAMPTZ NOT NULL DEFAULT now();
+--   * CHECK para invariantes de dominio (ex: CHECK (sats > 0));
+--   * UNIQUE nomeada (uq_{table_name}_...) e FK explicita para a tabela pai.
+--
+-- O teste de contrato `test_colunas_batem_com_os_modelos` compara as colunas
+-- deste arquivo com o metadata do SQLAlchemy: mexeu no modelo e esqueceu o SQL
+-- (ou o contrario), a suite quebra.
+
+CREATE SCHEMA IF NOT EXISTS {schema_name};
+
+-- Exemplo (descomente e adapte):
+--
+-- CREATE TABLE IF NOT EXISTS {schema_name}.{table_name} (
+--     id            SERIAL PRIMARY KEY,
+--     nome          TEXT NOT NULL,
+--     ativo         BOOLEAN NOT NULL DEFAULT TRUE,
+--     criado_em     TIMESTAMPTZ NOT NULL DEFAULT now(),
+--     atualizado_em TIMESTAMPTZ NOT NULL DEFAULT now(),
+--     CONSTRAINT uq_{table_name}_nome UNIQUE (nome)
+-- );
+-- CREATE INDEX IF NOT EXISTS ix_{table_name}_nome
+--     ON {schema_name}.{table_name} (nome);

@@ -472,6 +472,7 @@ def package(dry_run: bool = False):
     if dry_run:
         logger.info("[DRY-RUN] Criaria %s com:", zip_path)
         logger.info("  - module.json")
+        logger.info("  - database.sql")
         logger.info("  - app/modules/pop_modelos/")
         logger.info("  - frontend/")
         logger.info("  - migration/")
@@ -481,6 +482,10 @@ def package(dry_run: bool = False):
         manifest = STANDALONE_ROOT / "module.json"
         if manifest.exists():
             zf.write(manifest, "module.json")
+        # Preparo do banco no standalone; dentro do GrindX vale a migration.
+        script_sql = STANDALONE_ROOT / "database.sql"
+        if script_sql.exists():
+            zf.write(script_sql, "database.sql")
         for f in MODULE_SRC.rglob("*"):
             if f.is_file() and "__pycache__" not in f.parts and not f.name.endswith(".pyc"):
                 if any(part in EXCLUDE_DIRS for part in f.parts):
