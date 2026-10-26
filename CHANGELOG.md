@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.87.0 (2026-10-26)
+
+### Features
+
+- Skill gera standalone sem chave de api
+  ([`c7ba58e`](https://github.com/TyrGunllod/GrindX/commit/c7ba58ed01e1d0f50f23752de97a271721ff4d10))
+
+
 ## v1.86.0 (2026-10-26)
 
 ### Features
