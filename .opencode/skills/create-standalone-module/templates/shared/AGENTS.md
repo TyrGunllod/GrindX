@@ -7,6 +7,7 @@ Estas regras causam falha de CI, bug sutil ou retrabalho quando ignoradas. Revis
 **Sempre:**
 - [ ] Antes de `git push`: executar testes → formatar código → lint, nesta ordem (ver Pre-push)
 - [ ] Manter `database.sql`, os modelos e a migration em sincronia (o teste de contrato compara as colunas)
+- [ ] Modal fecha só no **Cancelar** ou **depois de salvar com sucesso** — sem X no cabeçalho, sem `Escape`, sem fechar no clique do overlay (`test_modal_contrato.py`)
 - [ ] Usar tokens/constantes do design system — nunca valores fixos (cores, fontes, espaçamentos)
 - [ ] Usar constantes/enums de erro — nunca strings literais de erro
 - [ ] Atualizar documentação (README, docs/) ao alterar código relevante

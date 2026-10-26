@@ -305,7 +305,14 @@ Substitua `{module_name}`.
   (`IF NOT EXISTS`, sem `DROP`/`TRUNCATE`) e **colunas do SQL == colunas do metadata**
 - `scripts/db_init.py` recusa `DATABASE_URL` sqlite com exit 2
 
-### 2.5 `tests/test_root_index.py`
+### 2.5 `tests/test_modal_contrato.py`
+Use template: `templates/shared/tests/test_modal_contrato.py`
+- Percorre todos os `frontend/*/index.html` e, em cada modal (`modal-overlay`), exige
+  `role="dialog"` + `aria-modal="true"` + `aria-labelledby`
+- Garante que **nenhum** modal tenha botão de fechar (`aria-label="Fechar"`/`&times;`) e que
+  cada rodapé tenha `Cancelar` e `Salvar`
+
+### 2.6 `tests/test_root_index.py`
 Use template: `templates/shared/tests/test_root_index.py`
 - Lê o `module.json` e confere que o `index.html` da raiz aponta para a **primeira aba**
   (`order` menor), convertendo `modules/x/index.html` (GrindX) em `frontend/x/index.html`
@@ -329,6 +336,7 @@ Use template: `templates/shared/frontend/style.css`
 - Tabelas viram cards no mobile: use `data-label` nos `<td>` para `::before`
 - `.page-header` é `position:sticky; top:0` via `core.css` (fica fixo ao rolar) — não duplicar no `style.css` do módulo
 - Modal usa `modal-overlay` + `modal-card` (NÃO `<dialog>` nativo); elemento central com `class="modal-content"` (header/footer fixos, scroll só no meio — layout vem do `core.css`)
+- Modal fecha **só no Cancelar ou após salvar** — sem X no cabeçalho, sem `Escape`, sem fechar no clique do overlay
 - Testar visualmente com pelo menos 2 skins antes de exportar
 
 ### 3.2 `index.html` e `script.js`
@@ -381,9 +389,8 @@ Use templates:
 ```html
 <div class="modal-overlay" id="modal-id" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display: none;">
   <div class="modal-card">
-    <header class="modal-header flex justify-between">
+    <header class="modal-header">
       <h3 id="modal-title">Título</h3>
-      <button class="btn-icon" id="close-modal" aria-label="Fechar">&times;</button>
     </header>
     <form id="form-id" class="modal-content grid grid-md-2">
       <!-- campos do formulário — container central, scroll próprio -->
@@ -395,6 +402,8 @@ Use templates:
   </div>
 </div>
 ```
+
+> **Sem botão de fechar (X):** o modal fecha **somente** no **Cancelar** ou **depois de salvar com sucesso**. Nada de `<button class="btn-icon">&times;</button>` no cabeçalho, de handler de `Escape` ou de fechar ao clicar no `.modal-overlay`: são caminhos que descartam o formulário preenchido sem aviso. `test_modal_contrato.py` guarda a regra. O `.modal-header` já é `display:flex; justify-content:space-between` no `core.css` — com um filho só, não precisa das utilitárias `flex justify-between`.
 
 > **Padrão de modal (obrigatório):** o elemento central (form, lista, div) recebe a classe `modal-content`. O `core.css` cuida do layout — `.modal-card` flex column, header/footer com `flex-shrink:0` (nunca somem), `.modal-content` com scroll próprio (`overflow-y:auto`), e bottom-sheet full-width em `<768px`. **Não duplicar** `max-height`/`overflow` no `style.css` do módulo; apenas `max-width`/padding específicos, em media query `@media (min-width: 768px)`.
 
@@ -577,6 +586,7 @@ pytest tests/ -k {module_name} -v
 - [ ] **Frontend tabs definido**: Array de abas com name, url, menu_icone, order
 - [ ] **Standalone prerequisites**: `app/__init__.py`, `app/main.py`, `app/core/` (config, database_protheus, auth), `app/modules/iam/base.py`, `shared/` (exceptions, schemas), `.env.example`, `.gitignore`
 - [ ] **`index.html` na raiz** apontando para a primeira aba (`meta refresh`, sem JS) — a raiz do `http.server` nunca pode listar pastas, e `test_root_index.py` guarda isso
+- [ ] **Modais sem botão de fechar**: só `Cancelar` e `Salvar` no rodapé, fechando apenas no cancelar ou no envio bem-sucedido (`test_modal_contrato.py`)
 - [ ] Backend: base, model, schemas, repository, service, router + __init__.py
 - [ ] **Router dual-context**: try/except para `get_db`/`get_current_user` (GrindX) vs `get_db_protheus`/`verify_api_key` (standalone)
 - [ ] **Frontend dual-context**: `_fetch()` e `downloadFromUrl()` com detecção `window.grindx.session` + `index.html` inclui `app.js`
