@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.86.0 (2026-10-26)
+
+### Features
+
+- Skill padroniza modal sem botao de fechar
+  ([`7559257`](https://github.com/TyrGunllod/GrindX/commit/7559257c0bd435386a56168526c3e781bc583523))
+
+
 ## v1.85.0 (2026-10-26)
 
 ### Features
