@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{menu_label}</title>
+    <link rel="stylesheet" href="/shared/core.css">
+    <!-- A raiz existe para o `python -m http.server` nao listar as pastas: sem
+         index.html em `/`, o servidor devolve o diretorio. O redirect usa meta
+         refresh (sem JS, sem rota de servidor) para a PRIMEIRA aba de
+         `frontend_tabs` no module.json. -->
+    <meta http-equiv="refresh" content="0; url=frontend/{frontend_prefix}_{tab1}/index.html">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-family, system-ui, sans-serif);
+            text-align: center;
+        }
+        .aviso { padding: var(--space-6); }
+        .aviso p { margin: var(--space-2) 0; }
+        a { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="aviso">
+        <p>Abrindo {tab1_nome}…</p>
+        <p><a href="frontend/{frontend_prefix}_{tab1}/index.html">Se nao abrir automaticamente, clique aqui.</a></p>
+    </div>
+</body>
+</html>

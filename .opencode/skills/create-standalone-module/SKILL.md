@@ -144,6 +144,7 @@ Project_Management/modulo-{module_name}/
 │   ├── version.py                               # Templates/shared/scripts/version.py
 │   └── db_init.py                               # Templates/shared/scripts/db_init.py (aplica o database.sql)
 ├── CHANGELOG.md                                 # Gerado por scripts/version.py
+├── index.html                                   # Templates/shared/standalone/root_index.html — raiz → primeira aba
 ├── database.sql                                 # Templates/shared/database.sql — schema + tabelas no standalone
 ├── migration/
 │   └── {revision}_{table_name}.py              # Templates/postgres/migration.py
@@ -198,6 +199,12 @@ Template com `DATABASE_URL`. Substitua `{module_name}` no nome do banco.
 ### `.gitignore` → `templates/shared/standalone/gitignore`
 Exclui `__pycache__/`, `.env`, `.pytest_cache/`, `dist/`, `*.db`, IDEs.
 
+### `index.html` (raiz) → `templates/shared/standalone/root_index.html`
+Substitua `{menu_label}`, `{frontend_prefix}`, `{tab1}`, `{tab1_nome}`. Redireciona `/` para a
+**primeira aba** com `meta refresh` (sem JS): sem este arquivo, `http://localhost:7080/`
+lista as pastas em vez de abrir o módulo. Só existe no standalone — o `export.py` copia
+`frontend/*` para o GrindX e a raiz do módulo não é exportada.
+
 ### `shared/core.css` → `templates/shared/standalone/shared/core.css`
 Variáveis CSS (`--primary`, `--bg-card`, `--border-color`, etc.) + padrão de modal (header/footer fixos, `.modal-content`, bottom-sheet mobile) para standalone sem o monorepo. **Apenas fallback standalone** — no GrindX o módulo usa a `shared` padrão em `/shared/core.css` e a `shared/` da raiz do módulo **não é copiada** no export.
 
@@ -207,7 +214,7 @@ Define `window.GRINDX_CONFIG.API_BASE_URL` para standalone. **Apenas fallback st
 ### `shared/app.js` → `templates/shared/standalone/shared/app.js`
 Stub vazio — no GrindX fornece `window.grindx.session`, no standalone é vazio. **Apenas fallback standalone**, não é copiado no export.
 
-> **Atenção `make dev-frontend`:** serve a **raiz do módulo** (não a pasta de cada aba), pois `/shared/...` resolve para `{module_root}/shared/`. Isso expõe o código Python do backend via HTTP — aceitável em ambiente de desenvolvimento standalone.
+> **Atenção `make dev-frontend`:** serve a **raiz do módulo** (não a pasta de cada aba), pois `/shared/...` resolve para `{module_root}/shared/`. Isso expõe o código Python do backend via HTTP — aceitável em ambiente de desenvolvimento standalone. Por isso a raiz **precisa** do `index.html` de redirect: o servidor entrega `/index.html` em `/` e a listagem de pastas nunca aparece.
 
 **Fluxo de import no router (dual-context):**
 - GrindX: `app.database.get_db` + `app.auth.dependencies.get_current_user`
@@ -297,6 +304,13 @@ Substitua `{module_name}`.
 - Cobre: schema criado, todas as tabelas do manifesto presentes, idempotência
   (`IF NOT EXISTS`, sem `DROP`/`TRUNCATE`) e **colunas do SQL == colunas do metadata**
 - `scripts/db_init.py` recusa `DATABASE_URL` sqlite com exit 2
+
+### 2.5 `tests/test_root_index.py`
+Use template: `templates/shared/tests/test_root_index.py`
+- Lê o `module.json` e confere que o `index.html` da raiz aponta para a **primeira aba**
+  (`order` menor), convertendo `modules/x/index.html` (GrindX) em `frontend/x/index.html`
+- Exige `meta refresh` (sem JS, sem servidor com rotas) e que a raiz **não** carregue
+  `shared/config.js` nem `shared/app.js` — ela só redireciona
 
 ## 3. Frontend
 
@@ -446,7 +460,9 @@ Use templates em `templates/shared/support/`:
 
 > **Regras dev — padrão pop-docs (obrigatórias):**
 > - `dev-backend` deve ser exatamente `uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload` (sem `python -m`, sem `cd app/...`, com `--host 0.0.0.0`)
-> - `dev-frontend` deve ser `python -m http.server 7080` **na raiz do módulo** — é o que faz o caminho absoluto `/shared/...` resolver para `{module_root}/shared/`, onde vive o fallback standalone, com **uma única** cópia do `shared/`. Abrir a aba em `http://localhost:7080/{frontend_prefix}_{aba}/index.html` (a raiz não tem `index.html` próprio, então lista as pastas; use a URL da aba). Não usar `cd frontend/{frontend_prefix}_{primeira_aba}`: isso quebra o `/shared/...` e exigiria uma cópia do `shared/` em cada `frontend/*/`.
+> - `dev-frontend` deve ser `python -m http.server 7080` **na raiz do módulo** — é o que faz o caminho absoluto `/shared/...` resolver para `{module_root}/shared/`, onde vive o fallback standalone, com **uma única** cópia do `shared/`.
+> - **A raiz tem `index.html`** (`templates/shared/standalone/root_index.html`): entrar em `http://localhost:7080/` cai direto na **primeira aba** (`frontend/{frontend_prefix}_{tab1}/index.html`) por `meta refresh`. Sem ele o `http.server` lista as pastas (`frontend/`, `shared/`, `app/`...). As outras abas ficam em `http://localhost:7080/frontend/{frontend_prefix}_{aba}/index.html`.
+> - Não usar `cd frontend/{frontend_prefix}_{primeira_aba}`: isso quebra o `/shared/...` e exigiria uma cópia do `shared/` em cada `frontend/*/`.
 
 ## 5.5 Versionamento (obrigatório)
 
@@ -467,6 +483,7 @@ Use templates em `templates/shared/support/`:
 Arquivos standalone (ver seção 1.0):
 - **`database.sql`** → `templates/shared/database.sql` — preparo do banco no standalone (seção 4.5)
 - **`scripts/db_init.py`** → `templates/shared/scripts/db_init.py` — aplica o `database.sql`
+- **`index.html`** (raiz) → `templates/shared/standalone/root_index.html` — `/` cai na primeira aba
 - **`.env.example`** → `templates/shared/standalone/env_example` — template DATABASE_URL
 - **`.gitignore`** → `templates/shared/standalone/gitignore` — exclui __pycache__, .env, .pytest_cache, dist
 
@@ -559,6 +576,7 @@ pytest tests/ -k {module_name} -v
 - [ ] **Frontend prefix definido**: Prefixo abreviado para sub-módulos (ex: `gp`)
 - [ ] **Frontend tabs definido**: Array de abas com name, url, menu_icone, order
 - [ ] **Standalone prerequisites**: `app/__init__.py`, `app/main.py`, `app/core/` (config, database_protheus, auth), `app/modules/iam/base.py`, `shared/` (exceptions, schemas), `.env.example`, `.gitignore`
+- [ ] **`index.html` na raiz** apontando para a primeira aba (`meta refresh`, sem JS) — a raiz do `http.server` nunca pode listar pastas, e `test_root_index.py` guarda isso
 - [ ] Backend: base, model, schemas, repository, service, router + __init__.py
 - [ ] **Router dual-context**: try/except para `get_db`/`get_current_user` (GrindX) vs `get_db_protheus`/`verify_api_key` (standalone)
 - [ ] **Frontend dual-context**: `_fetch()` e `downloadFromUrl()` com detecção `window.grindx.session` + `index.html` inclui `app.js`
