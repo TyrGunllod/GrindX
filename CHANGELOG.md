@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v1.84.0 (2026-10-26)
+
+### Chores
+
+- Ajuste de padding no módulo users
+  ([`78379f5`](https://github.com/TyrGunllod/GrindX/commit/78379f59ce3bbc78a271b35d03f5f74c2aa6e85f))
+
+### Documentation
+
+- Sync test counts, modules and API examples with codebase
+  ([`bfd9566`](https://github.com/TyrGunllod/GrindX/commit/bfd9566e4180123fd853ca16dc7fc22bff74f9c2))
+
+### Features
+
+- Skill cria modulo standalone com database.sql e db-init
+  ([`9051434`](https://github.com/TyrGunllod/GrindX/commit/90514348be6355a3cd990405b73b6017dac6cffa))
+
+
 ## v1.83.4 (2026-09-03)
 
 ### Bug Fixes
