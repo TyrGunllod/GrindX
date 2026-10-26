@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.85.0 (2026-10-26)
+
+### Features
+
+- Skill gera index na raiz para nao listar pastas no standalone
+  ([`286483a`](https://github.com/TyrGunllod/GrindX/commit/286483ae8ee1840738ce6774c17d09d7325e8db9))
+
+
 ## v1.84.0 (2026-10-26)
 
 ### Chores
