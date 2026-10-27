@@ -1,12 +1,13 @@
 ---
 name: create-standalone-module
-description: Use when creating new GrindX modules that must be developed and tested independently outside the monorepo, then exported via export.py. Covers backend (FastAPI/SQLAlchemy), frontend (vanilla JS), self-contained tests, Alembic migration, and self-registration.
+description: Use when creating new GrindX modules that must be developed and tested independently outside the monorepo, then packaged as a zip (make release) and installed manually by copying it into the GrindX import/ folder. Covers backend (FastAPI/SQLAlchemy), frontend (vanilla JS), self-contained tests and Alembic migration.
 ---
 
 # Create Standalone Module — GrindX
 
 Desenvolver módulos GrindX **fora do monorepo** (ex: `Project_Management/modulo-{nome}/`),
-testar isoladamente, exportar via `export.py` apenas após testes verdes.
+testar isoladamente e empacotar (`make release`) apenas após testes verdes; a instalação
+no GrindX é manual (zip copiado para `import/`).
 
 ## Tech Stack Questionnaire (Perguntar Primeiro)
 
@@ -20,11 +21,11 @@ Antes dos parâmetros do módulo, **sempre pergunte qual padrão de frontend e b
 | **(A2) GrindX + SQL Server** | HTML puro | CSS puro | Vanilla JS | SQL Server (via pyodbc, raw SQL) | FastAPI + SQLAlchemy | `api-sqlserver` |
 | **(B) Outro padrão** | Especificar | Especificar | Especificar | Especificar | Especificar | Especificar |
 
-- Se escolher **(A)**, siga os templates padrão (exporta para `api-postgres`).
-- Se escolher **(A2)**, mesmo frontend, SQL Server com raw SQL (sem ORM/Alembic). Exporta para `api-sqlserver`.
+- Se escolher **(A)**, siga os templates padrão (migration Alembic para `api-postgres`).
+- Se escolher **(A2)**, mesmo frontend, SQL Server com raw SQL (sem ORM/Alembic — o zip não leva `migration/`).
 - Se escolher **(B)**, pergunte detalhadamente e adapte os templates.
 
-> **Pasta `shared` na raiz do módulo**: o módulo referencia `/shared/core.css`, `/shared/config.js` e `/shared/app.js` (caminho absoluto a partir da raiz da webapp). No GrindX isso usa a **`shared` padrão** (`apps/frontend-webapp/shared/`); no **standalone**, o fallback (`core.css`, `config.js`, `app.js`) vive na pasta **`shared/` da raiz do módulo**, **coexistindo** com o pacote Python (`__init__.py`, `exceptions/`, `schemas/`). Toda a pasta `shared/` é **apenas fallback standalone** — o `export.py` a exclui do zip e o `make dev-frontend` serve a **raiz do módulo** (não a pasta de cada aba). O `version.js` é específico do módulo e fica na **raiz** de cada frontend (carregado como `version.js`).
+> **Pasta `shared` na raiz do módulo**: o módulo referencia `/shared/core.css`, `/shared/config.js` e `/shared/app.js` (caminho absoluto a partir da raiz da webapp). No GrindX isso usa a **`shared` padrão** (`apps/frontend-webapp/shared/`); no **standalone**, o fallback (`core.css`, `config.js`, `app.js`) vive na pasta **`shared/` da raiz do módulo**, **coexistindo** com o pacote Python (`__init__.py`, `exceptions/`, `schemas/`). Toda a pasta `shared/` é **apenas fallback standalone** — o `package()`/`release()` a exclui do zip e o `make dev-frontend` serve a **raiz do módulo** (não a pasta de cada aba). O `version.js` é específico do módulo e fica na **raiz** de cada frontend (carregado como `version.js`).
 
 ## Parameter Questionnaire
 
@@ -160,7 +161,7 @@ Project_Management/modulo-{module_name}/
 - ❌ **Sem** `conftest.py`, `test_integration.py` (mock do Protheus em vez de SQLite)
 - ❌ **Sem** `database.sql` e `scripts/db_init.py` (não há schema para preparar)
 - ✏️ `module.json` — adiciona `target_api: "sqlserver"` → `templates/sqlserver/module.json`
-- ✏️ `export.py` — aponta para `api-sqlserver`, pula migration/dependency/alembic
+- ✏️ `export.py` — nenhuma adaptação: sem `migration/`, o zip leva só backend e frontend
 - ✏️ `routers/{module_name}_router.py` — factory inline (padrão atual)
 - ✏️ `repositories/` — usa `text()` da SQLAlchemy, não models
 - 🆕 `exceptions.py` — exceções específicas do domínio
@@ -202,17 +203,17 @@ Exclui `__pycache__/`, `.env`, `.pytest_cache/`, `dist/`, `*.db`, IDEs.
 ### `index.html` (raiz) → `templates/shared/standalone/root_index.html`
 Substitua `{menu_label}`, `{frontend_prefix}`, `{tab1}`, `{tab1_nome}`. Redireciona `/` para a
 **primeira aba** com `meta refresh` (sem JS): sem este arquivo, `http://localhost:7080/`
-lista as pastas em vez de abrir o módulo. Só existe no standalone — o `export.py` copia
-`frontend/*` para o GrindX e a raiz do módulo não é exportada.
+lista as pastas em vez de abrir o módulo. Só existe no standalone — o zip leva
+`frontend/*` para o GrindX e a raiz do módulo não vai no pacote.
 
 ### `shared/core.css` → `templates/shared/standalone/shared/core.css`
-Variáveis CSS (`--primary`, `--bg-card`, `--border-color`, etc.) + padrão de modal (header/footer fixos, `.modal-content`, bottom-sheet mobile) para standalone sem o monorepo. **Apenas fallback standalone** — no GrindX o módulo usa a `shared` padrão em `/shared/core.css` e a `shared/` da raiz do módulo **não é copiada** no export.
+Variáveis CSS (`--primary`, `--bg-card`, `--border-color`, etc.) + padrão de modal (header/footer fixos, `.modal-content`, bottom-sheet mobile) para standalone sem o monorepo. **Apenas fallback standalone** — no GrindX o módulo usa a `shared` padrão em `/shared/core.css` e a `shared/` da raiz do módulo **não vai no zip**.
 
 ### `shared/config.js` → `templates/shared/standalone/shared/config.js`
-Define `window.GRINDX_CONFIG.API_BASE_URL` para standalone. **Apenas fallback standalone**, não é copiado no export.
+Define `window.GRINDX_CONFIG.API_BASE_URL` para standalone. **Apenas fallback standalone**, não vai no zip.
 
 ### `shared/app.js` → `templates/shared/standalone/shared/app.js`
-Stub vazio — no GrindX fornece `window.grindx.session`, no standalone é vazio. **Apenas fallback standalone**, não é copiado no export.
+Stub vazio — no GrindX fornece `window.grindx.session`, no standalone é vazio. **Apenas fallback standalone**, não vai no zip.
 
 > **Atenção `make dev-frontend`:** serve a **raiz do módulo** (não a pasta de cada aba), pois `/shared/...` resolve para `{module_root}/shared/`. Isso expõe o código Python do backend via HTTP — aceitável em ambiente de desenvolvimento standalone. Por isso a raiz **precisa** do `index.html` de redirect: o servidor entrega `/index.html` em `/` e a listagem de pastas nunca aparece.
 
@@ -465,7 +466,7 @@ Use templates em `templates/shared/support/`:
 - **`run_tests.ps1`** → `templates/shared/support/run_tests.ps1` — script para rodar testes com `GRINDX_PACKAGES`
 - **`requirements.txt`** → `templates/shared/support/requirements.txt` — pytest, sqlalchemy, pydantic, structlog, fastapi, uvicorn, alembic, python-dotenv
 - **`pytest.ini`** → `templates/shared/support/pytest.ini` — config testpaths
-- **`Makefile`** → `templates/shared/support/Makefile` — targets: test, test-unit, test-integration, dev-backend, dev-frontend, **db-init, db-init-dry**, package, export, dry-run, import, clean, version, version-dry-run, help
+- **`Makefile`** → `templates/shared/support/Makefile` — targets: test, test-unit, test-integration, dev-backend, dev-frontend, **db-init, db-init-dry**, package, release, dry-run, clean, version, version-dry-run, help
 
 > **Regras dev — padrão pop-docs (obrigatórias):**
 > - `dev-backend` deve ser exatamente `uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload` (sem `python -m`, sem `cd app/...`, com `--host 0.0.0.0`)
@@ -479,7 +480,7 @@ Use templates em `templates/shared/support/`:
 
 > **Version badge: padrão vs standalone** — módulos **padrão** do monorepo (criados direto em `apps/frontend-webapp/modules/`) **não** geram versão própria: exibem a versão do sistema via `window.grindx.version.get()` (vinda de `version.json`), igual à tela de login. Apenas módulos **standalone/importados** geram a própria versão (`window.{module_upper}_VERSION` via `scripts/version.py`). Esta seção 5.5 aplica-se apenas a módulos standalone.
 
-- **`scripts/version.py`** → `templates/shared/scripts/version.py` — gera a próxima versão semver a partir de conventional commits (`BREAKING`/`feat!:` → MAJOR, `feat:` → MINOR, demais → PATCH). Atualiza `module.json` + `CHANGELOG.md` + **todas** as `frontend/*/version.js` (glob por aba, `version.js` na **raiz** de cada frontend). Flags: `--dry-run`, `--no-tag`; exit 2 em erro de git. Ignora commits de release (`docs: registrar changelog`).
+- **`scripts/version.py`** → `templates/shared/scripts/version.py` — gera a próxima versão semver a partir de conventional commits (`BREAKING`/`feat!:` → MAJOR, `feat:` → MINOR, `fix`/`refactor`/`perf` → PATCH; `docs`/`style`/`chore`/`test`/`ci`/`build` não geram release). Atualiza `module.json` + `CHANGELOG.md` + **todas** as `frontend/*/version.js` (glob por aba, `version.js` na **raiz** de cada frontend). Flags: `--dry-run`, `--no-tag`; exit 2 em erro de git. Ignora commits de release (`docs: registrar changelog`).
 - **`scripts/version.py`** usa o placeholder `{module_upper}` para o global JS (`window.{module_upper}_VERSION`).
 - **`CHANGELOG.md`** — criado na primeira execução; formatação por tipo de commit.
 - **Frontend badge**: cada `frontend/*/index.html` carrega `version.js` (antes de `script.js`), inclui `<span id="viz-version">` no header e `script.js` chama `setBadgeVersao()` (`templates/shared/frontend/*` já contém esses trechos). `style.css` esconde o badge em `@media print`.
@@ -494,7 +495,7 @@ Arquivos standalone (ver seção 1.0):
 - **`scripts/db_init.py`** → `templates/shared/scripts/db_init.py` — aplica o `database.sql`
 - **`index.html`** (raiz) → `templates/shared/standalone/root_index.html` — `/` cai na primeira aba
 - **`.env.example`** → `templates/shared/standalone/env_example` — template DATABASE_URL
-- **`.gitignore`** → `templates/shared/standalone/gitignore` — exclui __pycache__, .env, .pytest_cache, dist
+- **`.gitignore`** → `templates/shared/standalone/gitignore` — exclui __pycache__, .env, .pytest_cache, dist (`Releases/` é versionado)
 
 Documentacao:
 - **`AGENTS.md`** → `templates/shared/AGENTS.md` — regras padrao para agentes de IA (preencher com detalhes do modulo)
@@ -517,27 +518,33 @@ Use template: `templates/sqlserver/module.json` (inclui `target_api: "sqlserver"
 
 **Nota:** O `register_menu` apenas loga informações. Associar abas manualmente no Portal → Estrutura após importação.
 
-## 7. export.py
+## 7. export.py (package / release)
 
 Use template: `templates/shared/export.py`
 Substitua `{module_name}`, `{entity_name}`.
 
+O script **só empacota** — nunca copia nada para fora do módulo:
+
+| Comando | Destino | Uso |
+|---|---|---|
+| `make package` | `dist/modulo-{pasta}-v{version}.zip` | iteração local (`dist/` fica no `.gitignore`) |
+| `make release` | `Releases/modulo-{pasta}-v{version}.zip` | artefato da versão (versionado no git, como no `pop_docs`) |
+
 > O `package()` inclui o **`database.sql`** da raiz no zip (além de `module.json`, backend, frontend e migration): é o script que cria as tabelas quando o módulo roda standalone. Se ele não existir, nada é incluído.
 
-**Nomenclatura do zip** — o `package()` nomeia o zip com a versão lida do `module.json`: `dist/modulo-{pasta_do_modulo}-v{version}.zip` (ex: `modulo-pop_docs-v1.0.0.zip`); sem versão no manifest → `modulo-{pasta_do_modulo}.zip`. Mesmo padrão do `pop_docs` (`_zip_filename`). A importação no GrindX usa o `module_name` do manifest (o fallback fuzzy `*{module_name}*.zip` aceita o nome com versão).
+**Nomenclatura do zip** — `package()`/`release()` nomeiam o zip com a versão lida do `module.json`: `dist/` (ou `Releases/`)`modulo-{pasta_do_modulo}-v{version}.zip` (ex: `modulo-pop_docs-v1.0.0.zip`); sem versão no manifest → `modulo-{pasta_do_modulo}.zip`. Mesmo padrão do `pop_docs` (`_zip_filename`). A importação no GrindX usa o `module_name` do manifest (o fallback fuzzy `*{module_name}*.zip` aceita o nome com versão).
 
-### Adaptação para `target_api`
+**Instalação no GrindX é manual**: copie o zip para `D:\_Projetos\GrindX\import\` e
+importe por **Gestão → Importar Módulos** (ou `POST /v1/import/{module_name}`).
+Não existem mais `make export`, `make export-dry` nem `make import`.
+
+### Diferenças para `target_api = sqlserver`
 
 | Configuração | `postgres` (padrão) | `sqlserver` |
 |---|---|---|
-| `GRINDX_API` | `apps/api-postgres` | `apps/api-sqlserver` |
-| Chamar `register_dependency()`? | Sim | **Não** |
-| Chamar `register_alembic_import()`? | Sim | **Não** |
-| Chamar `copy_migration()`? | Sim | **Não** |
-| Chamar `run_migrations()`? | Sim | **Não** |
-| Incluir `migration/` no zip? | Sim | **Não** |
-
-No template, altere: `GRINDX_API = GRINDX_ROOT / "apps" / "api-postgres"` → `GRINDX_ROOT / "apps" / "api-sqlserver"` (sqlserver). O método `export()` já usa `is_sqlserver` para pular condicionalmente.
+| Incluir `migration/` no projeto? | Sim | **Não** (sem Alembic) |
+| `module.json` | — | `target_api: "sqlserver"` + `role_minima: "leitura"` |
+| Instalação | zip copiado para `import/` | idem |
 
 ## 8. Execution / Test Workflow
 
@@ -556,13 +563,13 @@ make db-init          # cria schema + tabelas via database.sql (sem isso o banco
 make dev-backend      # FastAPI: uvicorn app.main:app --host 0.0.0.0 --port 7000 --reload → http://localhost:7000
 make dev-frontend     # Frontend: python -m http.server 7080 na raiz do modulo → http://localhost:7080/{prefix}_{tab}/index.html
 
-# 4. Gerar pacote .zip
-make package
+# 4. Gerar o zip da versão
+make release          # Releases/modulo-{module_name}-vX.Y.Z.zip
+# make package gera em dist/ para testes rapidos
 
-# 5. Importar no GrindX
-make import
+# 5. Instalar no GrindX (manual)
+# Copie o zip para D:\_Projetos\GrindX\import\ e use Gestão → Importar Módulos
 # Via API: POST /v1/import/{module_name}
-# Via frontend: Gestão → Importar Módulos
 ```
 
 ### SQL Server (opção A2)
@@ -605,15 +612,17 @@ pytest tests/ -k {module_name} -v
 - [ ] Dev server funciona: `make dev-backend` sobe em http://localhost:7000
 - [ ] `module.json` criado na raiz do standalone com `frontend_tabs` array
 - [ ] `export.py`: usa `STANDALONE_ROOT` para paths de frontend, migration e dist
-- [ ] `export.py`: `--dry-run` simula sem alterar GrindX
-- [ ] `export.py`: **exclui a pasta `shared/` do módulo** da cópia e do zip (no GrindX usa-se a `shared` padrão em `/shared`)
+- [ ] `export.py`: `--dry-run` simula o zip sem gravar
+- [ ] `export.py`: **exclui a pasta `shared/` do módulo** do zip (no GrindX usa-se a `shared` padrão em `/shared`)
+- [ ] `make release` gera `Releases/modulo-{module_name}-vX.Y.Z.zip` e `Releases/` **é versionado** (o `dist/` fica no `.gitignore`)
+- [ ] Instalação no GrindX é **manual** (copiar o zip para `import/`); sem `make export`/`make import`
 
 ### SQL Server (opção A2) — Diferenças
 
 - [ ] **Sem** `base.py`, `models/`, `migration/`, `database.sql`, `scripts/db_init.py`
 - [ ] **Adicionar** `exceptions.py` com exceções específicas do domínio
 - [ ] **`module.json`**: incluir `"target_api": "sqlserver"` e `"role_minima": "leitura"`
-- [ ] **`export.py`**: `GRINDX_API` aponta para `apps/api-sqlserver`; pula migration/dependency/alembic
+- [ ] **`export.py`**: nenhuma adaptação; o zip não leva `migration/`
 - [ ] **Router**: factory inline (já é o padrão); não usa `auth/dependencies.py`
 - [ ] **Repository**: SQL raw via `text()`, sem models SQLAlchemy
 - [ ] **Tests**: sem `conftest.py` (mock do Protheus); sem `test_integration.py`
