@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.88.0 (2026-10-27)
+
+### Features
+
+- Skill empacota o modulo com make release
+  ([`83e5286`](https://github.com/TyrGunllod/GrindX/commit/83e52865c87451a83564cbeda2f4c963eda18f9c))
+
+
 ## v1.87.0 (2026-10-26)
 
 ### Features
