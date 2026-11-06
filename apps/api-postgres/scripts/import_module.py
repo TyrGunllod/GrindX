@@ -320,7 +320,189 @@ def _get_last_native_revision(dest_dir: Path) -> str | None:
     return last_rev
 
 
+def _alembic_env() -> dict[str, str]:
+    """Ambiente para o subprocess do alembic, com o PYTHONPATH do monorepo.
+
+    Sem isso, o CLI do alembic não encontra `shared`/`packages` e falha com
+    ``ModuleNotFoundError`` quando chamado fora do processo do servidor.
+    """
+    env = os.environ.copy()
+    packages_dir = str(_get_monorepo_root() / "packages")
+    current = [p for p in env.get("PYTHONPATH", "").split(os.pathsep) if p]
+    if packages_dir not in current:
+        current.insert(0, packages_dir)
+    env["PYTHONPATH"] = os.pathsep.join(current)
+    return env
+
+
+def _get_database_url() -> str | None:
+    """Resolve a URL do banco sem depender de importar o pacote ``app``.
+
+    O importador também roda via CLI (fora do processo do servidor), onde
+    ``app`` não está no ``sys.path``. Lemos ``DATABASE_URL`` do ambiente ou do
+    ``.env`` da API.
+    """
+    url = os.environ.get("DATABASE_URL")
+    if url:
+        return url
+
+    env_file = _get_api_dir() / ".env"
+    if not env_file.exists():
+        return None
+    for line in env_file.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        if key.strip() == "DATABASE_URL":
+            return value.strip().strip('"').strip("'")
+    return None
+
+
+def _get_db_current_revision() -> str | None:
+    """Lê a revisão atual do banco direto de ``alembic_version``.
+
+    Não usa o CLI do alembic de propósito: quando o banco aponta para uma
+    revisão que não existe mais nos arquivos, o CLI aborta antes de permitir
+    qualquer reconciliação.
+    """
+    from sqlalchemy import create_engine, text
+    from sqlalchemy.exc import ProgrammingError
+
+    database_url = _get_database_url()
+    if not database_url:
+        logger.warning("DATABASE_URL não encontrada; assumindo banco sem revisão")
+        return None
+
+    engine = create_engine(database_url)
+    try:
+        with engine.connect() as conn:
+            try:
+                row = conn.execute(
+                    text("SELECT version_num FROM alembic_version")
+                ).first()
+            except ProgrammingError:
+                # Banco novo, ainda sem tabela alembic_version.
+                return None
+    finally:
+        engine.dispose()
+    return row[0] if row else None
+
+
+def _stamp_revision(revision: str) -> None:
+    """Marca o banco na revisão informada, sem executar DDL."""
+    api_dir = _get_api_dir()
+    logger.warning(
+        "Reconciliando alembic_version com a revisão %s (sem executar DDL)",
+        revision,
+    )
+    result = subprocess.run(
+        [
+            _get_venv_python(),
+            "-m",
+            "alembic",
+            "stamp",
+            "--purge",
+            revision,
+        ],
+        cwd=api_dir,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=120,
+        env=_alembic_env(),
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"Falha ao reconciliar alembic_version para {revision}:\n"
+            f"STDOUT: {result.stdout}\nSTDERR: {result.stderr}"
+        )
+
+
+def _revision_of(filepath: Path) -> str | None:
+    """Extrai o ``revision`` de um arquivo de migration."""
+    try:
+        content = filepath.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    match = re.search(
+        r'^revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*"([^"]+)"',
+        content,
+        re.MULTILINE,
+    )
+    return match.group(1) if match else None
+
+
+def _all_revisions(dest_dir: Path) -> set[str]:
+    """Todas as revisões conhecidas nos arquivos de migration do projeto."""
+    revisions = set()
+    for filepath in dest_dir.glob("*.py"):
+        revision = _revision_of(filepath)
+        if revision:
+            revisions.add(revision)
+    return revisions
+
+
+def _module_migration_files(dest_dir: Path, module_name: str) -> list[Path]:
+    """Migrations do módulo (numeradas >= 100), ordenadas pela numeração."""
+    needle = module_name.lower()
+    found = []
+    for filepath in dest_dir.glob("*.py"):
+        match = re.match(r"^(\d{3,})_", filepath.name)
+        if not match:
+            continue
+        try:
+            content = filepath.read_text(encoding="utf-8").lower()
+        except OSError:
+            continue
+        if needle in content or needle in filepath.name.lower():
+            found.append((int(match.group(1)), filepath))
+    return [filepath for _, filepath in sorted(found)]
+
+
+def _highest_numbered(dest_dir: Path, minimum: int = 100) -> int:
+    """Maior número de prefixo de migration >= ``minimum`` (ou minimum-1)."""
+    highest = minimum - 1
+    for filepath in dest_dir.glob("*.py"):
+        match = re.match(r"^(\d{3,})_", filepath.name)
+        if match:
+            number = int(match.group(1))
+            if number >= minimum and number > highest:
+                highest = number
+    return highest
+
+
+def _rewrite_migration(content: str, revision: str, down_revision: str) -> str:
+    """Reescreve ``revision``/``down_revision`` mantendo o restante do arquivo."""
+    content = re.sub(
+        r'^revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*"[^"]*"',
+        f'revision: str = "{revision}"',
+        content,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    content = re.sub(
+        r"^down_revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*[^#\n]+",
+        f'down_revision: str | None = "{down_revision}"',
+        content,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    return content
+
+
 def copy_migration(import_dir: Path) -> None:
+    """Copia as migrations do módulo encadeando a partir da revisão atual.
+
+    Regras:
+    - Banco na cadeia do módulo: mantém as migrations já aplicadas e acrescenta
+      apenas as novas (sem renumerar).
+    - Banco em outra revisão conhecida (ex.: head nativo): o módulo não está
+      aplicado, então as migrations antigas são substituídas e recriadas a
+      partir do head nativo.
+    - Banco em revisão órfã (não existe mais nos arquivos): reconcilia o
+      ``alembic_version`` para o head atual do módulo e mantém os arquivos.
+    """
     src_dir = import_dir / "migration"
     api_dir = _get_api_dir()
     dest_dir = api_dir / "alembic" / "versions"
@@ -336,8 +518,8 @@ def copy_migration(import_dir: Path) -> None:
         logger.warning("Nenhum arquivo de migration em %s", src_dir)
         return
 
-    last_rev = _get_last_native_revision(dest_dir)
-    if not last_rev:
+    native_rev = _get_last_native_revision(dest_dir)
+    if not native_rev:
         logger.error("Nenhuma migration nativa encontrada para encadear")
         return
 
@@ -345,56 +527,80 @@ def copy_migration(import_dir: Path) -> None:
     module_name = manifest["module_name"]
     start_num = int(manifest.get("migration_start_number", 100))
 
-    highest_module = 99
-    for f in dest_dir.glob("*.py"):
-        m = re.match(r"^(\d{3,})_", f.name)
-        if m:
-            num = int(m.group(1))
-            if num >= 100 and num > highest_module:
-                highest_module = num
+    current_rev = _get_db_current_revision()
+    module_files = _module_migration_files(dest_dir, module_name)
+    module_revs = {rev for rev in map(_revision_of, module_files) if rev}
 
-    actual_start = max(start_num, highest_module + 1)
+    if current_rev and current_rev in module_revs:
+        # Reimport: banco já está na cadeia deste módulo.
+        applied_count = next(
+            (
+                index + 1
+                for index, filepath in enumerate(module_files)
+                if _revision_of(filepath) == current_rev
+            ),
+            len(module_files),
+        )
+        logger.info(
+            "Banco em %s (cadeia do módulo): %d migration(ões) aplicada(s) mantida(s)",
+            current_rev,
+            applied_count,
+        )
+        for stale in module_files[applied_count:]:
+            stale.unlink()
+            logger.info("Migration não aplicada removida: %s", stale.name)
+        module_files = module_files[:applied_count]
+        chain_rev = _revision_of(module_files[-1]) if module_files else native_rev
+    elif current_rev is None or current_rev in _all_revisions(dest_dir):
+        # Banco em revisão conhecida fora da cadeia do módulo (head nativo ou
+        # de outro módulo): o módulo ainda não foi aplicado. Reinstala do zero.
+        for filepath in module_files:
+            filepath.unlink()
+            logger.info("Migration removida para reimport: %s", filepath.name)
+        module_files = []
+        applied_count = 0
+        chain_rev = native_rev
+    elif module_files:
+        # Revisão órfã: o banco aponta para algo que não existe mais. Mantém os
+        # arquivos e apenas reconcilia a versão para o head atual do módulo.
+        head_rev = _revision_of(module_files[-1])
+        if head_rev:
+            _stamp_revision(head_rev)
+        applied_count = len(module_files)
+        chain_rev = head_rev or native_rev
+        logger.info(
+            "Banco em revisão órfã %s: mantidas %d migration(ões) do módulo",
+            current_rev,
+            applied_count,
+        )
+    else:
+        applied_count = 0
+        chain_rev = native_rev
 
-    for f in dest_dir.glob("*.py"):
-        m = re.match(r"^\d{3,}_", f.name)
-        if m:
-            content = f.read_text(encoding="utf-8")
-            if module_name.lower() in content.lower():
-                f.unlink()
-                logger.info("Migration removida para reimport: %s", f.name)
+    next_num = max(
+        start_num + applied_count,
+        _highest_numbered(dest_dir) + 1,
+    )
 
-    prev_rev = last_rev
-    for i, f in enumerate(migration_files):
-        content = f.read_text(encoding="utf-8")
-        rev_num = actual_start + i
+    for offset, source in enumerate(migration_files[applied_count:]):
+        rev_num = next_num + offset
         rev = str(rev_num).zfill(max(3, len(str(rev_num))))
 
-        content = re.sub(
-            r'revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*"[^"]*"',
-            f'revision: str = "{rev}"',
-            content,
-        )
-        content = re.sub(
-            r"down_revision(?:\s*:\s*\w+(?:\s*\|\s*None)?)?\s*=\s*[^#\n]+",
-            f'down_revision: str | None = "{prev_rev}"',
-            content,
-        )
+        content = source.read_text(encoding="utf-8")
+        content = _rewrite_migration(content, rev, chain_rev)
 
-        name = f.name
-        name = re.sub(r"^\d+_", "", name)
+        name = re.sub(r"^\d+_", "", source.name)
         new_name = f"{rev}_{name}"
-
         dest_path = dest_dir / new_name
         dest_path.write_text(content, encoding="utf-8")
         logger.info(
             "Migration copiada: %s -> %s (revision %s, down_revision %s)",
-            f.name,
+            source.name,
             new_name,
             rev,
-            prev_rev,
+            chain_rev,
         )
-
-        prev_rev = rev
+        chain_rev = rev
 
 
 def register_router(manifest: dict, force: bool, main_py: Path | None = None) -> None:
@@ -667,6 +873,7 @@ def run_migrations() -> None:
             text=True,
             check=False,
             timeout=120,
+            env=_alembic_env(),
         )
     except subprocess.TimeoutExpired:
         raise RuntimeError(

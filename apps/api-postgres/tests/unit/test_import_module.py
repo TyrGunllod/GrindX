@@ -1,5 +1,6 @@
 """Tests for register_router(), register_alembic_import(), and register_dependency() in import_module.py."""
 
+import json
 import textwrap
 from unittest.mock import patch
 
@@ -8,6 +9,7 @@ import pytest
 import scripts.import_module as import_module
 from scripts.import_module import (
     _snake_to_pascal,
+    copy_migration,
     register_alembic_import,
     register_dependency,
     register_router,
@@ -531,3 +533,148 @@ class TestImportFlow:
             import_mod.register_alembic_import(manifest, force=False, env_py=env_py)
             content_env = env_py.read_text()
             assert "from app.modules.projeto.models.projeto import" in content_env
+
+
+def _write_migration(path, revision, down_revision, marker="native"):
+    path.write_text(
+        f'revision: str = "{revision}"\n'
+        f'down_revision: str | None = "{down_revision}"\n'
+        f"# {marker}\n"
+        f"def upgrade():\n    pass\n",
+        encoding="utf-8",
+    )
+
+
+def _write_source_migration(import_dir, filename, marker="pop_docs"):
+    path = import_dir / "migration" / filename
+    path.write_text(
+        'revision: str = "src"\n'
+        'down_revision: str | None = "prev"\n'
+        f"# {marker}\n"
+        "def upgrade():\n    pass\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+@pytest.fixture
+def migration_env(tmp_path):
+    api_dir = tmp_path / "apps" / "api-postgres"
+    versions = api_dir / "alembic" / "versions"
+    versions.mkdir(parents=True)
+    _write_migration(versions / "023_native.py", "023a4c5d6e7f", "f49af6b8a8d4")
+    import_dir = tmp_path / "import"
+    (import_dir / "migration").mkdir(parents=True)
+    (import_dir / "module.json").write_text(
+        json.dumps({"module_name": "pop_docs", "migration_start_number": "100"}),
+        encoding="utf-8",
+    )
+    return api_dir, versions, import_dir
+
+
+def _run_copy_migration(api_dir, import_dir, current_rev):
+    with (
+        patch("scripts.import_module._get_api_dir", return_value=api_dir),
+        patch(
+            "scripts.import_module._get_db_current_revision",
+            return_value=current_rev,
+        ),
+        patch("scripts.import_module._stamp_revision") as stamp,
+    ):
+        copy_migration(import_dir)
+    return stamp
+
+
+class TestCopyMigration:
+    def test_primeira_importacao_encadeia_no_head_nativo(self, migration_env):
+        api_dir, versions, import_dir = migration_env
+        _write_source_migration(import_dir, "100_create.py")
+        _write_source_migration(import_dir, "106_add.py")
+
+        _run_copy_migration(api_dir, import_dir, current_rev="023a4c5d6e7f")
+
+        files = sorted(p.name for p in versions.glob("1*.py"))
+        assert files == ["100_create.py", "101_add.py"]
+        first = (versions / "100_create.py").read_text(encoding="utf-8")
+        second = (versions / "101_add.py").read_text(encoding="utf-8")
+        assert 'revision: str = "100"' in first
+        assert 'down_revision: str | None = "023a4c5d6e7f"' in first
+        assert 'revision: str = "101"' in second
+        assert 'down_revision: str | None = "100"' in second
+
+    def test_reimport_nao_renumera_migrations_aplicadas(self, migration_env):
+        api_dir, versions, import_dir = migration_env
+        _write_migration(
+            versions / "100_create.py", "100", "023a4c5d6e7f", marker="pop_docs"
+        )
+        _write_migration(versions / "101_add.py", "101", "100", marker="pop_docs")
+        _write_source_migration(import_dir, "100_create.py")
+        _write_source_migration(import_dir, "106_add.py")
+
+        _run_copy_migration(api_dir, import_dir, current_rev="101")
+
+        assert sorted(p.name for p in versions.glob("1*.py")) == [
+            "100_create.py",
+            "101_add.py",
+        ]
+        assert (
+            'revision: str = "100"'
+            in (versions / "100_create.py").read_text(encoding="utf-8")
+        )
+        assert (
+            'revision: str = "101"'
+            in (versions / "101_add.py").read_text(encoding="utf-8")
+        )
+
+    def test_reimport_acrescenta_apenas_migration_nova(self, migration_env):
+        api_dir, versions, import_dir = migration_env
+        _write_migration(
+            versions / "100_create.py", "100", "023a4c5d6e7f", marker="pop_docs"
+        )
+        _write_migration(versions / "101_add.py", "101", "100", marker="pop_docs")
+        _write_source_migration(import_dir, "100_create.py")
+        _write_source_migration(import_dir, "106_add.py")
+        _write_source_migration(import_dir, "107_nova.py")
+
+        _run_copy_migration(api_dir, import_dir, current_rev="101")
+
+        files = sorted(p.name for p in versions.glob("1*.py"))
+        assert files == ["100_create.py", "101_add.py", "102_nova.py"]
+        new = (versions / "102_nova.py").read_text(encoding="utf-8")
+        assert 'revision: str = "102"' in new
+        assert 'down_revision: str | None = "101"' in new
+
+    def test_banco_fora_da_cadeia_reconcilia_para_head_do_modulo(self, migration_env):
+        api_dir, versions, import_dir = migration_env
+        _write_migration(
+            versions / "100_create.py", "100", "023a4c5d6e7f", marker="pop_docs"
+        )
+        _write_migration(versions / "101_add.py", "101", "100", marker="pop_docs")
+        _write_source_migration(import_dir, "100_create.py")
+        _write_source_migration(import_dir, "106_add.py")
+
+        stamp = _run_copy_migration(api_dir, import_dir, current_rev="999")
+
+        stamp.assert_called_once_with("101")
+        assert sorted(p.name for p in versions.glob("1*.py")) == [
+            "100_create.py",
+            "101_add.py",
+        ]
+
+    def test_banco_no_head_nativo_reinstala_migrations_antigas(self, migration_env):
+        api_dir, versions, import_dir = migration_env
+        _write_migration(
+            versions / "100_old.py", "100", "023a4c5d6e7f", marker="pop_docs"
+        )
+        _write_migration(versions / "101_old.py", "101", "100", marker="pop_docs")
+        _write_source_migration(import_dir, "100_create.py")
+        _write_source_migration(import_dir, "106_add.py")
+
+        _run_copy_migration(api_dir, import_dir, current_rev="023a4c5d6e7f")
+
+        files = sorted(p.name for p in versions.glob("1*.py"))
+        assert files == ["100_create.py", "101_add.py"]
+        assert (
+            'down_revision: str | None = "023a4c5d6e7f"'
+            in (versions / "100_create.py").read_text(encoding="utf-8")
+        )
