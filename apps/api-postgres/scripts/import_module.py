@@ -950,6 +950,10 @@ def import_module(
     _tick = time.time()
     try:
         manifest = validate_manifest(import_dir)
+        if manifest["module_name"] != module_name:
+            raise ValueError(
+                f"Zip pertence ao módulo '{manifest['module_name']}', não '{module_name}'"
+            )
         if target_api == "postgres":
             manifest_target = manifest.get("target_api", "postgres")
             if manifest_target != "postgres":

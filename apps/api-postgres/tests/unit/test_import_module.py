@@ -675,3 +675,27 @@ class TestCopyMigration:
         assert 'down_revision: str | None = "023a4c5d6e7f"' in (
             versions / "100_create.py"
         ).read_text(encoding="utf-8")
+
+
+class TestSlugValidation:
+    def test_zip_de_outro_modulo_falha_antes_da_copia(self, tmp_path):
+        import_dir = tmp_path / "zip"
+        import_dir.mkdir()
+        (import_dir / "module.json").write_text(
+            json.dumps(
+                {
+                    "module_name": "custos",
+                    "entity_name": "Custo",
+                    "menu_label": "Custos",
+                    "schema_name": "org",
+                    "route_prefix": "/v1/custos",
+                    "frontend_url": "modules/custos/index.html",
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        result = import_module.import_module("custo", import_dir, dry_run=True)
+
+        assert result["success"] is False
+        assert "custos" in result["error"]
