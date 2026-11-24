@@ -2,6 +2,59 @@
 
 <!-- version list -->
 
+## v1.89.0 (2026-11-24)
+
+### Bug Fixes
+
+- Corrige limpeza de registros e rollback da atualizacao
+  ([`a0f7476`](https://github.com/TyrGunllod/GrindX/commit/a0f74760caad956e9c9650f77e040be350c91cd6))
+
+- Preserva integridade da cadeia de migrations no reimport
+  ([`e0d5944`](https://github.com/TyrGunllod/GrindX/commit/e0d5944d4256522838ac20a3d39f18bc014b97ff))
+
+- Propaga falha de migration na importacao
+  ([`cd2e092`](https://github.com/TyrGunllod/GrindX/commit/cd2e0923a4bf5410328bc0c6e14d0b89ff247c50))
+
+- Rejeita zip de outro modulo no import
+  ([`78f23ef`](https://github.com/TyrGunllod/GrindX/commit/78f23efa9006e6bdd60d2f477c6cf71d85a7a5a5))
+
+### Code Style
+
+- Ruff format
+  ([`8596489`](https://github.com/TyrGunllod/GrindX/commit/8596489ac47c035a56741eac2aa40c8cc960a9f8))
+
+### Documentation
+
+- Atualizacao de modulo e restart automatico
+  ([`5142895`](https://github.com/TyrGunllod/GrindX/commit/51428957c536e5d21dc233ded1be0798d55b073a))
+
+- Inclui restart automatico e integridade de migrations na spec
+  ([`57bdf6e`](https://github.com/TyrGunllod/GrindX/commit/57bdf6e0b4a287c579fd19756a6598261b660d55))
+
+- Plano de implementacao da atualizacao de modulo
+  ([`92f4f19`](https://github.com/TyrGunllod/GrindX/commit/92f4f1953ef516c2b4f460a0fc38cfa428a2ae5f))
+
+- Spec de atualizacao de modulo sem desinstalar
+  ([`cad2fdb`](https://github.com/TyrGunllod/GrindX/commit/cad2fdb3d90aefbd84ad92b35f386237d98d3507))
+
+- Valida slug do zip no import de modulo
+  ([`4db488c`](https://github.com/TyrGunllod/GrindX/commit/4db488cbfef9bf1bd0056059d2e916ebfefc33fc))
+
+### Features
+
+- Atualiza modulo com migrations sincronas na rota de import
+  ([`ec14e75`](https://github.com/TyrGunllod/GrindX/commit/ec14e752dab57bdaed9997b9a1e80c87b08d9e28))
+
+- Botao atualizar no importador
+  ([`d7d6d5b`](https://github.com/TyrGunllod/GrindX/commit/d7d6d5b0a43f7943affd9fd302b27b2627e72bba))
+
+- Limpa registros gerados ao atualizar modulo
+  ([`af3f012`](https://github.com/TyrGunllod/GrindX/commit/af3f012163eaadcf0f77bdabb9ef7e3852bbb200))
+
+- Reinicia a api apos atualizar modulo
+  ([`078ed93`](https://github.com/TyrGunllod/GrindX/commit/078ed9361f79142eea65bdde771f51f805070db0))
+
+
 ## v1.88.1 (2026-11-24)
 
 ### Code Style
