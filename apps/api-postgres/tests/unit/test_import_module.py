@@ -699,3 +699,65 @@ class TestSlugValidation:
 
         assert result["success"] is False
         assert "custos" in result["error"]
+
+class TestCleanRegistrations:
+    def test_limpa_dependencies_env_e_requirements(self, tmp_path, monkeypatch):
+        api = tmp_path / "apps" / "api-postgres"
+        (api / "app" / "auth").mkdir(parents=True)
+        (api / "app" / "auth" / "dependencies.py").write_text(
+            "from app.modules.mod_x.services.x_service import XService\n"
+            "def get_mod_x_service(db=Depends(get_db)) -> XService:\n"
+            '    """Factory."""\n'
+            "    return XService(db)\n",
+            encoding="utf-8",
+        )
+        (api / "alembic").mkdir(parents=True)
+        (api / "alembic" / "env.py").write_text(
+            "from app.modules.mod_x.models.x import X  # noqa: F401\n",
+            encoding="utf-8",
+        )
+        (api / "requirements.txt").write_text(
+            "# === Módulo mod_x ===\nfoo==1.0\n", encoding="utf-8"
+        )
+        monkeypatch.setattr(import_module, "_get_monorepo_root", lambda: tmp_path)
+
+        steps = []
+        import_module._clean_registrations("mod_x", steps)
+
+        assert "mod_x" not in (api / "app" / "auth" / "dependencies.py").read_text(
+            encoding="utf-8"
+        )
+        assert "mod_x" not in (api / "alembic" / "env.py").read_text(encoding="utf-8")
+        assert "mod_x" not in (api / "requirements.txt").read_text(encoding="utf-8")
+        assert steps
+
+
+class TestUpdateDetection:
+    def test_atualizacao_limpa_registros_antes_de_registrar(self, tmp_path):
+        api = tmp_path / "api"
+        (api / "app" / "modules" / "mod_x").mkdir(parents=True)
+        (api / "app" / "main.py").write_text("", encoding="utf-8")
+        import_dir = tmp_path / "zip"
+        import_dir.mkdir()
+
+        with (
+            patch("scripts.import_module._get_api_dir", return_value=api),
+            patch("scripts.import_module.validate_manifest") as mock_validate,
+            patch("scripts.import_module.backup_existing"),
+            patch("scripts.import_module.copy_backend"),
+            patch("scripts.import_module.merge_requirements"),
+            patch("scripts.import_module.copy_frontend"),
+            patch("scripts.import_module.copy_migration"),
+            patch("scripts.import_module._clean_registrations") as mock_clean,
+            patch("scripts.import_module.register_router"),
+            patch("scripts.import_module.register_dependency"),
+            patch("scripts.import_module.register_alembic_import"),
+            patch("scripts.import_module.run_migrations"),
+            patch("scripts.import_module._get_db_current_revision", return_value=None),
+            patch("scripts.import_module.register_menu"),
+        ):
+            mock_validate.return_value = {"module_name": "mod_x", "frontend_url": "x"}
+            result = import_module.import_module("mod_x", import_dir, force=True)
+
+        mock_clean.assert_called_once()
+        assert result["updated"] is True

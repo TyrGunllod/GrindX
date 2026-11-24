@@ -963,6 +963,10 @@ def import_module(
                 )
             target_api = manifest_target
         is_frontend_only = manifest.get("frontend_only", False)
+        api_dir = (
+            _get_api_dir() if target_api == "postgres" else _get_sqlserver_api_dir()
+        )
+        is_update = (api_dir / "app" / "modules" / module_name).exists()
         steps.append("Manifesto validado")
         _tick = _log_step("validate_manifest", _tick)
 
@@ -980,11 +984,6 @@ def import_module(
             # Copia module.json para o backend (para scan/remover)
             manifest_src = import_dir / "module.json"
             if manifest_src.exists():
-                api_dir = (
-                    _get_api_dir()
-                    if target_api == "postgres"
-                    else _get_sqlserver_api_dir()
-                )
                 manifest_dest = (
                     api_dir / "app" / "modules" / module_name / "module.json"
                 )
@@ -992,6 +991,12 @@ def import_module(
                 shutil.copy2(manifest_src, manifest_dest)
         steps.append("Backend copiado")
         _tick = _log_step("copy_backend", _tick)
+
+        if not dry_run and is_update:
+            _clean_main_py(api_dir / "app" / "main.py", module_name, steps)
+            if target_api != "sqlserver":
+                _clean_registrations(module_name, steps)
+            steps.append("Registros antigos do módulo limpos")
 
         if not dry_run:
             merge_requirements(import_dir, skip_install=skip_install)
@@ -1052,7 +1057,12 @@ def import_module(
         else:
             steps.append("Módulo sqlserver — sem migrações necessárias")
 
-        return {"success": True, "steps": steps}
+        if is_update:
+            steps.append(
+                "Atualização concluída — reinicie a API para carregar o novo código"
+            )
+
+        return {"success": True, "steps": steps, "updated": is_update}
 
     except Exception as e:
         logger.error("Erro na importação: %s", str(e))
@@ -1122,6 +1132,59 @@ def _clean_requirements_txt(module_name: str, api_dir: Path) -> bool:
 
     req_file.write_text("".join(cleaned), encoding="utf-8")
     return True
+
+
+def _clean_registrations(module_name: str, steps: list[str]) -> None:
+    """Remove registros gerados pelo import em dependencies.py, env.py e requirements."""
+    monorepo_root = _get_monorepo_root()
+
+    deps_py = (
+        monorepo_root / "apps" / "api-postgres" / "app" / "auth" / "dependencies.py"
+    )
+    if deps_py.exists():
+        content = deps_py.read_text(encoding="utf-8")
+        orig_len = len(content)
+        # Remove imports do modulo
+        content_clean = re.sub(
+            rf"^from app\.modules\.{re.escape(module_name)}\..*\n?",
+            "",
+            content,
+            flags=re.MULTILINE,
+        )
+        # Remove factories geradas pelo register_dependency (prefixo get_{module_name}_)
+        content_clean = re.sub(
+            rf"^def get_{re.escape(module_name)}_.*(?:\n[ \t]+.*)*\n?",
+            "",
+            content_clean,
+            flags=re.MULTILINE,
+        )
+        # Fallback: remove qualquer linha restante que referencie o modulo
+        lines = content_clean.splitlines(keepends=True)
+        before_fallback = len(lines)
+        module_path_prefix = f"app.modules.{module_name}"
+        lines = [line for line in lines if module_path_prefix not in line]
+        if len(lines) != before_fallback:
+            content_clean = "".join(lines)
+        content_clean = re.sub(r"\n{3,}", "\n\n", content_clean)
+        if len(content_clean) != orig_len:
+            deps_py.write_text(content_clean, encoding="utf-8")
+            steps.append("Dependencies limpas em auth/dependencies.py")
+
+    env_py = monorepo_root / "apps" / "api-postgres" / "alembic" / "env.py"
+    if env_py.exists():
+        content = env_py.read_text(encoding="utf-8")
+        lines = [
+            line
+            for line in content.splitlines(keepends=True)
+            if not line.strip().startswith(f"from app.modules.{module_name}.")
+        ]
+        if len(lines) != len(content.splitlines(keepends=True)):
+            env_py.write_text("".join(lines), encoding="utf-8")
+            steps.append("Imports removidos de alembic/env.py")
+
+    api_postgres_dir = monorepo_root / "apps" / "api-postgres"
+    if _clean_requirements_txt(module_name, api_postgres_dir):
+        steps.append("Dependencias removidas do requirements.txt")
 
 
 def remove_module(module_name: str) -> dict:
@@ -1207,56 +1270,7 @@ def remove_module(module_name: str) -> dict:
                     f.unlink()
                     steps.append(f"Migration removida: {f.name}")
 
-    # Clean dependencies.py (api-postgres only)
-    deps_py = (
-        monorepo_root / "apps" / "api-postgres" / "app" / "auth" / "dependencies.py"
-    )
-    if deps_py.exists():
-        content = deps_py.read_text(encoding="utf-8")
-        orig_len = len(content)
-        # Remove imports do modulo
-        content_clean = re.sub(
-            rf"^from app\.modules\.{re.escape(module_name)}\..*\n?",
-            "",
-            content,
-            flags=re.MULTILINE,
-        )
-        # Remove factories geradas pelo register_dependency (prefixo get_{module_name}_)
-        content_clean = re.sub(
-            rf"^def get_{re.escape(module_name)}_.*(?:\n[ \t]+.*)*\n?",
-            "",
-            content_clean,
-            flags=re.MULTILINE,
-        )
-        # Fallback: remove qualquer linha restante que referencie o modulo
-        lines = content_clean.splitlines(keepends=True)
-        before_fallback = len(lines)
-        module_path_prefix = f"app.modules.{module_name}"
-        lines = [line for line in lines if module_path_prefix not in line]
-        if len(lines) != before_fallback:
-            content_clean = "".join(lines)
-        content_clean = re.sub(r"\n{3,}", "\n\n", content_clean)
-        if len(content_clean) != orig_len:
-            deps_py.write_text(content_clean, encoding="utf-8")
-            steps.append("Dependencies limpas em auth/dependencies.py")
-
-    # Clean alembic/env.py (api-postgres only)
-    env_py = monorepo_root / "apps" / "api-postgres" / "alembic" / "env.py"
-    if env_py.exists():
-        content = env_py.read_text(encoding="utf-8")
-        lines = [
-            line
-            for line in content.splitlines(keepends=True)
-            if not line.strip().startswith(f"from app.modules.{module_name}.")
-        ]
-        if len(lines) != len(content.splitlines(keepends=True)):
-            env_py.write_text("".join(lines), encoding="utf-8")
-            steps.append("Imports removidos de alembic/env.py")
-
-    # Clean requirements.txt (api-postgres only)
-    api_postgres_dir = monorepo_root / "apps" / "api-postgres"
-    if _clean_requirements_txt(module_name, api_postgres_dir):
-        steps.append("Dependencias removidas do requirements.txt")
+    _clean_registrations(module_name, steps)
 
     if not steps:
         logger.warning("Nada encontrado para remover: %s", module_name)
