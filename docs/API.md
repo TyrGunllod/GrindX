@@ -664,25 +664,29 @@ Escaneia o diretório de importação (zips `.zip` disponíveis) e os módulos j
 
 ### `POST /v1/import/{module_name}`
 
-Importa (instala) um módulo a partir do zip `{module_name}.zip` no diretório de importação.
+Importa (instala) um módulo a partir do zip `{module_name}.zip` no diretório de importação. Se o módulo já existe no backend (mesmo slug), a operação é uma **atualização**: arquivos e versão são trocados, migrations novas rodam antes da resposta e `portal.modulos`/`usuario_modulo` não são tocados.
 
-**Path params:** `module_name` — nome do módulo (fuzzy match no arquivo `.zip`)
+**Path params:** `module_name` — nome do módulo (fuzzy match no arquivo `.zip`; o `module_name` do manifest precisa ser igual ao da URL, senão a importação falha antes de copiar qualquer arquivo)
 
 **Query params:** `force` (boolean, default `true`) — sobrescreve o módulo se já existir
 
-**Response 200:**
+**Response 200 (atualização):**
 ```json
 {
   "success": true,
-  "message": "Importação concluída com sucesso",
+  "message": "Módulo atualizado com sucesso.",
   "steps": [
     "Backend copiado",
+    "Registros antigos do módulo limpos",
     "Frontend copiado",
-    "Migração aplicada"
+    "Schema na revisão 101",
+    "Atualização concluída — reinicie a API para carregar o novo código"
   ],
   "error": null
 }
 ```
+
+Em instalação nova a mensagem é `Módulo importado com sucesso.` e as migrations rodam em background. Falha de migration devolve `success: false` com o stderr do Alembic em `error`.
 
 ### `DELETE /v1/import/{module_name}`
 

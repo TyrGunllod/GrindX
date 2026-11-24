@@ -158,6 +158,10 @@ Módulos read-only (consultas a tabelas do Protheus) usam `target_api: "sqlserve
 - O fallback `shared/` (frontend + Python) vive na raiz do módulo standalone e é **excluído no export** e **ignorado durante a cópia** (o monorepo tem os `shared` padrão)
 - `python scripts/import_module.py {nome} --import-dir={tmp} --target-api=sqlserver` (executado a partir de `apps/api-postgres/`, onde está `scripts/import_module.py`)
 
+### Atualização de módulo
+
+`POST /v1/import/{nome}` com o módulo já instalado é uma **atualização**: troca arquivos/versão, limpa e regenera `main.py`/`dependencies.py`/`alembic/env.py`, roda as migrations antes da resposta e **não** toca em `portal.modulos` nem `usuario_modulo`. Falha de migration devolve `success: false`; revisão órfã no banco recusa a atualização. `IMPORT_AUTO_RESTART=true` (compose do `api-postgres`) reinicia a API após a atualização — default `false` para não matar o `--reload` em dev.
+
 ### Módulos frontend-only
 
 Módulos sem backend (reutilizam endpoints de outros módulos) usam `frontend_only: true` no `module.json`:

@@ -380,6 +380,20 @@ Para remover um módulo importado, use `--remove` (o endpoint `DELETE /v1/import
 
 ---
 
+## Atualizar Módulo
+
+Módulos já instalados mostram o botão **Atualizar** na lista de zips (em vez de Importar). A atualização reaproveita `POST /v1/import/{module_name}`: troca os arquivos backend/frontend e aplica as migrations novas, **sem remover e reinstalar**.
+
+**Preservado:** vínculo com a aba no menu (nome exibido, ordem, role mínima), permissões por usuário (`usuario_modulo`), dados das tabelas, migrations já aplicadas e as factories registradas em `dependencies.py`.
+
+**Sempre preservado:** o menu não é reescrito. Se a nova versão mudar o rótulo/ícone/URL, ajuste manualmente em **Portal → Estrutura**.
+
+**Migrations na atualização:** rodam antes da resposta. Se alguma falhar, a operação falha com o erro do Alembic e nada é marcado como aplicado. Migrations antigas não aplicadas são movidas para `import/.backup/unapplied_migrations/` (nunca apagadas). Banco numa revisão que não existe mais nos arquivos → atualização recusada até o `alembic_version` ser corrigido.
+
+**Restart:** a API em container não roda com `--reload`. Com `IMPORT_AUTO_RESTART=true` (definido no `compose.yaml`), a API se reinicia sozinha após a atualização (o `restart: unless-stopped` do container levanta de novo). Fora do container, reinicie manualmente.
+
+---
+
 ## Ordem de Importação
 
 Para módulos com dependências, importe nesta ordem:
