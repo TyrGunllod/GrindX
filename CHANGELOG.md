@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.88.1 (2026-11-24)
+
+### Code Style
+
+- Aplica ruff format no teste de import_module
+  ([`b02a210`](https://github.com/TyrGunllod/GrindX/commit/b02a21083f062c958f9acbc12dea4cc5bcfe8c0d))
+
+### Documentation
+
+- Exige merge de main apenas a partir de Develop
+  ([`a400480`](https://github.com/TyrGunllod/GrindX/commit/a400480372c19b9400c84ac9585010f50e844222))
+
+
 ## v1.88.0 (2026-10-27)
 
 ### Features
