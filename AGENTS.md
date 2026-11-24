@@ -11,6 +11,7 @@ Estas regras causam falha de CI, bug sutil ou retrabalho quando ignoradas. Revis
 - [ ] `ErrorCode.CONSTANT` de `packages/shared/exceptions/codes.py` — nunca strings literais de erro
 - [ ] `config.js` incluído em TODO `index.html` de módulo, nesta ordem: `config.js` → `app.js` → `apiService.js` → `baseController.js` → `script.js`
 - [ ] Atualizar `README.md`, `docs/API.md`, `docs/DATABASE.md`, `docs/SETUP.md`, `docs/README.md` e este `AGENTS.md` ao alterar código relevante — ver seção Docs Sync
+- [ ] Merge em `main` **somente** a partir de `Develop` — nenhuma outra branch entra em `main` (nem merge nem push direto) — ver seção Commit & Release
 
 **Nunca sem confirmação explícita do usuário:**
 - [ ] Adicionar endpoint de escrita em `api-sqlserver` — é somente leitura (`allow_methods=["GET"]`)
@@ -87,6 +88,8 @@ Config ruff em `apps/api-postgres/ruff.toml`: select E, F, I — ignore E501 —
 
 ## Commit & Release
 
+- Fluxo de branches: `feat/*` | `feature/*` | `fix/*` → `Develop` → `main`
+- **`main` só recebe merge de `Develop`** — nenhuma outra branch pode ser mergeada ou pushada direto em `main`
 - Formato: [conventional commits](https://www.conventionalcommits.org/) (parser angular)
 - Título em inglês, descrição em português
 - `feat` → minor, `fix`/`perf` → patch
