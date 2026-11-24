@@ -28,7 +28,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
                     render: function(v, row) {
                         var slug = (row.slug || '').replace(/[&<>"']/g, '');
                         if (row.ja_importado) {
-                            return '<button class="btn btn-sm btn-danger" data-action="remove" data-slug="' + slug + '"><i class="fas fa-trash"></i> <span class="hide-mobile">Remover</span></button>';
+                            return '<button class="btn btn-sm btn-primary" data-action="update" data-slug="' + slug + '"><i class="fas fa-sync"></i> <span class="hide-mobile">Atualizar</span></button>';
                         }
                         return '<button class="btn btn-sm btn-primary" data-action="import" data-slug="' + slug + '"><i class="fas fa-download"></i> <span class="hide-mobile">Importar</span></button>';
                     }
@@ -54,6 +54,8 @@ class ImporterController extends window.grindx.controllers.BaseController {
             var action = btn.dataset.action;
             if (action === 'import') {
                 this.abrirModalImportar(slug);
+            } else if (action === 'update') {
+                this.abrirModalAtualizar(slug);
             } else if (action === 'remove') {
                 this.abrirModalRemover(slug);
             }
@@ -110,6 +112,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
 
     abrirModalImportar(slug) {
         this.currentSlug = slug;
+        this.currentAction = 'import';
         var safeSlug = (slug || '').replace(/[&<>"']/g, '');
         var body = document.getElementById('modalBody');
         body.innerHTML =
@@ -123,8 +126,27 @@ class ImporterController extends window.grindx.controllers.BaseController {
         this.importModal.open();
     }
 
+    abrirModalAtualizar(slug) {
+        this.currentSlug = slug;
+        this.currentAction = 'update';
+        var safeSlug = (slug || '').replace(/[&<>"']/g, '');
+        var modulo = (this.modules || []).find(m => m.slug === slug) || {};
+        var versao = (modulo.version || '-').replace(/[&<>"']/g, '');
+        var body = document.getElementById('modalBody');
+        body.innerHTML =
+            '<p><strong>Módulo:</strong> ' + safeSlug + '</p>' +
+            '<p>Atualizar para a versão ' + versao + '? A aba, a ordem, as permissões e os dados serão preservados.</p>' +
+            '<div id="importLog" class="import-log hidden"></div>';
+        document.getElementById('modalTitle').textContent = 'Atualizar Módulo';
+        var btn = document.getElementById('btnConfirm');
+        btn.textContent = 'Atualizar';
+        btn.disabled = false;
+        this.importModal.open();
+    }
+
     abrirModalRemover(slug) {
         this.currentSlug = slug;
+        this.currentAction = 'remove';
         var safeSlug = (slug || '').replace(/[&<>"']/g, '');
         var body = document.getElementById('modalBody');
         body.innerHTML =
@@ -141,9 +163,16 @@ class ImporterController extends window.grindx.controllers.BaseController {
     async confirmarImport() {
         var btn = document.getElementById('btnConfirm');
         var logDiv = document.getElementById('importLog');
-        var isRemove = document.getElementById('modalTitle').textContent === 'Remover Módulo';
+        var action = this.currentAction || 'import';
+        var isRemove = action === 'remove';
+        var labels = {
+            import: ['Importando...', 'Importar', 'Módulo importado com sucesso!'],
+            update: ['Atualizando...', 'Atualizar', 'Módulo atualizado com sucesso!'],
+            remove: ['Removendo...', 'Remover', 'Módulo removido com sucesso!']
+        };
+        var label = labels[action];
         btn.disabled = true;
-        btn.textContent = isRemove ? 'Removendo...' : 'Importando...';
+        btn.textContent = label[0];
         logDiv.classList.remove('hidden');
         logDiv.innerHTML = '<div class="loading-spinner"></div>';
 
@@ -168,25 +197,20 @@ class ImporterController extends window.grindx.controllers.BaseController {
                 var div = document.createElement('div');
                 div.className = 'log-step success';
                 div.style.fontWeight = 'bold';
-                div.textContent = isRemove ? 'Módulo removido com sucesso!' : 'Módulo importado com sucesso!';
+                div.textContent = label[2];
                 logDiv.appendChild(div);
                 setTimeout(() => {
                     this.importModal.close();
                     this.carregar();
                 }, 1500);
             } else {
-                if (!isRemove) {
-                    logDiv.innerHTML = '<div class="log-step info" style="font-weight:bold">Aguardando servidor reiniciar...</div><div class="loading-spinner" style="margin-top: 10px;"></div>';
-                    await this.aguardarServidor(this.currentSlug, logDiv, btn);
-                } else {
-                    var errDiv = document.createElement('div');
-                    errDiv.className = 'log-step error';
-                    errDiv.style.fontWeight = 'bold';
-                    errDiv.textContent = 'Falha: ' + (result.error || 'Erro desconhecido');
-                    logDiv.appendChild(errDiv);
-                    btn.disabled = false;
-                    btn.textContent = 'Remover';
-                }
+                var errDiv = document.createElement('div');
+                errDiv.className = 'log-step error';
+                errDiv.style.fontWeight = 'bold';
+                errDiv.textContent = 'Falha: ' + (result.error || 'Erro desconhecido');
+                logDiv.appendChild(errDiv);
+                btn.disabled = false;
+                btn.textContent = label[1];
             }
         } catch (err) {
             if (!isRemove) {
@@ -195,7 +219,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
             } else {
                 logDiv.innerHTML = '<div class="log-step error" style="font-weight:bold">Falha: ' + (err.message || 'Erro desconhecido') + '</div>';
                 btn.disabled = false;
-                btn.textContent = 'Remover';
+                btn.textContent = label[1];
             }
         }
     }
@@ -213,9 +237,9 @@ class ImporterController extends window.grindx.controllers.BaseController {
                 var modulo = (data.modules || []).find(m => m.slug === slug);
 
                 if (modulo && modulo.ja_importado) {
-                    logDiv.innerHTML = '<div class="log-step success" style="font-weight:bold">✓ Módulo importado com sucesso!</div>';
+                    logDiv.innerHTML = '<div class="log-step success" style="font-weight:bold">✓ Módulo atualizado com sucesso!</div>';
                     btn.disabled = false;
-                    btn.textContent = 'Importar';
+                    btn.textContent = this.currentAction === 'update' ? 'Atualizar' : 'Importar';
                     setTimeout(() => {
                         this.importModal.close();
                         this.carregar();
@@ -229,7 +253,7 @@ class ImporterController extends window.grindx.controllers.BaseController {
 
         logDiv.innerHTML = '<div class="log-step error" style="font-weight:bold">Timeout: servidor não respondeu. Recarregue a página.</div>';
         btn.disabled = false;
-        btn.textContent = 'Importar';
+        btn.textContent = this.currentAction === 'update' ? 'Atualizar' : 'Importar';
     }
 }
 
