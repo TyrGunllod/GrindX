@@ -761,3 +761,29 @@ class TestUpdateDetection:
 
         mock_clean.assert_called_once()
         assert result["updated"] is True
+
+class TestMigrationFailure:
+    def test_falha_de_migration_retorna_erro(self, tmp_path):
+        import_dir = tmp_path / "zip"
+        import_dir.mkdir()
+
+        with (
+            patch("scripts.import_module._get_api_dir", return_value=tmp_path),
+            patch("scripts.import_module.validate_manifest") as mock_validate,
+            patch("scripts.import_module.backup_existing"),
+            patch("scripts.import_module.copy_backend"),
+            patch("scripts.import_module.merge_requirements"),
+            patch("scripts.import_module.copy_frontend"),
+            patch("scripts.import_module.copy_migration"),
+            patch("scripts.import_module.register_router"),
+            patch("scripts.import_module.register_dependency"),
+            patch("scripts.import_module.register_alembic_import"),
+            patch("scripts.import_module.register_menu"),
+            patch("scripts.import_module.run_migrations") as mock_run_migrations,
+        ):
+            mock_validate.return_value = {"module_name": "mod_x", "frontend_url": "x"}
+            mock_run_migrations.side_effect = RuntimeError("migration boom")
+            result = import_module.import_module("mod_x", import_dir, force=True)
+
+        assert result["success"] is False
+        assert "migration boom" in result["error"]

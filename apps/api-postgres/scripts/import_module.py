@@ -1043,15 +1043,11 @@ def import_module(
             if skip_migrations:
                 steps.append("Migração adiada (executada em segundo plano)")
             else:
-                try:
-                    if not dry_run:
-                        run_migrations()
-                    steps.append("Migrations executadas")
-                except Exception as e:
-                    logger.warning(
-                        "Migration falhou (tabelas podem já existir): %s", str(e)
-                    )
-                    steps.append(f"Migration ignorada: {str(e)[:100]}")
+                if not dry_run:
+                    run_migrations()
+                    rev = _get_db_current_revision()
+                    steps.append(f"Schema na revisão {rev or 'desconhecida'}")
+                steps.append("Migrations executadas")
         elif is_frontend_only:
             steps.append("Módulo frontend-only — sem migrações")
         else:
