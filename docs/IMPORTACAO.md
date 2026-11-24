@@ -384,7 +384,7 @@ Para remover um módulo importado, use `--remove` (o endpoint `DELETE /v1/import
 
 Módulos já instalados mostram o botão **Atualizar** na lista de zips (em vez de Importar). A atualização reaproveita `POST /v1/import/{module_name}`: troca os arquivos backend/frontend e aplica as migrations novas, **sem remover e reinstalar**.
 
-**Preservado:** vínculo com a aba no menu (nome exibido, ordem, role mínima), permissões por usuário (`usuario_modulo`), dados das tabelas, migrations já aplicadas e as factories registradas em `dependencies.py`.
+**Preservado:** vínculo com a aba no menu (nome exibido, ordem, role mínima), permissões por usuário (`usuario_modulo`), dados das tabelas e migrations já aplicadas. Os registros em `main.py`, `dependencies.py` e `alembic/env.py` são **limpos e regenerados** a partir dos arquivos novos (services/repositories precisam seguir o padrão `<X>Service`/`<X>Repository` para a factory ser recriada).
 
 **Sempre preservado:** o menu não é reescrito. Se a nova versão mudar o rótulo/ícone/URL, ajuste manualmente em **Portal → Estrutura**.
 

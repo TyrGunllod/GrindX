@@ -686,7 +686,7 @@ Importa (instala) um módulo a partir do zip `{module_name}.zip` no diretório d
 }
 ```
 
-Em instalação nova a mensagem é `Módulo importado com sucesso.` e as migrations rodam em background. Falha de migration devolve `success: false` com o stderr do Alembic em `error`.
+Em instalação nova a mensagem é `Módulo importado com sucesso.` e as migrations rodam em background (falha ali só aparece no log do servidor). Em atualização, falha de migration devolve `success: false` com o stderr do Alembic em `error` e os arquivos do módulo são restaurados ao estado anterior.
 
 ### `DELETE /v1/import/{module_name}`
 

@@ -379,7 +379,11 @@ def import_module(
                 steps.append("Módulo frontend-only importado — sem migrações")
             elif not update:
                 steps.append("Módulo sqlserver importado — sem migrações")
-            if settings.IMPORT_AUTO_RESTART and result_data.get("updated"):
+            if (
+                settings.IMPORT_AUTO_RESTART
+                and result_data.get("updated")
+                and not frontend_only
+            ):
                 background_tasks.add_task(_restart_api)
                 steps.append("API vai reiniciar para carregar o novo código")
             logger.info("Import de '%s' concluído", module_name)
@@ -395,7 +399,7 @@ def import_module(
                     else "Falha na importação"
                 )
             ),
-            steps=result_data.get("steps", []),
+            steps=steps or result_data.get("steps", []),
             error=result_data.get("error"),
         )
 

@@ -115,10 +115,7 @@ def validate_manifest(import_dir: Path) -> dict:
 
 
 def backup_existing(manifest: dict, target_api: str = "postgres") -> Path | None:
-    if target_api == "sqlserver":
-        logger.info("SQL Server target — backup desnecessário")
-        return None
-    api_dir = _get_api_dir()
+    api_dir = _get_api_dir() if target_api == "postgres" else _get_sqlserver_api_dir()
     backup_root = _get_import_dir() / BACKUP_DIRNAME
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     backup_dir = backup_root / f"{manifest['module_name']}_{timestamp}"
@@ -142,6 +139,39 @@ def backup_existing(manifest: dict, target_api: str = "postgres") -> Path | None
                 logger.info("Backup criado: %s -> %s", f, backup_dir / f.name)
             except PermissionError:
                 logger.warning("Sem permissão para copiar %s — continuando", f)
+
+    # Backup do módulo e do frontend para o rollback devolver o estado anterior
+    module_dir = api_dir / "app" / "modules" / manifest["module_name"]
+    if module_dir.exists():
+        try:
+            shutil.copytree(
+                module_dir,
+                backup_dir / "backend",
+                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+            )
+        except PermissionError:
+            logger.warning("Sem permissão para copiar %s — continuando", module_dir)
+
+    urls = [tab.get("url", "") for tab in manifest.get("frontend_tabs", [])]
+    if manifest.get("frontend_url"):
+        urls.append(manifest["frontend_url"])
+    frontend_base = _get_frontend_dir() / "modules"
+    for url in urls:
+        parts = url.split("/")
+        if len(parts) < 2:
+            continue
+        frontend_dir = frontend_base / parts[1]
+        if frontend_dir.exists():
+            try:
+                shutil.copytree(
+                    frontend_dir,
+                    backup_dir / "frontend" / parts[1],
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+                )
+            except PermissionError:
+                logger.warning(
+                    "Sem permissão para copiar %s — continuando", frontend_dir
+                )
 
     return backup_dir
 
@@ -478,6 +508,21 @@ def _rewrite_migration(content: str, revision: str, down_revision: str) -> str:
         flags=re.MULTILINE,
     )
     return content
+
+
+def _remove_new_migrations(
+    versions_dir: Path, before: set[Path], module_name: str
+) -> None:
+    """Remove migrations copiadas por esta execução (rollback de atualização)."""
+    if not versions_dir.exists():
+        return
+    for filepath in versions_dir.glob("*.py"):
+        if filepath in before:
+            continue
+        content = filepath.read_text(encoding="utf-8", errors="ignore")
+        if module_name in filepath.name or module_name in content:
+            filepath.unlink(missing_ok=True)
+            logger.info("Migration nova removida no rollback: %s", filepath.name)
 
 
 def copy_migration(import_dir: Path) -> None:
@@ -890,12 +935,14 @@ def register_menu(manifest: dict) -> None:
         logger.info("  - %s: %s", tab_name, tab_url)
 
 
-def rollback(backup_dir: Path | None) -> None:
+def rollback(
+    backup_dir: Path | None, module_name: str, target_api: str = "postgres"
+) -> None:
     if not backup_dir or not backup_dir.exists():
         logger.warning("Nada para restaurar")
         return
 
-    api_dir = _get_api_dir()
+    api_dir = _get_api_dir() if target_api == "postgres" else _get_sqlserver_api_dir()
     restored = 0
     for f in backup_dir.iterdir():
         if f.name == "main.py":
@@ -909,6 +956,24 @@ def rollback(backup_dir: Path | None) -> None:
         shutil.copy2(f, dest)
         restored += 1
         logger.info("Restaurado: %s -> %s", f, dest)
+
+    backend_backup = backup_dir / "backend"
+    if backend_backup.exists():
+        dest = api_dir / "app" / "modules" / module_name
+        shutil.rmtree(dest, ignore_errors=True)
+        shutil.copytree(backend_backup, dest)
+        restored += 1
+        logger.info("Backend restaurado: %s", dest)
+
+    frontend_backup = backup_dir / "frontend"
+    if frontend_backup.exists():
+        frontend_base = _get_frontend_dir() / "modules"
+        for item in frontend_backup.iterdir():
+            dest = frontend_base / item.name
+            shutil.rmtree(dest, ignore_errors=True)
+            shutil.copytree(item, dest)
+            restored += 1
+            logger.info("Frontend restaurado: %s", dest)
 
     logger.info("Rollback concluído: %d arquivos restaurados", restored)
 
@@ -931,6 +996,8 @@ def import_module(
 ) -> dict:
     steps = []
     backup_path = None
+    migrations_before: set[Path] | None = None
+    versions_dir = _get_api_dir() / "alembic" / "versions"
 
     _tick = time.time()
     try:
@@ -995,6 +1062,9 @@ def import_module(
 
         if not dry_run:
             if target_api != "sqlserver":
+                migrations_before = (
+                    set(versions_dir.glob("*.py")) if versions_dir.exists() else set()
+                )
                 copy_migration(import_dir)
         steps.append("Migration copiada")
         _tick = _log_step("copy_migration", _tick)
@@ -1048,7 +1118,9 @@ def import_module(
     except Exception as e:
         logger.error("Erro na importação: %s", str(e))
         if not dry_run and backup_path:
-            rollback(backup_path)
+            rollback(backup_path, module_name, target_api)
+        if migrations_before is not None:
+            _remove_new_migrations(versions_dir, migrations_before, module_name)
         return {"success": False, "steps": steps, "error": str(e)}
 
 
@@ -1142,7 +1214,7 @@ def _clean_registrations(module_name: str, steps: list[str]) -> None:
         # Fallback: remove qualquer linha restante que referencie o modulo
         lines = content_clean.splitlines(keepends=True)
         before_fallback = len(lines)
-        module_path_prefix = f"app.modules.{module_name}"
+        module_path_prefix = f"app.modules.{module_name}."
         lines = [line for line in lines if module_path_prefix not in line]
         if len(lines) != before_fallback:
             content_clean = "".join(lines)

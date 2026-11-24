@@ -758,7 +758,7 @@ class TestUpdateDetection:
         with (
             patch("scripts.import_module._get_api_dir", return_value=api),
             patch("scripts.import_module.validate_manifest") as mock_validate,
-            patch("scripts.import_module.backup_existing"),
+            patch("scripts.import_module.backup_existing", return_value=None),
             patch("scripts.import_module.copy_backend"),
             patch("scripts.import_module.merge_requirements"),
             patch("scripts.import_module.copy_frontend"),
@@ -786,7 +786,7 @@ class TestMigrationFailure:
         with (
             patch("scripts.import_module._get_api_dir", return_value=tmp_path),
             patch("scripts.import_module.validate_manifest") as mock_validate,
-            patch("scripts.import_module.backup_existing"),
+            patch("scripts.import_module.backup_existing", return_value=None),
             patch("scripts.import_module.copy_backend"),
             patch("scripts.import_module.merge_requirements"),
             patch("scripts.import_module.copy_frontend"),
@@ -803,3 +803,254 @@ class TestMigrationFailure:
 
         assert result["success"] is False
         assert "migration boom" in result["error"]
+
+
+class TestCleanRegistrationsPrefixo:
+    def test_nao_remove_modulo_com_prefixo_semelhante(self, tmp_path, monkeypatch):
+        api = tmp_path / "apps" / "api-postgres"
+        (api / "app" / "auth").mkdir(parents=True)
+        deps = api / "app" / "auth" / "dependencies.py"
+        deps.write_text(
+            "from app.modules.custo.services.custo_service import CustoService\n"
+            "from app.modules.custos.services.custos_service import CustosService\n"
+            "def get_custo_service(db=Depends(get_db)) -> CustoService:\n"
+            '    """Factory."""\n'
+            "    return CustoService(db)\n"
+            "def get_custos_service(db=Depends(get_db)) -> CustosService:\n"
+            '    """Factory."""\n'
+            "    return CustosService(db)\n",
+            encoding="utf-8",
+        )
+        (api / "alembic").mkdir(parents=True)
+        (api / "alembic" / "env.py").write_text("", encoding="utf-8")
+        (api / "requirements.txt").write_text(
+            "# === Módulo custo ===\ncusto-dep==1.0\n# === Módulo custos ===\ncustos-dep==1.0\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(import_module, "_get_monorepo_root", lambda: tmp_path)
+
+        import_module._clean_registrations("custo", [])
+
+        content = deps.read_text(encoding="utf-8")
+        assert "from app.modules.custo.services" not in content
+        assert "from app.modules.custos.services.custos_service" in content
+        assert "get_custos_service" in content
+        assert "custos-dep==1.0" in (api / "requirements.txt").read_text(
+            encoding="utf-8"
+        )
+
+
+class TestUpdateRegeneration:
+    def test_atualizacao_troca_import_e_factory_do_service(self, tmp_path):
+        api = tmp_path / "apps" / "api-postgres"
+        modules = api / "app" / "modules" / "mod_x"
+        (modules / "services").mkdir(parents=True)
+        (modules / "repositories").mkdir()
+        (modules / "routers").mkdir()
+        (modules / "services" / "foo_service.py").write_text(
+            "class FooService:\n    def __init__(self, repo):\n        self.repo = repo\n",
+            encoding="utf-8",
+        )
+        (modules / "repositories" / "foo_repository.py").write_text(
+            "class FooRepository:\n    def __init__(self, db):\n        self.db = db\n",
+            encoding="utf-8",
+        )
+        (modules / "routers" / "foo_router.py").write_text(
+            "router = None\n", encoding="utf-8"
+        )
+        (api / "app" / "auth").mkdir(parents=True)
+        deps = api / "app" / "auth" / "dependencies.py"
+        deps.write_text(
+            "from fastapi import Depends\n"
+            "from sqlalchemy.orm import Session\n"
+            "from app.database import get_db\n\n\n"
+            "# --- Versões vinculadas das permissões ---\n",
+            encoding="utf-8",
+        )
+        main = api / "app" / "main.py"
+        main.write_text(
+            "from app.routers.health_router import router as health_router\n"
+            "from app.modules.mod_x.routers.foo_router import router as mod_x_foo_router\n"
+            "app.include_router(health_router)\n"
+            "app.include_router(mod_x_foo_router)\n",
+            encoding="utf-8",
+        )
+        (api / "alembic").mkdir()
+        (api / "alembic" / "env.py").write_text(
+            "from app.modules.portal.models.portal import Aba, Modulo  # noqa: F401\n",
+            encoding="utf-8",
+        )
+        (api / "requirements.txt").write_text("", encoding="utf-8")
+        frontend = tmp_path / "apps" / "frontend-webapp" / "modules" / "mod_x"
+        frontend.mkdir(parents=True)
+        (frontend / "index.html").write_text("old", encoding="utf-8")
+
+        import_dir = tmp_path / "zip"
+        import_dir.mkdir()
+        (import_dir / "module.json").write_text(
+            json.dumps(
+                {
+                    "module_name": "mod_x",
+                    "entity_name": "ModX",
+                    "menu_label": "Mod X",
+                    "schema_name": "org",
+                    "route_prefix": "/v1/mod_x",
+                    "frontend_tabs": [{"url": "modules/mod_x/index.html"}],
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        def fake_copy_backend(import_dir, module_name, force, target_api="postgres"):
+            (modules / "services" / "foo_service.py").unlink()
+            (modules / "routers" / "foo_router.py").unlink()
+            (modules / "services" / "bar_service.py").write_text(
+                "class BarService:\n    def __init__(self, repo):\n        self.repo = repo\n",
+                encoding="utf-8",
+            )
+            (modules / "repositories" / "bar_repository.py").write_text(
+                "class BarRepository:\n    def __init__(self, db):\n        self.db = db\n",
+                encoding="utf-8",
+            )
+            (modules / "routers" / "bar_router.py").write_text(
+                "router = None\n", encoding="utf-8"
+            )
+
+        with (
+            patch("scripts.import_module._get_api_dir", return_value=api),
+            patch("scripts.import_module._get_monorepo_root", return_value=tmp_path),
+            patch(
+                "scripts.import_module._get_frontend_dir",
+                return_value=tmp_path / "apps" / "frontend-webapp",
+            ),
+            patch(
+                "scripts.import_module._get_import_dir",
+                return_value=tmp_path / "import",
+            ),
+            patch("scripts.import_module.copy_backend", side_effect=fake_copy_backend),
+            patch("scripts.import_module.merge_requirements"),
+            patch("scripts.import_module.copy_frontend"),
+            patch("scripts.import_module.copy_migration"),
+            patch("scripts.import_module.run_migrations"),
+            patch("scripts.import_module._get_db_current_revision", return_value="100"),
+            patch("scripts.import_module.register_menu"),
+        ):
+            result = import_module.import_module("mod_x", import_dir, force=True)
+
+        assert result["success"] is True
+        content = deps.read_text(encoding="utf-8")
+        assert "FooService" not in content
+        assert "BarService" in content
+        assert "get_mod_x_bar_service" in content
+        main_content = main.read_text(encoding="utf-8")
+        assert "bar_router" in main_content
+        assert "foo_router" not in main_content
+
+
+class TestRollback:
+    def test_falha_de_migration_restaura_backend_e_frontend(self, tmp_path):
+        api = tmp_path / "apps" / "api-postgres"
+        modules = api / "app" / "modules" / "mod_x"
+        (modules / "routers").mkdir(parents=True)
+        (modules / "routers" / "old_router.py").write_text("# old", encoding="utf-8")
+        main = api / "app" / "main.py"
+        main.write_text(
+            "from app.modules.mod_x.routers.old_router import router as mod_x_old_router\n"
+            "app.include_router(mod_x_old_router)\n",
+            encoding="utf-8",
+        )
+        (api / "app" / "auth").mkdir()
+        (api / "app" / "auth" / "dependencies.py").write_text("", encoding="utf-8")
+        (api / "alembic" / "versions").mkdir(parents=True)
+        (api / "requirements.txt").write_text("", encoding="utf-8")
+        frontend = tmp_path / "apps" / "frontend-webapp" / "modules" / "mod_x"
+        frontend.mkdir(parents=True)
+        (frontend / "index.html").write_text("old", encoding="utf-8")
+
+        import_dir = tmp_path / "zip"
+        import_dir.mkdir()
+        (import_dir / "module.json").write_text(
+            json.dumps(
+                {
+                    "module_name": "mod_x",
+                    "entity_name": "ModX",
+                    "menu_label": "Mod X",
+                    "schema_name": "org",
+                    "route_prefix": "/v1/mod_x",
+                    "frontend_tabs": [{"url": "modules/mod_x/index.html"}],
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        def fake_copy_backend(import_dir, module_name, force, target_api="postgres"):
+            (modules / "routers" / "old_router.py").unlink()
+            (modules / "routers" / "new_router.py").write_text(
+                "# new", encoding="utf-8"
+            )
+
+        def fake_copy_frontend(import_dir, module_name, force):
+            (frontend / "index.html").write_text("new", encoding="utf-8")
+
+        with (
+            patch("scripts.import_module._get_api_dir", return_value=api),
+            patch("scripts.import_module._get_monorepo_root", return_value=tmp_path),
+            patch(
+                "scripts.import_module._get_frontend_dir",
+                return_value=tmp_path / "apps" / "frontend-webapp",
+            ),
+            patch(
+                "scripts.import_module._get_import_dir",
+                return_value=tmp_path / "import",
+            ),
+            patch("scripts.import_module.copy_backend", side_effect=fake_copy_backend),
+            patch("scripts.import_module.merge_requirements"),
+            patch(
+                "scripts.import_module.copy_frontend", side_effect=fake_copy_frontend
+            ),
+            patch("scripts.import_module.copy_migration"),
+            patch(
+                "scripts.import_module.run_migrations", side_effect=RuntimeError("boom")
+            ),
+            patch("scripts.import_module.register_menu"),
+        ):
+            result = import_module.import_module("mod_x", import_dir, force=True)
+
+        assert result["success"] is False
+        assert (modules / "routers" / "old_router.py").exists()
+        assert not (modules / "routers" / "new_router.py").exists()
+        assert "old_router" in main.read_text(encoding="utf-8")
+        assert (frontend / "index.html").read_text(encoding="utf-8") == "old"
+
+
+class TestRemoveNewMigrations:
+    def test_remove_apenas_migrations_novas_do_modulo(self, tmp_path):
+        versions = tmp_path / "versions"
+        versions.mkdir()
+        antiga = versions / "100_old.py"
+        antiga.write_text('revision: str = "100"\n# mod_x\n', encoding="utf-8")
+        outra = versions / "200_outro.py"
+        outra.write_text('revision: str = "200"\n# outro_mod\n', encoding="utf-8")
+        before = {antiga, outra}
+
+        nova = versions / "101_new.py"
+        nova.write_text('revision: str = "101"\n# mod_x\n', encoding="utf-8")
+
+        import_module._remove_new_migrations(versions, before, "mod_x")
+
+        assert nova.exists() is False
+        assert antiga.exists()
+        assert outra.exists()
+
+
+class TestArchiveFailure:
+    def test_permission_error_levanta_runtime_error(self, tmp_path, monkeypatch):
+        origem = tmp_path / "101_add.py"
+        origem.write_text('revision: str = "101"\n', encoding="utf-8")
+        monkeypatch.setattr(
+            import_module, "_get_import_dir", lambda: tmp_path / "import"
+        )
+
+        with patch("scripts.import_module.shutil.move", side_effect=PermissionError):
+            with pytest.raises(RuntimeError, match="101_add.py"):
+                import_module._archive_unapplied_migration(origem)

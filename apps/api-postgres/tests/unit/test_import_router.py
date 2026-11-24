@@ -484,3 +484,124 @@ class TestAutoRestart:
             client.post("/v1/import/projetos", headers=auth_headers)
 
         mock_restart.assert_not_called()
+
+    def test_restart_nao_agendado_em_frontend_only(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        from unittest.mock import patch
+
+        _criar_zip_manifest(
+            tmp_path,
+            "pop_viz",
+            {
+                "module_name": "pop_viz",
+                "entity_name": "PopViz",
+                "frontend_only": True,
+                "menu_label": "Visualizador POP",
+                "frontend_tabs": [
+                    {"name": "Visualizador POP", "url": "modules/pop_viz/index.html"}
+                ],
+            },
+        )
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+        from app.core.config import settings
+
+        monkeypatch.setattr(settings, "IMPORT_AUTO_RESTART", True)
+
+        with (
+            patch("scripts.import_module.import_module") as mock_import,
+            patch("app.routers.import_router._is_update", return_value=True),
+            patch("app.routers.import_router._restart_api") as mock_restart,
+        ):
+            mock_import.return_value = {
+                "success": True,
+                "steps": ["ok"],
+                "updated": True,
+            }
+            client.post("/v1/import/pop_viz", headers=auth_headers)
+
+        mock_restart.assert_not_called()
+
+    def test_restart_nao_agendado_quando_update_falha(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        from unittest.mock import patch
+
+        _criar_zip_manifest(
+            tmp_path,
+            "projetos",
+            {
+                "module_name": "projetos",
+                "entity_name": "Projeto",
+                "schema_name": "org",
+                "route_prefix": "/v1/projetos",
+                "menu_label": "Projetos",
+                "frontend_tabs": [
+                    {"name": "Projetos", "url": "modules/projetos/index.html"}
+                ],
+            },
+        )
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+        from app.core.config import settings
+
+        monkeypatch.setattr(settings, "IMPORT_AUTO_RESTART", True)
+
+        with (
+            patch("scripts.import_module.import_module") as mock_import,
+            patch("app.routers.import_router._is_update", return_value=True),
+            patch("app.routers.import_router._restart_api") as mock_restart,
+        ):
+            mock_import.return_value = {
+                "success": False,
+                "steps": [],
+                "error": "migration boom",
+            }
+            client.post("/v1/import/projetos", headers=auth_headers)
+
+        mock_restart.assert_not_called()
+
+    def test_steps_do_restart_chegam_ao_cliente(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        from unittest.mock import patch
+
+        _criar_zip_manifest(
+            tmp_path,
+            "projetos",
+            {
+                "module_name": "projetos",
+                "entity_name": "Projeto",
+                "schema_name": "org",
+                "route_prefix": "/v1/projetos",
+                "menu_label": "Projetos",
+                "frontend_tabs": [
+                    {"name": "Projetos", "url": "modules/projetos/index.html"}
+                ],
+            },
+        )
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+        from app.core.config import settings
+
+        monkeypatch.setattr(settings, "IMPORT_AUTO_RESTART", True)
+
+        with (
+            patch("scripts.import_module.import_module") as mock_import,
+            patch("app.routers.import_router._is_update", return_value=True),
+            patch("app.routers.import_router._restart_api"),
+        ):
+            mock_import.return_value = {
+                "success": True,
+                "steps": ["ok"],
+                "updated": True,
+            }
+            response = client.post("/v1/import/projetos", headers=auth_headers)
+
+        assert (
+            "API vai reiniciar para carregar o novo código" in response.json()["steps"]
+        )
