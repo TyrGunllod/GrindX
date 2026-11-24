@@ -325,3 +325,81 @@ class TestImportFrontendOnly:
         assert entry is not None
         assert entry["pode_remover"] is True
         assert entry["ja_importado"] is True
+
+class TestImportUpdate:
+    def test_atualizacao_roda_migrations_inline(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        from unittest.mock import patch
+
+        _criar_zip_manifest(
+            tmp_path,
+            "projetos",
+            {
+                "module_name": "projetos",
+                "entity_name": "Projeto",
+                "schema_name": "org",
+                "route_prefix": "/v1/projetos",
+                "menu_label": "Projetos",
+                "frontend_tabs": [
+                    {"name": "Projetos", "url": "modules/projetos/index.html"}
+                ],
+            },
+        )
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+
+        with (
+            patch("scripts.import_module.import_module") as mock_import,
+            patch("app.routers.import_router._is_update", return_value=True),
+            patch("app.routers.import_router._run_migrations_background") as mock_bg,
+        ):
+            mock_import.return_value = {
+                "success": True,
+                "steps": ["ok"],
+                "updated": True,
+            }
+            response = client.post("/v1/import/projetos", headers=auth_headers)
+
+        assert response.status_code == 200, response.text
+        _, _, call_kwargs = mock_import.mock_calls[0]
+        assert call_kwargs["skip_migrations"] is False
+        mock_bg.assert_not_called()
+        assert response.json()["message"] == "Módulo atualizado com sucesso."
+
+    def test_instalacao_nova_mantem_migrations_em_background(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        from unittest.mock import patch
+
+        _criar_zip_manifest(
+            tmp_path,
+            "projetos",
+            {
+                "module_name": "projetos",
+                "entity_name": "Projeto",
+                "schema_name": "org",
+                "route_prefix": "/v1/projetos",
+                "menu_label": "Projetos",
+                "frontend_tabs": [
+                    {"name": "Projetos", "url": "modules/projetos/index.html"}
+                ],
+            },
+        )
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+
+        with (
+            patch("scripts.import_module.import_module") as mock_import,
+            patch("app.routers.import_router._is_update", return_value=False),
+            patch("app.routers.import_router._run_migrations_background") as mock_bg,
+        ):
+            mock_import.return_value = {"success": True, "steps": ["ok"]}
+            response = client.post("/v1/import/projetos", headers=auth_headers)
+
+        assert response.status_code == 200, response.text
+        _, _, call_kwargs = mock_import.mock_calls[0]
+        assert call_kwargs["skip_migrations"] is True
+        mock_bg.assert_called_once()

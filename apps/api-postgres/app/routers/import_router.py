@@ -85,6 +85,12 @@ def _get_import_dir() -> Path:
     return Path(settings.import_dir_path)
 
 
+def _is_update(module_name: str) -> bool:
+    """True quando o módulo já existe no backend (reimport = atualização)."""
+    api_dir = Path(__file__).resolve().parent.parent.parent
+    return (api_dir / "app" / "modules" / module_name).exists()
+
+
 def _read_manifest_from_zip(zip_path: Path) -> dict | None:
     try:
         with zipfile.ZipFile(zip_path, "r") as zf:
@@ -268,6 +274,7 @@ def import_module(
     _: None = Depends(require_role("admin")),
 ):
     import_dir = _get_import_dir()
+    update = _is_update(module_name)
 
     zip_path = import_dir / f"{module_name}.zip"
     if not zip_path.exists():
@@ -338,7 +345,7 @@ def import_module(
                 module_name,
                 tmp_dir,
                 force=force,
-                skip_migrations=True,
+                skip_migrations=not update,
                 skip_install=True,
                 target_api=target_api,
             )
@@ -351,7 +358,7 @@ def import_module(
             logger.info("Zip removido após importação: %s", zip_path.name)
             steps = result_data.get("steps", [])
             frontend_only = manifest_data.get("frontend_only", False)
-            if target_api != "sqlserver" and not frontend_only:
+            if target_api != "sqlserver" and not frontend_only and not update:
                 threading.Thread(
                     target=_run_migrations_background,
                     args=(module_name,),
@@ -360,16 +367,20 @@ def import_module(
                 steps.append("Migrações agendadas em segundo plano")
             elif frontend_only:
                 steps.append("Módulo frontend-only importado — sem migrações")
-            else:
+            elif not update:
                 steps.append("Módulo sqlserver importado — sem migrações")
             logger.info("Import de '%s' concluído", module_name)
 
         return ImportResult(
             success=result_data.get("success", False),
             message=(
-                "Módulo importado com sucesso."
-                if result_data.get("success")
-                else "Falha na importação"
+                "Módulo atualizado com sucesso."
+                if result_data.get("success") and result_data.get("updated")
+                else (
+                    "Módulo importado com sucesso."
+                    if result_data.get("success")
+                    else "Falha na importação"
+                )
             ),
             steps=result_data.get("steps", []),
             error=result_data.get("error"),
