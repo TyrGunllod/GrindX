@@ -326,6 +326,7 @@ class TestImportFrontendOnly:
         assert entry["pode_remover"] is True
         assert entry["ja_importado"] is True
 
+
 class TestImportUpdate:
     def test_atualizacao_roda_migrations_inline(
         self, client, auth_headers, tmp_path, monkeypatch
@@ -403,6 +404,7 @@ class TestImportUpdate:
         _, _, call_kwargs = mock_import.mock_calls[0]
         assert call_kwargs["skip_migrations"] is True
         mock_bg.assert_called_once()
+
 
 class TestAutoRestart:
     def test_restart_agendado_quando_flag_ligada_e_update(

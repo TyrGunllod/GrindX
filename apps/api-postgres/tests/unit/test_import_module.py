@@ -650,9 +650,7 @@ class TestCopyMigration:
 
         with (
             patch("scripts.import_module._get_api_dir", return_value=api_dir),
-            patch(
-                "scripts.import_module._get_db_current_revision", return_value="999"
-            ),
+            patch("scripts.import_module._get_db_current_revision", return_value="999"),
         ):
             with pytest.raises(RuntimeError, match="999"):
                 copy_migration(import_dir)
@@ -716,6 +714,7 @@ class TestSlugValidation:
         assert result["success"] is False
         assert "custos" in result["error"]
 
+
 class TestCleanRegistrations:
     def test_limpa_dependencies_env_e_requirements(self, tmp_path, monkeypatch):
         api = tmp_path / "apps" / "api-postgres"
@@ -777,6 +776,7 @@ class TestUpdateDetection:
 
         mock_clean.assert_called_once()
         assert result["updated"] is True
+
 
 class TestMigrationFailure:
     def test_falha_de_migration_retorna_erro(self, tmp_path):
