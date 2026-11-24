@@ -40,7 +40,8 @@ O reimport por cima **já existe**: `POST /v1/import/{module}` com `force=True` 
 
 ### 4.1 Backend — `scripts/import_module.py`
 
-1. Extrair de `remove_module()` a limpeza de registros para `_clean_registrations(module_name, steps)`: `_clean_main_py` (main.py da API), factories/imports em `auth/dependencies.py`, imports em `alembic/env.py` e `_clean_requirements_txt`. `remove_module()` passa a chamar essa função — sem duplicação.
+1. Validar, logo após `validate_manifest()` e antes do backup/cópia, que `manifest["module_name"]` é igual ao `module_name` recebido (slug da URL). Hoje o *fuzzy match* do `import_router` pode selecionar um zip de outro módulo; como `copy_backend` usa o slug e `copy_migration`/`register_*` usam o manifest, a divergência altera a cadeia de migrations de outro módulo e ainda responde sucesso. Divergência vira `ValueError`, que o `except` existente já devolve como `success: false` com a mensagem no log do modal.
+2. Extrair de `remove_module()` a limpeza de registros para `_clean_registrations(module_name, steps)`: `_clean_main_py` (main.py da API), factories/imports em `auth/dependencies.py`, imports em `alembic/env.py` e `_clean_requirements_txt`. `remove_module()` passa a chamar essa função — sem duplicação.
 2. Em `import_module()`, detectar atualização antes do `copy_backend` (diretório do backend já existe) e, quando for atualização, rodar `_clean_registrations` entre `copy_backend` e `merge_requirements`. Depois o fluxo normal (`register_router`, `register_dependency`, `register_alembic_import`) regenera tudo a partir dos arquivos novos.
 3. Retornar `updated: True` no resultado e acrescentar step: `"Atualização concluída — reinicie a API para carregar o novo código"`.
 
@@ -67,6 +68,7 @@ Sem rota nova. A mensagem de sucesso passa a ser "Módulo atualizado com sucesso
 - `import_module`: primeira importação não chama a limpeza; segunda (diretório existente) chama `_clean_main_py`/dependencies/env/requirements antes de registrar.
 - Nova versão que remove um service: `dependencies.py` final não contém import nem factory da classe removida.
 - `import_router`: resposta com `updated=True` usa a mensagem "Módulo atualizado com sucesso.".
+- Zip com `module_name` divergente do slug: `import_module` falha antes do backup, sem copiar nem registrar nada.
 - Nenhum teste toca em `portal.modulos`/`usuario_modulo` — a preservação é por ausência de escrita.
 
 ---
@@ -74,5 +76,4 @@ Sem rota nova. A mensagem de sucesso passa a ser "Módulo atualizado com sucesso
 ## 6. Limites conhecidos
 
 - A API em produção roda sem `--reload`: o código novo só entra no ar após restart (avisado no step).
-- Um zip com `module_name` diferente do slug da URL continua sobrescrevendo o módulo do slug — comportamento atual, fora do escopo.
 - Migrations novas são copiadas a partir da revisão atual do banco (`copy_migration` já faz isso); não há validação de downgrade.
