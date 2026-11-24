@@ -50,11 +50,11 @@ Para migrations: downgrade automático é desnecessário — `alembic/env.py:75`
 ### 4.1 Backend — `scripts/import_module.py`
 
 1. Validar, logo após `validate_manifest()` e antes do backup/cópia, que `manifest["module_name"]` é igual ao `module_name` recebido (slug da URL). Hoje o *fuzzy match* do `import_router` pode selecionar um zip de outro módulo; como `copy_backend` usa o slug e `copy_migration`/`register_*` usam o manifest, a divergência altera a cadeia de migrations de outro módulo e ainda responde sucesso. Divergência vira `ValueError`, que o `except` existente já devolve como `success: false`.
-2. Extrair de `remove_module()` a limpeza de registros para `_clean_registrations(module_name, steps)`: `_clean_main_py` (main.py da API), factories/imports em `auth/dependencies.py`, imports em `alembic/env.py` e `_clean_requirements_txt`. `remove_module()` passa a chamar essa função — sem duplicação.
+2. Extrair de `remove_module()` a limpeza de registros para `_clean_registrations(module_name, steps)`: factories/imports em `auth/dependencies.py`, imports em `alembic/env.py` e `_clean_requirements_txt`. `_clean_main_py` continua separado (precisa do caminho do `main.py` de cada API). `remove_module()` passa a chamar a função extraída — sem duplicação.
 3. Em `import_module()`, detectar atualização antes do `copy_backend` (diretório do backend já existe) e, quando for atualização, rodar `_clean_registrations` entre `copy_backend` e `merge_requirements`. Depois o fluxo normal (`register_router`, `register_dependency`, `register_alembic_import`) regenera tudo a partir dos arquivos novos.
 4. Falha de migration deixa de ser engolida: o `except` de `run_migrations()` relança e o `except` externo devolve `success: false` com o stderr do alembic. O rollback de arquivos existente continua valendo.
 5. Depois de `run_migrations()`, ler `_get_db_current_revision()` e acrescentar step `"Schema na revisão <rev>"`.
-6. In `copy_migration()`: não apagar migration não aplicada (`stale.unlink()` removido, vira warning no log) e, em revisão órfã, recusar com `RuntimeError` informando a revisão do banco e o head do módulo em vez de `_stamp_revision`.
+6. In `copy_migration()`: em vez de apagar migration não aplicada (`stale.unlink()`), mover para `import/.backup/unapplied_migrations/` — deixá-la em `alembic/versions/` criaria múltiplos heads e quebraria `upgrade head`; falha ao arquivar recusa a atualização. Em revisão órfã, recusar com `RuntimeError` informando a revisão do banco e o head do módulo em vez de `_stamp_revision`.
 7. Retornar `updated: True` no resultado e acrescentar step `"Atualização concluída — reinicie a API para carregar o novo código"` (ou `"Atualização concluída — a API vai reiniciar"` quando o restart automático estiver ligado).
 
 Ordem final: validar slug → backup → copy_backend → (update: clean registrations) → merge_requirements → copy_frontend → copy_migration → register_* → migrations → revisão atual.
@@ -86,7 +86,7 @@ Ordem final: validar slug → backup → copy_backend → (update: clean registr
 - Nova versão que remove um service: `dependencies.py` final não contém import nem factory da classe removida.
 - Zip com `module_name` divergente do slug: `import_module` falha antes do backup, sem copiar nem registrar nada.
 - `run_migrations()` levantando: `import_module` devolve `success: False` com o erro.
-- `copy_migration`: revisão órfã levanta erro; migration não aplicada não é apagada.
+- `copy_migration`: revisão órfã levanta erro sem carimbar; migration não aplicada é movida para `import/.backup/unapplied_migrations/`, não apagada.
 - `import_router`: atualização passa `skip_migrations=False` e não agenda background; instalação nova mantém o background.
 - `import_router`: resposta com `updated=True` usa a mensagem "Módulo atualizado com sucesso.".
 - `_restart_api` só é agendado com a flag ligada + `updated`.
