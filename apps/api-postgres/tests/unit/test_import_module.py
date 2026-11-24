@@ -617,13 +617,11 @@ class TestCopyMigration:
             "100_create.py",
             "101_add.py",
         ]
-        assert (
-            'revision: str = "100"'
-            in (versions / "100_create.py").read_text(encoding="utf-8")
+        assert 'revision: str = "100"' in (versions / "100_create.py").read_text(
+            encoding="utf-8"
         )
-        assert (
-            'revision: str = "101"'
-            in (versions / "101_add.py").read_text(encoding="utf-8")
+        assert 'revision: str = "101"' in (versions / "101_add.py").read_text(
+            encoding="utf-8"
         )
 
     def test_reimport_acrescenta_apenas_migration_nova(self, migration_env):
@@ -674,7 +672,6 @@ class TestCopyMigration:
 
         files = sorted(p.name for p in versions.glob("1*.py"))
         assert files == ["100_create.py", "101_add.py"]
-        assert (
-            'down_revision: str | None = "023a4c5d6e7f"'
-            in (versions / "100_create.py").read_text(encoding="utf-8")
-        )
+        assert 'down_revision: str | None = "023a4c5d6e7f"' in (
+            versions / "100_create.py"
+        ).read_text(encoding="utf-8")
