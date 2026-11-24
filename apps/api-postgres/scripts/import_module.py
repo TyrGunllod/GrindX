@@ -389,34 +389,23 @@ def _get_db_current_revision() -> str | None:
     return row[0] if row else None
 
 
-def _stamp_revision(revision: str) -> None:
-    """Marca o banco na revisão informada, sem executar DDL."""
-    api_dir = _get_api_dir()
-    logger.warning(
-        "Reconciliando alembic_version com a revisão %s (sem executar DDL)",
-        revision,
-    )
-    result = subprocess.run(
-        [
-            _get_venv_python(),
-            "-m",
-            "alembic",
-            "stamp",
-            "--purge",
-            revision,
-        ],
-        cwd=api_dir,
-        capture_output=True,
-        text=True,
-        check=False,
-        timeout=120,
-        env=_alembic_env(),
-    )
-    if result.returncode != 0:
+def _archive_unapplied_migration(filepath: Path) -> Path:
+    """Move uma migration não aplicada para o backup do import.
+
+    Deixá-la em ``alembic/versions`` criaria múltiplos heads e quebraria
+    ``upgrade head``; apagá-la perderia o histórico.
+    """
+    dest_dir = _get_import_dir() / BACKUP_DIRNAME / "unapplied_migrations"
+    dest = dest_dir / filepath.name
+    try:
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(filepath), str(dest))
+    except PermissionError as exc:
         raise RuntimeError(
-            f"Falha ao reconciliar alembic_version para {revision}:\n"
-            f"STDOUT: {result.stdout}\nSTDERR: {result.stderr}"
-        )
+            f"Não foi possível arquivar a migration não aplicada {filepath}: {exc}. "
+            "Resolva manualmente antes de atualizar."
+        ) from exc
+    return dest
 
 
 def _revision_of(filepath: Path) -> str | None:
@@ -547,8 +536,8 @@ def copy_migration(import_dir: Path) -> None:
             applied_count,
         )
         for stale in module_files[applied_count:]:
-            stale.unlink()
-            logger.info("Migration não aplicada removida: %s", stale.name)
+            dest = _archive_unapplied_migration(stale)
+            logger.info("Migration não aplicada arquivada em: %s", dest)
         module_files = module_files[:applied_count]
         chain_rev = _revision_of(module_files[-1]) if module_files else native_rev
     elif current_rev is None or current_rev in _all_revisions(dest_dir):
@@ -561,17 +550,13 @@ def copy_migration(import_dir: Path) -> None:
         applied_count = 0
         chain_rev = native_rev
     elif module_files:
-        # Revisão órfã: o banco aponta para algo que não existe mais. Mantém os
-        # arquivos e apenas reconcilia a versão para o head atual do módulo.
+        # Revisão órfã: o banco aponta para algo que não existe mais nos arquivos.
+        # Carimbar o head esconderia migrations não aplicadas — recusa a atualização.
         head_rev = _revision_of(module_files[-1])
-        if head_rev:
-            _stamp_revision(head_rev)
-        applied_count = len(module_files)
-        chain_rev = head_rev or native_rev
-        logger.info(
-            "Banco em revisão órfã %s: mantidas %d migration(ões) do módulo",
-            current_rev,
-            applied_count,
+        raise RuntimeError(
+            f"Banco na revisão '{current_rev}', que não existe mais nos arquivos. "
+            f"Head do módulo '{module_name}': '{head_rev}'. "
+            "Resolva o alembic_version antes de atualizar."
         )
     else:
         applied_count = 0

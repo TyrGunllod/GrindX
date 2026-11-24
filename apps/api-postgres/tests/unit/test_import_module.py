@@ -575,14 +575,13 @@ def migration_env(tmp_path):
 def _run_copy_migration(api_dir, import_dir, current_rev):
     with (
         patch("scripts.import_module._get_api_dir", return_value=api_dir),
+        patch("scripts.import_module._get_import_dir", return_value=import_dir),
         patch(
             "scripts.import_module._get_db_current_revision",
             return_value=current_rev,
         ),
-        patch("scripts.import_module._stamp_revision") as stamp,
     ):
         copy_migration(import_dir)
-    return stamp
 
 
 class TestCopyMigration:
@@ -642,7 +641,23 @@ class TestCopyMigration:
         assert 'revision: str = "102"' in new
         assert 'down_revision: str | None = "101"' in new
 
-    def test_banco_fora_da_cadeia_reconcilia_para_head_do_modulo(self, migration_env):
+    def test_banco_em_revisao_orfa_levanta_erro(self, migration_env):
+        api_dir, versions, import_dir = migration_env
+        _write_migration(
+            versions / "100_create.py", "100", "023a4c5d6e7f", marker="pop_docs"
+        )
+        _write_source_migration(import_dir, "100_create.py")
+
+        with (
+            patch("scripts.import_module._get_api_dir", return_value=api_dir),
+            patch(
+                "scripts.import_module._get_db_current_revision", return_value="999"
+            ),
+        ):
+            with pytest.raises(RuntimeError, match="999"):
+                copy_migration(import_dir)
+
+    def test_reimport_arquiva_migration_nao_aplicada(self, migration_env):
         api_dir, versions, import_dir = migration_env
         _write_migration(
             versions / "100_create.py", "100", "023a4c5d6e7f", marker="pop_docs"
@@ -651,13 +666,14 @@ class TestCopyMigration:
         _write_source_migration(import_dir, "100_create.py")
         _write_source_migration(import_dir, "106_add.py")
 
-        stamp = _run_copy_migration(api_dir, import_dir, current_rev="999")
+        _run_copy_migration(api_dir, import_dir, current_rev="100")
 
-        stamp.assert_called_once_with("101")
         assert sorted(p.name for p in versions.glob("1*.py")) == [
             "100_create.py",
             "101_add.py",
         ]
+        archived = list((import_dir / ".backup" / "unapplied_migrations").glob("*.py"))
+        assert [p.name for p in archived] == ["101_add.py"]
 
     def test_banco_no_head_nativo_reinstala_migrations_antigas(self, migration_env):
         api_dir, versions, import_dir = migration_env
