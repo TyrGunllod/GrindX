@@ -403,3 +403,82 @@ class TestImportUpdate:
         _, _, call_kwargs = mock_import.mock_calls[0]
         assert call_kwargs["skip_migrations"] is True
         mock_bg.assert_called_once()
+
+class TestAutoRestart:
+    def test_restart_agendado_quando_flag_ligada_e_update(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        from unittest.mock import patch
+
+        _criar_zip_manifest(
+            tmp_path,
+            "projetos",
+            {
+                "module_name": "projetos",
+                "entity_name": "Projeto",
+                "schema_name": "org",
+                "route_prefix": "/v1/projetos",
+                "menu_label": "Projetos",
+                "frontend_tabs": [
+                    {"name": "Projetos", "url": "modules/projetos/index.html"}
+                ],
+            },
+        )
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+        from app.core.config import settings
+
+        monkeypatch.setattr(settings, "IMPORT_AUTO_RESTART", True)
+
+        with (
+            patch("scripts.import_module.import_module") as mock_import,
+            patch("app.routers.import_router._is_update", return_value=True),
+            patch("app.routers.import_router._restart_api") as mock_restart,
+        ):
+            mock_import.return_value = {
+                "success": True,
+                "steps": ["ok"],
+                "updated": True,
+            }
+            response = client.post("/v1/import/projetos", headers=auth_headers)
+
+        assert response.status_code == 200, response.text
+        mock_restart.assert_called_once()
+
+    def test_restart_nao_agendado_em_instalacao(
+        self, client, auth_headers, tmp_path, monkeypatch
+    ):
+        from unittest.mock import patch
+
+        _criar_zip_manifest(
+            tmp_path,
+            "projetos",
+            {
+                "module_name": "projetos",
+                "entity_name": "Projeto",
+                "schema_name": "org",
+                "route_prefix": "/v1/projetos",
+                "menu_label": "Projetos",
+                "frontend_tabs": [
+                    {"name": "Projetos", "url": "modules/projetos/index.html"}
+                ],
+            },
+        )
+        monkeypatch.setattr(
+            "app.routers.import_router._get_import_dir", lambda: tmp_path
+        )
+        from app.core.config import settings
+
+        monkeypatch.setattr(settings, "IMPORT_AUTO_RESTART", True)
+
+        with (
+            patch("scripts.import_module.import_module") as mock_import,
+            patch("app.routers.import_router._is_update", return_value=False),
+            patch("app.routers.import_router._restart_api") as mock_restart,
+            patch("app.routers.import_router._run_migrations_background"),
+        ):
+            mock_import.return_value = {"success": True, "steps": ["ok"]}
+            client.post("/v1/import/projetos", headers=auth_headers)
+
+        mock_restart.assert_not_called()

@@ -75,6 +75,7 @@ class Settings(BaseSettings):
 
     # --- Import de Módulos ---
     IMPORT_DIR: str = ""
+    IMPORT_AUTO_RESTART: bool = False
 
     # --- Skins Snapshot Directory ---
     SKINS_DIR: str = ""

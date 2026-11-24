@@ -6,16 +6,19 @@ importar módulos completos (backend + frontend + migration + registro).
 """
 
 import json
+import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
 import threading
+import time
 import zipfile
 from pathlib import Path
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -55,6 +58,12 @@ def _run_migrations_background(module_name: str) -> None:
             "Execute manualmente: make migrate",
             module_name,
         )
+
+
+def _restart_api() -> None:
+    """Reinicia o processo após a resposta; o container levanta de novo."""
+    time.sleep(2)
+    os.kill(os.getpid(), signal.SIGTERM)
 
 
 class ModuleInfo(BaseModel):
@@ -269,6 +278,7 @@ def scan_imports(
 @router.post("/{module_name}", response_model=ImportResult, summary="Importa um módulo")
 def import_module(
     module_name: str,
+    background_tasks: BackgroundTasks,
     force: bool = Query(True, description="Sobrescrever módulo existente"),
     db: Session = Depends(get_db),
     _: None = Depends(require_role("admin")),
@@ -369,6 +379,9 @@ def import_module(
                 steps.append("Módulo frontend-only importado — sem migrações")
             elif not update:
                 steps.append("Módulo sqlserver importado — sem migrações")
+            if settings.IMPORT_AUTO_RESTART and result_data.get("updated"):
+                background_tasks.add_task(_restart_api)
+                steps.append("API vai reiniciar para carregar o novo código")
             logger.info("Import de '%s' concluído", module_name)
 
         return ImportResult(
